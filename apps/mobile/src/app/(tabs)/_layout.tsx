@@ -1,10 +1,12 @@
 import { Tabs } from "expo-router";
-import { Text } from "react-native";
+import { TabIcon } from "../../components/TabIcon";
 export default function StreetTabs() {
   return (
     <Tabs
       screenOptions={{
         headerShown: false,
+        tabBarShowLabel: false,
+        tabBarIconStyle: { width: 60, height: 40 },
         tabBarActiveTintColor: "#008cff",
         tabBarStyle: { backgroundColor: "#fff", borderTopColor: "#e8edef" },
       }}
@@ -14,8 +16,8 @@ export default function StreetTabs() {
         options={{
           title: "Home",
           tabBarAccessibilityLabel: "Home",
-          tabBarIcon: ({ color }) => (
-            <Text style={{ fontSize: 27, color }}>⌂</Text>
+          tabBarIcon: ({ color, focused }) => (
+            <TabIcon kind="home" color={color} focused={focused} />
           ),
         }}
       />
@@ -24,8 +26,8 @@ export default function StreetTabs() {
         options={{
           title: "Map",
           tabBarAccessibilityLabel: "Map",
-          tabBarIcon: ({ color }) => (
-            <Text style={{ fontSize: 25, color }}>◎</Text>
+          tabBarIcon: ({ color, focused }) => (
+            <TabIcon kind="map" color={color} focused={focused} />
           ),
         }}
       />
@@ -34,8 +36,8 @@ export default function StreetTabs() {
         options={{
           title: "Settings",
           tabBarAccessibilityLabel: "Settings",
-          tabBarIcon: ({ color }) => (
-            <Text style={{ fontSize: 25, color }}>♙</Text>
+          tabBarIcon: ({ color, focused }) => (
+            <TabIcon kind="account" color={color} focused={focused} />
           ),
         }}
       />
