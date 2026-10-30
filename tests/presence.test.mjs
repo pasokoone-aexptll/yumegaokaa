@@ -57,3 +57,13 @@ test("T07 再取得と分割でも他人のアイコンの透明度を戻さな�
   assert.equal(liveCells(s, now + 60000)[0].count, 2);
   assert.deepEqual(liveCells(s, now + 600000), []);
 });
+
+test("pool images preserve their individual expiry when seven people split into five plus two", () => {
+  const now=Date.now();
+  const s={cells:[{expiry_groups:[
+    {expires_at:new Date(now+60000).toISOString(),count:5,icons:["a","b","c","d","e"]},
+    {expires_at:new Date(now+600000).toISOString(),count:2,icons:["f","g"]},
+  ]}]};
+  assert.deepEqual(liveCells(s,now)[0].clusters.map(c=>c.icons),[["a","b","c","d","e"],["f","g"]]);
+  assert.deepEqual(liveCells(s,now+60000)[0].clusters[0].icons,["f","g"]);
+});

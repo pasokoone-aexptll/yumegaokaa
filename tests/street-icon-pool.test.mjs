@@ -26,6 +26,17 @@ test('pool contribution, daily stability, replacement, removal and withdrawal', 
   assert.equal(published.contributed,true);
   assert.equal(published.contribution_path,prepare.upload_path);
   assert.equal((await rpc('street_icon_get')).daily_path,published.daily_path);
+  const visit=randomUUID();
+  await c.query("insert into app_private.visits(id,account_id,street_id,writer_session_id,started_at,expires_at) values($1,$2,$3,$4,now(),now()+interval '3 hours')",[visit,uid,street,sid]);
+  await c.query("insert into app_private.presence(visit_id,area_version,grid_version,cell_id,observed_at,expires_at) select $1,a.version,s.grid_version,floor(extensions.st_x(extensions.st_pointonsurface(a.polygon))/100)::int::text||':'||floor(extensions.st_y(extensions.st_pointonsurface(a.polygon))/100)::int::text,now(),now()+interval '10 minutes' from app_private.areas a join app_private.streets s on s.id=a.street_id and s.area_version=a.version where s.id=$2",[visit,street]);
+  const snapshot=await rpc('get_presence_snapshot');
+  const groups=snapshot.cells.flatMap(cell=>cell.expiry_groups);
+  assert.equal(groups.reduce((sum,g)=>sum+g.count,0),snapshot.presence_count);
+  assert.ok(groups.flatMap(g=>g.icons).includes(published.daily_path));
+  for(const g of groups) assert.equal(g.icons.length,g.count);
+  assert.equal(JSON.stringify(snapshot).includes(uid),false);
+  assert.equal(JSON.stringify(snapshot).includes(visit),false);
+
   const replacement=await rpc('street_icon_prepare');
   assert.notEqual(replacement.id,prepare.id);
   assert.equal((await rpc('street_icon_get')).contribution_id,prepare.id);

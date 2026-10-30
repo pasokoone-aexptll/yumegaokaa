@@ -17,15 +17,21 @@ export function liveCells(snapshot: Snapshot, now: number) {
     if (!count) return [];
     // Each display slot fades on its own deadline; a newcomer cannot brighten others.
     const slots = groups.flatMap((g) =>
-      Array.from({ length: g.count }, () =>
-        Math.max(0, Math.min(1, (Date.parse(g.expires_at) - now) / 600000)),
-      ),
+      Array.from({ length: g.count }, (_, i) => ({
+        opacity: Math.max(
+          0,
+          Math.min(1, (Date.parse(g.expires_at) - now) / 600000),
+        ),
+        icon: g.icons?.[i] ?? null,
+      })),
     );
     let offset = 0;
     const clusters = splitCount(count).map((size) => {
-      const opacities = slots.slice(offset, offset + size);
+      const group = slots.slice(offset, offset + size);
+      const opacities = group.map((slot) => slot.opacity);
+      const icons = group.map((slot) => slot.icon);
       offset += size;
-      return { count: size, opacities };
+      return { count: size, opacities, icons };
     });
     return [{ ...c, count, clusters }];
   });

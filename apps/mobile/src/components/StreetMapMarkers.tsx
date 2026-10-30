@@ -1,3 +1,4 @@
+import { Avatar } from "./Avatar";
 import { Marker } from "@maplibre/maplibre-react-native";
 import { router } from "expo-router";
 import { Pressable, Text, View } from "react-native";
@@ -57,7 +58,16 @@ export function StreetMapMarkers({
                         },
                       ]}
                     >
-                      <Text style={styles.orbSymbol}>✦</Text>
+                      {cluster.icons[slot] ? (
+                        <Avatar
+                          bucket="street-icons"
+                          path={cluster.icons[slot] ?? undefined}
+                          name=""
+                          size={38}
+                        />
+                      ) : (
+                        <Text style={styles.orbSymbol}>✦</Text>
+                      )}
                     </View>
                   ))}
                 </View>

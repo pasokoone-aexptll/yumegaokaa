@@ -23,7 +23,11 @@ export type Snapshot = {
     area_version: string;
     grid_version: string;
     anchor: { longitude: number; latitude: number };
-    expiry_groups: { expires_at: string; count: number }[];
+    expiry_groups: {
+      expires_at: string;
+      count: number;
+      icons?: (string | null)[];
+    }[];
   }[];
 };
 const bridge = requireNativeModule("PresenceNative") as {
