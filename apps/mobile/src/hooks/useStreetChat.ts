@@ -5,7 +5,7 @@ import { useCallback, useContext, useEffect, useRef, useState } from "react";
 import { AccountAccessContext } from "./useAccountAccess";
 import { AppState } from "react-native";
 import { native, streetID } from "../lib/native";
-import { pendingCommand, submitCommand } from "../lib/commands";
+import { useChatComposer } from "./useChatComposer";
 export type Message = {
   id: string;
   author_id: string | null;
@@ -21,9 +21,7 @@ export type Message = {
 export function useStreetChat() {
   const { chatRestrictedUntil } = useContext(AccountAccessContext);
   const [items, setItems] = useState<Message[]>([]),
-    [text, setText] = useState(""),
     [error, setError] = useState(""),
-    [busy, setBusy] = useState(false),
     [expanded, setExpanded] = useState(false),
     [loading, setLoading] = useState(true),
     [hasNew, setHasNew] = useState(false);
@@ -101,11 +99,6 @@ export function useStreetChat() {
     mounted.current = true;
     const counter = generation;
     void loadRef.current();
-    void pendingCommand("chat_send")
-      .then((p) => {
-        if (p) setText(String(p.body.body ?? ""));
-      })
-      .catch(() => {});
     const timer = setInterval(() => {
       if (AppState.currentState === "active") void loadRef.current();
     }, 5000);
@@ -131,27 +124,10 @@ export function useStreetChat() {
       clearInterval(timer);
     };
   }, []);
-  async function send() {
-    if (busy || chatRestrictedUntil || !text.trim()) return;
-    setBusy(true);
-    try {
-      await submitCommand("chat_send", {
-        street_id: streetID,
-        body: text.trim(),
-      });
-      setText("");
-      older.current = false;
-      await loadRef.current();
-    } catch (e) {
-      setError(
-        String(e).includes("pending_command_exists")
-          ? "前回の送信結果が未確認です。前回の内容で再試行してください。"
-          : "送信できませんでした。名前の設定・通信を確認し、同じ内容で再試行してください。",
-      );
-    } finally {
-      setBusy(false);
-    }
-  }
+  const composer = useChatComposer(() => {
+    older.current = false;
+    void loadRef.current();
+  }, !!chatRestrictedUntil);
   async function action(op: string, p: Record<string, unknown>) {
     generation.current++;
     try {
@@ -203,13 +179,10 @@ export function useStreetChat() {
     followLatest,
     readingHistory: older,
     items,
-    text,
-    setText,
-    error,
-    busy,
+    ...composer,
+    error: composer.error || error,
     expanded,
     loading,
-    send,
     action,
     toggleExpanded,
     beginHistory,

@@ -19,6 +19,11 @@ import { useStreetChat, Message } from "../hooks/useStreetChat";
 import { ui } from "./Page";
 export function StreetChat() {
   const {
+    pending,
+    revise,
+    restoring,
+    restoreFailed,
+    restore,
     chatRestrictedUntil,
     hasNew,
     followLatest,
@@ -194,6 +199,25 @@ export function StreetChat() {
                 まで制限されています
               </Text>
             )}
+            {restoreFailed && (
+              <Pressable
+                accessibilityRole="button"
+                onPress={() => void restore()}
+              >
+                <Text style={ui.error}>送信状態を再取得</Text>
+              </Pressable>
+            )}
+            {pending && (
+              <Pressable
+                accessibilityRole="button"
+                disabled={busy}
+                onPress={() => void revise()}
+              >
+                <Text style={{ color: "#008cff" }}>
+                  未確定の送信を取り消して編集
+                </Text>
+              </Pressable>
+            )}
             <View style={{ flexDirection: "row", gap: 8 }}>
               <TextInput
                 style={[ui.input, { flex: 1, padding: 10 }]}
@@ -201,14 +225,21 @@ export function StreetChat() {
                 maxLength={500}
                 value={text}
                 onChangeText={setText}
+                editable={!pending && !restoring && !restoreFailed && !busy}
               />
               <Pressable
-                disabled={busy || !!chatRestrictedUntil || !text.trim()}
+                disabled={
+                  busy ||
+                  restoring ||
+                  restoreFailed ||
+                  !!chatRestrictedUntil ||
+                  !text.trim()
+                }
                 onPress={() => void send()}
                 style={{ padding: 10 }}
               >
                 <Text style={{ color: "#008cff" }}>
-                  {busy ? "送信中" : "送信"}
+                  {busy ? "確認中" : pending ? "結果を確認" : "送信"}
                 </Text>
               </Pressable>
             </View>
