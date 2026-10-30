@@ -335,6 +335,14 @@ final class Smoke: XCTestCase {
   XCTAssertEqual(toggle.value as? String,"0")
   attach(app,"entry-denied-location")
  }
+ @MainActor func testPresenceHeader() throws {
+  continueAfterFailure=false
+  let app=XCUIApplication(bundleIdentifier:"jp.yumegaoka.development")
+  app.launch()
+  XCTAssertTrue(app.descendants(matching:.any).matching(identifier:"気配の街アイコン 8人分").firstMatch.waitForExistence(timeout:30))
+  XCTAssertTrue(app.staticTexts.containing(NSPredicate(format:"label CONTAINS %@","10人がチェックイン中")).firstMatch.exists)
+  attach(app,"presence-header-eight-with-ten-checkins")
+ }
  @MainActor func testMVPNavigation() throws {
   continueAfterFailure=false
   let app=XCUIApplication(bundleIdentifier:"jp.yumegaoka.development")

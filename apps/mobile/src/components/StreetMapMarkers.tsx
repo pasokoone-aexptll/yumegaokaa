@@ -102,6 +102,8 @@ export function StreetMapMarkers({
               <Text
                 style={{
                   fontSize: 25,
+                  lineHeight: 36,
+                  height: 36,
                   color: "#ff5d9c",
                   textAlign: "center",
                 }}

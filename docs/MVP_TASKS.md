@@ -1161,3 +1161,9 @@ T012をIMPLEMENTED/INTEGRATEDへ更新。DONE8、IMPLEMENTED15、IN_PROGRESS7、
 - DONE12/33（36.4%）、IMPLEMENTED11、IN_PROGRESS7、BLOCKED3。コード23/33、統合22/33、実機11/33。外部依存以外の残り18件。
 
 cp96再試験：/tmp/yumegaoka-entry96-retry.xcresult成功。入街前取消→OFF維持、位置情報拒否→案内表示→成功表示なし/OFF維持を実Release画面で確認。試験後シミュレータの位置情報許可を復元。最初の失敗には権限条件とエラー消去の両方を修正したため、単一原因と断定しない。
+
+## チェックポイント97：人数差のあるヘッダー実表示（2026-10-31）
+- T007/R10/R19：ローカル専用fixtureで10滞在・8気配を作り、既存poolから当日画像を割当。testPresenceHeader成功（/tmp/yumegaoka-header97.xcresult）。実画像 /tmp/yumegaoka-header97-images/D4CE740D-864D-4194-9D65-976B44C28727.png で7画像＋1と別行の10チェックインを目視確認。既存cp96 Releaseを使用、本体再ビルドなし。
+- scripts/test-header-ui.mjsは開始時に既存有効滞在0件を要求し、専用UUIDの滞在/気配/割当/会員/Authだけをfinallyで削除。既存pool画像やユーザーの滞在は変更しない。試験終了コード0で清掃完了。再利用時の観測時刻と失効の厳密一致のためstatement_timestampを使用。これは模擬人数の描画試験であり実在ユーザーの観測証明ではない。
+- 必須ピン表示の欠けへ、イベントの雲文字に行高/高さ36を明示。表示修正の実画面確認は次のまとめたビルドへ残す。地図上の全マーカーやFigma完全一致は未達。Q10も未解決なのでT007はIN_PROGRESS維持。
+- コード23/33、統合22/33、実機11/33、DONE12/33、BLOCKED3。iPhone操作/pushなし。次はピン表示の必須差分と残る入街/通報の統合条件を進める。
