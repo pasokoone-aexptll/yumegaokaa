@@ -85,3 +85,5 @@ Personal Team用Debug iPhoneビルドは2026-10-29に成功。変更後のTypeSc
 
 ## cp103 再開地点
 T029：アプリ共通通信はgatewayConnection/useStreetMapへ接続済み。035適用・直接Realtime停止済み。ローカル配信起動は `npm run realtime:local`（54325）。実Auth/DB共通transport再接続試験成功。次はMVP_REMAINING T029-05の既存上限/認可証拠照合。新RN画面は未ビルド、T031/T032でまとめる。旧iPhone版の直接Realtime通知は無効。残量初回30→26、外部3枠別、DONE12。無関係なテスト反復は不要。
+
+cp104再開地点：T029/T022 DONE、14/33、残24項目。次T025-01の使用済招待受領者/ページング実UI。gateway起動はnpm run realtime:local、現在常駐は未起動。次のバッチReleaseではgateway接続・幅可変ヘッダー・ピン外観をまとめて確認する。今回はDB試験chat-flow/recruitment-flowのみ、製品変更なし。

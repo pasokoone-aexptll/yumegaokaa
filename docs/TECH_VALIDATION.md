@@ -631,3 +631,8 @@ R16/R18。useStreetMapの直接Supabase購読をgatewayConnectionへ置換。前
 
 cp103追記：035でprivate broadcast読取policyを削除。config realtime.enabled=false、既存local realtimeコンテナを停止。ローカル実WS handshake拒否を確認（RLSだけを物理遮断とは扱わない）。gateway-auth試験に実アプリのgatewayConnectionを接続し、強制切断→新規token取得→ready→実DB変更通知が成功。実Auth署名/会員/session失効・単一runtime排他も同じ試験で通過。クラウド経路閉鎖はT033の配備条件で未確認。旧iPhone直購読版の通知は止まるため、最新版転送前は即時配信を保証しない。
 最終残量：初回30→26項目、22–52推測作業時間＋判断/外部待ち不明。T029-05の上限/認可証拠照合は未完、DONE数据置。
+
+## cp104：T029完了
+R03/R16/R18。LIMIT_ACCEPTANCEで要件8章全上限・認可・再送を現行実装/既存証拠に対応付け。chat-flowに他人受付拒否、本文変更conflict、受付削除後再送not_foundと行数非増加を追加し実DB成功。製品変更なし、型/Lintはcp103を再利用。T029 DONE、全体13/33。残量26→25、追加必須0。
+
+cp104追記：T022/R15/R18。recruitment-flowでブロックの募集一覧/直接取得拒否、解除後取得、check-in人数維持を実DB成功。useStreetMap/useHomePins/useStreetChatと募集詳細のlocalBlocksによる遅延応答除外、event/presenceに適用しないことを現行コード照合。cp66 arrival-chat、cp44/47/70実UI・実機と既存state試験を再利用しDONE。製品変更なし、追加ビルド不要。

@@ -98,6 +98,27 @@ test("統合: 入街→募集→別人一覧→編集→退出→再送で復活
     const before = (await rpc(1, "recruitment_list", { street_id: street }))
       .items;
     assert.equal(before.length, 1);
+    const countBefore = (
+      await rpc(1, "get_presence_snapshot", { street_id: street })
+    ).checked_in_count;
+    await rpc(1, "block_set", { account_id: users[0], blocked: true });
+    assert.equal(
+      (await rpc(1, "recruitment_list", { street_id: street })).items.length,
+      0,
+    );
+    await denied(1, "recruitment_get", { id: pin.id }, /not_found/);
+    assert.equal(
+      (await rpc(1, "get_presence_snapshot", { street_id: street }))
+        .checked_in_count,
+      countBefore,
+    );
+    await rpc(1, "block_set", { account_id: users[0], blocked: false });
+    assert.equal((await rpc(1, "recruitment_get", { id: pin.id })).id, pin.id);
+    assert.equal(
+      (await rpc(1, "recruitment_list", { street_id: street })).items.length,
+      1,
+    );
+
     assert.equal(
       Date.parse(before[0].expires_at) -
         (
