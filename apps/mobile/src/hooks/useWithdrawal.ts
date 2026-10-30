@@ -46,10 +46,20 @@ export function useWithdrawal() {
       }
       await native.logout();
       router.replace("/");
-    } catch {
-      setError(
-        "完了を確認できませんでした。通信を確認して、もう一度お試しください",
-      );
+    } catch (error) {
+      if (String(error).includes("attempt_expired")) {
+        authenticated.current = false;
+        confirmed.current = false;
+        setRequest(undefined);
+        setCode("");
+        setError(
+          "確認の有効期限が切れました。本人確認コードを送り直してください。",
+        );
+      } else {
+        setError(
+          "完了を確認できませんでした。通信を確認して、もう一度お試しください",
+        );
+      }
     } finally {
       writing.current = false;
       setBusy(false);

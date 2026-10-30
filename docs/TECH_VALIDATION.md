@@ -381,3 +381,6 @@ testProfilePhotoPersistence成功25.215秒。既存Release、専用ローカル�
 
 ### チェックポイント60：初回登録の統合
 現行ReleaseでtestInvitationOnboarding成功67.309秒。新規OTP→招待→名前→pool写真→Map、各登録途中と完了後の再起動復帰を確認。実DBで招待消費・会員・プロフィール・pool/Storageを照合。旧中央タップがチャットを開いた初回試験は停止し、runnerだけ修正。本体ビルドなし。/tmp/yumegaoka-onboarding60-fixed.xcresult。実機通信断復帰は未確認。試験後シミュレータはログアウト。
+
+### チェックポイント61：退会受付の再試行
+T005/R03/R17。useWithdrawalでサーバー受付期限切れ時は古いrequest/code/authenticated状態を破棄し本人確認へ戻す。状態試験3件で期限切れ、確認応答紛失、logout失敗の再試行を確認。型/Lint成功。実OTP/DB経由の既存試験とは区別し、今回実機退会は未実施。

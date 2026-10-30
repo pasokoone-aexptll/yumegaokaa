@@ -843,3 +843,8 @@ T003/T004/T007/T030：チャット画像との別設定、本人と地図で同�
 - 修正後のRelease統合試験成功67.309秒。新規ローカルOTP→招待受領→名前未設定で再起動復帰→名前設定→pool未登録で再起動復帰→写真選択/切り抜き/公開→Map→再起動後Map→Settings当日画像確認→ログアウト。結果 /tmp/yumegaoka-onboarding60-fixed.xcresult。
 - 実DB照合：専用招待が消費され、有効会員・Onboarding visitorプロフィール・有効pool・39513bytesのStorage画像が保存済み。シミュレータは終了時ログアウト状態。iphone-validation@example.testのデータは保持し、実機のログイン状態は変更していない。
 - 完了条件の実機通信断/依存T029の最終照合は残す。DONE5/IMPLEMENTED10/IN_PROGRESS15/TODO0/BLOCKED3維持。次：残るアカウント例外/運営・上限の統合確認。pushなし。
+
+## 実装チェックポイント61：退会受付の期限切れ・再試行
+- T005/R03/R17：withdraw_confirmのattempt_expiredを一般通信失敗と分離。古い受付ID・入力コード・再認証済み状態を消去し、本人確認コード送信へ戻す。応答紛失では受付を保持し、同一IDで結果を再確認する既存方式を維持。
+- withdrawal-state.test.mjs 3件成功：期限切れで新しい本人確認へ、確認応答紛失後に消費済みOTPを使い直さず同じ受付で再試行、退会確認済み後のlogout失敗で退会処理を重複しない。hook/native stubによる状態試験であり実機退会操作ではない。
+- typecheck/Lint、差分検査成功。サーバー変更なし、無関係なDB/Storage試験は再実行せず。ネイティブビルド/実機転送は次回へまとめる。DONE5/IMPLEMENTED10/IN_PROGRESS15/TODO0/BLOCKED3維持。次：アカウント例外の実画面接続、残る運営統合。pushなし。
