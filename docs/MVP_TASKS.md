@@ -1316,3 +1316,8 @@ T029はLIMIT_ACCEPTANCEの全上限/認可と共通受付再送、T022は募集�
 - T005/T030/R03/R17：037で退会時の投稿制限/招待枠削除と未使用招待だけの無効化を実装。既退会分の制限/通知も回収。account-smokeで実Authの新旧メール確認、別OTPログイン後の旧セッション維持、再認証前拒否、退会後両セッション403、参加/通知/制限/枠削除、未使用招待無効・既使用招待維持、プロフィール削除/投稿匿名化/Auth worker清掃を確認。/tmp/yumegaoka-account131b.log成功。初回はfixture UUID型推論エラー、明示cast修正後成功。
 - アカウント導線はcp118、useEmailChange/useWithdrawalの既存状態試験、native.ts→PresenceNativeModule→APIClient接続を照合。メール紛失の自動復旧なしを維持。固定T005条件の採用導線/再認証/他セッション/削除を満たしDONE。物理2台・実機上のメール変更/退会操作は今回未実施、DEVICE_VERIFIEDへ加算しない。T030はRETENTION_ACCEPTANCEの既存期限・清掃・端末コピー証拠とQ08の今回確認でDONE。
 - DONE27/33（81.8%）、IMPLEMENTED1、IN_PROGRESS2、BLOCKED3。実装28/33（84.8%）、統合27/33（81.8%）、実機11/33（33.3%）。残9→5（cp130で1、cp131で3解消）、追加必須0。推測5.5–11.5→3.5–7.5h＋待ち不明。ネイティブビルド/実機転送/成功済み全件試験は省略。cp129成果物には今回のJS変更は未同梱、再開時にまとめて更新する。
+
+## チェックポイント132：ロジック変更後のiPhone成果物更新
+- T032-01：a843e5dの運営hook/確認文を含めiPhone Releaseを増分生成。/tmp/yumegaoka-device132-build.logでBUILD SUCCEEDED、codesign --verify --deep --strict成功。製品再ビルドはこの1回、全件試験なし。
+- 転送待ち成果物は `/tmp/yumegaoka-validation-release/Build/Products/Release-iphoneos/app.app`。main.jsbundle SHA256 `aa7d46d9ebde03e2dbdedacb34e0343c807fd12a5bd083d1c00a4422c95bdb8d`。cp129成果物を置換。ソース変更がなければこの成果物を転送する。DB036/037は適用済み。
+- 端末転送/操作は実機再開可否の回答待ち。残5→5、新規必須0、推測3.5–7.5h＋待ち不明は据置き。DONE27/33、ロジック実装29/33・検証28/33、実機11/33は不変。最終UI作業なし。
