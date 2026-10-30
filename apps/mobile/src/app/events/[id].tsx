@@ -1,3 +1,4 @@
+import { openMapAt } from "../../lib/mapNavigation";
 import { Alert, Text, View } from "react-native";
 import { router, useLocalSearchParams } from "expo-router";
 import { Action, Empty, Page, ui } from "../../components/Page";
@@ -56,15 +57,7 @@ export default function Event() {
           />
           <Action
             title="Mapで場所を見る"
-            onPress={() =>
-              router.navigate({
-                pathname: "/",
-                params: {
-                  longitude: event.longitude,
-                  latitude: event.latitude,
-                },
-              })
-            }
+            onPress={() => openMapAt(event.longitude, event.latitude)}
           />
           <Action
             title={event.joined ? "参加を取り消す" : "参加する"}

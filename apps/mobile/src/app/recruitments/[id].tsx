@@ -1,3 +1,4 @@
+import { openMapAt } from "../../lib/mapNavigation";
 import { Alert, Text, TextInput } from "react-native";
 import { router, useLocalSearchParams } from "expo-router";
 import { Action, Empty, Page, ui } from "../../components/Page";
@@ -24,12 +25,7 @@ export default function Detail() {
           />
           <Action
             title="Mapで場所を見る"
-            onPress={() =>
-              router.navigate({
-                pathname: "/",
-                params: { longitude: pin.longitude, latitude: pin.latitude },
-              })
-            }
+            onPress={() => openMapAt(pin.longitude, pin.latitude)}
           />
           {pin.mine && (
             <>

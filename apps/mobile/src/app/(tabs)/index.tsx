@@ -27,6 +27,7 @@ export default function Street() {
     longitude?: string;
     latitude?: string;
     panel?: string;
+    mapRequest?: string;
   }>();
   const {
     ready,
@@ -65,13 +66,15 @@ export default function Street() {
     const lon = Number(params.longitude),
       lat = Number(params.latitude);
     if (
+      ready &&
+      signed &&
       params.longitude &&
       params.latitude &&
       Number.isFinite(lon) &&
       Number.isFinite(lat)
     )
       camera.current?.flyTo({ center: [lon, lat], zoom: 16, duration: 600 });
-  }, [params.longitude, params.latitude]);
+  }, [params.longitude, params.latitude, params.mapRequest, ready, signed]);
   async function recenter() {
     try {
       const p = await native.currentLocation();

@@ -1,5 +1,5 @@
 import { Pressable, StyleSheet, Text, View } from "react-native";
-import { router } from "expo-router";
+import { openMapAt } from "../lib/mapNavigation";
 
 export function PinListItem({
   title,
@@ -28,12 +28,7 @@ export function PinListItem({
       <Pressable
         accessibilityRole="button"
         accessibilityLabel={`${title}の地図を開く`}
-        onPress={() =>
-          router.navigate({
-            pathname: "/",
-            params: { longitude, latitude },
-          })
-        }
+        onPress={() => openMapAt(longitude, latitude)}
         style={styles.map}
       >
         <Text style={styles.mapText}>地図を開く ›</Text>
