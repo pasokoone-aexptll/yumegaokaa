@@ -13,6 +13,18 @@ test("two recruitment creates and exit serialize on the same visit", async () =>
     street = randomUUID(),
     visit = randomUUID();
   const clients = [];
+  const pids = [];
+  async function waitForBothRequests() {
+    for (let attempt = 0; attempt < 100; attempt++) {
+      const { rows } = await admin.query(
+        "select count(*) n from pg_stat_activity where pid=any($1::int[]) and wait_event_type='Lock'",
+        [pids],
+      );
+      if (Number(rows[0].n) === 2) return;
+      await new Promise((resolve) => setTimeout(resolve, 20));
+    }
+    throw new Error("both requests did not reach the held lock");
+  }
   async function rpc(i, op, p) {
     const c = clients[i];
     await c.query("begin");
@@ -62,6 +74,7 @@ test("two recruitment creates and exit serialize on the same visit", async () =>
       await c.connect();
       await c.query("set statement_timeout='10s'");
       clients.push(c);
+      pids.push((await c.query("select pg_backend_pid() pid")).rows[0].pid);
     }
     const tickets = await Promise.all(
       [0, 1].map((i) =>
@@ -84,6 +97,7 @@ test("two recruitment creates and exit serialize on the same visit", async () =>
     const race = Promise.allSettled(
       tickets.map((t, i) => rpc(i, "command_execute", { id: t.id, body })),
     );
+    await waitForBothRequests();
     await admin.query("commit");
     const result = await race;
     assert.equal(result.filter((r) => r.status === "fulfilled").length, 1);
@@ -109,6 +123,7 @@ test("two recruitment creates and exit serialize on the same visit", async () =>
       rpc(0, "command_execute", { id: next.id, body }),
       rpc(1, "end_visit", { visit_id: visit, reason: "manual" }),
     ]);
+    await waitForBothRequests();
     await admin.query("commit");
     const exited = await exiting;
     assert.equal(exited[1].status, "fulfilled");
