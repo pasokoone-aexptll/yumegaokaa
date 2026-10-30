@@ -1,52 +1,39 @@
-import { useCallback, useState } from "react";
 import { Alert, Text, View } from "react-native";
-import { router, useFocusEffect, useLocalSearchParams } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 import { Action, Empty, Page, ui } from "../../components/Page";
-import { native } from "../../lib/native";
-import { StreetEvent } from "../../lib/events";
+import { useEventDetail } from "../../hooks/useEventDetail";
 export default function Event() {
   const { id } = useLocalSearchParams<{ id: string }>();
-  const [event, setEvent] = useState<StreetEvent>(),
-    [error, setError] = useState(""),
-    [busy, setBusy] = useState(false),
-    [roster, setRoster] =
-      useState<{ account_id: string; display_name: string }[]>();
-  const load = useCallback(async () => {
-    try {
-      const e = await native.rpc<StreetEvent>("event_get", { id });
-      setEvent(e);
-      setError("");
-    } catch {
-      setEvent(undefined);
-      setError(
-        "イベントを取得できません。終了・中止されたか、接続を確認する必要があります。",
-      );
-    }
-  }, [id]);
-  useFocusEffect(
-    useCallback(() => {
-      void load();
-    }, [load]),
-  );
-  async function act(operation: string, p: Record<string, unknown>) {
-    setBusy(true);
-    try {
-      await native.rpc(operation, { id, ...p });
-      await load();
-    } catch {
-      setError(
-        "操作できませんでした。満席・変更・通信状態を確認し、最新内容を再取得してください。",
-      );
-    } finally {
-      setBusy(false);
-    }
-  }
+  const {
+    event,
+    error,
+    loading,
+    busy,
+    canceled,
+    roster,
+    rosterLoading,
+    load,
+    act,
+    loadRoster,
+  } = useEventDetail(id);
   return (
     <Page title={event?.title ?? "オフ会"}>
       {!!error && <Text style={ui.error}>{error}</Text>}
-      <Action title="最新情報を取得" onPress={() => void load()} />
+      {!canceled && (
+        <Action
+          title="再取得"
+          disabled={busy || loading}
+          onPress={() => void load()}
+        />
+      )}
       {!event ? (
-        <Empty>参加を確認するにはイベントの情報が必要です。</Empty>
+        <Empty>
+          {canceled
+            ? "イベントを中止しました"
+            : loading
+              ? "読み込み中…"
+              : "イベントを表示できません"}
+        </Empty>
       ) : (
         <>
           <Text>
@@ -80,7 +67,11 @@ export default function Event() {
           />
           <Action
             title={event.joined ? "参加を取り消す" : "参加する"}
-            disabled={busy || (!event.joined && event.count >= event.capacity)}
+            disabled={
+              busy ||
+              loading ||
+              (!event.joined && event.count >= event.capacity)
+            }
             onPress={() =>
               void act("event_register", {
                 joined: !event.joined,
@@ -93,20 +84,17 @@ export default function Event() {
               <Text>主催者の操作</Text>
               <Action
                 title="参加者一覧"
-                onPress={() =>
-                  void native
-                    .rpc<{
-                      items: { account_id: string; display_name: string }[];
-                    }>("event_roster", { id })
-                    .then((r) => setRoster(r.items))
-                    .catch(() => setError("名簿を取得できません。"))
-                }
+                disabled={busy || rosterLoading}
+                onPress={() => void loadRoster()}
               />
+              {rosterLoading && <Text>読み込み中…</Text>}
+              {roster?.length === 0 && <Text>参加者はまだいません</Text>}
               {roster?.map((p) => (
                 <Text key={p.account_id}>{p.display_name}</Text>
               ))}
               <Action
                 title="イベントを編集"
+                disabled={busy || loading}
                 onPress={() =>
                   router.push({ pathname: "/events/edit/[id]", params: { id } })
                 }

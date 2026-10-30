@@ -1,43 +1,11 @@
-import { useCallback, useState } from "react";
+import { useState } from "react";
 import { Pressable, Text, View } from "react-native";
-import { router, useFocusEffect } from "expo-router";
+import { router } from "expo-router";
 import { Action, Empty, Page, ui } from "../../components/Page";
-import { native, streetID } from "../../lib/native";
-import { Recruitment } from "../../lib/recruitments";
-import { StreetEvent } from "../../lib/events";
+import { useHomePins } from "../../hooks/useHomePins";
 export default function Home() {
-  const [recruitments, setRecruitments] = useState<Recruitment[]>([]);
-  const [tab, setTab] = useState("参加予定のピン"),
-    [items, setItems] = useState<StreetEvent[]>([]),
-    [error, setError] = useState(""),
-    [loading, setLoading] = useState(true);
-  const load = useCallback(async () => {
-    setLoading(true);
-    try {
-      const r = await native.rpc<{ items: StreetEvent[] }>("event_list", {
-        street_id: streetID,
-        mine_only: true,
-      });
-      setItems(r.items);
-      setRecruitments(
-        (
-          await native.rpc<{ items: Recruitment[] }>("recruitment_list", {
-            street_id: streetID,
-          })
-        ).items,
-      );
-      setError("");
-    } catch {
-      setError("一覧を取得できません。ログインと接続を確認してください。");
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-  useFocusEffect(
-    useCallback(() => {
-      void load();
-    }, [load]),
-  );
+  const [tab, setTab] = useState("参加予定のピン");
+  const { items, recruitments, error, loading, load } = useHomePins();
   return (
     <Page title="ピン一覧">
       <Action title="ピンを作成" onPress={() => router.push("/pins/create")} />
@@ -77,6 +45,8 @@ export default function Home() {
         ) : (
           !error && <Empty>参加予定のオフ会はありません。</Empty>
         )
+      ) : loading ? (
+        <Empty>読み込み中…</Empty>
       ) : recruitments.length ? (
         recruitments.map((p) => (
           <Pressable
