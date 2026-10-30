@@ -704,3 +704,14 @@ R11/R18。sticker-flowに同一点3登録の退化拒否と競合公開拒否を
 - T030-03/R17：シミュレータのアプリCaches内ImagePicker/ImageManipulatorに4ファイル残存を確認（内容は読まず）。終了finallyだけでは強制終了の残存を回収できないため、TemporaryImageCleanupを追加。native.configureの初回に、前回の選択/変換コピーの通常ファイルだけを削除。プロセス内一度のみ、復帰や再ログインでは選択中ファイルを削除しない。
 - 純Swiftの実ファイル試験成功：両専用ディレクトリの通常ファイル削除、写真原本相当/Documents・類似名フォルダ・シンボリックリンクの対象保護、再実行。新しい保存期間ではなく既定一時コピー清掃の取りこぼし修正。
 - 本体への組込ビルドとシミュレータ起動時の実残存回収、表示用OS画像キャッシュは未確認。T030-03未完。残12→12、新規必須0、推測9.5–20.5h＋待ち不明は据置き。DONE23/33、実装25/33、統合24/33、実機11/33、BLOCKED3/33。
+
+## チェックポイント122：画像キャッシュ組込確認中
+- T030-03：Pod install成功、新Swiftファイル登録後のReleaseシミュレータビルド進行中。実行session24573、ログ/tmp/yumegaoka-release122.log。完了未確認のため成功扱いしない。再開時は同じハンドルを確認し、タイムアウトだけで再起動しない。
+- 起動前ImagePicker/ImageManipulatorの一時ファイル4件を/tmp/yumegaoka-cache122-before.jsonへ名前/サイズのみ記録。表示用HTTPキャッシュを読み取りで確認し、Storage経路の記録5件を検出。AvatarのreloadはRN画像メモリキャッシュを迂回するが、HTTPキャッシュへの保存抑止を証明しない。既定T030-03内で対応が必要。
+- 残12→12、新規必須0、推測9.5–20.5h＋待ち不明は据置き。DONE23/33、実装25/33、統合24/33、実機11/33、BLOCKED3/33。本体インストール/起動後清掃はまだ未確認。
+
+## チェックポイント123：一時画像の実残存回収
+- cp122の同じビルドsession24573が終了コード0、BUILD SUCCEEDED。再起動せず完了を待った。Release122をシミュレータへinstall/launch成功（PID33003）。
+- 起動前に記録したImagePicker/ImageManipulatorの4ファイルを、新しいアプリコンテナの同名ディレクトリと照合し残存0件。両ディレクトリは存在し、既存ファイルのみ回収された。純Swiftの対象外/原本/リンク保護試験cp121と合わせ、一時コピー回収を組込確認。
+- T030-03には表示用HTTPキャッシュの保存抑止が残る。RN RCTHTTPRequestHandlerはdefaultSessionConfiguration、APIClientはURLSession.sharedを利用。Avatarのreloadによる取得時迂回だけでディスク保存の抑止を主張しない。
+- 残12→12、新規必須0、推測9.5–20.5h＋待ち不明は据置き。DONE23/33、実装25/33、統合24/33、実機11/33、BLOCKED3/33。iPhoneは操作していない。
