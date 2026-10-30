@@ -1,3 +1,4 @@
+import { localBlocks } from "../lib/localBlocks";
 import { streetChanges } from "../lib/streetChanges";
 import "react-native-url-polyfill/auto";
 import { useCallback, useEffect, useRef, useState } from "react";
@@ -103,7 +104,9 @@ export function useStreetMap() {
         { street_id: streetID },
       );
       if (generation !== snapshotGeneration.current) return;
-      setRecruitments(recruiting.items);
+      setRecruitments(
+        recruiting.items.filter((p) => !localBlocks.hidden(p.author_id)),
+      );
       setError("");
     } catch (e) {
       if (generation !== snapshotGeneration.current) return;
@@ -179,6 +182,12 @@ export function useStreetMap() {
           });
       })
       .catch(() => {});
+    const unsubscribeBlocks = localBlocks.subscribe(() => {
+      setRecruitments((items) =>
+        items.filter((p) => !localBlocks.hidden(p.author_id)),
+      );
+      void refresh();
+    });
     const timer = setInterval(() => {
       if (AppState.currentState === "active") void refresh();
     }, 10000);
@@ -199,6 +208,7 @@ export function useStreetMap() {
       }
     });
     return () => {
+      unsubscribeBlocks();
       invalidateSnapshot();
       clearInterval(timer);
       clearInterval(ticker);

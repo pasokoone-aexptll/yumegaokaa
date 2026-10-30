@@ -1,3 +1,4 @@
+import { localBlocks } from "../lib/localBlocks";
 import { useCallback, useRef, useState } from "react";
 import { AppState } from "react-native";
 import { useFocusEffect } from "expo-router";
@@ -26,6 +27,10 @@ export function useRecruitmentDetail(id: string) {
       try {
         const result = await native.rpc<Recruitment>("recruitment_get", { id });
         if (gen !== generation.current || seq !== request.current) return;
+        if (localBlocks.hidden(result.author_id)) {
+          setPin(undefined);
+          return;
+        }
         // Keep the original revision while local input is dirty; a concurrent
         // edit must be rejected by the server rather than silently overwritten.
         if (discard || !dirty.current) {
@@ -62,12 +67,18 @@ export function useRecruitmentDetail(id: string) {
         if (AppState.currentState === "active") void load();
       };
       const timer = setInterval(refresh, 10000);
+      const unsubscribeBlocks = localBlocks.subscribe(() => {
+        if (baseline.current && localBlocks.hidden(baseline.current.author_id))
+          setPin(undefined);
+        void load();
+      });
       const unsubscribe = streetChanges.subscribe(refresh);
       const foreground = AppState.addEventListener("change", refresh);
       return () => {
         generation.current++;
         clearInterval(timer);
         unsubscribe();
+        unsubscribeBlocks();
         foreground.remove();
       };
     }, [load]),

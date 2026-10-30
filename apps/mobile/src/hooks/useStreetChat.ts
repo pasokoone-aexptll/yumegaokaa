@@ -1,3 +1,4 @@
+import { localBlocks } from "../lib/localBlocks";
 import { readChatWindow, ChatCursor } from "../lib/chatWindow";
 import { streetChanges } from "../lib/streetChanges";
 import { useCallback, useContext, useEffect, useRef, useState } from "react";
@@ -77,8 +78,8 @@ export function useStreetChat() {
         next[0]?.created_at >= previous[0].created_at
       )
         setHasNew(true);
-      itemsRef.current = next;
-      setItems(next);
+      itemsRef.current = next.filter((m) => !localBlocks.hidden(m.author_id));
+      setItems(itemsRef.current);
       setError("");
     } catch {
       if (gen === generation.current)
@@ -108,6 +109,13 @@ export function useStreetChat() {
     const timer = setInterval(() => {
       if (AppState.currentState === "active") void loadRef.current();
     }, 5000);
+    const unsubscribeBlocks = localBlocks.subscribe(() => {
+      itemsRef.current = itemsRef.current.filter(
+        (m) => !localBlocks.hidden(m.author_id),
+      );
+      setItems(itemsRef.current);
+      void loadRef.current();
+    });
     const unsubscribe = streetChanges.subscribe(() => {
       if (AppState.currentState === "active") void loadRef.current();
     });
@@ -117,6 +125,7 @@ export function useStreetChat() {
     return () => {
       mounted.current = false;
       unsubscribe();
+      unsubscribeBlocks();
       foreground.remove();
       counter.current++;
       clearInterval(timer);
@@ -152,6 +161,8 @@ export function useStreetChat() {
           m.id === p.id ? { ...m, body: null, deleted: true } : m,
         );
       }
+      if (op === "block_set")
+        localBlocks.set(String(p.account_id), p.blocked === true);
       if (op === "block_set" && p.blocked) {
         itemsRef.current = itemsRef.current.filter(
           (m) => m.author_id !== p.account_id,

@@ -1,5 +1,6 @@
+import { localBlocks } from "../lib/localBlocks";
 import { useFocusEffect } from "expo-router";
-import { useCallback, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import { Text, View } from "react-native";
 import { Action, Empty, Page, ui } from "../components/Page";
 import { native } from "../lib/native";
@@ -24,12 +25,21 @@ export default function Blocks() {
       void refresh();
     }, [refresh]),
   );
+  const writing = useRef(false);
+  const [busy, setBusy] = useState(false);
   async function unblock(id: string) {
+    if (writing.current) return;
+    writing.current = true;
+    setBusy(true);
     try {
       await native.rpc("block_set", { account_id: id, blocked: false });
+      localBlocks.set(id, false);
       await refresh();
     } catch {
       setError("解除できませんでした。再試行してください。");
+    } finally {
+      writing.current = false;
+      setBusy(false);
     }
   }
   return (
@@ -47,7 +57,11 @@ export default function Blocks() {
       {items.map((i) => (
         <View key={i.account_id} style={ui.card}>
           <Text>{i.display_name}</Text>
-          <Action title="解除" onPress={() => void unblock(i.account_id)} />
+          <Action
+            title="解除"
+            disabled={busy}
+            onPress={() => void unblock(i.account_id)}
+          />
         </View>
       ))}
     </Page>

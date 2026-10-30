@@ -4,12 +4,12 @@ import { readFileSync } from 'node:fs';
 import ts from '../apps/mobile/node_modules/typescript/lib/typescript.js';
 
 test('identity changes discard screen state, same-account reauthentication preserves it', () => {
-  let cleared = 0;
+  let cleared = 0, blocksCleared = 0;
   const exports = {};
   const source = ts.transpileModule(readFileSync('apps/mobile/src/lib/sessionState.ts', 'utf8'), {
     compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022 },
   }).outputText;
-  new Function('require', 'exports', source)(() => ({ clearDraft: () => cleared++ }), exports);
+  new Function('require', 'exports', source)(id => id.includes("localBlocks") ? { localBlocks: { clear: () => blocksCleared++ } } : ({ clearDraft: () => cleared++ }), exports);
   const store = exports.sessionState;
   let changes = 0;
   const unsubscribe = store.subscribe(() => changes++);
@@ -25,6 +25,7 @@ test('identity changes discard screen state, same-account reauthentication prese
   assert.equal(store.get().revision, signed.revision + 1);
   store.publish({ signed_in: true, email: 'two@example.test' });
   assert.equal(cleared, 3, 'Other account cannot inherit a pin draft');
+  assert.equal(blocksCleared, 3, 'Other account cannot inherit local block masks');
   assert.equal(changes, 4);
   unsubscribe();
   store.publish({ signed_in: false, email: '' });

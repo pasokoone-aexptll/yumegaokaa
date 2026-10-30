@@ -1,3 +1,4 @@
+import { localBlocks } from "./localBlocks";
 import { clearDraft } from "./pinDraft";
 
 type Session = { signed_in: boolean; email: string };
@@ -16,7 +17,10 @@ export const sessionState = {
     const changed =
       state.signed_in !== session.signed_in || state.email !== email;
     if (state.ready && !changed) return;
-    if (changed) clearDraft();
+    if (changed) {
+      clearDraft();
+      localBlocks.clear();
+    }
     state = {
       ready: true,
       signed_in: session.signed_in,

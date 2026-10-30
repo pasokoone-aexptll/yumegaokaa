@@ -1,3 +1,4 @@
+import { localBlocks } from "../lib/localBlocks";
 import { useCallback, useRef, useState } from "react";
 import { AppState } from "react-native";
 import { useFocusEffect } from "expo-router";
@@ -31,7 +32,9 @@ export function useHomePins() {
       ]);
       if (gen !== generation.current || seq !== request.current) return;
       setItems(events.items);
-      setRecruitments(pins.items);
+      setRecruitments(
+        pins.items.filter((p) => !localBlocks.hidden(p.author_id)),
+      );
       setError("");
     } catch {
       if (gen === generation.current && seq === request.current)
@@ -51,12 +54,19 @@ export function useHomePins() {
         if (AppState.currentState === "active") void load();
       };
       const timer = setInterval(refresh, 10000);
+      const unsubscribeBlocks = localBlocks.subscribe(() => {
+        setRecruitments((items) =>
+          items.filter((p) => !localBlocks.hidden(p.author_id)),
+        );
+        void load();
+      });
       const unsubscribe = streetChanges.subscribe(refresh);
       const foreground = AppState.addEventListener("change", refresh);
       return () => {
         generation.current++;
         clearInterval(timer);
         unsubscribe();
+        unsubscribeBlocks();
         foreground.remove();
       };
     }, [load]),
