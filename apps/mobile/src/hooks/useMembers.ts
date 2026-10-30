@@ -1,7 +1,7 @@
 import { useCallback, useRef, useState } from "react";
 import { useFocusEffect } from "expo-router";
 import { native } from "../lib/native";
-import type { Member } from "../components/MemberRow";
+import type { Member } from "../lib/member";
 
 export function useMembers() {
   const [items, setItems] = useState<Member[]>([]);

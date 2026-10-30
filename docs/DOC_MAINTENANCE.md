@@ -54,3 +54,6 @@
 
 ## 残量管理（2026-10-31）
 cp102のMVP_TASKS完了条件を固定。MVP_REMAINING（docs内）で残項目・推測工数を管理し、報告では前回→今回、解消項目、新規必須と既存条件への関係/必要性/工数影響を示す。外部3件は別集計。追加改善はBUG_BACKLOGへ。未計測を減少と見せない。
+
+## ロジックとUIの独立記録（2026-10-31）
+ユーザーの方針変更によりLOGIC_PROGRESSへLOGIC_IMPLEMENTED/LOGIC_VERIFIED/UI_PROVISIONAL/UI_DESIGN_PENDING/UI_FINALIZEDを記録。既存33タスク/DONE履歴は変更せず、各段階を別に判定する。最終UI未完成だけでロジック判定を保留しないが、実機でしか確認できないロジックを未検証のまま完了にしない。UI_LOGIC_CONTRACTは現状草案で、ロジック第一段階完了時に再照合する。

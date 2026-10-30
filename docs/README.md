@@ -6,6 +6,8 @@
 
 | 文書 | 役割・扱い |
 | --- | --- |
+| [LOGIC_PROGRESS](LOGIC_PROGRESS.md) | ロジック・仮UI・最終UIを分離した達成記録 |
+| [UI_LOGIC_CONTRACT](UI_LOGIC_CONTRACT.md) | Figma差替え用の画面/操作/状態/ロジック境界（草案） |
 | [MVP_TASKS](MVP_TASKS.md) | MVP全体のタスク・完了条件・進捗率・次の順序の正本 |
 | [LOCAL_FLOW_ACCEPTANCE](LOCAL_FLOW_ACCEPTANCE.md) | 役割別の主要フローと実UI/DB統合証拠（T031） |
 | [NAVIGATION_ACCEPTANCE](NAVIGATION_ACCEPTANCE.md) | 全画面・導線と操作証拠の対応（T006） |

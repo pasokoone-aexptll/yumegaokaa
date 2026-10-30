@@ -110,6 +110,38 @@ try {
     "insert into app_private.messages(street_id,author_id,body) values($1,$2,'匿名化対象')",
     [street, uid],
   );
+  const unusedInvite = randomUUID(),
+    usedInvite = randomUUID();
+  await db.query(
+    "insert into app_private.invitations(id,issuer,code_hash,used_at,used_by) values($1,$3,decode($1::uuid::text,'escape'),null,null),($2,$3,decode($2::uuid::text,'escape'),now(),$3)",
+    [unusedInvite, usedInvite, uid],
+  );
+  await db.query(
+    "insert into app_private.chat_restrictions(account_id,until_at) values($1,now()+interval '1 hour')",
+    [uid],
+  );
+  await db.query(
+    "insert into app_private.invite_policies(account_id,weekly_limit,paused) values($1,0,true)",
+    [uid],
+  );
+  const event = randomUUID();
+  await db.query(
+    "insert into app_private.events(id,host_id,street_id,title,longitude,latitude,starts_at,ends_at) values($1,$2,$3,'Withdrawal',139,35,now()+interval '1 hour',now()+interval '2 hours')",
+    [event, uid, street],
+  );
+  await db.query(
+    "insert into app_private.registrations(event_id,account_id,joined) values($1,$2,true)",
+    [event, uid],
+  );
+  await db.query(
+    "insert into app_private.notifications(event_id,event_revision,recipient,kind) values($1,1,$2,'changed')",
+    [event, uid],
+  );
+  await db.query(
+    "insert into app_private.notification_outbox(notification_id) select id from app_private.notifications where event_id=$1",
+    [event],
+  );
+  const oldSession = session.access_token;
   const prepared = await rpc(session.access_token, "withdraw_prepare");
   assert.ok(prepared.ok);
   const ticket = await prepared.json();
@@ -126,11 +158,62 @@ try {
     token: await mailCode(newEmail),
     type: "email",
   });
+  assert.equal(
+    (await rpc(oldSession, "profile_get")).status,
+    200,
+    "Old session remains usable after another login",
+  );
   const withdrawn = await rpc(session.access_token, "withdraw_confirm", {
     id: ticket.id,
   });
   assert.equal(withdrawn.status, 200, "Reauthenticated withdrawal");
   assert.equal((await rpc(session.access_token, "profile_get")).status, 403);
+  assert.equal(
+    (await rpc(oldSession, "profile_get")).status,
+    403,
+    "Withdrawal blocks other logged-in sessions",
+  );
+  for (const [table, column] of [
+    ["chat_restrictions", "account_id"],
+    ["invite_policies", "account_id"],
+    ["notifications", "recipient"],
+    ["registrations", "account_id"],
+  ])
+    assert.equal(
+      (
+        await db.query(
+          `select count(*)::int n from app_private.${table} where ${column}=$1`,
+          [uid],
+        )
+      ).rows[0].n,
+      0,
+    );
+  assert.ok(
+    (
+      await db.query(
+        "select revoked_at from app_private.invitations where id=$1",
+        [unusedInvite],
+      )
+    ).rows[0].revoked_at,
+  );
+  assert.equal(
+    (
+      await db.query(
+        "select revoked_at from app_private.invitations where id=$1",
+        [usedInvite],
+      )
+    ).rows[0].revoked_at,
+    null,
+  );
+  assert.equal(
+    (
+      await db.query(
+        "select count(*)::int n from app_private.notification_outbox o join app_private.notifications n on n.id=o.notification_id where n.recipient=$1",
+        [uid],
+      )
+    ).rows[0].n,
+    0,
+  );
   assert.equal(
     (
       await db.query(
@@ -185,6 +268,17 @@ try {
     await db.query("delete from app_private.messages where street_id=$1", [
       street,
     ]);
+    for (const [table, column] of [
+      ["notifications", "recipient"],
+      ["registrations", "account_id"],
+      ["invitations", "issuer"],
+      ["chat_restrictions", "account_id"],
+      ["invite_policies", "account_id"],
+      ["events", "host_id"],
+    ])
+      await db.query(`delete from app_private.${table} where ${column}=$1`, [
+        uid,
+      ]);
     await db.query("delete from app_private.streets where id=$1", [street]);
     await db.query("delete from app_private.members where account_id=$1", [
       uid,

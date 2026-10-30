@@ -746,3 +746,11 @@ R11/R18。sticker-flowに同一点3登録の退化拒否と競合公開拒否を
 - T032-01/R20/R21：ソースbcf09edを基に、cp68以降の変更をまとめてiPhone向けReleaseビルド成功。ログ `/tmp/yumegaoka-device129-build.log`。成果物 `/tmp/yumegaoka-validation-release/Build/Products/Release-iphoneos/app.app`。同じ成果物を実機再開時に転送し、ソース変更がなければ再ビルドしない。
 - codesign --verify --deep --strict成功。bundle jp.yumegaoka.development、表示名「夢ヶ丘 検証用」、localEntry=true/validationRelease=true、main.jsbundle同梱（3,316,654 bytes、SHA256 512770b7fc317fa200e27ad903a344eb2f198ffc6f8ab16a9ea81bb6647cc406）。APIの172.30.100.165は生成時のMac LANアドレスと一致。検証用ローカル設定であり公開版ではない。
 - ユーザーの実機確認保留を維持し、端末転送・起動・操作なし。T032-01は転送が残るため未完。残9→9、新規必須0。推測5.5–11.5h＋判断/実機/外部待ち不明は据置き（部分実行を根拠なく時間減算しない）。DONE24/33、実装26/33、統合25/33、実機11/33、BLOCKED3/33を維持。無関係なテストは反復せず。
+
+## チェックポイント130/131：ロジック優先と停止・退会の収束
+- ユーザー方針をAGENTS/要件/DECISIONSへ反映。現行UIは仮UI、最終Figmaは後工程。既存33タスク/DONE履歴と条件は保持し、LOGIC_PROGRESSへロジック/仮UI/最終UIの独立達成記録を追加。
+- T024/R14/R16/R18：036で停止時の一般参加登録をjoined=false・revision+1に変更し、本人宛通知を削除（outbox cascade）。会員親→イベントID順でロックし、主催イベント取消しと同一トランザクション。解除で復活せず、停止前の古い参加要求はconflict、新しい意思の参加は可能。member-operations実DB成功。T024 DONE。
+- 運営のMemberRowからAPI送信/入力検証/書込中状態をuseMemberActionsへ抽出。Member型をlibへ移しhooksからUIへの依存を除去。デザイン変更なし。二重送信抑止・再取得失敗・不正入力のhook2試験、型/Lint成功。停止確認文に参加登録取消しの重要情報を追加。
+- T005/T030/R03/R17：037で退会時の投稿制限/招待枠削除と未使用招待だけの無効化を実装。既退会分の制限/通知も回収。account-smokeで実Authの新旧メール確認、別OTPログイン後の旧セッション維持、再認証前拒否、退会後両セッション403、参加/通知/制限/枠削除、未使用招待無効・既使用招待維持、プロフィール削除/投稿匿名化/Auth worker清掃を確認。/tmp/yumegaoka-account131b.log成功。初回はfixture UUID型推論エラー、明示cast修正後成功。
+- アカウント導線はcp118、useEmailChange/useWithdrawalの既存状態試験、native.ts→PresenceNativeModule→APIClient接続を照合。メール紛失の自動復旧なしを維持。固定T005条件の採用導線/再認証/他セッション/削除を満たしDONE。物理2台・実機上のメール変更/退会操作は今回未実施、DEVICE_VERIFIEDへ加算しない。T030はRETENTION_ACCEPTANCEの既存期限・清掃・端末コピー証拠とQ08の今回確認でDONE。
+- DONE27/33（81.8%）、IMPLEMENTED1、IN_PROGRESS2、BLOCKED3。実装28/33（84.8%）、統合27/33（81.8%）、実機11/33（33.3%）。残9→5（cp130で1、cp131で3解消）、追加必須0。推測5.5–11.5→3.5–7.5h＋待ち不明。ネイティブビルド/実機転送/成功済み全件試験は省略。cp129成果物には今回のJS変更は未同梱、再開時にまとめて更新する。
