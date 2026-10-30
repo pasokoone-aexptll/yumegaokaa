@@ -658,3 +658,6 @@ R13/R14/R17。notification-concurrency.test.mjs成功。実2worker接続でAのc
 
 ## cp111：T020複数閲覧と切断復帰
 R15/R16/R19。chat-live-clients.test.mjs成功。専用2アカウントをGoTrueで認証、ゲートウェイへ2WS接続、command経由実投稿、双方通知とchat_list表示内容を確認。片方切断→追加投稿→再接続ready→両投稿取得成功。fixture削除済み。画面はこの試験では操作せず、cp44/46/70の入力/拡大/再起動/実機とcp86の実DB125件差分回復、cp103共通transport復帰を再利用。現行hookの通知→取得→描画呼出しを照合しT020 DONE。2台iPhone同時操作は未確認。製品変更なし、追加ビルド/型/Lintなし。残19→18、DONE18/33。
+
+## cp112：T023募集/イベント通報UI
+R15/R17/R18。testPinReportEntrypointsが既存Release109上で成功。Home参加予定→イベント詳細/募集一覧→募集詳細から各通報画面→送信→受付を確認し、実DB2行の対象種別/ID/通報者/理由spamを照合。/tmp/yumegaoka-report112-retry.xcresult。初回fixtureはstarted_at不足、次の試験はカード名の完全一致誤り（実際は「〜の詳細」）で失敗し、試験側だけ修正。製品変更なし。fixture/通報は削除済み。既存cp47/70投稿通報・運営証拠と合わせT023 DONE。実機再実行/本体ビルド/無関連試験なし。残18→17。

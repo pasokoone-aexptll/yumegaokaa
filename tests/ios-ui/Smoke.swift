@@ -124,6 +124,22 @@ final class Smoke: XCTestCase {
   XCTAssertTrue(message.waitForExistence(timeout:20))
   attach(app,"peer-visible-after-unblock")
  }
+ @MainActor func testPinReportEntrypoints() throws {
+  continueAfterFailure=false
+  let app=XCUIApplication(bundleIdentifier:"jp.yumegaoka.development")
+  app.launch()
+  let home=app.descendants(matching:.any).matching(identifier:"Home").firstMatch
+  XCTAssertTrue(home.waitForExistence(timeout:30));home.tap()
+  tap(app,"UI通報イベントの詳細")
+  tap(app,"通報");tap(app,"運営へ送信")
+  XCTAssertTrue(app.staticTexts["通報を受け付けました。通報者の情報は相手に公開されません。"].waitForExistence(timeout:15))
+  attach(app,"event-report-confirmed")
+  tap(app,"戻る");tap(app,"‹ 戻る")
+  home.tap();tap(app,"募集中のピン");tap(app,"UI通報募集の詳細")
+  tap(app,"通報");tap(app,"運営へ送信")
+  XCTAssertTrue(app.staticTexts["通報を受け付けました。通報者の情報は相手に公開されません。"].waitForExistence(timeout:15))
+  attach(app,"recruitment-report-confirmed")
+ }
  @MainActor func testOperatorInvitePagination() throws {
   let app=try operatorApp()
   tap(app,"‹ 戻る")

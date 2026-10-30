@@ -101,3 +101,5 @@ cp109再開：Release109成功・シミュレータへ更新済み。ピンSVG�
 cp110：T018 DONE、17/33、残19。次T020-01：chat-reconnect-integration/cp86とgateway-auth/cp103の接続を確認し、2閲覧者への実通知・差分復旧だけ不足なら追加。iPhoneは未転送。
 
 cp111：T020 DONE、18/33、残18。gateway PID70930が54325待受を確認。次T023-01募集/イベント通報UIの未確認2入口を既存Smoke/operator fixtureで確認する。製品変更なし。
+
+cp112再開：T023 DONE、19/33、残17。次T026-01。既存sticker-detail-stateとsticker-flowを読み、fake失敗/不一致/再開の実UI/DB不足だけ補う。シミュレータRelease109、専用通報fixture清掃済み。
