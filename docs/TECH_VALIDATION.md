@@ -678,3 +678,9 @@ R11/R18。sticker-flowに同一点3登録の退化拒否と競合公開拒否を
 - T012/R06/R19：native.stopの通信待ち中にactiveがtrueのままになることをentry-state試験で再現（変更前失敗）。OFF操作直後に観測停止/退出待ちを画面へ反映し、NFC取消と退出Promiseの例外処理を分離。PresenceEngineの状態通知も、停止要求済みのactive滞在を退出待ちとして返す。完了済み/滞在なしでは停止要求だけをpendingにしない。
 - entry-state4件成功、TypeScript・Lint成功、Swift構文parse成功。Swift型検査/ネイティブビルドと通信不明・退出待ちのシミュレータ画面確認は未実施。T012をDONEにしない。次回のまとめビルドに含める。
 - 固定T012-01内の不具合修正。追加必須0、残項目15→15。推測12.5–28.5h＋待ち不明は据置き。DONE21/33、実装24/33、統合23/33、実機11/33、BLOCKED3/33。
+
+## チェックポイント117：通信断退出の画面統合
+- T012/R04/R06/R19をDONE。Releaseシミュレータをcp116修正込みで1回ビルド成功。入街→ローカルAPI停止→OFF→退出待ち表示→API復旧→再起動OFF・チェックイン0人をtestOfflineExitRecoveryで確認（27.08秒）。/tmp/yumegaoka-offline117.xcresult。実DBの最新滞在ended=true/end_reason=manualを確認。APIコンテナ復旧済み。
+- scripts/test-offline-exit-ui.mjsはlocalhost制御口とfinally復旧/180秒復旧タイマーを使用。製品の疑似エラー表示ではなく実API停止による通信失敗。物理端末の機内モードや背景歩行ではない。
+- 既存cp77演出/成功・cp96取消/権限拒否・cp115別端末の証拠を再利用。T012完了条件を緩和せず実NFCだけT028へ分離。
+- DONE22/33、IMPLEMENTED2、IN_PROGRESS6、BLOCKED3。実装24/33、統合23/33、実機11/33は不変。残15→14、新規必須0、推測11.5–25.5作業時間＋待ち不明。次T006-01。

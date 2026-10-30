@@ -368,6 +368,35 @@ final class Smoke: XCTestCase {
   XCTAssertEqual(toggle.value as? String,"0")
   attach(app,"entry-denied-location")
  }
+ @MainActor func testOfflineExitRecovery() async throws {
+  continueAfterFailure=false
+  func control(_ action:String) async throws {
+   var request=URLRequest(url:URL(string:"http://127.0.0.1:54326/"+action)!)
+   request.httpMethod="POST"
+   let (_,response)=try await URLSession.shared.data(for:request)
+   XCTAssertEqual((response as? HTTPURLResponse)?.statusCode,200)
+  }
+  let app=XCUIApplication(bundleIdentifier:"jp.yumegaoka.development")
+  XCUIDevice.shared.location=XCUILocation(location:CLLocation(latitude:35.7295,longitude:139.7109))
+  defer {XCUIDevice.shared.location=nil}
+  app.launch()
+  assertParticipation(app,active:false,timeout:30)
+  app.switches["街への参加"].tap()
+  tap(app,"開発用タグで入街（NFC代用）")
+  XCTAssertTrue(app.staticTexts["街への参加が完了しました"].waitForExistence(timeout:25))
+  tap(app,"地図へ")
+  assertParticipation(app,active:true,timeout:10)
+  try await control("offline")
+  app.switches["街への参加"].tap()
+  assertParticipation(app,active:false,timeout:5)
+  XCTAssertTrue(app.staticTexts.containing(NSPredicate(format:"label CONTAINS %@","通信回復後")).firstMatch.waitForExistence(timeout:25))
+  attach(app,"offline-exit-pending")
+  try await control("online")
+  app.terminate();app.launch()
+  assertParticipation(app,active:false,timeout:30)
+  XCTAssertTrue(app.staticTexts.containing(NSPredicate(format:"label CONTAINS %@","0人がチェックイン中")).firstMatch.waitForExistence(timeout:30))
+  attach(app,"offline-exit-recovered")
+ }
  @MainActor func testOtherWriterEntryState() throws {
   continueAfterFailure=false
   let app=XCUIApplication(bundleIdentifier:"jp.yumegaoka.development")
