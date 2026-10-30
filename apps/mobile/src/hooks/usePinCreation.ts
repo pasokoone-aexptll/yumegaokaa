@@ -1,3 +1,4 @@
+import { eventInputError } from "../lib/eventInput";
 import { useEffect, useState } from "react";
 import { router } from "expo-router";
 import { usePinDraft, updateDraft, clearDraft } from "../lib/pinDraft";
@@ -142,16 +143,13 @@ export function usePinCreation() {
       }
       return;
     }
-    const start = new Date(starts),
-      end = new Date(ends);
-    if (
-      !location ||
-      !Number.isFinite(start.getTime()) ||
-      !Number.isFinite(end.getTime())
-    ) {
-      setError("場所と開始・終了日時を確認してください。");
+    const invalid = eventInputError(starts, ends, capacity);
+    if (invalid || !location) {
+      setError(invalid ?? "開催場所を選んでください。");
       return;
     }
+    const start = new Date(starts),
+      end = new Date(ends);
     setBusy(true);
     try {
       const body = eventBody ?? {

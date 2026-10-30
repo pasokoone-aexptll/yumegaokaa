@@ -790,3 +790,15 @@ T003/T004/T007/T030：チャット画像との別設定、本人と地図で同�
 - testHostEditRosterNotifications成功463.872秒。終了日時変更→保存→変更通知→中止→中止通知/既読復元。35.28秒から452.18秒の空白はMacの15:05:02〜15:12:00の418秒スリープと一致。性能測定値として使わない。結果 /tmp/yumegaoka-host-datetime.xcresult。実機での日時選択は未確認。
 - 依存追加時のnpm auditでhigh3件を確認。根は既存Expo CLI経由のzod3.25.76、GHSA-mrhx-c7xc-m3w5。datetimepicker自体の指摘ではない。CLIはzod ^3.25.76を要求し、提示されたExpo51への自動downgradeやZod4強制置換は行わない。不要なこの作業のMetro PID67248を所属確認後に停止。ReleaseはMetro不要、アプリソース/生成JSにZodError等は見つからないが、依存の警告解消・公開前の再評価はT033へ残す。根拠：https://github.com/advisories/GHSA-mrhx-c7xc-m3w5 。ローカルSupabaseは維持。
 - T015をIMPLEMENTEDへ。DONE5/IMPLEMENTED9/IN_PROGRESS16/TODO0/BLOCKED3、完了5/33=15.2%、実装到達14/33=42.4%。次：残る入力不備/通信失敗の画面接続、UI整理。帰宅後の画像保存/実機操作確認は保留。pushなし。
+
+## 実装チェックポイント52：イベント入力の修正導線
+- T015/T017/R13/R19：作成・編集の送信前に共通eventInputErrorで終了>開始、開催24時間以内、定員整数1〜100を検査。作成の送信内容固定より前に検査し、不正入力は編集可能なまま返す。未来日時や開催状態などサーバー時計が必要な条件は従来どおりサーバーが判断する。
+- tests/event-input.test.mjsの2件成功（日時/24時間境界、定員境界）。typecheck/Lint成功。呼出順をコードで確認。入力エラーから再送する実画面試験は未実施。純JSの変更のためネイティブ再ビルド・実機転送はまとめた次回へ回す。
+- 画像の切り抜き・2MB以内への変換はチェックポイント49で実装済み。iPhoneへ未反映であること、元の保存エラーの原因は未確定であることを維持。帰宅後の写真保存確認が必要。
+- DONE5/IMPLEMENTED9/IN_PROGRESS16/TODO0/BLOCKED3、完了15.2%、実装到達42.4%を維持。次：残る画面接続と実機での画像保存確認。pushなし。
+
+## 実装チェックポイント53：運営の制限終了日時と画面分割
+- T024/T025/R16/R18/R19：参加者管理の終了日時テキスト欄を、検証済みEventDateFieldの標準日時選択へ接続。確定したISO日時を従来のoperator_chat_restrictへ送信し、未来日時のサーバー検査・理由・MFA要件は変更しない。
+- MemberRowをcomponentsへ分離し、members画面は一覧取得・ページング・描画に限定。操作内容、確認ダイアログ、退会済み操作禁止は維持。
+- typecheck/Lint、git diff --check成功。既存日時選択のRelease証拠はチェックポイント51。今回の運営画面で選択→制限の実操作は未確認。ネイティブ変更がないためビルド・実機転送は次回へまとめる。
+- DONE5/IMPLEMENTED9/IN_PROGRESS16/TODO0/BLOCKED3を維持。次：運営の招待一覧の続き取得（現状UIは最初の100件）、古い応答の画面復帰対策、帰宅後の画像保存確認。pushなし。

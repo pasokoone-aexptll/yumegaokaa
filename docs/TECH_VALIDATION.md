@@ -354,3 +354,9 @@ scripts/avatar-smoke.mjs成功：所有者アップロード、プロフィー�
 - testHostEditRosterNotifications成功463.872秒。終了日時変更→保存→変更通知→中止→中止通知/既読復元。35.28秒から452.18秒の空白はMacの15:05:02〜15:12:00の418秒スリープと一致。性能測定値として使わない。結果 /tmp/yumegaoka-host-datetime.xcresult。実機での日時選択は未確認。
 - 依存追加時のnpm auditでhigh3件を確認。根は既存Expo CLI経由のzod3.25.76、GHSA-mrhx-c7xc-m3w5。datetimepicker自体の指摘ではない。CLIはzod ^3.25.76を要求し、提示されたExpo51への自動downgradeやZod4強制置換は行わない。不要なこの作業のMetro PID67248を所属確認後に停止。ReleaseはMetro不要、アプリソース/生成JSにZodError等は見つからないが、依存の警告解消・公開前の再評価はT033へ残す。根拠：https://github.com/advisories/GHSA-mrhx-c7xc-m3w5 。ローカルSupabaseは維持。
 - T015をIMPLEMENTEDへ。DONE5/IMPLEMENTED9/IN_PROGRESS16/TODO0/BLOCKED3、完了5/33=15.2%、実装到達14/33=42.4%。次：残る入力不備/通信失敗の画面接続、UI整理。帰宅後の画像保存/実機操作確認は保留。pushなし。
+
+### チェックポイント52：イベント入力の事前検査
+T015/T017、R13/R19。作成・編集で日時順序・24時間上限・定員1〜100の整数を共通検査し、作成要求を固定する前に入力へ戻す。event-input.test.mjs 2件、typecheck/Lint成功。サーバー時計と状態による検査は維持。入力エラー後の実画面再送は未確認。ネイティブビルド・実機転送は今回省略。
+
+### チェックポイント53：運営の日時選択
+T024/T025、R16/R18/R19。membersからMemberRowを分離し、投稿制限の終了をEventDateFieldで選択するよう接続。API・サーバー検査は変更なし。typecheck/Lintと差分検査成功。運営画面での制限操作を伴う実機検証は未実施。

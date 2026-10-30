@@ -1,3 +1,4 @@
+import { eventInputError } from "../lib/eventInput";
 import { useCallback, useState } from "react";
 import { useFocusEffect, router } from "expo-router";
 import { native } from "../lib/native";
@@ -42,15 +43,13 @@ export function useEventEditor(id: string) {
   );
   async function save() {
     if (!event || !point) return;
-    const starts = new Date(start),
-      ends = new Date(end);
-    if (
-      !Number.isFinite(starts.getTime()) ||
-      !Number.isFinite(ends.getTime())
-    ) {
-      setError("日時を確認してください");
+    const invalid = eventInputError(start, end, capacity);
+    if (invalid) {
+      setError(invalid);
       return;
     }
+    const starts = new Date(start),
+      ends = new Date(end);
     setBusy(true);
     try {
       await native.rpc("event_edit", {
