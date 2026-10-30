@@ -368,6 +368,19 @@ final class Smoke: XCTestCase {
   XCTAssertEqual(toggle.value as? String,"0")
   attach(app,"entry-denied-location")
  }
+ @MainActor func testOtherWriterEntryState() throws {
+  continueAfterFailure=false
+  let app=XCUIApplication(bundleIdentifier:"jp.yumegaoka.development")
+  app.launch()
+  XCTAssertTrue(app.staticTexts["別の端末で参加中"].waitForExistence(timeout:30))
+  XCTAssertEqual(app.switches["街への参加"].value as? String,"0")
+  tap(app,"開発用の入街を開始")
+  XCTAssertTrue(app.staticTexts["街に参加する"].waitForExistence(timeout:10))
+  tap(app,"キャンセル")
+  XCTAssertFalse(app.staticTexts["街への参加が完了しました"].exists)
+  XCTAssertTrue(app.staticTexts["別の端末で参加中"].exists)
+  attach(app,"other-writer-entry-state")
+ }
  @MainActor func testPresenceHeader() throws {
   continueAfterFailure=false
   let app=XCUIApplication(bundleIdentifier:"jp.yumegaoka.development")

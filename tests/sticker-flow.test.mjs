@@ -140,6 +140,28 @@ test("ステッカー3枚準備→凸包公開→再送→停止で旧範囲保�
       ).valid,
       false,
     );
+    // Three registrations at the same point cannot publish a polygon.
+    await c.query("savepoint degenerate");
+    await c.query(
+      "update app_private.sticker_drafts set longitude=139.7,latitude=35.72 where street_id=$1",
+      [street],
+    );
+    const degenerate = await call("sticker_preview", {
+      street_id: street,
+      draft_ids: drafts.map((d) => d.id),
+    });
+    assert.equal(degenerate.valid, false);
+    assert.equal(degenerate.id, undefined);
+    assert.equal(
+      (
+        await c.query(
+          "select area_version from app_private.streets where id=$1",
+          [street],
+        )
+      ).rows[0].area_version,
+      "1",
+    );
+    await c.query("rollback to savepoint degenerate");
     const preview = await call("sticker_preview", {
       street_id: street,
       draft_ids: drafts.map((d) => d.id),
@@ -169,7 +191,17 @@ test("ステッカー3枚準備→凸包公開→再送→停止で旧範囲保�
       street_id: street,
       draft_ids: drafts.map((d) => d.id),
     });
+    const competingPreview = await call("sticker_preview", {
+      street_id: street,
+      draft_ids: drafts.map((d) => d.id),
+    });
     const result = await call("sticker_publish", { id: updatedPreview.id });
+    await c.query("savepoint competing_publication");
+    await assert.rejects(
+      () => call("sticker_publish", { id: competingPreview.id }),
+      /area_changed/,
+    );
+    await c.query("rollback to savepoint competing_publication");
     assert.equal(result.area_version, 2);
     assert.equal(
       (await call("sticker_publish", { id: updatedPreview.id })).area_version,

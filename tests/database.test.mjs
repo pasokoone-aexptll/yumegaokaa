@@ -216,6 +216,20 @@ test("実DB: 滞在の権限・競合・期限・集約", async (t) => {
     ]);
     await assert.rejects(rpc(w, "observe_visit", obs(v)), /area_changed/);
     assert.equal((await rpc(w, "get_my_visit")).visit.state, "active");
+    const latest = await rpc(w, "get_street_config", { street_id: street });
+    assert.equal(String(latest.area_version), "2");
+    assert.equal(
+      (
+        await rpc(
+          w,
+          "observe_visit",
+          obs(v, 1, "0:0", {
+            area_version: String(latest.area_version),
+          }),
+        )
+      ).result,
+      "accepted",
+    );
     await sql("update app_private.streets set area_version=1 where id=$1", [
       street,
     ]);
@@ -439,6 +453,9 @@ test.after(async () => {
   ]);
   await sql("delete from app_private.visits where street_id=$1", [street]);
   await sql("delete from app_private.tags where street_id=$1", [street]);
+  await sql("delete from app_private.daily_street_icons where street_id=$1", [
+    street,
+  ]);
   await sql("delete from app_private.areas where street_id=$1", [street]);
   await sql("delete from app_private.streets where id=$1", [street]);
   for (const u of identities) {

@@ -664,3 +664,12 @@ R15/R17/R18。testPinReportEntrypointsが既存Release109上で成功。Home参�
 
 ## cp113：T026登録再開と未照合拒否
 R11/R18。sticker-flowへwritten/verifiedで別tag_id拒否・段階不変・タグinactive、同一操作再送のphase/revision非増加を追加し実DB成功。sticker-detail-stateの容量不足/離画面/応答紛失/取消4試験も成功。既存Release109でtestOperatorStickerPreparationに照合待ち→一覧→同登録再開を追加、設置/編集/取消まで成功（/tmp/yumegaoka-sticker113.xcresult）。物理NFCはfake、通信失敗はhook模擬、画面再開は実DBという範囲を区別。運営資格復元済み。T026 DONE、残17→16。製品変更なし、本体ビルド・実機確認なし。
+
+## cp114：T027街範囲の完了照合
+R11/R18。sticker-flowに同一点3登録の退化拒否と競合公開拒否を追加、1件成功。database T14に最新設定取得→新版observe受理を追加。初回は後処理のdaily_street_icons FKで失敗、試験清掃修正後18件成功。初回試験用残データは未整理。既存公開/交換画面証拠とPresenceEngine.observeの最新設定取得→判定→最新版送信を照合。T027 DONE。実NFC・実機歩行は含めない。製品コード・仕様変更なし、ビルドなし。
+
+## チェックポイント115：別端末の入街表示
+- T012/R04/R06/R19：scripts/test-other-writer-ui.mjsで専用シミュレータアカウントへ別writerの実DB滞在を用意。既存Release109で「別の端末で参加中」、トグルOFF、入街説明→取消、他端末滞在がendedにならないことを確認。fixture滞在はfinally削除。
+- tests/ios-ui/Smoke.swiftのtestOtherWriterEntryState成功（10.37秒）。証拠/tmp/yumegaoka-other-writer115.xcresult。製品再ビルド・iPhone操作なし。
+- T012はIMPLEMENTED維持。通信不明/退出待ち画面を次に確認。DONE21/33、実装24/33、統合23/33、実機11/33、BLOCKED3/33。残15→15、新規必須0、推測12.5–28.5h＋待ち不明は据置き。
+- cp114で残った専用試験街2ed97d22-1802-4976-bb09-d6ae09573948と日替わり割当3件を、名前test・滞在/タグなしを確認して削除。試験ユーザーの一括削除は行っていない。
