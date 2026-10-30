@@ -1,3 +1,4 @@
+import { streetChanges } from "../lib/streetChanges";
 import "react-native-url-polyfill/auto";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Alert, AppState } from "react-native";
@@ -162,13 +163,19 @@ export function useStreetMap() {
     let disposed = false;
     const channel = realtime
       .channel(`street:${streetID}`, { config: { private: true } })
-      .on("broadcast", { event: "changed" }, () => void refresh());
+      .on("broadcast", { event: "changed" }, () => {
+        streetChanges.notify();
+        void refresh();
+      });
     void realtime.realtime
       .setAuth()
       .then(() => {
         if (!disposed)
           channel.subscribe((status) => {
-            if (status === "SUBSCRIBED") void refresh();
+            if (status === "SUBSCRIBED") {
+              streetChanges.notify();
+              void refresh();
+            }
           });
       })
       .catch(() => {});

@@ -1,3 +1,5 @@
+import { readChatWindow, ChatCursor } from "../lib/chatWindow";
+import { streetChanges } from "../lib/streetChanges";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { AppState } from "react-native";
 import { native, streetID } from "../lib/native";
@@ -20,48 +22,80 @@ export function useStreetChat() {
     [error, setError] = useState(""),
     [busy, setBusy] = useState(false),
     [expanded, setExpanded] = useState(false),
-    [loading, setLoading] = useState(true);
+    [loading, setLoading] = useState(true),
+    [hasNew, setHasNew] = useState(false);
   const fetching = useRef(false),
     generation = useRef(0),
-    older = useRef(false);
-  const load = useCallback(
-    async (more = false) => {
-      if (fetching.current) return;
-      fetching.current = true;
-      const gen = generation.current;
-      try {
-        const last = items[items.length - 1];
-        const r = await native.rpc<{ items: Message[] }>("chat_list", {
-          street_id: streetID,
-          ...(more && last
-            ? { before_at: last.created_at, before_id: last.id }
-            : {}),
-        });
-        if (gen !== generation.current) return;
-        setItems((previous) =>
-          more
-            ? [
-                ...previous,
-                ...r.items.filter((x) => !previous.some((p) => p.id === x.id)),
-              ]
-            : r.items,
-        );
-        setError("");
-      } catch {
-        if (gen === generation.current)
-          setError("チャットを取得できません。再読み込みしてください。");
-      } finally {
-        fetching.current = false;
-        setLoading(false);
+    older = useRef(false),
+    itemsRef = useRef<Message[]>([]),
+    lastRead = useRef(0),
+    pendingRefresh = useRef(false),
+    mounted = useRef(true);
+  const load = useCallback(async (more = false) => {
+    if (!mounted.current) return;
+    if (fetching.current) {
+      if (!more) pendingRefresh.current = true;
+      return;
+    }
+    fetching.current = true;
+    const gen = generation.current;
+    try {
+      const previous = itemsRef.current;
+      const last = previous.at(-1);
+      const page = async (cursor?: ChatCursor) => {
+        // Leave margin under the server's five reads / ten seconds limit.
+        const wait = Math.max(0, 2600 - (Date.now() - lastRead.current));
+        if (wait) await new Promise((resolve) => setTimeout(resolve, wait));
+        if (gen !== generation.current) return [];
+        lastRead.current = Date.now();
+        return (
+          await native.rpc<{ items: Message[] }>("chat_list", {
+            street_id: streetID,
+            ...(cursor
+              ? { before_at: cursor.created_at, before_id: cursor.id }
+              : {}),
+          })
+        ).items;
+      };
+      const result = more
+        ? await page(last)
+        : await readChatWindow(page, last, () => gen !== generation.current);
+      if (gen !== generation.current || !result) return;
+      const next = more
+        ? [
+            ...previous,
+            ...result.filter((x) => !previous.some((p) => p.id === x.id)),
+          ]
+        : result;
+      if (
+        !more &&
+        older.current &&
+        previous[0] &&
+        next[0]?.id !== previous[0].id &&
+        next[0]?.created_at >= previous[0].created_at
+      )
+        setHasNew(true);
+      itemsRef.current = next;
+      setItems(next);
+      setError("");
+    } catch {
+      if (gen === generation.current)
+        setError("チャットを取得できません。再読み込みしてください。");
+    } finally {
+      fetching.current = false;
+      if (gen === generation.current) setLoading(false);
+      if (pendingRefresh.current && gen === generation.current) {
+        pendingRefresh.current = false;
+        setTimeout(() => void loadRef.current(), 0);
       }
-    },
-    [items],
-  );
+    }
+  }, []);
   const loadRef = useRef(load);
   useEffect(() => {
     loadRef.current = load;
   }, [load]);
   useEffect(() => {
+    mounted.current = true;
     const counter = generation;
     void loadRef.current();
     void pendingCommand("chat_send")
@@ -70,10 +104,18 @@ export function useStreetChat() {
       })
       .catch(() => {});
     const timer = setInterval(() => {
-      if (AppState.currentState === "active" && !older.current)
-        void loadRef.current();
+      if (AppState.currentState === "active") void loadRef.current();
     }, 5000);
+    const unsubscribe = streetChanges.subscribe(() => {
+      if (AppState.currentState === "active") void loadRef.current();
+    });
+    const foreground = AppState.addEventListener("change", (state) => {
+      if (state === "active") void loadRef.current();
+    });
     return () => {
+      mounted.current = false;
+      unsubscribe();
+      foreground.remove();
       counter.current++;
       clearInterval(timer);
     };
@@ -103,16 +145,17 @@ export function useStreetChat() {
     generation.current++;
     try {
       await native.rpc(op, p);
-      if (op === "chat_delete")
-        setItems((previous) =>
-          previous.map((m) =>
-            m.id === p.id ? { ...m, body: null, deleted: true } : m,
-          ),
+      if (op === "chat_delete") {
+        itemsRef.current = itemsRef.current.map((m) =>
+          m.id === p.id ? { ...m, body: null, deleted: true } : m,
         );
-      if (op === "block_set" && p.blocked)
-        setItems((previous) =>
-          previous.filter((m) => m.author_id !== p.account_id),
+      }
+      if (op === "block_set" && p.blocked) {
+        itemsRef.current = itemsRef.current.filter(
+          (m) => m.author_id !== p.account_id,
         );
+      }
+      setItems(itemsRef.current);
       older.current = false;
       await loadRef.current();
     } catch {
@@ -123,6 +166,7 @@ export function useStreetChat() {
   function toggleExpanded() {
     setExpanded((value) => !value);
     older.current = false;
+    itemsRef.current = [];
     void loadRef.current();
   }
   function beginHistory() {
@@ -136,7 +180,14 @@ export function useStreetChat() {
   function reload() {
     void loadRef.current();
   }
+  function followLatest() {
+    older.current = false;
+    setHasNew(false);
+  }
   return {
+    hasNew,
+    followLatest,
+    readingHistory: older,
     items,
     text,
     setText,

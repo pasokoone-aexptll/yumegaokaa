@@ -1,3 +1,4 @@
+import { useRef, type ComponentRef } from "react";
 import { Avatar } from "./Avatar";
 import { router } from "expo-router";
 import {
@@ -12,6 +13,9 @@ import { useStreetChat, Message } from "../hooks/useStreetChat";
 import { ui } from "./Page";
 export function StreetChat() {
   const {
+    hasNew,
+    followLatest,
+    readingHistory,
     items,
     text,
     setText,
@@ -26,6 +30,7 @@ export function StreetChat() {
     loadMore,
     reload,
   } = useStreetChat();
+  const scroll = useRef<ComponentRef<typeof ScrollView>>(null);
   function menu(m: Message) {
     Alert.alert(m.display_name, "操作を選択", [
       ...(m.mine && m.kind === "text" && !m.deleted
@@ -80,6 +85,12 @@ export function StreetChat() {
         </Text>
       </Pressable>
       <ScrollView
+        ref={scroll}
+        maintainVisibleContentPosition={{ minIndexForVisible: 1 }}
+        onContentSizeChange={() => {
+          if (!readingHistory.current)
+            scroll.current?.scrollToEnd({ animated: false });
+        }}
         onScrollBeginDrag={beginHistory}
         keyboardShouldPersistTaps="handled"
       >
@@ -116,6 +127,18 @@ export function StreetChat() {
           </Pressable>
         ))}
       </ScrollView>
+      {hasNew && (
+        <Pressable
+          onPress={() => {
+            followLatest();
+            scroll.current?.scrollToEnd({ animated: true });
+          }}
+        >
+          <Text style={{ color: "#008cff", textAlign: "center" }}>
+            新着へ ↓
+          </Text>
+        </Pressable>
+      )}
       {!!error && (
         <Pressable onPress={reload}>
           <Text style={ui.error}>{error}</Text>
