@@ -7,6 +7,7 @@ export default function Settings() {
       <Action title="友人を招待" onPress={() => router.push("/invitations")} />
       <Action title="お知らせ" onPress={() => router.push("/notifications")} />
       <Action title="ブロック設定" onPress={() => router.push("/blocks")} />
+      <Action title="アカウント管理" onPress={() => router.push("/account")} />
       <Action title="運営" onPress={() => router.push("/admin")} />
       <Action title="ログイン・接続状態" onPress={() => router.navigate("/")} />
     </Page>

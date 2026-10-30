@@ -102,6 +102,30 @@ actor APIClient {
   authGeneration+=1;refreshing?.cancel();refreshing=nil
   try save(result)
  }
+ func accountDetails() async throws -> [String:Any] {
+  let generation=authGeneration;let bearer=try await token()
+  let user=try await request(path:"/auth/v1/user",body:[:],bearer:bearer,method:"GET")
+  guard generation==authGeneration else{throw ServiceError(code:"login_required")}
+  var updated=credentials;updated["user"]=user;try save(updated)
+  return ["email":user["email"] ?? "", "new_email":user["new_email"] ?? ""]
+ }
+ func changeEmail(_ email:String) async throws {
+  let generation=authGeneration;let bearer=try await token()
+  _ = try await request(path:"/auth/v1/user",body:["email":email],bearer:bearer,method:"PUT")
+  guard generation==authGeneration else{throw ServiceError(code:"login_required")}
+ }
+ func verifyEmailChange(email:String,code:String) async throws -> [String:Any] {
+  let generation=authGeneration
+  let expectedUser=(credentials["user"] as? [String:Any])?["id"] as? String
+  let result=try await request(path:"/auth/v1/verify",body:["email":email,"token":code,"type":"email_change"])
+  guard generation==authGeneration else{throw ServiceError(code:"login_required")}
+  if result["access_token"] != nil {
+   guard let user=result["user"] as? [String:Any],user["id"] as? String==expectedUser else{throw ServiceError(code:"unauthorized")}
+   authGeneration+=1;refreshing?.cancel();refreshing=nil;try save(result)
+   return ["complete":true]
+  }
+  return ["complete":false]
+ }
  func realtimeToken() async throws -> String {try await token()}
  func logout() async {
   authGeneration+=1;refreshing?.cancel();refreshing=nil

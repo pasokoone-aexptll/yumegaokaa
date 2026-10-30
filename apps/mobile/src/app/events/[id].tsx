@@ -1,5 +1,5 @@
 import { useCallback, useState } from "react";
-import { Alert, Text, TextInput, View } from "react-native";
+import { Alert, Text, View } from "react-native";
 import { router, useFocusEffect, useLocalSearchParams } from "expo-router";
 import { Action, Empty, Page, ui } from "../../components/Page";
 import { native } from "../../lib/native";
@@ -10,13 +10,11 @@ export default function Event() {
     [error, setError] = useState(""),
     [busy, setBusy] = useState(false),
     [roster, setRoster] =
-      useState<{ account_id: string; display_name: string }[]>(),
-    [newEnd, setNewEnd] = useState("");
+      useState<{ account_id: string; display_name: string }[]>();
   const load = useCallback(async () => {
     try {
       const e = await native.rpc<StreetEvent>("event_get", { id });
       setEvent(e);
-      setNewEnd(e.ends_at);
       setError("");
     } catch {
       setEvent(undefined);
@@ -107,26 +105,11 @@ export default function Event() {
               {roster?.map((p) => (
                 <Text key={p.account_id}>{p.display_name}</Text>
               ))}
-              <TextInput
-                style={ui.input}
-                value={newEnd}
-                onChangeText={setNewEnd}
-                placeholder="終了日時"
-              />
               <Action
-                title="終了日時を更新"
-                disabled={busy}
-                onPress={() => {
-                  const d = new Date(newEnd);
-                  if (!Number.isFinite(d.getTime())) {
-                    setError("日時を確認してください。");
-                    return;
-                  }
-                  void act("event_edit", {
-                    ...event,
-                    ends_at: d.toISOString(),
-                  });
-                }}
+                title="イベントを編集"
+                onPress={() =>
+                  router.push({ pathname: "/events/edit/[id]", params: { id } })
+                }
               />
               <Action
                 title="イベントを中止"

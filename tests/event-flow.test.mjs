@@ -19,7 +19,7 @@ test('統合: 作成→参加→Home→取消/再送→変更通知→名簿権�
  let e=await rpc(0,'event_get',{id});await rpc(0,'event_edit',{...e,ends_at:new Date(Date.now()+9000000).toISOString()});
  assert.equal((await rpc(1,'notification_list')).items[0].kind,'changed');assert.equal((await rpc(2,'notification_list')).items.length,0);
  assert.equal((await rpc(0,'event_roster',{id})).items.length,1);await denied(1,'event_roster',{id},/membership_required/);
- e=await rpc(0,'event_get',{id});await rpc(0,'event_cancel',{id,revision:e.revision});
+ e=await rpc(0,'event_get',{id});await rpc(0,'event_cancel',{id,revision:e.revision});await rpc(0,'event_cancel',{id,revision:e.revision});
  assert.equal((await rpc(1,'event_list',{street_id:street,mine_only:true})).items.length,0);assert.equal((await rpc(1,'notification_list')).items[0].kind,'canceled');
  await denied(1,'event_get',{id},/not_found/);
  }finally{await c.query('rollback');await c.end();}

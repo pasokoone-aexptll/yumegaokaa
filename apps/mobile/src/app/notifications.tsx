@@ -6,6 +6,7 @@ import { native } from "../lib/native";
 type Notice = {
   id: string;
   event_id: string;
+  title: string;
   kind: "changed" | "canceled";
   created_at: string;
   read: boolean;
@@ -34,6 +35,7 @@ export default function Notifications() {
       {!error && !items.length && <Empty>お知らせはありません。</Empty>}
       {items.map((n) => (
         <View key={n.id} style={ui.card}>
+          <Text>{n.title}</Text>
           <Text>
             {n.kind === "canceled"
               ? "参加予定のイベントが中止されました"

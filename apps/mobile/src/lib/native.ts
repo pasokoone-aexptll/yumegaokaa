@@ -34,6 +34,12 @@ export const native = requireNativeModule("PresenceNative") as {
   }>;
   monotonicTime(): number;
   realtimeToken(): Promise<string>;
+  accountDetails(): Promise<{ email: string; new_email: string }>;
+  changeEmail(email: string): Promise<void>;
+  verifyEmailChange(
+    email: string,
+    code: string,
+  ): Promise<{ complete: boolean }>;
   mfaFactors(): Promise<{
     factors: { id: string; status: string; factor_type: string }[];
   }>;
