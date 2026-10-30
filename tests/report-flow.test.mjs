@@ -19,6 +19,12 @@ test('通報→重複抑止→MFA運営証拠→投稿削除→解決→期限�
  await call(1,'operator_report_resolve',{id:report.id,resolution:'handled'});
  assert.ok(!(await call(1,'operator_reports')).items.some(x=>x.id===report.id));
  await c.query("update app_private.reports set resolved_at=now()-interval '31 days' where id=$1",[report.id]);
+ const anonymous=randomUUID();
+ await c.query("insert into app_private.messages(id,street_id,author_id,body) values($1,$2,null,'匿名の投稿')",[anonymous,street]);
+ const anonymousReport=await call(0,'report_create',{...body,target_id:anonymous});
+ assert.ok(anonymousReport.id);
+ const item=(await call(0,'chat_list',{street_id:street})).items.find(x=>x.id===anonymous);
+ assert.equal(item.display_name,'退会済み');assert.equal(item.mine,false);assert.equal(item.author_id,null);
  await c.query('select app_private.cleanup()');assert.equal((await c.query('select id from app_private.reports where id=$1',[report.id])).rowCount,0);
  }finally{await c.query('rollback');await c.end();}
 });

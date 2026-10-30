@@ -37,7 +37,7 @@ export function StreetChat() {
             },
           ]
         : []),
-      ...(!m.mine
+      ...(!m.mine && m.author_id
         ? [
             {
               text: "ブロック",

@@ -82,3 +82,10 @@ scripts/avatar-smoke.mjs成功：所有者アップロード、プロフィー�
 - event-flow成功：作成→参加→取消/再送→変更通知→名簿権限→中止の再送。
 - /tmp/yumegaoka-account-profile-build.logでBUILD SUCCEEDED。画像選択とアカウントブリッジを含むシミュレータ向けビルドであり、実機操作の証拠ではない。
 - TypeScript/Lint成功。退会フックの通信再試行処理はコード反映済みだが、画面での通信断/再起動試験は未実施。全MVP完了を意味しない。
+
+
+## 2026-10-30 Map分割と匿名投稿（T007/T020/T023、R03/R15〜R19）
+- Map画面の状態管理をuseStreetMap、マーカーをStreetMapMarkers、スタイルを別ファイルへ分離。TypeScript/Lint成功。
+- 019の匿名投稿通報と表示をreport-flowで確認。退会後の匿名投稿はアカウント情報を復元せず通報でき、ブロック操作は表示しない。
+- 本体の再ビルドなし。直前の成功したビルドをシミュレータへインストールし、testMVPNavigation成功（43.624秒、失敗0、/tmp/yumegaoka-map-refactor-ui-retry.log）。初回は既に除去した説明文を待つテストの不整合で失敗。地点確定ボタンを確認する形へ修正した。
+- 実iPhone操作、新規アカウント画面の入力、全機能統合、背景観測の再検証ではない。

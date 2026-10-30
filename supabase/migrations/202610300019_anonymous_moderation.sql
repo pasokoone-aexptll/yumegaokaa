@@ -1,0 +1,104 @@
+begin;
+-- Retained anonymous posts remain reportable without restoring identity.
+alter table app_private.reports alter column subject_id drop not null;
+create or replace function app_private.report_api(operation text,payload jsonb default '{}'::jsonb)
+returns jsonb language plpgsql security definer set search_path='' as $$
+<<api>>
+declare uid uuid:=auth.uid();sid uuid:=(auth.jwt()->>'session_id')::uuid;t timestamptz:=clock_timestamp();
+ target uuid;kind text;subject uuid;proof jsonb;r app_private.reports%rowtype;result jsonb;reason text;description text;
+begin
+ if operation not in ('report_create','operator_reports','operator_report_resolve','operator_message_delete') then return app_private.operator_api(operation,payload);end if;
+ if operation<>'report_create' then
+  uid:=app_private.require_operator();
+  if operation='operator_reports' then
+   select coalesce(jsonb_agg(x order by x.created_at),'[]'::jsonb) into result from(
+    select rp.id,rp.target_kind,rp.target_id,rp.reason,rp.description,rp.evidence,rp.created_at,
+     rp.created_at+interval '90 days'<=t as review_due
+    from app_private.reports rp where rp.resolved_at is null and rp.created_at+interval '180 days'>t
+    order by created_at limit 100
+   )x;
+   return jsonb_build_object('items',result);
+  end if;
+  select * into r from app_private.reports where id=(payload->>'id')::uuid for update;
+  if not found or (r.resolved_at is null and r.created_at+interval '180 days'<=t) or r.resolved_at+interval '30 days'<=t then raise exception 'not_found';end if;
+  if operation='operator_message_delete' then
+   if r.target_kind<>'message' then raise exception 'invalid_input';end if;
+   update app_private.messages set body=null,deleted_at=t where id=r.target_id and deleted_at is null;
+   if found then insert into app_private.operator_audit(actor,action,target) values(uid,'message_delete',r.target_id);end if;
+   return '{"deleted":true}'::jsonb;
+  end if;
+  reason:=payload->>'resolution';
+  if reason is null or reason not in ('handled','no_action') then raise exception 'invalid_input';end if;
+  if r.resolved_at is null then
+   update app_private.reports set resolved_at=t,resolution=api.reason where id=r.id;
+   insert into app_private.operator_audit(actor,action,target) values(uid,'report_resolve',r.id);
+  end if;
+  return '{"resolved":true}'::jsonb;
+ end if;
+ if uid is null or sid is null or not exists(select 1 from auth.sessions where id=sid and user_id=uid) then raise exception 'unauthorized';end if;
+ perform 1 from app_private.members where account_id=uid and active for update;
+ if not found then raise exception 'membership_required';end if;
+ target:=(payload->>'target_id')::uuid;kind:=payload->>'target_kind';reason:=payload->>'reason';description:=coalesce(payload->>'description','');
+ if kind is null or kind not in ('message','recruitment','event') or reason is null or reason not in ('spam','harassment','other') or char_length(description)>1000 then raise exception 'invalid_input';end if;
+ select * into r from app_private.reports where reporter=uid and target_kind=kind and target_id=target and resolved_at is null;
+ if found then return jsonb_build_object('id',r.id);end if;
+ -- Bound evidence ingestion; no body is accepted from the reporting client.
+ if(select count(*) from app_private.request_limits where account_id=uid and app_private.request_limits.kind='report' and at>t-interval '1 minute')>=10 then raise exception 'rate_limited';end if;
+ if kind='message' then
+  select author_id,jsonb_build_object('body',body,'created_at',created_at,'street_id',street_id,'deleted',deleted_at is not null)
+   into subject,proof from app_private.messages where id=target and created_at>t-interval '30 days' for share;
+ elsif kind='event' then
+  select host_id,jsonb_build_object('title',title,'description',e.description,'street_id',street_id,'starts_at',starts_at,'ends_at',ends_at)
+   into subject,proof from app_private.events e where id=target and coalesce(canceled_at,ends_at)+interval '24 hours'>t;
+ else
+  select v.account_id,jsonb_build_object('title',p.title,'street_id',v.street_id,'created_at',p.created_at)
+   into subject,proof from app_private.recruitments p join app_private.visits v on v.id=p.visit_id
+   where p.id=target and least(coalesce(p.ended_at,p.expires_at),p.expires_at,coalesce(v.ended_at,v.expires_at),v.expires_at)+interval '24 hours'>t;
+ end if;
+ if proof is null then raise exception 'not_found';end if;
+ insert into app_private.reports(reporter,target_kind,target_id,subject_id,reason,description,evidence)
+ values(uid,kind,target,subject,reason,description,proof) returning * into r;
+ insert into app_private.request_limits values(uid,'report',t);
+ return jsonb_build_object('id',r.id);
+end $$;
+create or replace function app_private.chat_read_api(operation text,payload jsonb default '{}'::jsonb)
+returns jsonb language plpgsql security definer set search_path='' as $$
+declare uid uuid:=auth.uid();sid uuid:=(auth.jwt()->>'session_id')::uuid; t timestamptz:=clock_timestamp(); result jsonb; target uuid; street uuid;
+begin
+ if operation not in ('chat_list','chat_delete','block_set','block_list') then return app_private.invitation_api(operation,payload);end if;
+ if uid is null or sid is null or not exists(select 1 from auth.sessions where id=sid and user_id=uid) then raise exception 'unauthorized';end if;
+ perform 1 from app_private.members where account_id=uid and active for update;
+ if not found then raise exception 'membership_required';end if;
+ if operation='block_set' then
+  target:=(payload->>'account_id')::uuid;
+  if target is null or target=uid or not exists(select 1 from app_private.members where account_id=target) then raise exception 'invalid_input';end if;
+  if (payload->>'blocked')::boolean then insert into app_private.blocks values(uid,target) on conflict do nothing;
+  else delete from app_private.blocks where owner_id=uid and target_id=target;end if;
+  return '{"updated":true}'::jsonb;
+ elsif operation='block_list' then
+  select coalesce(jsonb_agg(jsonb_build_object('account_id',b.target_id,'display_name',coalesce(p.display_name,'名前未設定'))),'[]'::jsonb) into result from app_private.blocks b left join app_private.profiles p on p.account_id=b.target_id where b.owner_id=uid;
+  return jsonb_build_object('items',result);
+ elsif operation='chat_delete' then
+  update app_private.messages set body=null,deleted_at=coalesce(deleted_at,t) where id=(payload->>'id')::uuid and author_id=uid;
+  if not found then raise exception 'not_found';end if;
+  return '{"deleted":true}'::jsonb;
+ end if;
+ street:=(payload->>'street_id')::uuid;
+ if not exists(select 1 from app_private.streets where id=street) then raise exception 'not_found';end if;
+ if(select count(*) from app_private.request_limits where account_id=uid and kind='chat_read' and at>t-interval '10 seconds')>=5 then raise exception 'rate_limited';end if;
+ insert into app_private.request_limits values(uid,'chat_read',t);
+ -- Cursor includes the UUID tie breaker; no offset drift when new posts arrive.
+ with feed as (
+ select id,author_id,body,created_at,deleted_at,'text' kind from app_private.messages where street_id=street
+ union all
+ select id,account_id,null,created_at,null,'arrival' from app_private.arrival_logs where street_id=street
+ ), page as (
+ select f.*,p.avatar_path,p.avatar_updated_at,case when f.author_id is null then '退会済み' else coalesce(p.display_name,'名前未設定') end display_name from feed f left join app_private.profiles p on p.account_id=f.author_id
+ where f.created_at>t-interval '30 days'
+ and not exists(select 1 from app_private.blocks b where b.owner_id=uid and b.target_id=f.author_id)
+ and (payload->>'before_at' is null or (f.created_at,f.id)<((payload->>'before_at')::timestamptz,(payload->>'before_id')::uuid))
+ order by f.created_at desc,f.id desc limit 50
+ ) select coalesce(jsonb_agg(jsonb_build_object('id',id,'author_id',author_id,'display_name',display_name,'avatar_path',avatar_path,'avatar_updated_at',avatar_updated_at,'body',body,'created_at',created_at,'deleted',deleted_at is not null,'kind',kind,'mine',coalesce(author_id=uid,false)) order by created_at desc,id desc),'[]'::jsonb) into result from page;
+ return jsonb_build_object('items',result,'server_time',t);
+end $$;
+commit;

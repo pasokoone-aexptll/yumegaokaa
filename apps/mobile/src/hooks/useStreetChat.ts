@@ -4,7 +4,7 @@ import { native, streetID } from "../lib/native";
 import { pendingCommand, submitCommand } from "../lib/commands";
 export type Message = {
   id: string;
-  author_id: string;
+  author_id: string | null;
   display_name: string;
   avatar_path?: string;
   avatar_updated_at?: string;
