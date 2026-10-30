@@ -6,9 +6,18 @@ export default function Account() {
   const a = useEmailChange();
   return (
     <Page title="アカウント管理">
+      {a.loading && <Text style={ui.muted}>読み込み中…</Text>}
+      {!a.loading && !a.ready && (
+        <Action
+          title="再読み込み"
+          disabled={a.busy}
+          onPress={() => void a.load()}
+        />
+      )}
       <Text>{a.email}</Text>
       <View style={ui.card}>
         <TextInput
+          editable={!a.busy && !a.loading && a.ready}
           style={ui.input}
           value={a.next}
           onChangeText={a.setNext}
@@ -18,13 +27,14 @@ export default function Account() {
         />
         <Action
           title="変更用コードを送る"
-          disabled={a.busy || !a.next.includes("@")}
+          disabled={a.busy || a.loading || !a.ready || !a.next.includes("@")}
           onPress={() => void a.send()}
         />
         {!!a.pending && (
           <>
             <Text>{a.email} に届いたコード</Text>
             <TextInput
+              editable={!a.busy && !a.loading && a.ready}
               style={ui.input}
               value={a.oldCode}
               onChangeText={a.setOldCode}
@@ -33,11 +43,12 @@ export default function Account() {
             />
             <Action
               title="現在のメールを確認"
-              disabled={a.busy || a.oldCode.length < 6}
+              disabled={a.busy || a.loading || !a.ready || a.oldCode.length < 6}
               onPress={() => void a.verify(a.email, a.oldCode)}
             />
             <Text>{a.pending} に届いたコード</Text>
             <TextInput
+              editable={!a.busy && !a.loading && a.ready}
               style={ui.input}
               value={a.newCode}
               onChangeText={a.setNewCode}
@@ -46,7 +57,7 @@ export default function Account() {
             />
             <Action
               title="新しいメールを確認"
-              disabled={a.busy || a.newCode.length < 6}
+              disabled={a.busy || a.loading || !a.ready || a.newCode.length < 6}
               onPress={() => void a.verify(a.pending, a.newCode)}
             />
           </>

@@ -9,7 +9,10 @@ export function useWithdrawal() {
     [error, setError] = useState("");
   const authenticated = useRef(false);
   const confirmed = useRef(false);
+  const writing = useRef(false);
   async function begin() {
+    if (writing.current) return;
+    writing.current = true;
     setBusy(true);
     setError("");
     try {
@@ -23,11 +26,13 @@ export function useWithdrawal() {
     } catch {
       setError("確認コードを送れませんでした");
     } finally {
+      writing.current = false;
       setBusy(false);
     }
   }
   async function finish() {
-    if (!request) return;
+    if (!request || writing.current) return;
+    writing.current = true;
     setBusy(true);
     setError("");
     try {
@@ -46,6 +51,7 @@ export function useWithdrawal() {
         "完了を確認できませんでした。通信を確認して、もう一度お試しください",
       );
     } finally {
+      writing.current = false;
       setBusy(false);
     }
   }

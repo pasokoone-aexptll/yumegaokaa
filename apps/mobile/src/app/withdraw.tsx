@@ -19,6 +19,7 @@ export default function Withdraw() {
         <>
           <Text>{request.email}</Text>
           <TextInput
+            editable={!busy}
             style={ui.input}
             value={code}
             onChangeText={setCode}

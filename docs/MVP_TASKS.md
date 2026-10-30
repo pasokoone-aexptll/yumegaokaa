@@ -111,7 +111,7 @@ P0=再利用する土台/次の着手、P1=全画面と主要機能、P2=統合�
 - **実装対象**：Settings・認証/資格の管理API。
 - **完了条件**：Q01/Q08で採用するメール変更・紛失・旧端末失効・退会を明示し、採用分の導線と削除を接続。未決定を独断で実装しない。
 - **検証方法**：採用フローの再認証・他端末・削除後アクセス確認。
-- **監査根拠・再利用判断**：E02/E03。通常ログアウトは再利用。例外方式は未決定。
+- **実装・検証根拠**：初期監査E02/E03から進展。承認済みの新旧メール確認・再認証退会をaccount/withdraw画面とNative/Auth/DBへ接続。account-smokeの既存証拠とチェックポイント42の状態試験を参照。実機での全操作と他端末への反映が残りIN_PROGRESS。
 
 ### T006 3タブ・画面遷移の骨格
 
@@ -711,3 +711,9 @@ T003/T004/T007/T030：チャット画像との別設定、本人と地図で同�
 - icon-expiry.test.mjs、street-icon-pool.test.mjs、member-operations.test.mjs成功。運営試験の旧invite_create直呼びは現在の承認済みcommand_prepare/executeへ更新。制限状態の反映、投稿拒否/解除、利用停止で主催イベント中止/滞在終了、解除で復活なしを確認。
 - street-icon-smoke.mjsで実JPEGアップロード→25時間前の未公開準備fixture→会員読取拒否→maintenance-worker --once→Storageオブジェクト/DB行削除を確認。試験画像/アカウントは清掃。時刻を変更したfixtureによる確認であり24時間の実待機試験ではない。typecheck/Lint成功。
 - 状態件数・完了数は維持：DONE5/IMPLEMENTED2/IN_PROGRESS23/TODO0/BLOCKED3、5/33=15.2%、実装到達7/33=21.2%。未完は実機UI統合と運用時のworker稼働確認。既存Releaseに今回JSは未収録、次のまとめたビルドで反映。ビルド/転送/pushなし。次：全画面の操作統合、実機Release確認。
+
+## 実装チェックポイント42：アカウント変更の復帰導線
+- T005/R03/R17：useEmailChangeの初回読込/失敗/再読込をaccount画面へ接続。読込前・通信中の操作を無効にし、メール変更送信/確認の連打を同期ガード。応答紛失時はaccountDetailsを再取得して変更中のメールへの確認導線を復元し、成功と断定しない。離脱後の古い応答を破棄しOTP入力を消去する。
+- useWithdrawalの確認コード送信/確定にも共通の同期ガードを追加、実行中はコード入力を固定。認証・退会API・削除要件は変更していない。
+- email-change-state.test.mjsの3件成功（送信応答紛失の変更先復元、連打/離脱、読込失敗から復帰）。typecheck/Lint成功。既存Auth/DB契約は未変更のためaccount-smokeの再実行は省略。実メール2通確認/退会のネイティブUI操作は未確認。
+- 全体5/33=15.2%、実装到達7/33=21.2%。DONE5/IMPLEMENTED2/IN_PROGRESS23/TODO0/BLOCKED3維持。今回完了増分0。ネイティブビルド/転送/pushなし。再開地点：全画面操作の統合と次のまとめたRelease実機確認。
