@@ -1,3 +1,4 @@
+import { EventCloudPin } from "./EventCloudPin";
 import { Avatar } from "./Avatar";
 import { Marker } from "@maplibre/maplibre-react-native";
 import { router } from "expo-router";
@@ -99,17 +100,9 @@ export function StreetMapMarkers({
                 {countdown(event, now)}
               </Text>
               <Text numberOfLines={1}>{event.title}</Text>
-              <Text
-                style={{
-                  fontSize: 25,
-                  lineHeight: 36,
-                  height: 36,
-                  color: "#ff5d9c",
-                  textAlign: "center",
-                }}
-              >
-                ☁︎
-              </Text>
+              <View style={{ alignItems: "center" }}>
+                <EventCloudPin />
+              </View>
             </Pressable>
           </Marker>
         ))}

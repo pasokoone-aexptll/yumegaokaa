@@ -643,3 +643,6 @@ R03/R16/R18。test-invite-pagination-uiで専用101件の使用済招待を実DB
 ## cp106：まとめたReleaseとヘッダー描画
 新Releaseビルド成功（/tmp/yumegaoka-release106.log）、シミュレータへinstall。ローカルgatewayはnpm run realtime:localで起動、54325。testPresenceHeaderを実DBfixtureで成功、/tmp/yumegaoka-header106.xcresult。画像3B0B0307-F239-47AA-ABBF-ECBD1F522477.pngを目視し、可変幅で8画像が全て収まり、チェックイン10人の別表示を確認。既存の幅/余剰計算試験cp99は再利用。fixture削除済み。
 イベントピンは☁︎文字の仮表示で、FigmaのDreamCloud斜めロゴの再現未達。T007-01/T015-01内の既存不足であり追加必須項目ではない。画面が取得できたことだけではgateway通知経由と定期pollを区別できないため、RN通知一巡T031の完了証拠にはしない。実機未転送。今回項目数23→23、DONE15/33維持。
+
+## cp107：イベントピンの仮文字を置換（描画未確認）
+T007/T015・R13/R19。EventCloudPinを追加しStreetMapMarkersの☁︎を置換。添付Figmaを元にSVGで雲/ピンク赤グラデーション/白縁/斜め非常口/軸と接地点を再構成。元ロゴの書き出しデータではない。Expo58公式手順でreact-native-svg互換版を導入しlockfile固定、pod install成功。型/Lint成功。native追加のためReleaseビルドを開始、/tmp/yumegaoka-release107.log。まだ描画成功/DONEと扱わない。残23、推測20–47.5時間据置、新規必須0（T007-01/T015-01内）。

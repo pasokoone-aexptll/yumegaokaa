@@ -91,3 +91,5 @@ cp104再開地点：T029/T022 DONE、14/33、残24項目。次T025-01の使用�
 cp105再開地点：T025 DONE、15/33、残23。次はT007-01/T015-01の幅可変ヘッダー/ピン描画とT031のgateway画面接続をまとめたRelease確認。シミュレータはcp96のまま。gateway常駐未起動。運営fixture清掃済み。
 
 cp106再開地点：新Releaseをシミュレータへ反映済み（gateway/adaptive headerを含む）。testPresenceHeader成功、8枚/チェックイン10人を目視。イベントロゴは☁︎仮表示が残るためT007-01/T015-01未完。画像素材はapps/mobile/assetsに未収録。Figmaの雲＋斜め非常口ロゴ表現を次に具体化する。ローカルgateway session20058起動、再開時はlsofで確認。残23/DONE15。実機未更新。
+
+cp107再開：ピンSVG実装と型/Lint成功、pod install済み。Release107ビルド session72066 が実行中（最終確認時コンパイル中）、/tmp/yumegaoka-release107.log。まず同sessionをpoll、成功ならsimctl install後、header UIの同じfixtureをUI_RESULT_PATHで新規xcresultへ出しピン描画を確認する。cp106には既存イベントピンが表示されていたが期限切れならfixtureイベントを用意。まだ再ビルド/再起動を重ねない。残23/DONE15。
