@@ -418,6 +418,21 @@ final class Smoke: XCTestCase {
   XCTAssertTrue(app.staticTexts.containing(NSPredicate(format:"label CONTAINS %@","10人がチェックイン中")).firstMatch.exists)
   attach(app,"presence-header-eight-with-ten-checkins")
  }
+ @MainActor func testAccountNestedNavigation() throws {
+  continueAfterFailure=false
+  let app=XCUIApplication(bundleIdentifier:"jp.yumegaoka.development")
+  app.launch()
+  XCTAssertTrue(app.descendants(matching:.any).matching(identifier:"Settings").firstMatch.waitForExistence(timeout:30))
+  tap(app,"Settings");tap(app,"アカウント管理")
+  XCTAssertTrue(app.textFields["新しいメールアドレス"].waitForExistence(timeout:15))
+  tap(app,"退会")
+  XCTAssertTrue(app.buttons["本人確認コードを送る"].waitForExistence(timeout:10))
+  tap(app,"‹ 戻る")
+  XCTAssertTrue(app.textFields["新しいメールアドレス"].waitForExistence(timeout:10))
+  tap(app,"‹ 戻る");tap(app,"ログイン・接続状態")
+  XCTAssertTrue(app.buttons["ログアウト"].waitForExistence(timeout:10))
+  attach(app,"account-nested-navigation")
+ }
  @MainActor func testMVPNavigation() throws {
   continueAfterFailure=false
   let app=XCUIApplication(bundleIdentifier:"jp.yumegaoka.development")

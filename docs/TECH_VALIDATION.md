@@ -684,3 +684,8 @@ R11/R18。sticker-flowに同一点3登録の退化拒否と競合公開拒否を
 - scripts/test-offline-exit-ui.mjsはlocalhost制御口とfinally復旧/180秒復旧タイマーを使用。製品の疑似エラー表示ではなく実API停止による通信失敗。物理端末の機内モードや背景歩行ではない。
 - 既存cp77演出/成功・cp96取消/権限拒否・cp115別端末の証拠を再利用。T012完了条件を緩和せず実NFCだけT028へ分離。
 - DONE22/33、IMPLEMENTED2、IN_PROGRESS6、BLOCKED3。実装24/33、統合23/33、実機11/33は不変。残15→14、新規必須0、推測11.5–25.5作業時間＋待ち不明。次T006-01。
+
+## チェックポイント118：全画面導線の照合
+- T006/R19をDONE。NAVIGATION_ACCEPTANCEに現行ルート・呼出元・操作証拠・Figmaの対応と限界を集約。既存機能試験を再実行せず再利用。
+- 未確認だったSettings→アカウント管理→退会→戻る→接続状態をtestAccountNestedNavigationで成功。/tmp/yumegaoka-navigation118.xcresult。メール変更/退会は実行せずT005の未決条件を維持。既存Release117を使用、本体ビルドとiPhone操作なし。
+- DONE23/33、IMPLEMENTED2、IN_PROGRESS5、BLOCKED3。実装25/33、統合24/33、実機11/33。残14→13、新規必須0。推測10.5–23.5h＋待ち不明。次T030。
