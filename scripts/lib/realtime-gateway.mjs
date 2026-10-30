@@ -3,7 +3,7 @@ import { WebSocketServer, WebSocket } from "ws";
 
 // Single process owns all accepted sockets. Deployment must not run independent
 // replicas until the account-wide admission lock is shared between them.
-export function createRealtimeGateway({ authorize }) {
+export function createRealtimeGateway({ authorize, heartbeatMs = 30000 }) {
   const accounts = new Map();
   const clients = new Map();
   const server = createServer((req, res) => {
@@ -15,6 +15,18 @@ export function createRealtimeGateway({ authorize }) {
     maxPayload: 1024,
     perMessageDeflate: false,
   });
+  const alive = new WeakSet();
+  const heartbeat = setInterval(() => {
+    for (const ws of clients.keys()) {
+      if (!alive.has(ws)) {
+        ws.terminate();
+        continue;
+      }
+      alive.delete(ws);
+      if (ws.readyState === WebSocket.OPEN) ws.ping();
+    }
+  }, heartbeatMs);
+  heartbeat.unref();
   let closing = false;
   server.on("upgrade", async (req, socket, head) => {
     socket.on("error", () => {});
@@ -49,6 +61,8 @@ export function createRealtimeGateway({ authorize }) {
       clearTimeout(timeout);
       sockets.handleUpgrade(req, socket, head, (ws) => {
         clients.set(ws, { token, ...identity });
+        alive.add(ws);
+        ws.on("pong", () => alive.add(ws));
         ws.on("error", () => {});
         ws.once("close", () => clients.delete(ws));
         ws.on("message", () => ws.close(1008, "Receive-only connection"));
@@ -95,6 +109,7 @@ export function createRealtimeGateway({ authorize }) {
     },
     async close() {
       closing = true;
+      clearInterval(heartbeat);
       for (const owned of accounts.values())
         for (const socket of owned) socket.destroy();
       await new Promise((resolve) => sockets.close(resolve));

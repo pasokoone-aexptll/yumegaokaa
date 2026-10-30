@@ -7,6 +7,7 @@
 | 文書 | 役割・扱い |
 | --- | --- |
 | [MVP_TASKS](MVP_TASKS.md) | MVP全体のタスク・完了条件・進捗率・次の順序の正本 |
+| [MVP_REMAINING](MVP_REMAINING.md) | 固定完了条件の残チェックリスト・件数・推測工数と増減 |
 | [MVP_IMPLEMENTATION_AUDIT](MVP_IMPLEMENTATION_AUDIT.md) | 2026-10-30の全体コード監査・未完成一覧・証拠 |
 | [PROJECT_CONTEXT](PROJECT_CONTEXT.md) | 目的・文化・顧客仮説の正本 |
 | [MVP_REQUIREMENTS](MVP_REQUIREMENTS.md) | 現在の承認済み要件の正本。未決定の細部は明記 |

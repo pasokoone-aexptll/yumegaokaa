@@ -624,3 +624,10 @@ cp96再試験：/tmp/yumegaoka-entry96-retry.xcresult成功。入街前取消→
 - gateway-runtimeで実Auth認可とWebSocketを接続。専用LISTEN接続のDB advisory lockにより独立2プロセスの起動を拒否。LISTEN/DB接続エラー時は全ソケットを閉じる。変更通知ごとの認可再確認、5秒補完再確認を実装。ローカル専用起動はnpm run realtime:local、54325番。クラウド設定なし。
 - gateway-auth試験を拡張して成功：実Auth/DB会員→実WebSocket ready→街DB更新→changed受信→利用停止→3秒以内のclose、同一DBへの2起動拒否。専用データとAuthユーザーはfinallyで削除。以前の認可単体試験だけでなくruntimeまで通した。常駐プロセスはまだ起動していない。
 - 残り：アプリWebSocket切替・直接Supabase迂回閉鎖・再接続/無応答ソケット回収・DB切断の障害確認。T029未完。既存モバイルは直接Realtimeを使用中。DONE12/33、コード23/33、統合22/33、実機11/33、BLOCKED3。モバイル変更なし、ビルド/実機/pushなし。
+
+## cp103（2026-10-31）：T029アプリ接続・残量固定
+R16/R18。useStreetMapの直接Supabase購読をgatewayConnectionへ置換。前景1接続、Authorizationヘッダー、毎回native.realtimeToken、ready/changedで既存API再取得。背景/破棄時に停止し、遅延トークン完了で再接続しない。指数バックオフ最大30秒。型でDOMにないRNヘッダー引数を補足。gateway-clientと既存entry-stateの4試験、型/Lint成功。gateway本体に30秒ping/pong死活監視を追加し、実loopback WebSocketで3枠/4本目拒否/停止切断/無応答切断・再接続の2試験成功。
+未確認：アプリ実通信、直接Realtime迂回の閉鎖、最新Release/iPhone。今回ビルド/転送なし。T029はIN_PROGRESS。既存33条件を固定し、ローカル残量30→28項目、外部3枠別。見積もりは推測、25.5–61→24–58作業時間＋判断/外部待ち不明。新規必須0。
+
+cp103追記：035でprivate broadcast読取policyを削除。config realtime.enabled=false、既存local realtimeコンテナを停止。ローカル実WS handshake拒否を確認（RLSだけを物理遮断とは扱わない）。gateway-auth試験に実アプリのgatewayConnectionを接続し、強制切断→新規token取得→ready→実DB変更通知が成功。実Auth署名/会員/session失効・単一runtime排他も同じ試験で通過。クラウド経路閉鎖はT033の配備条件で未確認。旧iPhone直購読版の通知は止まるため、最新版転送前は即時配信を保証しない。
+最終残量：初回30→26項目、22–52推測作業時間＋判断/外部待ち不明。T029-05の上限/認可証拠照合は未完、DONE数据置。

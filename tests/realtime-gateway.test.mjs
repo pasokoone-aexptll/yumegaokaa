@@ -65,3 +65,45 @@ test("real websocket admission permits three sockets, releases on close, and cut
     await gateway.close();
   }
 });
+
+test("unresponsive sockets release their account slots", async () => {
+  const gateway = createRealtimeGateway({
+    heartbeatMs: 20,
+    authorize: async () => ({
+      accountId: "a",
+      sessionId: "s",
+      streetId: "street",
+    }),
+  });
+  gateway.server.listen(0, "127.0.0.1");
+  await once(gateway.server, "listening");
+  const endpoint = `ws://127.0.0.1:${gateway.server.address().port}/street`;
+  const ws = new WebSocket(endpoint, {
+    autoPong: false,
+    headers: { Authorization: "Bearer valid" },
+  });
+  try {
+    await once(ws, "message");
+    await Promise.race([
+      once(ws, "close"),
+      new Promise((_, reject) => {
+        const t = setTimeout(
+          () => reject(Error("heartbeat did not close")),
+          1000,
+        );
+        t.unref();
+      }),
+    ]);
+    const next = new WebSocket(endpoint, {
+      headers: { Authorization: "Bearer valid" },
+    });
+    try {
+      assert.equal(JSON.parse((await once(next, "message"))[0]).type, "ready");
+    } finally {
+      next.terminate();
+    }
+  } finally {
+    ws.terminate();
+    await gateway.close();
+  }
+});

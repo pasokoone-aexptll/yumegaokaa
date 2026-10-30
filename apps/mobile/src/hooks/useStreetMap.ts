@@ -4,7 +4,7 @@ import "react-native-url-polyfill/auto";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Alert, AppState } from "react-native";
 import { closeMenu, setToolsButtonVisible } from "expo-dev-client";
-import { createClient } from "@supabase/supabase-js";
+import { gatewayConnection } from "../lib/gatewayConnection";
 import NfcManager, { NfcTech, Ndef } from "react-native-nfc-manager";
 import {
   key,
@@ -17,7 +17,7 @@ import {
 } from "../lib/native";
 import { Recruitment } from "../lib/recruitments";
 import { StreetEvent } from "../lib/events";
-import { localEntry, nfcDisabled } from "../lib/development";
+import { localEntry, localHost, nfcDisabled } from "../lib/development";
 const initial: NativeState = {
   observing: false,
   status: "未参加",
@@ -157,33 +157,38 @@ export function useStreetMap() {
         void refresh();
       })
       .catch((e) => setError(friendly(e)));
-    const realtime = createClient(url, key, {
-      auth: {
-        persistSession: false,
-        autoRefreshToken: false,
-        detectSessionInUrl: false,
+    const gateway = gatewayConnection({
+      token: () => native.realtimeToken(),
+      connect: (token) => {
+        let endpoint = process.env.EXPO_PUBLIC_GATEWAY_URL;
+        if (!endpoint && localHost) {
+          const local = new URL(url);
+          local.protocol = local.protocol === "https:" ? "wss:" : "ws:";
+          local.port = "54325";
+          local.pathname = "/street";
+          local.search = "";
+          endpoint = local.toString();
+        }
+        if (!endpoint || (!localHost && !endpoint.startsWith("wss://")))
+          throw new Error("gateway_not_configured");
+        // React Native supports handshake headers; DOM typings omit this option.
+        const NativeWebSocket = WebSocket as unknown as {
+          new (
+            url: string,
+            protocols: undefined,
+            options: { headers: Record<string, string> },
+          ): WebSocket;
+        };
+        return new NativeWebSocket(endpoint, undefined, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
       },
-      accessToken: () => native.realtimeToken(),
-    });
-    let disposed = false;
-    const channel = realtime
-      .channel(`street:${streetID}`, { config: { private: true } })
-      .on("broadcast", { event: "changed" }, () => {
+      changed: () => {
         streetChanges.notify();
         void refresh();
-      });
-    void realtime.realtime
-      .setAuth()
-      .then(() => {
-        if (!disposed)
-          channel.subscribe((status) => {
-            if (status === "SUBSCRIBED") {
-              streetChanges.notify();
-              void refresh();
-            }
-          });
-      })
-      .catch(() => {});
+      },
+    });
+    gateway.setActive(AppState.currentState === "active");
     const unsubscribeBlocks = localBlocks.subscribe(() => {
       setRecruitments((items) =>
         items.filter((p) => !localBlocks.hidden(p.author_id)),
@@ -201,6 +206,7 @@ export function useStreetMap() {
       1000,
     );
     const sub = AppState.addEventListener("change", (s) => {
+      gateway.setActive(s === "active");
       if (s === "active") {
         void refresh();
         native
@@ -215,8 +221,7 @@ export function useStreetMap() {
       clearInterval(timer);
       clearInterval(ticker);
       sub.remove();
-      disposed = true;
-      void realtime.removeChannel(channel);
+      gateway.setActive(false);
     };
   }, [signed, refresh, invalidateSnapshot]);
   async function login() {
