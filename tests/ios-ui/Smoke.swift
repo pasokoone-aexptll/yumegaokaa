@@ -414,7 +414,7 @@ final class Smoke: XCTestCase {
   if toggle.value as? String != "1" {
    toggle.tap();tap(app,"開発用タグで入街（NFC代用）");app.tap()
   }
-  XCTAssertTrue(app.staticTexts["気配を観測中"].waitForExistence(timeout:25) || app.staticTexts["新しい気配を共有しました"].exists)
+  assertParticipation(app, active:true, timeout:25)
   if app.buttons["地図へ"].exists {tap(app,"地図へ")}
   app.descendants(matching:.any).matching(identifier:"Home").firstMatch.tap()
   tap(app,"ピンを作成")
@@ -438,7 +438,7 @@ final class Smoke: XCTestCase {
   XCTAssertFalse(app.descendants(matching:.any).matching(NSPredicate(format:"label CONTAINS %@",title)).firstMatch.exists)
   app.descendants(matching:.any).matching(identifier:"Map").firstMatch.tap()
   toggle.tap()
-  XCTAssertTrue(app.staticTexts["未参加"].waitForExistence(timeout:20))
+  assertParticipation(app, active:false, timeout:20)
   attach(app,"recruitment-ended-and-checked-out")
  }
  @MainActor func testHostEditRosterNotifications() throws {
@@ -673,7 +673,7 @@ final class Smoke: XCTestCase {
   if app.staticTexts["位置情報を許可してから、もう一度入街してください。設定アプリで許可を変更できます。"].waitForExistence(timeout:3) {
    toggle.tap();tap(app,"開発用タグで入街（NFC代用）")
   }
-  XCTAssertTrue(app.staticTexts["気配を観測中"].waitForExistence(timeout:25) || app.staticTexts["新しい気配を共有しました"].exists)
+  assertParticipation(app, active:true, timeout:25)
   XCUIDevice.shared.location = XCUILocation(location: CLLocation(latitude:35.72951,longitude:139.71091))
   XCTAssertTrue(app.staticTexts["新しい気配を共有しました"].waitForExistence(timeout:30))
   // MapLibre's native annotation is not exposed as XCTest text. Review this
@@ -686,13 +686,19 @@ final class Smoke: XCTestCase {
   let toggle=app.switches["街への参加"]
   app.terminate();app.launch()
   XCTAssertTrue(toggle.waitForExistence(timeout:30))
-  XCTAssertTrue(app.staticTexts["気配を観測中"].waitForExistence(timeout:25) || app.staticTexts["新しい気配を共有しました"].exists)
+  assertParticipation(app, active:true, timeout:25)
   toggle.tap()
-  XCTAssertTrue(app.staticTexts["未参加"].waitForExistence(timeout:25))
+  assertParticipation(app, active:false, timeout:25)
   app.terminate();app.launch()
-  XCTAssertTrue(app.staticTexts["未参加"].waitForExistence(timeout:30))
+  assertParticipation(app, active:false, timeout:30)
   XCTAssertEqual(toggle.value as? String,"0")
   attach(app,"after-exit-relaunch")
+ }
+ @MainActor private func assertParticipation(_ app:XCUIApplication, active:Bool, timeout:TimeInterval) {
+  let toggle=app.switches["街への参加"]
+  XCTAssertTrue(toggle.waitForExistence(timeout:timeout))
+  let expected=XCTNSPredicateExpectation(predicate:NSPredicate(format:"value == %@",active ? "1" : "0"),object:toggle)
+  XCTAssertEqual(XCTWaiter.wait(for:[expected],timeout:timeout),.completed)
  }
  @MainActor private func adjustMinute(_ app:XCUIApplication) {
   XCTAssertTrue(app.pickerWheels.firstMatch.waitForExistence(timeout:10))

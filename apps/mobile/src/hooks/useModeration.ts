@@ -7,6 +7,7 @@ import { streetChanges } from "../lib/streetChanges";
 type Report = {
   id: string;
   target_kind: string;
+  target_id: string;
   reason: string;
   description: string;
   evidence: { body?: string; title?: string; description?: string };
@@ -28,7 +29,10 @@ export function useModeration() {
     const seq = ++request.current;
     setLoading(true);
     try {
-      const result = await native.rpc<{ items: Report[] }>("operator_reports", {});
+      const result = await native.rpc<{ items: Report[] }>(
+        "operator_reports",
+        {},
+      );
       if (gen !== generation.current || seq !== request.current) return;
       setItems(result.items);
       setError("");
@@ -74,7 +78,9 @@ export function useModeration() {
       // A lost response may still mean the operation committed.
       await load();
       if (gen === generation.current)
-        setError("操作結果を確認できませんでした。最新の一覧を確認してください。");
+        setError(
+          "操作結果を確認できませんでした。最新の一覧を確認してください。",
+        );
     } finally {
       writing.current = false;
       setBusy(false);

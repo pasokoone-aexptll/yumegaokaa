@@ -132,9 +132,6 @@ export default function Street() {
             trackColor={{ true: "#28c967" }}
           />
         </View>
-        {localEntry && (
-          <Text style={styles.note}>開発用：NFC読取のみボタンで代用</Text>
-        )}
         <View style={styles.people}>
           <Text style={styles.peopleText}>
             ✦{" "}
@@ -143,20 +140,22 @@ export default function Street() {
               : "街の様子を確認中…"}
           </Text>
         </View>
-        <View style={styles.status}>
-          <Text>{state.status}</Text>
-          {state.visit.can_update === false &&
-            state.visit.state === "active" && (
-              <Pressable
-                accessibilityRole="button"
-                onPress={() => setSheet("explain")}
-              >
-                <Text style={styles.link}>
-                  {localEntry ? "開発用の入街を開始" : "この端末でNFCを読む"}
-                </Text>
-              </Pressable>
-            )}
-        </View>
+        {!["未参加", "気配を観測中"].includes(state.status) && (
+          <View style={styles.status}>
+            <Text>{state.status}</Text>
+            {state.visit.can_update === false &&
+              state.visit.state === "active" && (
+                <Pressable
+                  accessibilityRole="button"
+                  onPress={() => setSheet("explain")}
+                >
+                  <Text style={styles.link}>
+                    {localEntry ? "開発用の入街を開始" : "この端末でNFCを読む"}
+                  </Text>
+                </Pressable>
+              )}
+          </View>
+        )}
         <View style={{ alignSelf: "flex-end", gap: 12 }}>
           <Pressable
             accessibilityRole="button"

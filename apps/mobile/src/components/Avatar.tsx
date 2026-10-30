@@ -1,6 +1,7 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Image, Text, View } from "react-native";
 import { native, key, url } from "../lib/native";
+
 export function Avatar({
   path,
   version,
@@ -14,37 +15,53 @@ export function Avatar({
   size?: number;
   bucket?: "avatars" | "street-icons";
 }) {
-  const [token, setToken] = useState("");
+  const identity = JSON.stringify([bucket, path, version]);
+  const [image, setImage] = useState({ identity: "", token: "", attempt: 0 });
+  const [failed, setFailed] = useState("");
+  const generation = useRef(0);
+  const retried = useRef(false);
+  const currentIdentity = useRef(identity);
   useEffect(() => {
-    let live = true;
-    void native
-      .realtimeToken()
-      .then((t) => {
-        if (live) setToken(t);
-      })
-      .catch(() => {});
+    const lifecycle = generation;
+    const current = ++lifecycle.current;
+    currentIdentity.current = identity;
+    retried.current = false;
+    if (path) {
+      void native
+        .realtimeToken()
+        .then((token) => {
+          if (current === generation.current) {
+            setFailed("");
+            setImage({ identity, token, attempt: 0 });
+          }
+        })
+        .catch(() => {});
+    }
     return () => {
-      live = false;
+      lifecycle.current++;
+      currentIdentity.current = "";
     };
-  }, [path, version]);
+  }, [identity, path]);
+
+  async function retry() {
+    if (currentIdentity.current !== identity) return;
+    if (retried.current) {
+      setFailed(identity);
+      return;
+    }
+    retried.current = true;
+    const current = generation.current;
+    try {
+      const token = await native.realtimeToken();
+      if (current === generation.current)
+        setImage({ identity, token, attempt: 1 });
+    } catch {
+      if (current === generation.current) setFailed(identity);
+    }
+  }
+
   const style = { width: size, height: size, borderRadius: size / 2 };
-  return path && token ? (
-    <Image
-      style={style}
-      source={{
-        uri:
-          url +
-          "/storage/v1/object/authenticated/" +
-          bucket +
-          "/" +
-          path +
-          "?v=" +
-          encodeURIComponent(version ?? ""),
-        headers: { apikey: key, Authorization: "Bearer " + token },
-        cache: "reload",
-      }}
-    />
-  ) : (
+  return (
     <View
       style={[
         style,
@@ -52,10 +69,33 @@ export function Avatar({
           alignItems: "center",
           justifyContent: "center",
           backgroundColor: "#deeff8",
+          overflow: "hidden",
         },
       ]}
     >
       <Text>{Array.from(name)[0] ?? "●"}</Text>
+      {path &&
+        image.identity === identity &&
+        image.token &&
+        failed !== identity && (
+          <Image
+            key={identity + ":" + image.attempt}
+            style={[style, { position: "absolute" }]}
+            onError={() => void retry()}
+            source={{
+              uri:
+                url +
+                "/storage/v1/object/authenticated/" +
+                bucket +
+                "/" +
+                path +
+                "?v=" +
+                encodeURIComponent(version ?? ""),
+              headers: { apikey: key, Authorization: "Bearer " + image.token },
+              cache: "reload",
+            }}
+          />
+        )}
     </View>
   );
 }

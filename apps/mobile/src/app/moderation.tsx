@@ -1,3 +1,4 @@
+import { router } from "expo-router";
 import { Alert, Text, View } from "react-native";
 import { Action, Empty, Page, ui } from "../components/Page";
 import { useModeration } from "../hooks/useModeration";
@@ -19,12 +20,44 @@ export default function Moderation() {
       {items.map((r) => (
         <View key={r.id} style={ui.card}>
           <Text>
-            {r.target_kind} / {r.reason}
+            {(
+              {
+                message: "投稿",
+                recruitment: "募集",
+                event: "オフ会",
+              } as Record<string, string>
+            )[r.target_kind] ?? r.target_kind}{" "}
+            /{" "}
+            {(
+              {
+                spam: "スパム",
+                harassment: "迷惑行為",
+                other: "その他",
+              } as Record<string, string>
+            )[r.reason] ?? r.reason}
             {r.review_due ? " · 整理対象" : ""}
           </Text>
           <Text>{r.description}</Text>
           <Text>{r.evidence.title}</Text>
           <Text>{r.evidence.body ?? r.evidence.description}</Text>
+          {(r.target_kind === "event" || r.target_kind === "recruitment") && (
+            <Action
+              title={
+                r.target_kind === "event"
+                  ? "オフ会の詳細を確認"
+                  : "募集の詳細を確認"
+              }
+              onPress={() =>
+                router.push({
+                  pathname:
+                    r.target_kind === "event"
+                      ? "/events/[id]"
+                      : "/recruitments/[id]",
+                  params: { id: r.target_id },
+                })
+              }
+            />
+          )}
           {r.target_kind === "message" && (
             <Action
               title="元の投稿を削除"
