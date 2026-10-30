@@ -17,16 +17,19 @@ export default function Invitations() {
   const [pending, setPending] = useState(false);
   const [items, setItems] = useState<Invite[]>([]),
     [code, setCode] = useState(""),
-    [issued, setIssued] = useState(""),
+    [issued, setIssued] = useState<{ id: string; code: string } | null>(null),
     [status, setStatus] = useState(""),
     [busy, setBusy] = useState(false);
   const refresh = useCallback(async () => {
     if (receiving) return;
     try {
       setPending(!!(await pendingCommand("invite_create")));
-      setItems(
-        (await native.rpc<{ items: Invite[] }>("invite_list", {})).items,
-      );
+      const result = await native.rpc<{ items: Invite[] }>("invite_list", {});
+      setItems(result.items);
+      setIssued((current) => {
+        const item = result.items.find((invite) => invite.id === current?.id);
+        return item && (item.used || item.revoked) ? null : current;
+      });
     } catch {
       setStatus("招待一覧を取得できませんでした。");
     }
@@ -41,9 +44,13 @@ export default function Invitations() {
     try {
       const r =
         op === "invite_create"
-          ? await submitCommand<{ code?: string }>("invite_create", {})
-          : await native.rpc<{ code?: string }>(op, p);
-      if (r.code) setIssued(r.code);
+          ? await submitCommand<{ id?: string; code?: string }>(
+              "invite_create",
+              {},
+            )
+          : await native.rpc<{ id?: string; code?: string }>(op, p);
+      if (r.code && r.id) setIssued({ id: r.id, code: r.code });
+      if (op === "invite_revoke" && issued?.id === p.id) setIssued(null);
       if (op === "invite_accept") access.retry();
       setStatus(
         op === "invite_accept" ? "招待を受け付けました。" : "更新しました。",
@@ -53,6 +60,7 @@ export default function Invitations() {
       if (op === "invite_create") {
         setPending(!!(await pendingCommand("invite_create").catch(() => null)));
       }
+      if (op === "invite_revoke") await refresh();
       setStatus(
         String(e).includes("rate_limited")
           ? "招待は7日間に5件までです。"
@@ -76,12 +84,12 @@ export default function Invitations() {
           />
           {!!issued && (
             <View style={ui.card}>
-              <Text selectable>{issued}</Text>
+              <Text selectable>{issued.code}</Text>
               <Action
                 title="コードを共有"
                 onPress={() =>
                   void Share.share({
-                    message: `夢ヶ丘の招待コード：${issued}（7日間・1回限り）`,
+                    message: `夢ヶ丘の招待コード：${issued.code}（7日間・1回限り）`,
                   })
                 }
               />

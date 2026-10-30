@@ -338,3 +338,10 @@ scripts/avatar-smoke.mjs成功：所有者アップロード、プロフィー�
 - Expo58公式資料と導入済み型を確認：https://docs.expo.dev/versions/v58.0.0/sdk/imagepicker/ 、https://docs.expo.dev/versions/v58.0.0/sdk/imagemanipulator/ 。標準編集の実写真結果は帰宅後に確認する。
 - インストール済みReleaseは9f927fe基点で今回の画像修正を含まない。次のまとめたReleaseへ収録。サーバー変更なし、既存Storage/DB試験は再実行せず。pushなし。
 - DONE5/IMPLEMENTED7/IN_PROGRESS18/TODO0/BLOCKED3、完了5/33=15.2%、実装到達12/33=36.4%を維持。次：残る画面統合とUI/コピー整理、帰宅後は最新版で画像保存を再確認。
+
+## 実装チェックポイント50：招待の発行・停止・同時受領
+- T003/T029/R03/R16：停止した招待の共有ボタンが残る問題を修正。発行結果をIDとコードで保持し、停止成功時に消去。一覧再取得で使用済み/停止済みになった場合も消去。停止応答不明時は一覧を再取得する。
+- invitation-concurrency.test.mjs成功。別DB接続の2要求が同じ招待行ロックを実際に待ったことを確認後に解放し、受領成功1人・拒否1人・新規会員1人を確認。発行5件成功、6件目拒否。独立fixtureは清掃済み。
+- testInviteIssueRevoke成功13.451秒：Release画面で発行→コード共有導線→停止→共有導線消去/停止状態。実DB最新fixtureは7日期限・未使用・停止済み。初回試験は非同期一覧の停止件数比較が不適切で失敗し、状態表示＋DB照合へ修正。本体再ビルドの反復なし。
+- 画像修正と今回の招待修正をまとめたシミュレータRelease生成成功。/tmp/yumegaoka-image-invite-build.log。UI結果 /tmp/yumegaoka-invite-release-status.xcresult と同名.log。typecheck/Lint、git diff --check成功。実機再転送・画像の再確認は帰宅後。pushなし。
+- T003をIMPLEMENTEDへ。DONE5/IMPLEMENTED8/IN_PROGRESS17/TODO0/BLOCKED3。完了5/33=15.2%、実装到達13/33=39.4%。現行pool登録を含む初回一巡を未検証のままDONEにはしない。次：残る画面統合とUI整理、帰宅後の実機写真確認。

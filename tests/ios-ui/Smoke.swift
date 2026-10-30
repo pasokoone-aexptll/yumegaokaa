@@ -3,6 +3,21 @@ import CoreLocation
 import CryptoKit
 
 final class Smoke: XCTestCase {
+ @MainActor func testInviteIssueRevoke() throws {
+  continueAfterFailure=false
+  let app=XCUIApplication(bundleIdentifier:"jp.yumegaoka.development")
+  app.launch()
+  XCTAssertTrue(app.switches["街への参加"].waitForExistence(timeout:30))
+  app.descendants(matching:.any).matching(identifier:"Settings").firstMatch.tap()
+  tap(app,"友人を招待")
+  XCTAssertTrue(app.buttons["招待を発行"].waitForExistence(timeout:15))
+  tap(app,"招待を発行")
+  XCTAssertTrue(app.buttons["コードを共有"].waitForExistence(timeout:20))
+  app.buttons.matching(identifier:"この招待を停止").firstMatch.tap()
+  XCTAssertTrue(XCTWaiter.wait(for:[XCTNSPredicateExpectation(predicate:NSPredicate(format:"exists == false"),object:app.buttons["コードを共有"])],timeout:15) == .completed)
+  XCTAssertTrue(app.staticTexts.matching(identifier:"停止済み").firstMatch.waitForExistence(timeout:10))
+  attach(app,"invitation-revoked")
+ }
  @MainActor func testOperatorResolvePeerReport() throws {
   let app=try operatorApp()
   tap(app,"‹ 戻る")
