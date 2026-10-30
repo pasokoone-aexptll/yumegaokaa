@@ -726,3 +726,8 @@ R11/R18。sticker-flowに同一点3登録の退化拒否と競合公開拒否を
 - T030-03/R17：cp124の代替文字は検証アカウント画像未設定（pathなし/Storageなし）が原因。scripts/test-image-cache-ui.mjsで専用アカウントへ一時JPEGを設定、Release124のプロフィールに画像が描画されたことを目視確認。/tmp/yumegaoka-image125.png、UI結果/tmp/yumegaoka-image125.xcresult成功。
 - 表示後のOS HTTPキャッシュにStorage記録0件。fixtureのプロフィール値を復元、専用Storage画像と生成JPEGをfinally削除。cp123の一時コピー回収と合わせT030-03完了。実機への再インストールはT032に残す。
 - 残12→11、新規必須0。推測9.5–20.5→8.5–18.5h＋待ち不明。T030はQ08未決のためIN_PROGRESS維持。DONE23/33、実装25/33、統合24/33、実機11/33、BLOCKED3/33。新規製品ビルドなし。次T024-02。
+
+## チェックポイント126：利用停止・解除の画面統合
+- T024-02/R16/R18：専用参加者と有効滞在を実DBへ作成し、MFA運営画面から理由入力→利用停止→解除を操作。testOperatorStopRestore成功、/tmp/yumegaoka-stop126.xcresult。解除後active=true、既存滞在end_reason=bannedを維持、member_stop/member_restoreの理由付き監査2件をDB照合。
+- scripts/test-member-stop-ui.mjsのfinallyでfixtureと監査を削除、シミュレータ運営資格を解除。既存Release124利用、製品再ビルド/実機操作なし。投稿制限・解除のAPIはmember-operations既存証拠、画面での確定操作は次に確認。Q07/Q09は未決のまま。
+- 残11→11、新規必須0、推測8.5–18.5h＋待ち不明は据置き。DONE23/33、実装25/33、統合24/33、実機11/33、BLOCKED3/33。T024はIMPLEMENTED維持。

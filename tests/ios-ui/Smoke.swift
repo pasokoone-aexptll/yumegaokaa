@@ -202,6 +202,22 @@ final class Smoke: XCTestCase {
   XCTAssertTrue(app.buttons["招待発行を停止"].waitForExistence(timeout:15))
   attach(app,"operator-invite-policy-restored")
  }
+ @MainActor func testOperatorStopRestore() throws {
+  let app=try operatorApp()
+  tap(app,"‹ 戻る");tap(app,"参加者・招待枠・利用停止")
+  let peer=app.buttons.matching(NSPredicate(format:"label BEGINSWITH %@","UI停止対象 · 利用中")).firstMatch
+  XCTAssertTrue(peer.waitForExistence(timeout:20));peer.tap()
+  for action in ["利用停止", "利用停止を解除"] {
+   let reason=app.textFields["操作理由（必須）"]
+   for _ in 0..<6 {if reason.isHittable {break};app.swipeDown()}
+   reason.tap();reason.typeText("UI stop restore verification");reason.typeText("\n")
+   for _ in 0..<6 {if app.buttons[action].isHittable {break};app.swipeUp()}
+   tap(app,action);tap(app,"確定")
+   let next=action == "利用停止" ? "利用停止を解除" : "利用停止"
+   XCTAssertTrue(app.buttons[next].waitForExistence(timeout:15))
+  }
+  attach(app,"operator-stop-restored")
+ }
  @MainActor func testOperatorMemberDateSelection() throws {
   let app=try operatorApp()
   tap(app,"‹ 戻る")
