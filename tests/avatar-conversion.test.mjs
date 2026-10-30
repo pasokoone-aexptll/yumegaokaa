@@ -40,6 +40,7 @@ function harness({
   }
   const exports = {};
   new Function("require", "exports", source)((id) => {
+    if (id === "./jpegMetadata") return { stripJpegMetadata: (bytes) => bytes };
     if (id === "expo-image-picker")
       return {
         launchImageLibraryAsync: async (o) => {

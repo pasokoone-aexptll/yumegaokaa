@@ -1,3 +1,4 @@
+import { stripJpegMetadata } from "./jpegMetadata";
 import * as ImagePicker from "expo-image-picker";
 import { ImageManipulator, SaveFormat } from "expo-image-manipulator";
 import { File } from "expo-file-system";
@@ -92,6 +93,7 @@ export type StreetIconState = {
   next_shuffle_at: string;
 };
 async function uploadImage(bucket: string, path: string, file: File) {
+  const body = stripJpegMetadata(await file.arrayBuffer());
   const token = await native.realtimeToken();
   const response = await fetch(
     url + "/storage/v1/object/" + bucket + "/" + path,
@@ -103,7 +105,7 @@ async function uploadImage(bucket: string, path: string, file: File) {
         "Content-Type": "image/jpeg",
         "x-upsert": "true",
       },
-      body: await file.arrayBuffer(),
+      body,
     },
   ).catch(() => {
     throw Error("image_upload_failed");

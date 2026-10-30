@@ -366,3 +366,6 @@ T024/T025、R03/R16/R18。useOperatorDashboardへ分離、複合カーソルと�
 
 ### チェックポイント55：Release運営フロー
 T024/T025/T031、R16/R18/R19。dd23225基点のReleaseビルド成功。testOperatorMemberDateSelectionが37.594秒で成功し、実TOTP→運営→参加者管理の日時キャンセル/確定→運営再取得を確認。結果 /tmp/yumegaoka-operator-member54.xcresult。招待ページングは前回DB検証のみ、制限API送信と実機写真保存は今回の対象外。一時運営資格/MFAは試験後解除済み。
+
+### チェックポイント56：ネイティブ写真保存
+既存Releaseで標準写真選択/切り抜き確定→実Storage保存のUI試験成功15.500秒。最新DB公開行・39713bytes/512×512JPEGを照合。元画像は同梱icon.png、個人写真は未使用。実出力にEXIFが残ったため送信前stripJpegMetadataを追加。実画像に適用した39513bytesのJPEGをsipsで読取、EXIF署名なし。画像関連6試験と型/Lint成功。除去追加後の製品Release保存は未検証。実機・大画像・任意領域への切り抜き移動も未確認。T004/T031、R03/R10/R17/R19。

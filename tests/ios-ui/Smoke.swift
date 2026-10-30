@@ -3,6 +3,25 @@ import CoreLocation
 import CryptoKit
 
 final class Smoke: XCTestCase {
+ @MainActor func testStreetIconPhotoSelection() throws {
+  continueAfterFailure=false
+  let app=XCUIApplication(bundleIdentifier:"jp.yumegaoka.development")
+  app.launch()
+  XCTAssertTrue(app.switches["街への参加"].waitForExistence(timeout:30))
+  app.descendants(matching:.any).matching(identifier:"Settings").firstMatch.tap()
+  tap(app,"街のアイコン")
+  tap(app,"提供画像を差し替える")
+  let photo=app.images.matching(identifier:"PXGGridLayout-Info").firstMatch
+  XCTAssertTrue(photo.waitForExistence(timeout:20))
+  photo.tap()
+  XCTAssertTrue(app.buttons["Done"].waitForExistence(timeout:15))
+  attach(app,"photo-crop")
+  app.buttons["Done"].tap()
+  let replace=app.buttons["提供画像を差し替える"]
+  XCTAssertTrue(XCTWaiter.wait(for:[XCTNSPredicateExpectation(predicate:NSPredicate(format:"exists == true AND enabled == true"),object:replace)],timeout:30) == .completed)
+  XCTAssertFalse(app.staticTexts.matching(NSPredicate(format:"label CONTAINS %@","できませんでした")).firstMatch.exists)
+  attach(app,"photo-saved")
+ }
  @MainActor func testInviteIssueRevoke() throws {
   continueAfterFailure=false
   let app=XCUIApplication(bundleIdentifier:"jp.yumegaoka.development")

@@ -814,3 +814,10 @@ T003/T004/T007/T030：チャット画像との別設定、本人と地図で同�
 - testOperatorMemberDateSelection成功37.594秒。専用アカウントで実TOTP登録→追加認証→ステッカー画面→運営へ戻る→参加者管理→制限終了日時のキャンセル（未設定維持）→選択確定→運営一覧復帰→再取得を確認。終了日時のAPI送信や招待100件超の画面スクロールはこの試験に含まない。結果 /tmp/yumegaoka-operator-member54.xcresult、同名.log。
 - 試験後に専用ローカルアカウントの一時運営資格・TOTPを解除。実機転送/写真保存の手動確認は未実施。完了件数は維持、DONE5/IMPLEMENTED9/IN_PROGRESS16/TODO0/BLOCKED3。
 - 次：画像処理のネイティブ側の確認、残る主要画面フロー。iPhoneは旧版のままであり、最新版インストールと写真保存は帰宅後。pushなし。
+
+## 実装チェックポイント56：実写真選択・切り抜き・保存とメタデータ除去
+- T004/T031/R03/R10/R17/R19：既存Releaseを再利用し、シミュレータ写真ライブラリへ同梱icon.pngを追加。testStreetIconPhotoSelectionで標準写真選択→切り抜きChoose→保存を確認（15.500秒）。実DBの新しい公開画像とStorageを照合し、JPEG512×512、39713bytesを確認。結果 /tmp/yumegaoka-photo-save56.xcresult。
+- 初期のUI構造調査は保存確認ではない。写真UIの読み込み前座標タップは進まず、PXGGridLayout-Infoの出現待ちへ修正。途中の長い実行時間はMac停止を含むため性能根拠に使わない。以後は試験コマンド内だけcaffeinateを使用。
+- 保存した実画像にEXIF領域が残ることを発見。再エンコードだけで除去済みと扱わず、送信直前にJPEGのAPP1（EXIF/XMP）・APP13・コメントを除くstripJpegMetadataを接続。ICCと圧縮画像データは保持し、再圧縮しない。実出力への適用で39513bytes、EXIF署名なし、512×512JPEGの読取成功。
+- 画像変換4件＋メタデータ除去2件、typecheck/Lint成功。変換試験はstub、メタデータ試験はバイナリ処理。除去追加後のRelease再ビルド・実機転送はまだ実施していない。上記UI保存成功は除去追加前の版。iPhone実写真・大きな写真・切り抜き位置変更の確認は残す。
+- DONE5/IMPLEMENTED9/IN_PROGRESS16/TODO0/BLOCKED3維持。次：更新した画像処理をまとめたReleaseへ収録、残る画面統合。pushなし。
