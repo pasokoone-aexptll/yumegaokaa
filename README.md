@@ -16,7 +16,7 @@ npm run setup:local
 npm run mobile
 ```
 
-別のターミナルで `npm run db:maintenance` を起動し、開発中の期限清掃・退会後のAuth/画像清掃を継続する。単発確認は `npm run db:maintenance:once`。ローカルAPIだけに接続し、特権キーを端末設定へ渡さない。Macやプロセスを止めた後は再起動が必要。
+別のターミナルで `npm run db:maintenance` を起動し、開発中の期限清掃・退会後のAuth/画像清掃・取り下げた街pool画像の物理清掃を継続する。単発確認は `npm run db:maintenance:once`。ローカルAPIだけに接続し、特権キーを端末設定へ渡さない。Macやプロセスを止めた後は再起動が必要。
 
 iPhoneはMacと同じLANに接続。`apps/mobile/.env.local` は公開用キーだけを持ち、Git対象外。クラウド鍵やサービスロール鍵をアプリへ入れない。
 

@@ -20,8 +20,8 @@ async function request(path, method, body) {
     body: JSON.stringify(body),
   });
 }
-async function job(operation, payload = {}) {
-  const r = await request("/rest/v1/rpc/maintenance_jobs", "POST", {
+async function job(operation, payload = {}, endpoint = "maintenance_jobs") {
+  const r = await request("/rest/v1/rpc/" + endpoint, "POST", {
     operation,
     payload,
   });
@@ -30,6 +30,21 @@ async function job(operation, payload = {}) {
 }
 async function tick() {
   await job("cleanup");
+  let icons = 0;
+  for (let i = 0; i < 100; i++) {
+    const item = await job("claim", {}, "icon_cleanup");
+    if (!item.id) break;
+    try {
+      const result = await request("/storage/v1/object/street-icons", "DELETE", { prefixes: [item.path] });
+      if (!result.ok) throw Error("icon_cleanup_failed");
+      await job("finish", { id: item.id, lease: item.lease }, "icon_cleanup");
+      icons++;
+    } catch {
+      await job("retry", { id: item.id, lease: item.lease }, "icon_cleanup");
+      console.error("取り下げた街アイコンの清掃を再試行待ちにしました。");
+    }
+  }
+  console.log("取り下げた街アイコン清掃:", icons, "件");
   let count = 0;
   for (let i = 0; i < 100; i++) {
     const item = await job("claim");
