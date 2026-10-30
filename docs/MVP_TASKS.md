@@ -21,13 +21,13 @@
 | --- | ---: | --- |
 | DONE | 5 | 下記の限定された完了条件を満たし、既存の必要な検証証拠あり |
 | IMPLEMENTED | 1 | コードあり、完了条件の確認が不足 |
-| IN_PROGRESS | 10 | 一部コードのみ存在し、実装の残りあり。監査中は作業停止 |
-| TODO | 14 | 当該機能の実装未着手。先行タスク未完だけではBLOCKEDにしない |
+| IN_PROGRESS | 19 | 一部コードと検証あり。残る実装・接続を継続中 |
+| TODO | 5 | 当該機能の実装未着手。先行タスク未完だけではBLOCKEDにしない |
 | BLOCKED | 3 | 実NFC/実Push/公開環境という外部依存で完了まで進めない |
 
 **実装到達率：(DONE + IMPLEMENTED) / 全タスク = 6 / 33（18.2%）**。IN_PROGRESSの割合は推測加算しない。残りは28タスク。件数は工数・日数の割合ではない。基盤、UI、イベント、公開準備で粒度が異なり「残り84.8%の時間」と解釈しない。納期はまだ推定しない。
 
-現在のフェーズ：**中核フローの部分実装・部分検証を終え、MVP全体の監査と実装計画を作成した段階。次は全画面の骨格と機能接続へ進む。**
+現在のフェーズ：**MVP全体の本体実装・統合中。Home/Map/Settings、募集・イベント・チャット・通報・運営を実ローカルDBへ接続し、残るアカウント・画像・ステッカー・配信処理を順次つなぐ段階。**
 
 ## タスク一覧
 
@@ -47,23 +47,23 @@ P0=再利用する土台/次の着手、P1=全画面と主要機能、P2=統合�
 | T010 | 背景観測・静止更新の接続 | IMPLEMENTED | P2 | T008/T009 |
 | T011 | 公開集約・気配の分割/失効計算 | DONE | P0 | T008 |
 | T012 | 入街・退出シートと権限案内 | IN_PROGRESS | P1 | T006/T009 |
-| T013 | Homeの参加予定・募集一覧 | TODO | P1 | T006/T014/T016 |
-| T014 | 募集ピン一式 | TODO | P1 | T006/T008/T029 |
+| T013 | Homeの参加予定・募集一覧 | IN_PROGRESS | P1 | T006/T014/T016 |
+| T014 | 募集ピン一式 | IN_PROGRESS | P1 | T006/T008/T029 |
 | T015 | イベント作成・地点選択 | IN_PROGRESS | P1 | T006/T029 |
-| T016 | イベント詳細・参加/取消 | TODO | P1 | T015 |
-| T017 | 主催者編集・中止・参加者一覧 | TODO | P1 | T016 |
-| T018 | アプリ内重要通知・配信待ち管理 | TODO | P1 | T016/T017/T029 |
+| T016 | イベント詳細・参加/取消 | IN_PROGRESS | P1 | T015 |
+| T017 | 主催者編集・中止・参加者一覧 | IN_PROGRESS | P1 | T016 |
+| T018 | アプリ内重要通知・配信待ち管理 | IN_PROGRESS | P1 | T016/T017/T029 |
 | T019 | 実プッシュ配信 | BLOCKED | P3 | T018 |
 | T020 | チャット送受信・履歴・拡大UI | IN_PROGRESS | P1 | T004/T006/T029 |
 | T021 | 名前付き入街ログのチャット接続 | IN_PROGRESS | P1 | T004/T008/T020 |
 | T022 | 投稿削除・ブロック | IN_PROGRESS | P1 | T014/T020 |
-| T023 | 通報受付・証拠管理 | TODO | P1 | T014/T015/T020/T029 |
-| T024 | 運営認証・通報対応・制限/解除 | TODO | P1 | T023/T029 |
-| T025 | 運営の招待監督 | TODO | P2 | T003/T024 |
+| T023 | 通報受付・証拠管理 | IN_PROGRESS | P1 | T014/T015/T020/T029 |
+| T024 | 運営認証・通報対応・制限/解除 | IN_PROGRESS | P1 | T023/T029 |
+| T025 | 運営の招待監督 | IN_PROGRESS | P2 | T003/T024 |
 | T026 | ステッカー準備・登録ワークフロー | TODO | P1 | T006/T024/T029 |
 | T027 | 街範囲公開・移設/交換/撤去 | TODO | P1 | T026/T008 |
 | T028 | 実NFC読取・書込・照合の接続 | BLOCKED | P3 | T012/T026/T027 |
-| T029 | 共通コマンド・上限・認可境界 | TODO | P1 | T001 |
+| T029 | 共通コマンド・上限・認可境界 | IN_PROGRESS | P1 | T001 |
 | T030 | 全データの期限清掃・ログ保護 | IN_PROGRESS | P2 | T003/T004/T014/T018/T020/T023/T026 |
 | T031 | 全画面・主要フローのローカル統合 | TODO | P2 | T003/T004/T005/T007/T012/T013/T014/T015/T016/T017/T018/T020/T021/T022/T023/T024/T025/T026/T027/T029/T030 |
 | T032 | 本体iPhone・複数閲覧・性能確認 | TODO | P2 | T010/T031 |
@@ -171,7 +171,7 @@ P0=再利用する土台/次の着手、P1=全画面と主要機能、P2=統合�
 
 ### T013 Homeの参加予定・募集一覧
 
-- **状態・優先・要件**：TODO / P1 / R12/R13/R19。依存：T006/T014/T016。
+- **状態・優先・要件**：IN_PROGRESS / P1 / R12/R13/R19。依存：T006/T014/T016。
 - **実装対象**：Home・一覧取得・詳細への遷移。
 - **完了条件**：参加予定/募集中一覧、詳細/Mapへ移動。終了/中止/取消を除外し、過去参加履歴を作らない。
 - **検証方法**：ローカルDBの作成/参加/終了が一覧へ反映、空/失敗表示。
@@ -179,7 +179,7 @@ P0=再利用する土台/次の着手、P1=全画面と主要機能、P2=統合�
 
 ### T014 募集ピン一式
 
-- **状態・優先・要件**：TODO / P1 / R06/R12/R16。依存：T006/T008/T029。
+- **状態・優先・要件**：IN_PROGRESS / P1 / R06/R12/R16。依存：T006/T008/T029。
 - **実装対象**：作成/詳細/編集/終了シート・Map・募集API/DB。
 - **完了条件**：街内有効滞在で単発現在地を確認し同時1件。題名編集、20分/手動/退出終了、位置固定、再作成上限、旧要求で復活しない。
 - **検証方法**：UI作成→編集→終了、二重作成/退出競合/期限/越権DB試験。
@@ -195,7 +195,7 @@ P0=再利用する土台/次の着手、P1=全画面と主要機能、P2=統合�
 
 ### T016 イベント詳細・参加/取消
 
-- **状態・優先・要件**：TODO / P1 / R13/R14/R19。依存：T015。
+- **状態・優先・要件**：IN_PROGRESS / P1 / R13/R14/R19。依存：T015。
 - **実装対象**：詳細シート・registrations・参加API。
 - **完了条件**：詳細から参加/取消しHomeへ反映。開催中の空席可、終了/中止不可。最後の席で超過せず古い参加で取消を復活させない。一般利用者には他人の名簿を返さない。
 - **検証方法**：2利用者の最後の1席、逆順/応答紛失、名簿越権、UI反映。
@@ -203,7 +203,7 @@ P0=再利用する土台/次の着手、P1=全画面と主要機能、P2=統合�
 
 ### T017 主催者編集・中止・参加者一覧
 
-- **状態・優先・要件**：TODO / P1 / R13/R14。依存：T016。
+- **状態・優先・要件**：IN_PROGRESS / P1 / R13/R14。依存：T016。
 - **実装対象**：主催者画面・編集/中止/名簿API。
 - **完了条件**：本人が編集/中止/名簿確認。定員を参加数未満にしない。終了/中止から再開不可。個別除名は作らず、一般利用者の直呼び拒否。
 - **検証方法**：主催者/一般/運営で権限確認、編集競合、中止と参加競合。
@@ -211,7 +211,7 @@ P0=再利用する土台/次の着手、P1=全画面と主要機能、P2=統合�
 
 ### T018 アプリ内重要通知・配信待ち管理
 
-- **状態・優先・要件**：TODO / P1 / R13/R14/R17。依存：T016/T017/T029。
+- **状態・優先・要件**：IN_PROGRESS / P1 / R13/R14/R17。依存：T016/T017/T029。
 - **実装対象**：通知一覧・outbox・配信adapter。
 - **完了条件**：日時/場所変更と中止をアプリ内通知。Push拒否でも確認可能。変更とoutboxを原子的確定し、取消/削除後に宛先復活なし。外部Pushだけfake可。
 - **検証方法**：DB変更→通知画面、重複/古い版/取消後再試行、24h削除。
@@ -251,7 +251,7 @@ P0=再利用する土台/次の着手、P1=全画面と主要機能、P2=統合�
 
 ### T023 通報受付・証拠管理
 
-- **状態・優先・要件**：TODO / P1 / R15/R17/R18。依存：T014/T015/T020/T029。
+- **状態・優先・要件**：IN_PROGRESS / P1 / R15/R17/R18。依存：T014/T015/T020/T029。
 - **実装対象**：通報シート・reports・限定証拠保存。
 - **完了条件**：投稿/募集/イベントから理由付き通報。通報者非公開、重複制限、削除済み対象も適切受付、証拠は運営のみ。
 - **検証方法**：通報→受付→運営参照、一般利用者証拠取得拒否、削除競合。
@@ -259,7 +259,7 @@ P0=再利用する土台/次の着手、P1=全画面と主要機能、P2=統合�
 
 ### T024 運営認証・通報対応・制限/解除
 
-- **状態・優先・要件**：TODO / P1 / R16/R18。依存：T023/T029。
+- **状態・優先・要件**：IN_PROGRESS / P1 / R16/R18。依存：T023/T029。
 - **実装対象**：運営画面・admin権限・制限API・監査。
 - **完了条件**：運営だけ対応/削除/投稿制限/利用停止/解除。理由/90日監査。投稿制限で滞在を消さず、利用停止では終了、解除で復活なし。Q09認証/Q07波及に従う。
 - **検証方法**：一般ユーザーAPI直呼び、停止と更新、既存接続と取得、操作監査。
@@ -267,7 +267,7 @@ P0=再利用する土台/次の着手、P1=全画面と主要機能、P2=統合�
 
 ### T025 運営の招待監督
 
-- **状態・優先・要件**：TODO / P2 / R03/R16/R18。依存：T003/T024。
+- **状態・優先・要件**：IN_PROGRESS / P2 / R03/R16/R18。依存：T003/T024。
 - **実装対象**：招待関係・発行/使用一覧・追加/無効化UI/API。
 - **完了条件**：発行者/使用状況を運営が確認し無効化・枠追加/停止。有効利用者の招待関係を監督できる。
 - **検証方法**：運営/参加者の権限、失効と消費競合、一覧反映。
@@ -299,7 +299,7 @@ P0=再利用する土台/次の着手、P1=全画面と主要機能、P2=統合�
 
 ### T029 共通コマンド・上限・認可境界
 
-- **状態・優先・要件**：TODO / P1 / R03/R16/R18。依存：T001。
+- **状態・優先・要件**：IN_PROGRESS / P1 / R03/R16/R18。依存：T001。
 - **実装対象**：各APIの共通guard・頻度/接続枠・受付記録。
 - **完了条件**：要件8章の文字/投稿/取得/招待/ピン/接続上限をサーバーで強制。新規作成のD02期限を決定し、重複記録削除後の再送で再生成しない。
 - **検証方法**：上限境界と並行要求、資格停止、他人ID/権限偽装、再送。
@@ -396,3 +396,35 @@ Event location selection now opens MapLibre and returns a coordinate while retai
 Chat read/delete/block SQL supabase/drafts/202610300003_chat_read.sql is a DRAFT outside automatic migrations, not applied: current-profile presentation awaits pending user choice. Blocks UI connected to forthcoming RPC. Chat send and command receipts not yet implemented. Latest TypeScript passed. Next: await product answers while continuing approved UI/session/entry work; then apply chat migration and connect posting/receipt/pins flows. Do not label draft endpoints or unbuilt native APIs operational on device.
 
 Checkpoint 3: Entry sheet now has a DB-confirmed success state; Page routes have a back action. Map recenter uses isolated one-shot Core Location, not the presence manager. Native change remains unbuilt. Migration 202610300004 fixes recruitment cleanup against its own expiry/end, not only the parent visit end; applied locally, targeted retention verification pending. Chat draft kept OUTSIDE migrations while profile-display decision is pending. No further DONE changes.
+
+### Checkpoint 4 — approved decisions and connected feature flows
+
+M01/M02 approved by user: current profile on past messages; capacity default20/range1..100; event coordinates inside street, while running only end time editable within24h; initial Map. Common server receipt10min, minimal result until acceptance deadline+24h, existing entry2min unchanged. Chat SQL moved from drafts into migrations and applied.
+
+Current: DONE5 / IMPLEMENTED1 / IN_PROGRESS16 / TODO8 / BLOCKED3. Completion5/33(15.2%), implementation6/33(18.2%). T013/T014/T016/T017/T018/T029 started; no unverified whole-feature task marked DONE.
+
+Implemented connections: Map chat→profile-backed history/send/delete/block; persistent SecureStore request journal→10min receipt→idempotent command. Event create→Map/Home→detail→join/cancel→host roster/end-time edit/cancel→in-app notifications/outbox. Recruitment create/get/list/edit/end API and UI, one-shot coordinate confirmation, Map/Home markers. New migrations005..008 applied locally. Feature cleanup now includes messages/receipts/events/notifications. Push delivery is not implemented.
+
+Verification: simulator native build succeeded once after one-shot location addition. Navigation-only UI initially failed because the test assumed a native TabBar; fixed accessibility selector, rerun passed43.8s. Verified Home/Map/Settings, creation→location→draft retained, settings routes. No physical iPhone verification this checkpoint. Profile/invite/retention DB flows passed. Chat integrated DB flow passed (profile→send→other reader→delete→replay→block→expiry). Event integrated DB flow passed (create→join→Home→cancel/replay→important-change notification→roster authorization→cancel); initial PostGIS search_path error was corrected by explicit projection strings. Recruitment integration and newer whole UI flow remain to verify. Latest typecheck rerun after missing recruitment state declarations; inspect result before claiming pass. Native was not rebuilt for JS/SQL changes.
+
+Remaining specifics: complete finite invitation issuance retries; profile image processing; chat live delivery/paging reconciliation/reporting; expired recruitment draft recovery; complete host edit form; server notification worker; operator moderation/sticker flows; session/cache integration and all-device flows. Existing partial implementations are not complete features yet. Git initial commit555969d on codex/mvp-integration, local only; further feature changes not committed yet at this checkpoint.
+
+### Checkpoint 5 — recruitment integration and Git
+
+Recruitment real-DB integration passed: checkin→create→other viewer list→title edit (expiry unchanged)→exit→old request retry does not restore pin. tests/recruitment-flow.test.mjs is the evidence. Event/chat flows above passed; UI end-to-end for these new flows still pending. Navigation-only simulator test was successful, not all-feature/device success. Current totals unchanged: DONE5 / IMPLEMENTED1 / IN_PROGRESS16 / TODO8 / BLOCKED3.
+
+New commands.ts persists pending requests in SecureStore chunks, checks server completion/expiry, avoids new issuance for uncertain/deleted receipts. Recruitment UI still needs explicit discard/recovery for an uncommitted stale location (do not resend stale coordinates as fresh). Invite issuance still requires receipt/retry integration. Background real device, profile images, moderation, sticker operations, complete event edit UI and real-time chat recovery remain.
+
+Git is now initialized with baseline commit555969d on codex/mvp-integration. Secrets, local environment, generated native folders, dependencies and logs excluded; no remote/push. Continue feature-sized commits. Native currentLocation compiled in simulator build /tmp/yumegaoka-mvp-navigation-build.log; no new phone transfer yet.
+
+## 実装チェックポイント6：MFA・運営・通報・送信取消
+
+- T023/T024/T025をTODO→IN_PROGRESS。分母33、DONE5・IMPLEMENTED1・IN_PROGRESS19・TODO5・BLOCKED3。完了増分0、完成率15.2%、実装到達率18.2%。
+- M03〜M05を要件・未決一覧・運営/通報設計本文へ反映。メール例外・退会の実装はT005に残る。
+- 009_operators：一般認証と運営資格、JWT AAL2、現存セッションのAAL2・検証済みTOTPを確認。招待監督一覧・無効化と90日監査。画面admin.tsxとSwift MFA APIを追加。
+- 010_reports：投稿/募集/イベントから通報。証拠はDBの対象から取得しクライアント持込本文を信用しない。未解決重複統合、一般利用者の証拠閲覧拒否、運営削除・解決、180日/30日清掃。report.tsx/moderation.tsxに接続。
+- 011_command_cancel：送信と取消を同じ受付行ロックで直列化。確定済みなら結果を返し、未確定なら取消後の遅延要求を拒否。募集の古い現在地を取り直す導線を追加。
+- 検証：operator-access.test.mjs、report-flow.test.mjs、取消を追加したchat-flow.test.mjsが成功。型検査成功。Lintはエラー0・StreetChatのcleanup ref警告1。
+- 未確認：TOTPの実Auth通信と新版ネイティブビルド（設定は追加したが稼働Auth再起動前）、新しい運営/通報画面の実操作、全画面統合、iPhone転送。DB試験はJWT claimsを試験内設定し、実トークン発行の証明にはしない。
+- 運営残作業：投稿制限・利用停止/解除、招待枠追加/停止・ページング、ステッカー登録/範囲公開。通報は募集/イベント経路と再送/期限境界を統合時に確認する。
+- 再開：上記残機能を実装し、ネイティブ変更をまとめた時点でMFA実Auth→運営操作を一巡する。成功済み中核検証の無関係な再実行はしない。

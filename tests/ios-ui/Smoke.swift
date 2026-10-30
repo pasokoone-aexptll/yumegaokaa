@@ -13,7 +13,7 @@ final class Smoke: XCTestCase {
   let title=app.textFields["オフ会名を入力"]
   title.tap();title.typeText("Navigation check");title.typeText("\n")
   tap(app,"場所を選択")
-  XCTAssertTrue(app.staticTexts["地図をタップして開催場所を選択（背景は開発用）"].waitForExistence(timeout:10))
+  XCTAssertTrue(app.staticTexts["地図をタップして開催場所を選択"].waitForExistence(timeout:10))
   app.coordinate(withNormalizedOffset:CGVector(dx:0.5,dy:0.45)).tap()
   tap(app,"この場所にする")
   XCTAssertEqual(title.value as? String,"Navigation check")

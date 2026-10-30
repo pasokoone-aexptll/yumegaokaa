@@ -26,9 +26,12 @@ export type Snapshot = {
   }[];
 };
 export const native = requireNativeModule("PresenceNative") as {
-  currentLocation(): Promise<{longitude:number;latitude:number;accuracy:number;observed_at:number}>;
+  currentLocation(): Promise<{ longitude: number; latitude: number; accuracy: number; observed_at: number }>;
   monotonicTime(): number;
   realtimeToken(): Promise<string>;
+  mfaFactors(): Promise<{factors:{id:string;status:string;factor_type:string}[]}>;
+  mfaEnroll(): Promise<{id:string;totp:{secret:string;uri:string}}> ;
+  mfaVerify(factor:string,code:string): Promise<void>;
   configure(url: string, key: string): Promise<void>;
   session(): Promise<{ signed_in: boolean; email: string }>;
   sendOTP(email: string): Promise<void>;

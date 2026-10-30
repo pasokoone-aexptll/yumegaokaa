@@ -12,6 +12,9 @@ public class PresenceNativeModule: Module {
   }
   AsyncFunction("currentLocation") { try await ForegroundLocation.shared.read() }
   AsyncFunction("realtimeToken") { try await APIClient.shared.realtimeToken() }
+  AsyncFunction("mfaFactors") { try await APIClient.shared.mfaFactors() }
+  AsyncFunction("mfaEnroll") { try await APIClient.shared.mfaEnroll() }
+  AsyncFunction("mfaVerify") { (factor:String,code:String) in try await APIClient.shared.mfaVerify(factor:factor,code:code) }
   AsyncFunction("session") { await APIClient.shared.session() }
   AsyncFunction("sendOTP") { (email:String) in try await APIClient.shared.sendOTP(email:email) }
   AsyncFunction("verifyOTP") { (email:String,code:String) in try await APIClient.shared.verifyOTP(email:email,code:code) }

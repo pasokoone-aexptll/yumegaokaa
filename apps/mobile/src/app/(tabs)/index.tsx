@@ -1,5 +1,9 @@
+import { mapStyle } from "../../lib/mapStyle";
 import "react-native-url-polyfill/auto";
-import { router } from "expo-router";
+import { StreetChat } from "../../components/StreetChat";
+import { Recruitment } from "../../lib/recruitments";
+import { StreetEvent, countdown } from "../../lib/events";
+import { router, useLocalSearchParams } from "expo-router";
 import Constants from "expo-constants";
 import { closeMenu, setToolsButtonVisible } from "expo-dev-client";
 import { createClient } from "@supabase/supabase-js";
@@ -76,8 +80,12 @@ const friendly = (error: unknown) => {
   return "接続または参加状態を確認できませんでした。もう一度お試しください。";
 };
 export default function Street() {
-  const camera=useRef<CameraRef>(null);
-  async function recenter(){try{const p=await native.currentLocation();camera.current?.flyTo({center:[p.longitude,p.latitude],zoom:16,duration:500});}catch{setError("現在地を取得できませんでした。位置情報の許可と接続アプリの版を確認してください。");}}
+  const camera = useRef<CameraRef>(null);
+  const params = useLocalSearchParams<{ longitude?: string; latitude?: string }>();
+  const [events, setEvents] = useState<StreetEvent[]>([]);
+  const [recruitments,setRecruitments]=useState<Recruitment[]>([]);
+  useEffect(() => { const lon = Number(params.longitude), lat = Number(params.latitude); if (params.longitude && params.latitude && Number.isFinite(lon) && Number.isFinite(lat)) camera.current?.flyTo({ center: [lon, lat], zoom: 16, duration: 600 }); }, [params.longitude, params.latitude]);
+  async function recenter() { try { const p = await native.currentLocation(); camera.current?.flyTo({ center: [p.longitude, p.latitude], zoom: 16, duration: 500 }); } catch { setError("現在地を取得できませんでした。位置情報の許可と接続アプリの版を確認してください。"); } }
   const [ready, setReady] = useState(!url || !key),
     [signed, setSigned] = useState(false),
     [email, setEmail] = useState(""),
@@ -88,10 +96,10 @@ export default function Street() {
     [now, setNow] = useState(0),
     [name, setName] = useState("夢ヶ丘");
   const [error, setError] = useState(
-      !url || !key
-        ? "開発接続設定がありません。npm run setup:local を実行してください。"
-        : "",
-    ),
+    !url || !key
+      ? "開発接続設定がありません。npm run setup:local を実行してください。"
+      : "",
+  ),
     [busy, setBusy] = useState(false),
     [sheet, setSheet] = useState<"explain" | "scanning" | "checking" | "success" | null>(
       null,
@@ -128,6 +136,12 @@ export default function Street() {
       });
       if (generation !== snapshotGeneration.current) return;
       setName(config.name);
+      const pins = await native.rpc<{ items: StreetEvent[] }>("event_list", { street_id: streetID });
+      if (generation !== snapshotGeneration.current) return;
+      setEvents(pins.items);
+      const recruiting=await native.rpc<{items:Recruitment[]}>("recruitment_list",{street_id:streetID});
+      if(generation!==snapshotGeneration.current)return;
+      setRecruitments(recruiting.items);
       setError("");
     } catch (e) {
       if (generation !== snapshotGeneration.current) return;
@@ -147,7 +161,7 @@ export default function Street() {
     }
   }, []);
   useEffect(() => {
-    if (__DEV__) {setToolsButtonVisible(false);closeMenu();}
+    if (__DEV__) { setToolsButtonVisible(false); closeMenu(); }
     if (!url || !key) return;
     native
       .configure(url, key)
@@ -193,7 +207,7 @@ export default function Street() {
             if (status === "SUBSCRIBED") void refresh();
           });
       })
-      .catch(() => {});
+      .catch(() => { });
     const timer = setInterval(() => {
       if (AppState.currentState === "active") void refresh();
     }, 10000);
@@ -210,7 +224,7 @@ export default function Street() {
         native
           .resume()
           .then(setState)
-          .catch(() => {});
+          .catch(() => { });
       }
     });
     return () => {
@@ -243,7 +257,7 @@ export default function Street() {
     canceled.current = true;
     setSheet(null);
     const stopping = native.stop();
-    await NfcManager.cancelTechnologyRequest().catch(() => {});
+    await NfcManager.cancelTechnologyRequest().catch(() => { });
     try {
       setState(await stopping);
       await refresh();
@@ -319,7 +333,7 @@ export default function Street() {
         setSheet(null);
       }
     } finally {
-      await NfcManager.cancelTechnologyRequest().catch(() => {});
+      await NfcManager.cancelTechnologyRequest().catch(() => { });
     }
   }
 
@@ -361,7 +375,7 @@ export default function Street() {
                     : "NDEF形式で書き込み可能なタグか確認してください。",
                 );
               } finally {
-                await NfcManager.cancelTechnologyRequest().catch(() => {});
+                await NfcManager.cancelTechnologyRequest().catch(() => { });
               }
             })(),
         },
@@ -414,7 +428,7 @@ export default function Street() {
           </Text>
         </Pressable>
         {sent && (
-          <Pressable accessibilityRole="button" disabled={busy} onPress={() => {setSent(false);setCode("");setError("");}}>
+          <Pressable accessibilityRole="button" disabled={busy} onPress={() => { setSent(false); setCode(""); setError(""); }}>
             <Text style={styles.link}>メールアドレスを確認・コードを再送</Text>
           </Pressable>
         )}
@@ -429,7 +443,7 @@ export default function Street() {
     <View style={styles.root}>
       <Map
         style={StyleSheet.absoluteFill}
-        mapStyle="https://demotiles.maplibre.org/style.json"
+        mapStyle={mapStyle}
       >
         <Camera ref={camera} initialViewState={{ center: [139.7109, 35.7295], zoom: 15 }} />
         {cells.map((cell) => (
@@ -481,6 +495,8 @@ export default function Street() {
             </View>
           </Marker>
         ))}
+        {events.filter(e => Date.parse(e.ends_at) > now).map(event => <Marker key={event.id} lngLat={[event.longitude, event.latitude]}><Pressable accessibilityRole="button" onPress={() => router.push({ pathname: "/events/[id]", params: { id: event.id } })} style={{ backgroundColor: "white", padding: 8, borderRadius: 16, maxWidth: 180 }}><Text style={{ color: "#ff4f88", fontWeight: "700" }}>{countdown(event, now)}</Text><Text numberOfLines={1}>{event.title}</Text><Text style={{ fontSize: 25, color: "#ff5d9c", textAlign: "center" }}>☁︎</Text></Pressable></Marker>)}
+        {recruitments.filter(p=>Date.parse(p.expires_at)>now).map(pin=><Marker key={pin.id} lngLat={[pin.longitude,pin.latitude]}><Pressable onPress={()=>router.push({pathname:"/recruitments/[id]",params:{id:pin.id}})} style={{backgroundColor:"white",padding:8,borderRadius:16}}><Text style={{color:"#4799ff"}}>{pin.display_name} が募集中</Text><Text>{pin.title}</Text><Text style={{textAlign:"center",color:"#469fff"}}>●</Text></Pressable></Marker>)}
       </Map>
       <SafeAreaView style={styles.overlay} pointerEvents="box-none">
         <View style={styles.header}>
@@ -514,9 +530,9 @@ export default function Street() {
               </Pressable>
             )}
         </View>
-        <View style={{alignSelf:"flex-end",gap:12}}>
-          <Pressable accessibilityRole="button" accessibilityLabel="現在地へ戻る" onPress={()=>void recenter()} style={{backgroundColor:"white",borderRadius:30,padding:18}}><Text style={{fontSize:22}}>➤</Text></Pressable>
-          <Pressable accessibilityRole="button" accessibilityLabel="ピンを追加" onPress={()=>router.push("/pins/create")} style={{backgroundColor:"white",borderRadius:30,padding:18}}><Text style={{fontSize:22}}>＋</Text></Pressable>
+        <View style={{ alignSelf: "flex-end", gap: 12 }}>
+          <Pressable accessibilityRole="button" accessibilityLabel="現在地へ戻る" onPress={() => void recenter()} style={{ backgroundColor: "white", borderRadius: 30, padding: 18 }}><Text style={{ fontSize: 22 }}>➤</Text></Pressable>
+          <Pressable accessibilityRole="button" accessibilityLabel="ピンを追加" onPress={() => router.push("/pins/create")} style={{ backgroundColor: "white", borderRadius: 30, padding: 18 }}><Text style={{ fontSize: 22 }}>＋</Text></Pressable>
         </View>
         <View style={{ flex: 1 }} pointerEvents="none" />
         {!!error && (
@@ -524,6 +540,7 @@ export default function Street() {
             <Text style={styles.error}>{error}</Text>
           </View>
         )}
+        <StreetChat />
         <View style={styles.bottom}>
           <Text style={styles.note}>
             {!snapshot
@@ -533,7 +550,7 @@ export default function Street() {
                 : "今見える気配はありません。人がいないとは限りません。"}
           </Text>
           <Text style={styles.note}>
-            地図は開発用デモ。気配は10分で薄くなって消えます。
+            気配は10分で薄くなって消えます。
           </Text>
           <Pressable accessibilityRole="button" onPress={() => setSettings(true)}>
             <Text style={styles.link}>アカウント・接続状態</Text>
@@ -563,7 +580,7 @@ export default function Street() {
                   ? "開発用タグから本物と同じDB/APIへ入街を記録しています。"
                   : "NFC読取にはiPhone標準の画面が開きます。読み取り後はステッカーから離して大丈夫です。"}
             </Text>
-            {sheet === "success" ? <Pressable accessibilityRole="button" style={styles.button} onPress={()=>setSheet(null)}><Text style={styles.buttonText}>地図へ</Text></Pressable> : sheet === "explain" ? (
+            {sheet === "success" ? <Pressable accessibilityRole="button" style={styles.button} onPress={() => setSheet(null)}><Text style={styles.buttonText}>地図へ</Text></Pressable> : sheet === "explain" ? (
               <Pressable accessibilityRole="button" style={styles.button} onPress={scan}>
                 <Text style={styles.buttonText}>
                   {localEntry ? "開発用タグで入街（NFC代用）" : "NFCを読み取る"}
@@ -596,6 +613,8 @@ export default function Street() {
               refreshQueued.current = false;
               await native.logout();
               setSnapshot(undefined);
+              setEvents([]);
+              setRecruitments([]);
               setState(initial);
               setSigned(false);
               setSettings(false);

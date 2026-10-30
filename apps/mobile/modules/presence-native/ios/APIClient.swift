@@ -29,12 +29,12 @@ actor APIClient {
   }
   credentials=value
  }
- private func request(path:String,body:[String:Any],bearer:String?=nil) async throws -> [String:Any] {
+ private func request(path:String,body:[String:Any],bearer:String?=nil,method:String="POST") async throws -> [String:Any] {
   guard !base.isEmpty,let url=URL(string:base+path) else {throw ServiceError(code:"not_configured")}
-  var req=URLRequest(url:url);req.httpMethod="POST";req.timeoutInterval=12
+  var req=URLRequest(url:url);req.httpMethod=method;req.timeoutInterval=12
   req.setValue("application/json",forHTTPHeaderField:"Content-Type");req.setValue(key,forHTTPHeaderField:"apikey")
   if let bearer { req.setValue("Bearer "+bearer,forHTTPHeaderField:"Authorization") }
-  req.httpBody=try JSONSerialization.data(withJSONObject:body)
+  if method != "GET" {req.httpBody=try JSONSerialization.data(withJSONObject:body)}
   let (data,response)=try await URLSession.shared.data(for:req)
   let json=(try? JSONSerialization.jsonObject(with:data)) as? [String:Any] ?? [:]
   guard let http=response as? HTTPURLResponse,(200..<300).contains(http.statusCode) else {
@@ -79,6 +79,28 @@ actor APIClient {
   let result=try await request(path:"/rest/v1/rpc/street_api",body:["operation":operation,"payload":payload],bearer:bearer)
   guard generation==authGeneration else {throw ServiceError(code:"login_required")}
   return result
+ }
+ func mfaFactors() async throws -> [String:Any] {
+  let bearer=try await token();let generation=authGeneration
+  let user=try await request(path:"/auth/v1/user",body:[:],bearer:bearer,method:"GET")
+  guard generation==authGeneration else{throw ServiceError(code:"login_required")}
+  return ["factors":user["factors"] ?? []]
+ }
+ func mfaEnroll() async throws -> [String:Any] {
+  let bearer=try await token();let generation=authGeneration
+  let result=try await request(path:"/auth/v1/factors",body:["factor_type":"totp","friendly_name":"Yumegaoka operator"],bearer:bearer)
+  guard generation==authGeneration else{throw ServiceError(code:"login_required")};return result
+ }
+ func mfaVerify(factor:String,code:String) async throws {
+  guard UUID(uuidString:factor) != nil else{throw ServiceError(code:"invalid_input")}
+  let bearer=try await token();let generation=authGeneration
+  let challenge=try await request(path:"/auth/v1/factors/"+factor+"/challenge",body:[:],bearer:bearer)
+  guard generation==authGeneration,let id=challenge["id"] as? String else{throw ServiceError(code:"login_required")}
+  var result=try await request(path:"/auth/v1/factors/"+factor+"/verify",body:["challenge_id":id,"code":code],bearer:bearer)
+  guard generation==authGeneration else{throw ServiceError(code:"login_required")}
+  if let seconds=result["expires_in"] as? Double {result["expires_at"]=Date().timeIntervalSince1970+seconds}
+  authGeneration+=1;refreshing?.cancel();refreshing=nil
+  try save(result)
  }
  func realtimeToken() async throws -> String {try await token()}
  func logout() async {

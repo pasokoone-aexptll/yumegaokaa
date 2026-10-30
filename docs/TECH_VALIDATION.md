@@ -48,3 +48,14 @@ R03〜R10/R21：OTPの新着選択・入力照合を修正後、シミュレー�
 同じ入街済み状態から、再起動→滞在継続→OFF→未参加→再起動→OFF維持の限定UI試験1件が成功（`/tmp/yumegaoka-ui-exit.xcresult`）。[退出後](evidence/first-slice-after-exit.png)は人数0・気配なし。元の一本の試験を先頭から再実行せず、成功した部分と続きの試験を組み合わせた確認である。残したSmoke.swiftはこの一連の操作を含む。
 
 製品側はコード期限切れの説明・再送導線、入力自動補正無効化、開発用ボタンのトグル干渉を修正。シミュレータ本体は標準署名で1回再ビルド。TypeScript/Lint成功。今回変更していないDB・状態管理の既存試験は再実行していない。詳細原因・実機転送差分・次の残作業は[実装進捗](IMPLEMENTATION_PROGRESS.md#再開後の確認2026-10-30)。背景地図はデモで道路表示は未完成。実機のロック中通信・物理的な通信断は未確認。
+
+## 2026-10-30 全体実装再開後
+
+T003/T004/T006/T013〜T018/T020〜T022/T029/T030を接続中。プロフィール・招待・募集清掃・チャット・イベント・募集のローカルDB統合試験が成功。証拠はtests/profile.test.mjs、invitations.test.mjs、recruitment-retention.test.mjs、chat-flow.test.mjs、event-flow.test.mjs、recruitment-flow.test.mjs。SQL試験はローカルでclaimsを設定しauthenticatedロールで公開RPCへ接続する。JWT署名そのものの新規検証ではない。
+
+シミュレータの現在地追加版を1回ビルド成功。3タブと作成/場所選択/入力保持/設定内各画面のUI試験を実行。最初はTabBar限定の検索が誤って失敗し、アクセシビリティ識別の修正後、限定試験1件43.8秒で成功。新規イベント/チャット/募集画面を含む全通し試験、物理iPhone操作、本人画像、実Push/NFCは未確認。詳細はMVP_TASKSの最新checkpoint。今回の新機能を全面DONEとはしない。
+
+
+## 2026-10-30 MFA/通報接続（R03/R15〜R18）
+運営資格＋JWT AAL2＋現存セッション/検証済みTOTPのDB guardを実装。operator-access.test.mjsで資格なし・追加認証なし・factor失効・運営失効の拒否を確認。report-flow.test.mjsで通報、重複統合、サーバー由来証拠、運営削除、解決、30日後清掃を確認。SQLの列名/変数衝突を修正して再実行成功。chat-flow.test.mjsに取消後遅延再送拒否と確定済み結果回収を追加し成功。
+型検査成功、Lintエラー0/既存StreetChat警告1。SwiftのMFA APIは未ビルド、稼働AuthのMFA設定反映・実Auth通信・新規画面実操作・実機転送は未確認。これらをDBテスト成功で代替しない。
