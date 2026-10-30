@@ -8,7 +8,7 @@ if(new URL(env.API_URL).hostname!=="127.0.0.1")throw Error("UI fixture is local-
 const db=new pg.Client({connectionString:env.DB_URL});await db.connect();
 try {
  const peerMessage=process.argv.includes("--peer-message");
- const email=peerMessage ? "iphone-peer@example.test" : "iphone-validation@example.test";
+ const email=peerMessage ? "iphone-peer@example.test" : process.argv.includes("--simulator") ? "simulator-validation@example.test" : "iphone-validation@example.test";
  let user=(await db.query("select id from auth.users where email=$1",[email])).rows[0];
  if(!user){
   const r=await fetch(env.API_URL+"/auth/v1/admin/users",{method:"POST",headers:{apikey:env.SERVICE_ROLE_KEY,Authorization:"Bearer "+env.SERVICE_ROLE_KEY,"Content-Type":"application/json"},body:JSON.stringify({email,email_confirm:true})});

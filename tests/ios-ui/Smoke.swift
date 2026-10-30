@@ -3,6 +3,17 @@ import CoreLocation
 import CryptoKit
 
 final class Smoke: XCTestCase {
+ @MainActor func testSignOutForFixtureSwitch() throws {
+  continueAfterFailure=false
+  let app=XCUIApplication(bundleIdentifier:"jp.yumegaoka.development")
+  app.launch()
+  if app.textFields["メールアドレス"].waitForExistence(timeout:3) { return }
+  let settings=app.descendants(matching:.any).matching(identifier:"Settings").firstMatch
+  XCTAssertTrue(settings.waitForExistence(timeout:20));settings.tap()
+  tap(app,"ログイン・接続状態")
+  tap(app,"ログアウト")
+  XCTAssertTrue(app.textFields["メールアドレス"].waitForExistence(timeout:15))
+ }
  @MainActor func testProfilePhotoPersistence() throws {
   continueAfterFailure=false
   let app=XCUIApplication(bundleIdentifier:"jp.yumegaoka.development")
@@ -145,7 +156,7 @@ final class Smoke: XCTestCase {
   XCTAssertTrue(app.descendants(matching:.any).matching(identifier:"Settings").firstMatch.waitForExistence(timeout:40))
   app.descendants(matching:.any).matching(identifier:"Map").firstMatch.tap()
   tap(app,"アカウント・接続状態")
-  XCTAssertTrue(app.staticTexts["iphone-validation@example.test"].waitForExistence(timeout:10),"Use only the dedicated local fixture")
+  XCTAssertTrue(app.staticTexts["simulator-validation@example.test"].waitForExistence(timeout:10),"Use only the dedicated local fixture")
   tap(app,"地図に戻る")
   app.descendants(matching:.any).matching(identifier:"Settings").firstMatch.tap()
   tap(app,"運営");tap(app,"認証アプリを登録")
@@ -201,7 +212,7 @@ final class Smoke: XCTestCase {
   if app.textFields["メールアドレス"].waitForExistence(timeout:5) {
   let email=app.textFields["メールアドレス"]
   XCTAssertTrue(email.waitForExistence(timeout:60),"Expected product login; inspect screenshot if development launcher is visible")
-  let address="iphone-validation@example.test"
+  let address="simulator-validation@example.test"
   if email.value as? String != address {
   email.tap()
   // Pace native keystrokes so RN's controlled input commits each change.
@@ -518,7 +529,7 @@ final class Smoke: XCTestCase {
   XCTAssertTrue(app.staticTexts["イベントを中止しました"].waitForExistence(timeout:15))
   attach(app,"event-after-cancel")
  }
- @MainActor func testRegisteredNavigation() async throws {
+ @MainActor private func loginRegisteredAccount() async throws {
   continueAfterFailure=false
   let app=XCUIApplication(bundleIdentifier:"jp.yumegaoka.development")
   addUIInterruptionMonitor(withDescription:"Permissions") { alert in
@@ -544,7 +555,7 @@ final class Smoke: XCTestCase {
   // Dedicated local registered fixture; native onboarding is a separate test.
   let email=app.textFields["メールアドレス"]
   XCTAssertTrue(email.waitForExistence(timeout:60),"Expected product login; inspect screenshot if development launcher is visible")
-  let address="iphone-validation@example.test"
+  let address="simulator-validation@example.test"
   if email.value as? String != address {
   email.tap()
   // Pace native keystrokes so RN's controlled input commits each change.
@@ -581,6 +592,12 @@ final class Smoke: XCTestCase {
   tap(app,"ログイン")
   let toggle=app.switches["街への参加"]
   XCTAssertTrue(toggle.waitForExistence(timeout:30))
+ }
+ @MainActor func testSimulatorAccountLogin() async throws {
+  try await loginRegisteredAccount()
+ }
+ @MainActor func testRegisteredNavigation() async throws {
+  try await loginRegisteredAccount()
   try testMVPNavigation()
  }
  @MainActor func testLoginEntryRestartExit() async throws {
@@ -608,7 +625,7 @@ final class Smoke: XCTestCase {
   // Expo development client may show the launcher before loading the local bundle.
   let email=app.textFields["メールアドレス"]
   XCTAssertTrue(email.waitForExistence(timeout:60),"Expected product login; inspect screenshot if development launcher is visible")
-  let address="iphone-validation@example.test"
+  let address="simulator-validation@example.test"
   if email.value as? String != address {
   email.tap()
   // Pace native keystrokes so RN's controlled input commits each change.

@@ -3,12 +3,12 @@
 NFCは開発用入力、位置はXCTestのシミュレーション。製品の画面・Swift観測・ローカルAuth/DB/APIを使用する。ロック中の実歩行の代替ではない。
 
 1. ローカルSupabaseを起動する。Debug版を使う場合だけMetroも起動する。`npm run setup:local`でアプリのLAN接続先を作る。
-2. `node scripts/prepare-ui-test.mjs`で専用ローカルアカウントを作る。サービス鍵はこのMacの準備処理だけで使う。
+2. `node scripts/prepare-ui-test.mjs --simulator`で専用ローカルアカウントを作る。サービス鍵はこのMacの準備処理だけで使う。
 3. `ruby tests/ios-ui/generate.rb`でUIテスト用プロジェクトを生成する（xcodeproj gemが必要）。
 4. 本体をXcode標準のシミュレータ署名でビルドし、インストールする。現在はJS内蔵Releaseを優先し、Debug版だけ開発サーバーを開く。本体には `CODE_SIGNING_ALLOWED=YES CODE_SIGN_IDENTITY=-` を使用する。Keychainを使う本体へ `CODE_SIGNING_ALLOWED=NO` を指定しない。次項のテストrunnerとは区別する。
 5. 下記の対象指定コマンドで、準備した状態に対応するケースだけ実行する。
 
-テスト専用メールは `iphone-validation@example.test`。Mailpitからワンタイムコードを読み、実際のログイン画面へ入力する。Mailpitの既定接続は `http://127.0.0.1:54324`。テスト成果物は一時ディレクトリへ置き、OTP入力を含み得る詳細ログを公開・docsへ転記しない。
+シミュレータ自動試験の専用メールは `simulator-validation@example.test`。iPhone手動確認の `iphone-validation@example.test` と分離する。Mailpitからワンタイムコードを読み、実際のログイン画面へ入力する。Mailpitの既定接続は `http://127.0.0.1:54324`。テスト成果物は一時ディレクトリへ置き、OTP入力を含み得る詳細ログを公開・docsへ転記しない。
 
 初回Expoの案内を閉じる処理を含む。開発メニューを閉じる座標はiPhone 17のテスト画面に基づくため、他画面サイズでは更新が必要。製品のテスト操作はアクセシビリティ要素を使用する。
 
@@ -20,7 +20,7 @@ NFCは開発用入力、位置はXCTestのシミュレーション。製品の�
 
 
 ## 運営のステッカー準備
-専用アカウントでログインしたシミュレータを使用。`node scripts/prepare-ui-test.mjs --operator` はこのローカル専用アカウントに限り運営資格を付け、TOTPを初期化する。`-only-testing:Smoke/Smoke/testOperatorStickerPreparation` で実TOTP登録/追加認証→登録→NFC代用→照合→設置→編集→取消を操作する。実タグの検証ではない。設定キー・入力コードを含み得るxcresultやスクリーンショットは一時領域に保管し共有しない。終了後は `node scripts/prepare-ui-test.mjs --revoke-operator` で試験資格とTOTPを廃棄する。公開・交換は別試験に残す。
+専用アカウントでログインしたシミュレータを使用。`node scripts/prepare-ui-test.mjs --simulator --operator` はこのローカル専用アカウントに限り運営資格を付け、TOTPを初期化する。`-only-testing:Smoke/Smoke/testOperatorStickerPreparation` で実TOTP登録/追加認証→登録→NFC代用→照合→設置→編集→取消を操作する。実タグの検証ではない。設定キー・入力コードを含み得るxcresultやスクリーンショットは一時領域に保管し共有しない。終了後は `node scripts/prepare-ui-test.mjs --simulator --revoke-operator` で試験資格とTOTPを廃棄する。公開・交換は別試験に残す。
 
 
 ## JS内蔵Releaseでの統合確認
@@ -58,3 +58,5 @@ runnerも未変更なら`test-without-building`。`-collect-test-diagnostics nev
 `testProfilePhotoPersistence`は写真fixtureと登録済み専用アカウントを使用し、本人画像選択→保存→再起動→プロフィール復帰を確認する。画像描画は添付画像の目視、保存は本人avatarsのStorage/DB照合で補う。街poolの公開行が変更されていないことも別途照合する。
 
 実機の変更通知を中止通知と切り分ける際は、専用アカウントに`node scripts/prepare-ui-test.mjs --host-event --notify-change`で作成→参加→終了時刻変更を実APIで用意できる。画面での通知確認・参加取消の代わりにはならない。MFA初期化は行わない。
+
+シミュレータのfixture作成は全オプションに`--simulator`を付ける（表の`--host-event`等にも追加）。付けない場合は実機専用アカウントなので、実機手動確認の準備以外では使わない。切替は`testSignOutForFixtureSwitch`→`testSimulatorAccountLogin`。後者はOTPだけで、画面巡回を不必要に反復しない。ログアウトはscope=localでiPhone側のセッションを失効させない。運営資格/MFAの初期化・解除もシミュレータ専用に限定する。

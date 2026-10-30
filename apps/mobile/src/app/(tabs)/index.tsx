@@ -25,6 +25,7 @@ export default function Street() {
   const params = useLocalSearchParams<{
     longitude?: string;
     latitude?: string;
+    panel?: string;
   }>();
   const {
     ready,
@@ -55,6 +56,10 @@ export default function Street() {
     active,
     logout,
   } = useStreetMap();
+  function closeAccount() {
+    setSettings(false);
+    if (params.panel === "account") router.setParams({ panel: "" });
+  }
   useEffect(() => {
     const lon = Number(params.longitude),
       lat = Number(params.latitude);
@@ -281,7 +286,11 @@ export default function Street() {
           </View>
         </View>
       </Modal>
-      <Modal visible={settings} animationType="slide">
+      <Modal
+        visible={settings || params.panel === "account"}
+        animationType="slide"
+        onRequestClose={closeAccount}
+      >
         <SafeAreaView style={styles.login}>
           <Text style={styles.heading}>アカウント</Text>
           <Text>{email}</Text>
@@ -295,13 +304,16 @@ export default function Street() {
           <Pressable
             accessibilityRole="button"
             style={styles.button}
-            onPress={() => void logout()}
+            onPress={() => {
+              closeAccount();
+              void logout();
+            }}
           >
             <Text style={styles.buttonText}>ログアウト</Text>
           </Pressable>
           <Pressable
             accessibilityRole="button"
-            onPress={() => setSettings(false)}
+            onPress={closeAccount}
           >
             <Text style={styles.link}>地図に戻る</Text>
           </Pressable>
