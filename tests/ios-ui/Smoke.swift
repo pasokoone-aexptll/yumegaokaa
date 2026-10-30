@@ -384,13 +384,9 @@ final class Smoke: XCTestCase {
   XCTAssertTrue(app.staticTexts["実機確認"].waitForExistence(timeout:15))
   tap(app,"イベントを編集")
   XCTAssertTrue(app.textFields["オフ会名"].waitForExistence(timeout:15))
-  let end=app.textFields.element(boundBy:2)
-  let replacement=ISO8601DateFormatter().string(from:Date().addingTimeInterval(10800))
-  end.tap();end.press(forDuration:1.2)
-  let selectAll=app.descendants(matching:.any).matching(NSPredicate(format:"label IN %@",["Select All","すべてを選択","すべて選択","全選択"])).firstMatch
-  XCTAssertTrue(selectAll.waitForExistence(timeout:5));selectAll.tap();end.typeText(replacement)
-  XCTAssertEqual(end.value as? String,replacement)
-  end.typeText("\n");app.swipeUp();tap(app,"保存")
+  tap(app,"終了日時を選択")
+  adjustMinute(app)
+  tap(app,"決定");app.swipeUp();tap(app,"保存")
   XCTAssertTrue(app.buttons["再取得"].waitForExistence(timeout:15))
   tap(app,"‹ 戻る")
   app.descendants(matching:.any).matching(identifier:"Settings").firstMatch.tap();tap(app,"お知らせ")
@@ -439,10 +435,14 @@ final class Smoke: XCTestCase {
   let title="UI event "+String(Int(Date().timeIntervalSince1970))
   let titleField=app.textFields["オフ会名を入力"]
   titleField.tap();titleField.typeText(title);titleField.typeText("\n")
-  let format=ISO8601DateFormatter()
-  for (label,offset) in [("開始日時",3600.0),("終了日時",7200.0)] {
-   let field=app.textFields[label]
-   field.tap();field.typeText(format.string(from:Date().addingTimeInterval(offset)));field.typeText("\n")
+  tap(app,"開始日時を選択")
+  XCTAssertTrue(app.pickerWheels.firstMatch.waitForExistence(timeout:10))
+  tap(app,"キャンセル")
+  XCTAssertEqual(app.buttons["開始日時を選択"].value as? String,"未設定")
+  for label in ["開始日時を選択","終了日時を選択"] {
+   tap(app,label)
+   adjustMinute(app)
+   tap(app,"決定")
   }
   app.swipeUp()
   tap(app,"場所を選択")
@@ -616,6 +616,15 @@ final class Smoke: XCTestCase {
   XCTAssertTrue(app.staticTexts["未参加"].waitForExistence(timeout:30))
   XCTAssertEqual(toggle.value as? String,"0")
   attach(app,"after-exit-relaunch")
+ }
+ @MainActor private func adjustMinute(_ app:XCUIApplication) {
+  XCTAssertTrue(app.pickerWheels.firstMatch.waitForExistence(timeout:10))
+  let wheel=app.pickerWheels.element(boundBy:app.pickerWheels.count-1)
+  let value=wheel.value as? String ?? ""
+  let digits=value.filter { $0.isNumber }
+  guard let minute=Int(digits),minute<60 else {XCTFail("Expected minute wheel");return}
+  let replacement=String(format:"%02d",(minute+5)%60)
+  wheel.adjust(toPickerWheelValue:replacement)
  }
  @MainActor private func tap(_ app:XCUIApplication,_ title:String) {
   let element=app.descendants(matching:.any).matching(identifier:title).firstMatch

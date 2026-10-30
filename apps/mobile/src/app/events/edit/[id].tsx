@@ -1,3 +1,4 @@
+import { EventDateField } from "../../../components/EventDateField";
 import { useState } from "react";
 import { useLocalSearchParams } from "expo-router";
 import { Alert, Modal, Text, TextInput, View } from "react-native";
@@ -56,19 +57,17 @@ export default function Edit() {
             placeholder="説明"
             editable={!e.ongoing && !e.busy}
           />
-          <Text>開始</Text>
-          <TextInput
-            style={ui.input}
+          <EventDateField
+            label="開始"
             value={e.start}
-            onChangeText={e.setStart}
-            editable={!e.ongoing && !e.busy}
+            onChange={e.setStart}
+            disabled={e.ongoing || e.busy}
           />
-          <Text>終了</Text>
-          <TextInput
-            style={ui.input}
+          <EventDateField
+            label="終了"
             value={e.end}
-            onChangeText={e.setEnd}
-            editable={!e.busy}
+            onChange={e.setEnd}
+            disabled={e.busy}
           />
           <Text>定員</Text>
           <TextInput

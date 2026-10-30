@@ -1,3 +1,4 @@
+import { EventDateField } from "../../components/EventDateField";
 import { updateDraft } from "../../lib/pinDraft";
 import { usePinCreation } from "../../hooks/usePinCreation";
 import { Text, TextInput, View } from "react-native";
@@ -41,22 +42,22 @@ export default function CreatePin() {
       />
       {kind === "event" ? (
         <>
-          <Text style={ui.muted}>
-            日時の入力例：2026-11-01T18:00（端末の現地時間）
-          </Text>
-          <TextInput
-            editable={!busy && !locked}
-            style={ui.input}
-            placeholder="開始日時"
+          <EventDateField
+            label="開始"
             value={starts}
-            onChangeText={(starts) => updateDraft({ starts })}
+            disabled={busy || locked}
+            onChange={(starts) => updateDraft({ starts })}
           />
-          <TextInput
-            editable={!busy && !locked}
-            style={ui.input}
-            placeholder="終了日時"
+          <EventDateField
+            label="終了"
             value={ends}
-            onChangeText={(ends) => updateDraft({ ends })}
+            disabled={busy || locked}
+            suggested={
+              Number.isFinite(Date.parse(starts))
+                ? new Date(Date.parse(starts) + 3600000).toISOString()
+                : undefined
+            }
+            onChange={(ends) => updateDraft({ ends })}
           />
           <TextInput
             editable={!busy && !locked}

@@ -345,3 +345,12 @@ scripts/avatar-smoke.mjs成功：所有者アップロード、プロフィー�
 - testInviteIssueRevoke成功13.451秒：Release画面で発行→コード共有導線→停止→共有導線消去/停止状態。実DB最新fixtureは7日期限・未使用・停止済み。初回試験は非同期一覧の停止件数比較が不適切で失敗し、状態表示＋DB照合へ修正。本体再ビルドの反復なし。
 - 画像修正と今回の招待修正をまとめたシミュレータRelease生成成功。/tmp/yumegaoka-image-invite-build.log。UI結果 /tmp/yumegaoka-invite-release-status.xcresult と同名.log。typecheck/Lint、git diff --check成功。実機再転送・画像の再確認は帰宅後。pushなし。
 - T003をIMPLEMENTEDへ。DONE5/IMPLEMENTED8/IN_PROGRESS17/TODO0/BLOCKED3。完了5/33=15.2%、実装到達13/33=39.4%。現行pool登録を含む初回一巡を未検証のままDONEにはしない。次：残る画面統合とUI整理、帰宅後の実機写真確認。
+
+## 実装チェックポイント51：イベントの標準日時選択
+- T015/T017/R13/R19：EventDateFieldを作成・主催編集へ共通接続。開始/終了行→iPhone標準スピナー→決定、キャンセルは元入力維持。書式説明と生の日時テキスト入力を除去。値は端末時刻表示、確定時ISOへ変換。未確定送信/送信中と開催中の編集制限は維持。
+- Expo58対応datetimepicker9.2.1をexpo installで追加。動的configへの自動追記だけ失敗したため、既存app.jsonのpluginsへ明示追加してprebuild/Pods成功。型/Lint初回はcallback内のDate.now判定を検出し、useCallback内で選択値を生成する形へ修正後成功。ReleaseのJSにも修正後のコードを確認。
+- シミュレータReleaseビルド成功 /tmp/yumegaoka-datetime-release.log。実機転送はせず、帰宅後のまとめた版へ含める。
+- testEventCreateJoinCancel成功49.818秒。標準日時選択のキャンセルで未設定維持、分の変更、開始/終了決定→Map地点→作成→参加/取消/中止。初回runnerは選択肢00〜59に対して読み上げ値のminutes付き文字列を渡して失敗、選択肢へ修正。本体再ビルドなし。結果 /tmp/yumegaoka-event-datetime-wheel.xcresult。
+- testHostEditRosterNotifications成功463.872秒。終了日時変更→保存→変更通知→中止→中止通知/既読復元。35.28秒から452.18秒の空白はMacの15:05:02〜15:12:00の418秒スリープと一致。性能測定値として使わない。結果 /tmp/yumegaoka-host-datetime.xcresult。実機での日時選択は未確認。
+- 依存追加時のnpm auditでhigh3件を確認。根は既存Expo CLI経由のzod3.25.76、GHSA-mrhx-c7xc-m3w5。datetimepicker自体の指摘ではない。CLIはzod ^3.25.76を要求し、提示されたExpo51への自動downgradeやZod4強制置換は行わない。不要なこの作業のMetro PID67248を所属確認後に停止。ReleaseはMetro不要、アプリソース/生成JSにZodError等は見つからないが、依存の警告解消・公開前の再評価はT033へ残す。根拠：https://github.com/advisories/GHSA-mrhx-c7xc-m3w5 。ローカルSupabaseは維持。
+- T015をIMPLEMENTEDへ。DONE5/IMPLEMENTED9/IN_PROGRESS16/TODO0/BLOCKED3、完了5/33=15.2%、実装到達14/33=42.4%。次：残る入力不備/通信失敗の画面接続、UI整理。帰宅後の画像保存/実機操作確認は保留。pushなし。

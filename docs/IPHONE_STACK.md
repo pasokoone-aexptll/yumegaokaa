@@ -27,6 +27,8 @@ expo-location＋expo-task-managerは背景位置取得を提供し、有力な�
 
 ## バージョンと互換性
 
+2026-10-30の実装追加：イベント日時入力はExpo 58対応の`@react-native-community/datetimepicker` 9.2.1を採用。`expo install`で固定し、app.jsonのpluginからprebuild/Podsへ反映する。日時の制限やAPI仕様は変更せず、iPhone標準UIの共通部品として利用する。Androidへの移植確認は別工程。根拠：[Expo 58公式資料](https://docs.expo.dev/versions/v58.0.0/sdk/date-time-picker/)。ネイティブビルド・操作結果はTECH_VALIDATIONへ記録する。
+
 公式MapLibre資料ではv11以降New Architectureのみ、RN 0.80以上を要件としている。Expoも新しいSDKはNew Architectureを前提とする。NFCライブラリのREADME検索結果とCHANGELOGにはv4のベータ／安定版表記の時間差があるため、検索結果だけで特定パッチ版を固定しない。
 
 実装開始時に公開済み安定Expo SDKとそれに対応するRNを基準に、MapLibre・NFCの公開パッケージ・タグ・peer依存を照合して一組をlockfileへ固定する。常にlatestを追う運用にしない。互換性が合わなければ理由を記録して隣接安定版を比較する。混在構成のシミュレータビルドは成功。実機NFCは未確認。対応iOS下限はこの依存セットの下限と対象利用者を確認して決める。

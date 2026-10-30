@@ -20,12 +20,12 @@
 | 状態 | 件数 | 定義 |
 | --- | ---: | --- |
 | DONE | 5 | 下記の限定された完了条件を満たし、既存の必要な検証証拠あり |
-| IMPLEMENTED | 8 | コードあり、完了条件の確認が不足 |
-| IN_PROGRESS | 17 | 一部コードと検証あり。残る実装・接続を継続中 |
+| IMPLEMENTED | 9 | コードあり、完了条件の確認が不足 |
+| IN_PROGRESS | 16 | 一部コードと検証あり。残る実装・接続を継続中 |
 | TODO | 0 | 当該機能の実装未着手。先行タスク未完だけではBLOCKEDにしない |
 | BLOCKED | 3 | 実NFC/実Push/公開環境という外部依存で完了まで進めない |
 
-**実装到達率：(DONE + IMPLEMENTED) / 全タスク = 13 / 33（39.4%）**。IN_PROGRESSの割合は推測加算しない。残りは28タスク。件数は工数・日数の割合ではない。基盤、UI、イベント、公開準備で粒度が異なり「残り84.8%の時間」と解釈しない。納期はまだ推定しない。
+**実装到達率：(DONE + IMPLEMENTED) / 全タスク = 14 / 33（42.4%）**。IN_PROGRESSの割合は推測加算しない。残りは28タスク。件数は工数・日数の割合ではない。基盤、UI、イベント、公開準備で粒度が異なり「残り84.8%の時間」と解釈しない。納期はまだ推定しない。
 
 現在のフェーズ：**MVP全体の本体実装・統合中。Home/Map/Settings、募集・イベント・チャット・通報・運営を実ローカルDBへ接続し、残るアカウント・画像・ステッカー・配信処理を順次つなぐ段階。**
 
@@ -49,7 +49,7 @@ P0=再利用する土台/次の着手、P1=全画面と主要機能、P2=統合�
 | T012 | 入街・退出シートと権限案内 | IN_PROGRESS | P1 | T006/T009 |
 | T013 | Homeの参加予定・募集一覧 | IN_PROGRESS | P1 | T006/T014/T016 |
 | T014 | 募集ピン一式 | IMPLEMENTED | P1 | T006/T008/T029 |
-| T015 | イベント作成・地点選択 | IN_PROGRESS | P1 | T006/T029 |
+| T015 | イベント作成・地点選択 | IMPLEMENTED | P1 | T006/T029 |
 | T016 | イベント詳細・参加/取消 | IMPLEMENTED | P1 | T015 |
 | T017 | 主催者編集・中止・参加者一覧 | IMPLEMENTED | P1 | T016 |
 | T018 | アプリ内重要通知・配信待ち管理 | IN_PROGRESS | P1 | T016/T017/T029 |
@@ -187,11 +187,11 @@ P0=再利用する土台/次の着手、P1=全画面と主要機能、P2=統合�
 
 ### T015 イベント作成・地点選択
 
-- **状態・優先・要件**：IN_PROGRESS / P1 / R13/R16/R19。依存：T006/T029。
+- **状態・優先・要件**：IMPLEMENTED / P1 / R13/R16/R19。依存：T006/T029。
 - **実装対象**：作成シート・地点選択Map・events/API。
 - **完了条件**：未入街でも題名/日時/地点/説明/定員を入力して作成。Map往復で下書き保持。90日/24時間/同時3件等を検査。定員等Q07を先に決定。
 - **検証方法**：フォーム往復、入力境界、再送/所有権、作成ピン表示。
-- **実装・検証根拠**：作成シート/地点選択Map/events/APIを接続。チェックポイント43/44で下書き保持、日時/題名/地点入力から実DB作成まで確認。入力境界とMap上の作成ピンの表示を含む完了照合は残る。
+- **実装・検証根拠**：作成シート/地点選択Map/events/APIを接続。チェックポイント43/44で下書き保持と実DB作成、51で標準日時選択/キャンセル→地点選択→作成を確認。入力境界とMap上の作成ピンの表示を含む完了照合は残る。
 
 ### T016 イベント詳細・参加/取消
 
@@ -781,3 +781,12 @@ T003/T004/T007/T030：チャット画像との別設定、本人と地図で同�
 - testInviteIssueRevoke成功13.451秒：Release画面で発行→コード共有導線→停止→共有導線消去/停止状態。実DB最新fixtureは7日期限・未使用・停止済み。初回試験は非同期一覧の停止件数比較が不適切で失敗し、状態表示＋DB照合へ修正。本体再ビルドの反復なし。
 - 画像修正と今回の招待修正をまとめたシミュレータRelease生成成功。/tmp/yumegaoka-image-invite-build.log。UI結果 /tmp/yumegaoka-invite-release-status.xcresult と同名.log。typecheck/Lint、git diff --check成功。実機再転送・画像の再確認は帰宅後。pushなし。
 - T003をIMPLEMENTEDへ。DONE5/IMPLEMENTED8/IN_PROGRESS17/TODO0/BLOCKED3。完了5/33=15.2%、実装到達13/33=39.4%。現行pool登録を含む初回一巡を未検証のままDONEにはしない。次：残る画面統合とUI整理、帰宅後の実機写真確認。
+
+## 実装チェックポイント51：イベントの標準日時選択
+- T015/T017/R13/R19：EventDateFieldを作成・主催編集へ共通接続。開始/終了行→iPhone標準スピナー→決定、キャンセルは元入力維持。書式説明と生の日時テキスト入力を除去。値は端末時刻表示、確定時ISOへ変換。未確定送信/送信中と開催中の編集制限は維持。
+- Expo58対応datetimepicker9.2.1をexpo installで追加。動的configへの自動追記だけ失敗したため、既存app.jsonのpluginsへ明示追加してprebuild/Pods成功。型/Lint初回はcallback内のDate.now判定を検出し、useCallback内で選択値を生成する形へ修正後成功。ReleaseのJSにも修正後のコードを確認。
+- シミュレータReleaseビルド成功 /tmp/yumegaoka-datetime-release.log。実機転送はせず、帰宅後のまとめた版へ含める。
+- testEventCreateJoinCancel成功49.818秒。標準日時選択のキャンセルで未設定維持、分の変更、開始/終了決定→Map地点→作成→参加/取消/中止。初回runnerは選択肢00〜59に対して読み上げ値のminutes付き文字列を渡して失敗、選択肢へ修正。本体再ビルドなし。結果 /tmp/yumegaoka-event-datetime-wheel.xcresult。
+- testHostEditRosterNotifications成功463.872秒。終了日時変更→保存→変更通知→中止→中止通知/既読復元。35.28秒から452.18秒の空白はMacの15:05:02〜15:12:00の418秒スリープと一致。性能測定値として使わない。結果 /tmp/yumegaoka-host-datetime.xcresult。実機での日時選択は未確認。
+- 依存追加時のnpm auditでhigh3件を確認。根は既存Expo CLI経由のzod3.25.76、GHSA-mrhx-c7xc-m3w5。datetimepicker自体の指摘ではない。CLIはzod ^3.25.76を要求し、提示されたExpo51への自動downgradeやZod4強制置換は行わない。不要なこの作業のMetro PID67248を所属確認後に停止。ReleaseはMetro不要、アプリソース/生成JSにZodError等は見つからないが、依存の警告解消・公開前の再評価はT033へ残す。根拠：https://github.com/advisories/GHSA-mrhx-c7xc-m3w5 。ローカルSupabaseは維持。
+- T015をIMPLEMENTEDへ。DONE5/IMPLEMENTED9/IN_PROGRESS16/TODO0/BLOCKED3、完了5/33=15.2%、実装到達14/33=42.4%。次：残る入力不備/通信失敗の画面接続、UI整理。帰宅後の画像保存/実機操作確認は保留。pushなし。
