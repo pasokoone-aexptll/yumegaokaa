@@ -95,3 +95,5 @@ cp106再開地点：新Releaseをシミュレータへ反映済み（gateway/ada
 cp107再開：ピンSVG実装と型/Lint成功、pod install済み。Release107ビルド session72066 が実行中（最終確認時コンパイル中）、/tmp/yumegaoka-release107.log。まず同sessionをpoll、成功ならsimctl install後、header UIの同じfixtureをUI_RESULT_PATHで新規xcresultへ出しピン描画を確認する。cp106には既存イベントピンが表示されていたが期限切れならfixtureイベントを用意。まだ再ビルド/再起動を重ねない。残23/DONE15。
 
 cp108：現在地非送信・Map状態表示のコード経路照合でT007-02解消。残22、DONE15。Release107 session72066は最終pollで稼働中、RNSVGコンパイルまで進展・errorなし。再開時同sessionをpollし、再ビルドしない。
+
+cp109再開：Release109成功・シミュレータへ更新済み。ピンSVG実表示確認でT007-01/T015-01解消、T015 DONE。残20/DONE16。次T018-01の既存outbox試験を確認し、2worker/取消の不足分だけ補完。ローカルgatewayの起動状態は再開時lsof確認。iPhoneは未更新。

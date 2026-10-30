@@ -89,17 +89,20 @@ export function StreetMapMarkers({
                   params: { id: event.id },
                 })
               }
-              style={{
-                backgroundColor: "white",
-                padding: 8,
-                borderRadius: 16,
-                maxWidth: 180,
-              }}
+              style={{ alignItems: "center", maxWidth: 180 }}
             >
-              <Text style={{ color: "#ff4f88", fontWeight: "700" }}>
-                {countdown(event, now)}
-              </Text>
-              <Text numberOfLines={1}>{event.title}</Text>
+              <View
+                style={{
+                  backgroundColor: "white",
+                  padding: 8,
+                  borderRadius: 16,
+                }}
+              >
+                <Text style={{ color: "#ff4f88", fontWeight: "700" }}>
+                  {countdown(event, now)}
+                </Text>
+                <Text numberOfLines={1}>{event.title}</Text>
+              </View>
               <View style={{ alignItems: "center" }}>
                 <EventCloudPin />
               </View>
