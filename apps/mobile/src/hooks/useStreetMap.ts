@@ -305,7 +305,7 @@ export function useStreetMap() {
       const s = await native.checkin(payload.tag_id);
       if (!canceled.current) {
         setState(s);
-        setSheet(null);
+        setSheet("success");
         await refresh();
       }
     } catch (e) {
