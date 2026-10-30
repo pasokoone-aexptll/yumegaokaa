@@ -1,53 +1,23 @@
-import { useCallback, useState } from "react";
-import { router, useFocusEffect } from "expo-router";
+import { router } from "expo-router";
 import { Modal, Text, TextInput, View } from "react-native";
 import { Action, Empty, Page, ui } from "../../components/Page";
 import { LocationPicker } from "../../components/LocationPicker";
-import { native, streetID } from "../../lib/native";
-import { submitCommand } from "../../lib/commands";
-import { StickerDraft } from "../../lib/stickers";
+import { useStickerRegistration } from "../../hooks/useStickerRegistration";
 export default function Stickers() {
-  const [items, setItems] = useState<StickerDraft[]>([]),
-    [title, setTitle] = useState(""),
-    [point, setPoint] = useState<[number, number]>(),
-    [selecting, setSelecting] = useState(false),
-    [busy, setBusy] = useState(false),
-    [error, setError] = useState("");
-  const load = useCallback(async () => {
-    try {
-      const r = await native.rpc<{ items: StickerDraft[] }>("sticker_list", {
-        street_id: streetID,
-      });
-      setItems(r.items);
-      setError("");
-    } catch {
-      setError("運営の追加認証と通信を確認してください。");
-    }
-  }, []);
-  useFocusEffect(
-    useCallback(() => {
-      void load();
-    }, [load]),
-  );
-  async function create() {
-    if (!point) return;
-    setBusy(true);
-    try {
-      const r = await submitCommand<{ id: string }>("sticker_create", {
-        street_id: streetID,
-        title: title.trim(),
-        longitude: point[0],
-        latitude: point[1],
-      });
-      setTitle("");
-      setPoint(undefined);
-      router.push({ pathname: "/stickers/[id]", params: { id: r.id } });
-    } catch {
-      setError("登録できません。同じ内容で再試行してください。");
-    } finally {
-      setBusy(false);
-    }
-  }
+  const {
+    items,
+    title,
+    setTitle,
+    point,
+    setPoint,
+    selecting,
+    setSelecting,
+    busy,
+    error,
+    pending,
+    create,
+    cancelPending,
+  } = useStickerRegistration();
   return (
     <Page title="ステッカー">
       <Action
@@ -62,16 +32,25 @@ export default function Stickers() {
           value={title}
           onChangeText={setTitle}
           maxLength={50}
+          editable={!busy && !pending}
         />
         <Action
           title={point ? "設置場所を変更" : "設置場所を選択"}
+          disabled={busy || !!pending}
           onPress={() => setSelecting(true)}
         />
         <Action
-          title="登録を開始"
+          title={pending ? "保存した登録を再試行" : "登録を開始"}
           disabled={busy || !title.trim() || !point}
           onPress={() => void create()}
         />
+        {!!pending && (
+          <Action
+            title="登録を取り消す"
+            disabled={busy}
+            onPress={() => void cancelPending()}
+          />
+        )}
       </View>
       {!items.length && !error && <Empty>登録はありません。</Empty>}
       {items.map((d) => (
