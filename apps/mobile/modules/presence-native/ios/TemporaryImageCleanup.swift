@@ -26,3 +26,15 @@ enum TemporaryImageCleanup {
     }
   }
 }
+
+// Authenticated images and API responses must not survive as HTTP cache files.
+// Mutate the shared object too, so sessions which already captured it are covered.
+enum PrivateHTTPCache {
+  private static let startup: Void = disable(URLCache.shared)
+  static func prepareOnce() { _ = startup }
+  static func disable(_ cache: URLCache) {
+    cache.removeAllCachedResponses()
+    cache.memoryCapacity = 0
+    cache.diskCapacity = 0
+  }
+}

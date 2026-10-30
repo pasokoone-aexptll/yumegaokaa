@@ -1267,3 +1267,9 @@ T029はLIMIT_ACCEPTANCEの全上限/認可と共通受付再送、T022は募集�
 - 起動前に記録したImagePicker/ImageManipulatorの4ファイルを、新しいアプリコンテナの同名ディレクトリと照合し残存0件。両ディレクトリは存在し、既存ファイルのみ回収された。純Swiftの対象外/原本/リンク保護試験cp121と合わせ、一時コピー回収を組込確認。
 - T030-03には表示用HTTPキャッシュの保存抑止が残る。RN RCTHTTPRequestHandlerはdefaultSessionConfiguration、APIClientはURLSession.sharedを利用。Avatarのreloadによる取得時迂回だけでディスク保存の抑止を主張しない。
 - 残12→12、新規必須0、推測9.5–20.5h＋待ち不明は据置き。DONE23/33、実装25/33、統合24/33、実機11/33、BLOCKED3/33。iPhoneは操作していない。
+
+## チェックポイント124：HTTPキャッシュ抑止
+- T030-03/R17：native.configureの通信開始前にPrivateHTTPCacheを一度実行。共有URLCacheの旧応答を消去しmemory/diskCapacityを0にする。既に参照済みの共有オブジェクトも変更。共有HTTPキャッシュ全体が対象で再取得通信が増え得る。MapLibre固有キャッシュを直接操作しない。
+- 実URLCache試験で旧応答削除/新規保存拒否を確認。純Swift一時ファイル試験も成功。Release124ビルド/install成功、testProfileImageDisplay成功、/tmp/yumegaoka-cache124.xcresult。画面画像/tmp/yumegaoka-cache124.pngは代替文字であり実画像表示成功の証拠ではない。
+- 更新後Cache.dbの読取ではcfurl_cache_response表自体がなく旧記録消去を確認。初回読取はSQLite readonly共有メモリエラー、権限付き再読取で表不存在。実画像取得後の保存抑止確認は未完。
+- 残12→12、新規必須0、推測9.5–20.5h＋待ち不明は据置き。DONE23/33、実装25/33、統合24/33、実機11/33、BLOCKED3/33。次は実画像fixtureを使い表示と保存なしを確認。iPhone操作なし。

@@ -418,6 +418,15 @@ final class Smoke: XCTestCase {
   XCTAssertTrue(app.staticTexts.containing(NSPredicate(format:"label CONTAINS %@","10人がチェックイン中")).firstMatch.exists)
   attach(app,"presence-header-eight-with-ten-checkins")
  }
+ @MainActor func testProfileImageDisplay() throws {
+  continueAfterFailure=false
+  let app=XCUIApplication(bundleIdentifier:"jp.yumegaoka.development")
+  app.launch()
+  XCTAssertTrue(app.descendants(matching:.any).matching(identifier:"Settings").firstMatch.waitForExistence(timeout:30))
+  tap(app,"Settings");tap(app,"プロフィール")
+  XCTAssertTrue(app.buttons["写真を選ぶ"].waitForExistence(timeout:15))
+  attach(app,"profile-image-no-http-cache")
+ }
  @MainActor func testAccountNestedNavigation() throws {
   continueAfterFailure=false
   let app=XCUIApplication(bundleIdentifier:"jp.yumegaoka.development")
