@@ -247,3 +247,11 @@ scripts/avatar-smoke.mjs成功：所有者アップロード、プロフィー�
 - 保存済み受付を読めない場合は新規送信を停止し、再取得ボタンを提示。初回復元中の入力上書きや送信中の二重タップを防ぐ。既存の投稿制限、再送受付10分/結果保持方式は変更しない。
 - chat-composer.test.mjs 3件成功：未確認本文復元/同じ内容で結果確認、取消結果が送信済みか未確定かによる分岐、保存読取失敗時の新規送信禁止。commands/native境界を代替するhook検証で、端末再起動・実通信断の証拠ではない。型チェック成功。Lintの初期effect内state更新指摘を修正して成功。diff check成功。
 - 実機の通信断/再起動からの復旧はRelease確認に残す。全体5/33、実装到達7/33、状態件数維持。ネイティブ変更・ビルド・転送・pushなし。
+
+## 実装チェックポイント38：まとめた実機Releaseの生成
+- T031/T032をTODOからIN_PROGRESSへ更新。全画面間の接続とRelease検証準備に実際に着手しているため。分母33・DONE5・IMPLEMENTED2は不変。IN_PROGRESS23/TODO0/BLOCKED3。完了15.2%、実装到達21.2%。
+- YUMEGAOKA_LOCAL_ENTRY=1 / YUMEGAOKA_VALIDATION_RELEASE=1でiOS prebuild/Pods導入。ExpoBlur58.0.5/PresenceNativeを含む。生成iOSはprebuildが再生成したため、生成物の手修正は正本にしない。
+- 最初のReleaseはディスク空き185MiBでlibRNScreens.a書込errno28により失敗。過去の/tmp/yumegaoka-native-build/Build、yumegaoka-next-build/Build、yumegaoka-derived/Buildのみ削除し約13GiB確保。ソース/DB/過去Logsは保持。原因解消後に同じDerivedDataを使って再実行しBUILD SUCCEEDED。
+- 成果物：/tmp/yumegaoka-validation-release/Build/Products/Release-iphoneos/app.app。名称「夢ヶ丘 検証用」、bundleID jp.yumegaoka.development、main.jsbundle 3.5MiB内蔵、ローカルネットワーク/ATS設定を確認。codesign --verify --deep --strict成功。ログ：/tmp/yumegaoka-validation-release-build.log（容量不足）、/tmp/yumegaoka-validation-release-retry.log（成功）。ソース基点70ac9d6、以降は進捗文書のみ。
+- iPhone 00008150-0002059A3488C01Cはpaired/available表示だったが、devicectl installはCoreDevice4000/NWError60接続タイムアウトで失敗。未インストール・未起動・実機操作未確認。再ビルドせず同じappを転送する。ユーザーへUSB接続/ロック解除を依頼中。他作業は継続可能。
+- この成功は全機能DONEの根拠にはしない。次：端末接続後に転送、初回登録/街pool/入退街/チャット/イベント/運営の操作と実DBを照合。実NFC/Push/クラウドは既存BLOCKEDのまま。pushなし。
