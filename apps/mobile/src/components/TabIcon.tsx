@@ -1,4 +1,4 @@
-import { StyleSheet, View } from "react-native";
+import { StyleSheet, View, type ColorValue } from "react-native";
 
 type Kind = "home" | "map" | "account";
 
@@ -8,10 +8,10 @@ export function TabIcon({
   focused,
 }: {
   kind: Kind;
-  color: string;
+  color: ColorValue | null;
   focused: boolean;
 }) {
-  const ink = kind === "map" && focused ? "white" : color;
+  const ink = kind === "map" && focused ? "white" : (color ?? "#87929b");
   return (
     <View
       accessible={false}
