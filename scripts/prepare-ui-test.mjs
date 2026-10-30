@@ -8,7 +8,8 @@ if(new URL(env.API_URL).hostname!=="127.0.0.1")throw Error("UI fixture is local-
 const db=new pg.Client({connectionString:env.DB_URL});await db.connect();
 try {
  const peerMessage=process.argv.includes("--peer-message");
- const email=peerMessage ? "iphone-peer@example.test" : process.argv.includes("--simulator") ? "simulator-validation@example.test" : "iphone-validation@example.test";
+ const peerEvent=process.argv.includes("--reported-event");
+ const email=(peerMessage || peerEvent) ? "iphone-peer@example.test" : process.argv.includes("--simulator") ? "simulator-validation@example.test" : "iphone-validation@example.test";
  let user=(await db.query("select id from auth.users where email=$1",[email])).rows[0];
  if(!user){
   const r=await fetch(env.API_URL+"/auth/v1/admin/users",{method:"POST",headers:{apikey:env.SERVICE_ROLE_KEY,Authorization:"Bearer "+env.SERVICE_ROLE_KEY,"Content-Type":"application/json"},body:JSON.stringify({email,email_confirm:true})});
@@ -16,7 +17,7 @@ try {
   user=await r.json();
  }
  await db.query("insert into app_private.members(account_id) values($1) on conflict do nothing",[user.id]);
- if(process.argv.includes("--registered-fixture") || process.argv.includes("--host-event") || peerMessage) {
+ if(process.argv.includes("--registered-fixture") || process.argv.includes("--host-event") || peerMessage || peerEvent) {
   // Prepare an already-registered account for navigation tests. This does not
   // stand in for testing the native picker or first-time onboarding.
   const headers={apikey:env.PUBLISHABLE_KEY,Authorization:"Bearer "+env.SERVICE_ROLE_KEY,"Content-Type":"application/json"};
@@ -34,7 +35,7 @@ try {
   };
   const dir=await mkdtemp(join(tmpdir(),"yumegaoka-ui-avatar-"));
   try {
-   await rpc("profile_save",{display_name:peerMessage ? "UI別の参加者" : "実機確認"});
+   await rpc("profile_save",{display_name:(peerMessage || peerEvent) ? "UI別の参加者" : "実機確認"});
    const street_id="11111111-1111-4111-8111-111111111111";
    const state=await rpc("street_icon_get",{street_id});
    if(!state.contribution_id){
@@ -48,8 +49,8 @@ try {
     const receipt=await rpc("command_prepare",{kind:"chat_send"});
     await rpc("command_execute",{id:receipt.id,body:{street_id,body:"UI peer message for report and block"}});
    }
-   if(process.argv.includes("--host-event")) {
-    const title="UI host workflow";
+   if(process.argv.includes("--host-event") || peerEvent) {
+    const title=peerEvent ? "UI reported event" : "UI host workflow";
     const list=await rpc("event_list",{street_id,mine_only:true});
     for(const event of list.items.filter(item=>item.title===title && item.mine)) {
      const current=await rpc("event_get",{id:event.id});
@@ -58,6 +59,7 @@ try {
     const receipt=await rpc("command_prepare",{kind:"event_create"});
     const created=await rpc("command_execute",{id:receipt.id,body:{street_id,title,description:"運営UI試験",longitude:139.7109,latitude:35.7295,starts_at:new Date(Date.now()+3600000).toISOString(),ends_at:new Date(Date.now()+7200000).toISOString(),capacity:20}});
     await rpc("event_register",{id:created.id,joined:true,revision:0});
+    if(peerEvent) await rpc("report_create",{target_kind:"event",target_id:created.id,reason:"spam",description:"運営から対象詳細と名簿を確認するローカル試験"});
     if(process.argv.includes("--notify-change")) {
      const current=await rpc("event_get",{id:created.id});
      await rpc("event_edit",{...current,ends_at:new Date(Date.parse(current.ends_at)+300000).toISOString()});

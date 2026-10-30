@@ -60,3 +60,5 @@ runnerも未変更なら`test-without-building`。`-collect-test-diagnostics nev
 実機の変更通知を中止通知と切り分ける際は、専用アカウントに`node scripts/prepare-ui-test.mjs --host-event --notify-change`で作成→参加→終了時刻変更を実APIで用意できる。画面での通知確認・参加取消の代わりにはならない。MFA初期化は行わない。
 
 シミュレータのfixture作成は全オプションに`--simulator`を付ける（表の`--host-event`等にも追加）。付けない場合は実機専用アカウントなので、実機手動確認の準備以外では使わない。切替は`testSignOutForFixtureSwitch`→`testSimulatorAccountLogin`。後者はOTPだけで、画面巡回を不必要に反復しない。ログアウトはscope=localでiPhone側のセッションを失効させない。運営資格/MFAの初期化・解除もシミュレータ専用に限定する。
+
+`testOperatorReportedEventRoster`は`--reported-event`でpeerのローカルイベント/自己参加/通報、`--simulator --operator`で別運営を準備する。実MFA→通報→現在のイベント詳細→名簿を確認し、主催編集/中止ボタンがないことを確認。終了後は`--simulator --revoke-operator`。実機アカウントを使わない。

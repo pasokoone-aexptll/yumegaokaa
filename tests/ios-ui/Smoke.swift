@@ -74,6 +74,19 @@ final class Smoke: XCTestCase {
   XCTAssertTrue(app.staticTexts.matching(identifier:"停止済み").firstMatch.waitForExistence(timeout:10))
   attach(app,"invitation-revoked")
  }
+ @MainActor func testOperatorReportedEventRoster() throws {
+  let app=try operatorApp()
+  tap(app,"‹ 戻る");tap(app,"通報対応")
+  XCTAssertTrue(app.staticTexts["UI reported event"].waitForExistence(timeout:20))
+  tap(app,"オフ会の詳細を確認")
+  tap(app,"参加者一覧")
+  XCTAssertTrue(app.staticTexts["UI別の参加者"].waitForExistence(timeout:15))
+  XCTAssertFalse(app.buttons["イベントを編集"].exists)
+  XCTAssertFalse(app.buttons["イベントを中止"].exists)
+  attach(app,"operator-non-host-event-roster")
+  tap(app,"‹ 戻る")
+  XCTAssertTrue(app.staticTexts["通報対応"].waitForExistence(timeout:10))
+ }
  @MainActor func testOperatorResolvePeerReport() throws {
   let app=try operatorApp()
   tap(app,"‹ 戻る")
