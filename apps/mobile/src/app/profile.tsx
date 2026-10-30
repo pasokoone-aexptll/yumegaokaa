@@ -1,36 +1,23 @@
-import { useEffect, useState } from "react";
 import { Text, TextInput } from "react-native";
 import { Action, Page, ui } from "../components/Page";
-import { native } from "../lib/native";
+import { Avatar } from "../components/Avatar";
+import { useProfile } from "../hooks/useProfile";
 export default function Profile() {
-  const [name, setName] = useState("");
-  const [status, setStatus] = useState("");
-  const [busy, setBusy] = useState(false);
-  useEffect(() => {
-    native
-      .rpc<{ display_name: string }>("profile_get", {})
-      .then((p) => setName(p.display_name ?? ""))
-      .catch(() =>
-        setStatus(
-          "プロフィールを取得できません。ログインと接続を確認してください。",
-        ),
-      );
-  }, []);
-  async function save() {
-    setBusy(true);
-    try {
-      await native.rpc("profile_save", { display_name: name });
-      setStatus("保存しました");
-    } catch {
-      setStatus(
-        "保存できませんでした。接続と名前を確認して再試行してください。",
-      );
-    } finally {
-      setBusy(false);
-    }
-  }
+  const { profile, name, setName, status, busy, save, selectAvatar } =
+    useProfile();
   return (
     <Page title="プロフィール">
+      <Avatar
+        path={profile?.avatar_path}
+        version={profile?.avatar_updated_at}
+        name={name}
+        size={88}
+      />
+      <Action
+        title="写真を選ぶ"
+        disabled={busy || !profile?.display_name}
+        onPress={() => void selectAvatar()}
+      />
       <TextInput
         style={ui.input}
         placeholder="表示名"
@@ -39,12 +26,11 @@ export default function Profile() {
         onChangeText={setName}
       />
       <Action
-        title="名前を保存"
+        title="保存"
         disabled={busy || !name.trim()}
         onPress={() => void save()}
       />
-      <Text>{status}</Text>
-      <Text style={ui.muted}>本人画像の設定は接続準備中です。</Text>
+      {!!status && <Text>{status}</Text>}
     </Page>
   );
 }

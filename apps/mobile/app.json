@@ -41,6 +41,14 @@
         {
           "nfcPermission": "街のNFCステッカーを読んで参加するために使います。"
         }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "プロフィールの写真を選択します。",
+          "cameraPermission": false,
+          "microphonePermission": false
+        }
       ]
     ],
     "scheme": "yumegaoka"

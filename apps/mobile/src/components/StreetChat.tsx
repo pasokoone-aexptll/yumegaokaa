@@ -1,3 +1,4 @@
+import { Avatar } from "./Avatar";
 import { router } from "expo-router";
 import {
   Alert,
@@ -97,6 +98,11 @@ export function StreetChat() {
             onLongPress={() => menu(m)}
             style={{ paddingVertical: 7 }}
           >
+            <Avatar
+              path={m.avatar_path}
+              version={m.avatar_updated_at}
+              name={m.display_name}
+            />
             <Text style={{ color: "#80909b", fontSize: 12 }}>
               {m.display_name} · {new Date(m.created_at).toLocaleTimeString()}
             </Text>

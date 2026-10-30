@@ -6,6 +6,8 @@ export type Message = {
   id: string;
   author_id: string;
   display_name: string;
+  avatar_path?: string;
+  avatar_updated_at?: string;
   body: string | null;
   created_at: string;
   deleted: boolean;

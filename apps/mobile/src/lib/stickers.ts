@@ -1,4 +1,4 @@
-import Constants from "expo-constants";
+import { localEntry } from "./development";
 import NfcManager, { NfcTech, Ndef } from "react-native-nfc-manager";
 export type StickerDraft = {
   id: string;
@@ -9,8 +9,7 @@ export type StickerDraft = {
   longitude: number;
   latitude: number;
 };
-export const localStickerAdapter =
-  __DEV__ && Constants.expoConfig?.extra?.localEntry === true;
+export const localStickerAdapter = localEntry;
 export async function stickerTouch(tagID: string, write: boolean) {
   const payload = { v: 1, tag_id: tagID };
   if (localStickerAdapter) return payload;

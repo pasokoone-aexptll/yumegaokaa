@@ -4,7 +4,6 @@ import { StreetChat } from "../../components/StreetChat";
 import { Recruitment } from "../../lib/recruitments";
 import { StreetEvent, countdown } from "../../lib/events";
 import { router, useLocalSearchParams } from "expo-router";
-import Constants from "expo-constants";
 import { closeMenu, setToolsButtonVisible } from "expo-dev-client";
 import { createClient } from "@supabase/supabase-js";
 import { useCallback, useEffect, useRef, useState } from "react";
@@ -39,30 +38,7 @@ import {
 } from "../../lib/native";
 import { liveCells } from "../../lib/presence";
 
-// Fixture entry is restricted to a debug build explicitly configured for a local API.
-const localHost = (() => {
-  try {
-    const h = new URL(url).hostname;
-    if (h === "localhost") return true;
-    const octets = h.split(".");
-    if (
-      octets.length !== 4 ||
-      octets.some((x) => !/^\d{1,3}$/.test(x) || Number(x) > 255)
-    )
-      return false;
-    const [first, second] = octets.map(Number);
-    return (
-      first === 127 ||
-      first === 10 ||
-      (first === 192 && second === 168) ||
-      (first === 172 && second >= 16 && second <= 31)
-    );
-  } catch {
-    return false;
-  }
-})();
-const nfcDisabled = Constants.expoConfig?.extra?.localEntry === true;
-const localEntry = __DEV__ && nfcDisabled && localHost;
+import { localEntry, nfcDisabled } from "../../lib/development";
 const initial: NativeState = {
   observing: false,
   status: "未参加",

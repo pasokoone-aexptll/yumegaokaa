@@ -457,3 +457,12 @@ Git is now initialized with baseline commit555969d on codex/mvp-integration. Sec
 - sticker-flow.test.mjs成功：3枚準備→未照合遷移拒否→1点で公開不可→凸包公開→同受付再送→停止後の古いプレビュー拒否→2点時の旧範囲保持。SQLの変数別名衝突を修正。型検査成功。Lint重複import警告を修正、再実行は次の変更確認時。
 - 未完：交換時の旧タグ廃止の原子性、登録下書きの編集/取消/再開UI、公開受付の期限清掃、全画面実操作、実NFC。物理write/read実装は未検証でT028はBLOCKEDを維持。
 - 次：上記のステッカー残処理、本人アイコン/アカウント例外、イベント編集と通知の残処理を接続し、まとめてUI統合へ進む。
+
+
+## 実装チェックポイント9：本人アイコン
+- T004/T020：Expo58対応ImagePicker/ImageManipulator/FileSystemを追加。2MB以内の画像を最大512pxで読み込み、JPEGへ再エンコードして非公開Storageへ保存。プロフィール画面をuseProfileへ分離、チャットは現在の本人画像を参照する。
+- RLSで会員閲覧・所有者更新、bucket側でも2MB/JPEG制限。scripts/avatar-smoke.mjsで実Storage保存→プロフィール参照→別会員読取、他人上書き/公開URL/2MB超過/停止会員の拒否を確認。fixtureユーザー・画像は削除。
+- 未確認：新ライブラリのネイティブビルドと写真選択実操作、出力画像のメタデータ/寸法の実測、退会時の画像清掃。型検査成功。T004はIN_PROGRESSを維持。
+- 依存監査：npm auditはZod<4.6.6の大量入力時メモリ消費（GHSA-mrhx-c7xc-m3w5）をhighとしてExpo CLI経由で報告。実体は開発CLI/ESLintのzod3.25.76であり、アプリの入力APIには使用していない。修正提案のExpo51への逆移行やZod4への無検証差替えは行わない。deepmerge4.3.1も開発設定経由のlow。公開準備T033で対応版を確認する。
+- NFC開発代用のガードを共通development.tsへ移し、ステッカー側もdebug＋明示設定＋ローカルAPIに限定。
+- 進捗5/33を維持。次の再開点はアカウント例外/イベント編集等の残処理。ネイティブ変更をまとめた後、画面操作を統合確認する。
