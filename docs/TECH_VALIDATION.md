@@ -411,3 +411,5 @@ arrival-chat-flow.test.mjsで実入街→再送/再利用/気配更新後のロ�
 
 ### チェックポイント68：期限清掃の接続確認
 feature-retention.test.mjs成功。実worker入口maintenance_jobs(cleanup)で期限前後26行を照合。終了/中止イベントと参加・通知・outboxの24h連鎖削除、チャット30日、通報180/30日、運営90日、未完了下書き7日。fixture rollback。全データ種別/常時稼働/バックアップは未確認。iPhone用Releaseのまとめたビルドを開始し、結果は後記する。
+
+チェックポイント68実機更新追記：iPhone用Releaseビルド成功、codesign --verify --deep --strict成功、main.jsbundle 3.5MiB同梱。検証用iPhoneへのinstall成功（/tmp/yumegaoka-iphone68-install.log）。画像切り抜き/圧縮・日時選択・通知/退会の修正を収録。devicectl起動は端末ロック（Locked）により拒否。インストール成功と起動成功を混同しない。帰宅後の手動起動・写真保存は未確認。

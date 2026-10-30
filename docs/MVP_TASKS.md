@@ -893,3 +893,5 @@ T003/T004/T007/T030：チャット画像との別設定、本人と地図で同�
 - 全fixture rollback。清掃の常時稼働/バックアップ/外部Authログ/全データ種別を網羅する試験ではない。T030はIN_PROGRESSのまま。既存の仕様・製品コード変更はなし。
 - T032：画像編集/圧縮、日時選択、通知/退会の修正をまとめてiPhone用Releaseの更新を開始。/tmp/yumegaoka-iphone68-build.log。ビルド完了・転送・実機操作は別途結果を記録する。
 - DONE5/IMPLEMENTED13/IN_PROGRESS12/TODO0/BLOCKED3。完了15.2%、実装到達54.5%。pushなし。
+
+チェックポイント68実機更新追記：iPhone用Releaseビルド成功、codesign --verify --deep --strict成功、main.jsbundle 3.5MiB同梱。検証用iPhoneへのinstall成功（/tmp/yumegaoka-iphone68-install.log）。画像切り抜き/圧縮・日時選択・通知/退会の修正を収録。devicectl起動は端末ロック（Locked）により拒否。インストール成功と起動成功を混同しない。帰宅後の手動起動・写真保存は未確認。
