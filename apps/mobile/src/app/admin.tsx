@@ -1,90 +1,26 @@
-import { useCallback, useState } from "react";
-import { router, useFocusEffect } from "expo-router";
+import { router } from "expo-router";
 import { Text, TextInput, View } from "react-native";
 import { Action, Empty, Page, ui } from "../components/Page";
-import { native } from "../lib/native";
-type Invite = {
-  id: string;
-  issuer_name: string | null;
-  recipient_name: string | null;
-  used_at: string | null;
-  revoked_at: string | null;
-  expires_at: string;
-};
+import { useOperatorDashboard } from "../hooks/useOperatorDashboard";
 export default function Screen() {
-  const [operator, setOperator] = useState(false),
-    [ready, setReady] = useState(false),
-    [busy, setBusy] = useState(false),
-    [error, setError] = useState("");
-  const [factor, setFactor] = useState(""),
-    [secret, setSecret] = useState(""),
-    [code, setCode] = useState(""),
-    [invites, setInvites] = useState<Invite[]>([]);
-  const [summary, setSummary] = useState<{
-    active_members: number;
-    active_invitations: number;
-  } | null>(null);
-  const load = useCallback(async () => {
-    const dashboard = await native.rpc<{
-      active_members: number;
-      active_invitations: number;
-    }>("operator_dashboard", {});
-    const list = await native.rpc<{ items: Invite[] }>("operator_invites", {});
-    setSummary(dashboard);
-    setInvites(list.items);
-    setReady(true);
-  }, []);
-  useFocusEffect(
-    useCallback(() => {
-      let live = true;
-      setReady(false);
-      setSecret("");
-      setCode("");
-      setError("");
-      setInvites([]);
-      setSummary(null);
-      void (async () => {
-        const status = await native.rpc<{ operator: boolean }>(
-          "operator_status",
-          {},
-        );
-        if (!live) return;
-        setOperator(status.operator);
-        if (!status.operator) return;
-        const factors = await native.mfaFactors();
-        if (!live) return;
-        setFactor(
-          factors.factors.find(
-            (f) => f.factor_type === "totp" && f.status === "verified",
-          )?.id ?? "",
-        );
-        try {
-          await load();
-        } catch {
-          /* AAL1 requires the code form below. */
-        }
-      })().catch((e) => {
-        if (live) setError(String(e));
-      });
-      return () => {
-        live = false;
-        setSecret("");
-        setCode("");
-      };
-    }, [load]),
-  );
-  async function run(work: () => Promise<void>) {
-    if (busy) return;
-    setBusy(true);
-    setError("");
-    try {
-      await work();
-    } catch (e) {
-      setError(String(e));
-    } finally {
-      setBusy(false);
-    }
-  }
+  const {
+    operator,
+    ready,
+    busy,
+    error,
+    factor,
+    secret,
+    code,
+    setCode,
+    invites,
+    summary,
+    more,
+    enroll,
+    verify,
+    revoke,
+    refresh,
+    next,
+  } = useOperatorDashboard();
   return (
     <Page title="運営">
       {!!error && <Text style={ui.error}>{error}</Text>}
@@ -99,13 +35,7 @@ export default function Screen() {
             <Action
               title="認証アプリを登録"
               disabled={busy}
-              onPress={() =>
-                void run(async () => {
-                  const f = await native.mfaEnroll();
-                  setFactor(f.id);
-                  setSecret(f.totp.secret);
-                })
-              }
+              onPress={() => void enroll()}
             />
           )}
           {!!secret && (
@@ -132,14 +62,7 @@ export default function Screen() {
               <Action
                 title="追加認証"
                 disabled={busy || code.length !== 6}
-                onPress={() =>
-                  void run(async () => {
-                    await native.mfaVerify(factor, code);
-                    setSecret("");
-                    setCode("");
-                    await load();
-                  })
-                }
+                onPress={() => void verify()}
               />
             </>
           )}
@@ -163,7 +86,7 @@ export default function Screen() {
           <Action
             title="最新の状態を取得"
             disabled={busy}
-            onPress={() => void run(load)}
+            onPress={() => void refresh()}
           />
           {!invites.length && <Empty>招待はありません。</Empty>}
           {invites.map((i) => (
@@ -181,16 +104,18 @@ export default function Screen() {
                 <Action
                   title="招待を無効化"
                   disabled={busy}
-                  onPress={() =>
-                    void run(async () => {
-                      await native.rpc("operator_invite_revoke", { id: i.id });
-                      await load();
-                    })
-                  }
+                  onPress={() => void revoke(i.id)}
                 />
               )}
             </View>
           ))}
+          {more && (
+            <Action
+              title="続きを表示"
+              disabled={busy}
+              onPress={() => void next()}
+            />
+          )}
         </>
       )}
     </Page>

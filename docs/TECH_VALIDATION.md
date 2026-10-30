@@ -360,3 +360,6 @@ T015/T017、R13/R19。作成・編集で日時順序・24時間上限・定員1�
 
 ### チェックポイント53：運営の日時選択
 T024/T025、R16/R18/R19。membersからMemberRowを分離し、投稿制限の終了をEventDateFieldで選択するよう接続。API・サーバー検査は変更なし。typecheck/Lintと差分検査成功。運営画面での制限操作を伴う実機検証は未実施。
+
+### チェックポイント54：運営招待の全件取得
+T024/T025、R03/R16/R18。useOperatorDashboardへ分離、複合カーソルと続き取得を接続。migration032ローカル適用済み。operator-access.test.mjsで同時刻105件のページ越境を重複/欠落なし確認、既存MFA/資格失効拒否も成功。operator-dashboard-state.test.mjsの3件で離脱後一覧/MFAキー非復活、二重操作抑止、無効化応答紛失後の再取得を確認。typecheck/Lint成功。実画面ページングと実機は未確認。
