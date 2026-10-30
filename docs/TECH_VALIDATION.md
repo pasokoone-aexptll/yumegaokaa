@@ -299,3 +299,10 @@ scripts/avatar-smoke.mjs成功：所有者アップロード、プロフィー�
 - testEventCreateJoinCancel成功38.129秒：日時/題名/Map地点から作成→参加→Homeで表示→詳細から取消→主催者中止。DBで試験イベントUI event 1793336001のcanceled=true/有効参加0件を確認。初回失敗試験のUI event 1793335696は参加1件の試験データとして残り、次の操作確認で整理する。一般利用者データは変更していない。
 - 結果 /tmp/yumegaoka-release-actions-query.xcresult、ログ同名.log。入力境界、一般参加者の複数端末UI、編集/名簿/通知、実機はこの試験の範囲外。成功済みの関連DB競合/名簿権限試験はコード確認で再利用、無関係な再実行はしない。
 - T016をIN_PROGRESS→IMPLEMENTED。ローカルUI接続が揃った証拠を追加したが依存T015全条件・実機統合をDONEと誤認しない。DONE5/IMPLEMENTED3/IN_PROGRESS22/TODO0/BLOCKED3。完了5/33=15.2%、実装到達8/33=24.2%、完了増分0。次：同じReleaseで主催編集/名簿/通知とチャット拡大・他利用者反映。pushなし。
+
+## 実装チェックポイント45：主催編集・名簿・重要通知
+- T017/T018/T031/R13/R14/R17/R19：既存Release（本体再ビルドなし）でtestHostEditRosterNotifications成功49.750秒。前回残ったUI event 1793335696を利用し、参加者一覧→終了日時編集→変更通知→通知から詳細→中止→中止通知既読→再起動後既読保持を確認。
+- DB照合：対象イベントrevision=3/canceled=true、通知kind=canceled/read=true。未処理だった前回試験イベントを中止して整理できた。Pushはこの試験に含めない。
+- 日時置換の初回試験はフィールド途中のカーソルで末尾文字が残り、保存前の値assertで停止。疑似右矢印では解決せず、最初の長押しはフォーカスのみ。フォーカス後の長押し→標準全選択→置換で成功。製品の値検査を弱めていない。失敗runnerはすべて終了済み、sysdiagnose省略で余分な待機を避けた。
+- 結果 /tmp/yumegaoka-release-host-focused.xcresult、ログ同名.log。scripts/prepare-ui-test.mjs --host-eventで実Auth/API経由の専用UI host workflowイベント作成/参加を再現可能に追加し、準備成功。テストの固定過去タイトルをこの専用名へ変更。成功したUIケースの再実行はタイトルだけの差分なので省略。新fixtureは次の試験用に保持。
+- T017 IN_PROGRESS→IMPLEMENTED。DONE5/IMPLEMENTED4/IN_PROGRESS21/TODO0/BLOCKED3、完了5/33=15.2%、実装到達9/33=27.3%。完了増分0。一般参加者側の複数端末UI、全通知削除/再試行、定員境界、実機は今回の保証外。次：募集/チャット拡大/他利用者への同期、全タスク完了条件の残り照合。pushなし。
