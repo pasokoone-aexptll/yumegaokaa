@@ -108,6 +108,20 @@ test("清掃統合: イベント関連24h・チャット30日・通報180/30日�
       );
       await remember("sticker_drafts", id, days < 7);
     }
+    for (const hours of [23, 25]) {
+      const id = randomUUID();
+      await db.query(
+        "insert into app_private.commands(id,owner_id,kind,accept_until) values($1,$2,'chat_send',clock_timestamp()-make_interval(hours=>$3))",
+        [id, uid, hours],
+      );
+      await remember("commands", id, hours < 24);
+    }
+    for (const days of [6, 8]) {
+      await db.query(
+        "insert into app_private.request_limits(account_id,kind,at) values($1,$2,clock_timestamp()-make_interval(days=>$3))",
+        [uid, `retention-${days}`, days],
+      );
+    }
     // Use the actual worker entry point, including its composed cleanup functions.
     await db.query("select set_config('request.jwt.claims',$1,true)", [
       JSON.stringify({ role: "service_role" }),
@@ -115,6 +129,15 @@ test("清掃統合: イベント関連24h・チャット30日・通報180/30日�
     await db.query("set local role service_role");
     await db.query("select public.maintenance_jobs('cleanup')");
     await db.query("reset role");
+    assert.deepEqual(
+      (
+        await db.query(
+          "select kind from app_private.request_limits where account_id=$1 order by kind",
+          [uid],
+        )
+      ).rows.map((r) => r.kind),
+      ["retention-6"],
+    );
     for (const row of expected) {
       const { rows } = await db.query(
         `select count(*)::int count from app_private.${row.table} where ${row.column ?? "id"}=$1`,

@@ -689,3 +689,8 @@ R11/R18。sticker-flowに同一点3登録の退化拒否と競合公開拒否を
 - T006/R19をDONE。NAVIGATION_ACCEPTANCEに現行ルート・呼出元・操作証拠・Figmaの対応と限界を集約。既存機能試験を再実行せず再利用。
 - 未確認だったSettings→アカウント管理→退会→戻る→接続状態をtestAccountNestedNavigationで成功。/tmp/yumegaoka-navigation118.xcresult。メール変更/退会は実行せずT005の未決条件を維持。既存Release117を使用、本体ビルドとiPhone操作なし。
 - DONE23/33、IMPLEMENTED2、IN_PROGRESS5、BLOCKED3。実装25/33、統合24/33、実機11/33。残14→13、新規必須0。推測10.5–23.5h＋待ち不明。次T030。
+
+## チェックポイント119：期限表の不足確認
+- T030/R17：RETENTION_ACCEPTANCEへ要件9章と実装/既存証拠/残条件を対応付け。feature-retentionへ操作受付23h保持/25h削除、制限用記録6日保持/8日削除を追加し実DB成功。新しい保存期限なし。
+- T030はIN_PROGRESS。試行/終了滞在/入街ログの物理削除境界、worker稼働、端末残存キャッシュ、Q08が残る。既存T030-01〜03内の確認で項目追加なし。
+- 残13→13、新規必須0、推測10.5–23.5h＋待ち不明は据置き。DONE23/33、実装25/33、統合24/33、実機11/33、BLOCKED3/33。製品変更なし、ビルド・実機操作省略。
