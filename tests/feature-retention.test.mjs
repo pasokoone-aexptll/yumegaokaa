@@ -122,6 +122,28 @@ test("清掃統合: イベント関連24h・チャット30日・通報180/30日�
         [uid, `retention-${days}`, days],
       );
     }
+    for (const hours of [23, 25]) {
+      const visit = randomUUID(),
+        attempt = randomUUID();
+      await db.query(
+        "insert into app_private.visits(id,account_id,street_id,writer_session_id,started_at,expires_at,ended_at,end_reason) values($1,$2,$3,$4,clock_timestamp()-interval '3 days',clock_timestamp()-interval '2 days',clock_timestamp()-make_interval(hours=>$5),'manual')",
+        [visit, uid, street, randomUUID(), hours],
+      );
+      await remember("visits", visit, hours < 24);
+      await db.query(
+        "insert into app_private.attempts(id,account_id,session_id,street_id,expected_epoch,issued_at,accept_until,state,result_visit_id,result_kind) values($1,$2,$3,$4,0,clock_timestamp()-interval '3 days',clock_timestamp()-make_interval(hours=>$5),'committed',$6,'created')",
+        [attempt, uid, randomUUID(), street, hours, visit],
+      );
+      await remember("attempts", attempt, hours < 24);
+    }
+    for (const days of [29, 31]) {
+      const id = randomUUID();
+      await db.query(
+        "insert into app_private.arrival_logs(id,source_visit_id,account_id,street_id,created_at) values($1,$2,$3,$4,clock_timestamp()-make_interval(days=>$5))",
+        [id, randomUUID(), uid, street, days],
+      );
+      await remember("arrival_logs", id, days < 30);
+    }
     // Use the actual worker entry point, including its composed cleanup functions.
     await db.query("select set_config('request.jwt.claims',$1,true)", [
       JSON.stringify({ role: "service_role" }),
