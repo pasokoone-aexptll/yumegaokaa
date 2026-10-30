@@ -77,8 +77,11 @@ export function MemberRow({
         disabled={busy || !!member.withdrawn_at || !reason.trim()}
         onPress={() => {
           const date = new Date(until);
-          if (!Number.isFinite(date.getTime())) {
-            setError("終了日時を確認してください。");
+          if (
+            !Number.isFinite(date.getTime()) ||
+            date.getTime() <= Date.now()
+          ) {
+            setError("未来の終了日時を選択してください。");
             return;
           }
           void act("operator_chat_restrict", { until_at: date.toISOString() });
@@ -100,12 +103,22 @@ export function MemberRow({
       <Action
         title="招待枠を保存"
         disabled={busy || !!member.withdrawn_at || !reason.trim()}
-        onPress={() =>
+        onPress={() => {
+          const value = Number(limit);
+          if (
+            !limit.trim() ||
+            !Number.isInteger(value) ||
+            value < 0 ||
+            value > 1000
+          ) {
+            setError("招待枠は0〜1000の整数で入力してください。");
+            return;
+          }
           void act("operator_invite_policy", {
-            weekly_limit: Number(limit),
+            weekly_limit: value,
             paused: member.invite_paused,
-          })
-        }
+          });
+        }}
       />
       <Action
         title={member.invite_paused ? "招待発行を再開" : "招待発行を停止"}

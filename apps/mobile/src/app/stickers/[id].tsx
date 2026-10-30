@@ -204,9 +204,19 @@ export default function Sticker() {
               }
             />
           ) : (
-            <Empty>
-              {draft.phase === "installed" ? "公開待ち" : "公開済み"}
-            </Empty>
+            <>
+              <Empty>
+                {draft.phase === "installed" ? "公開待ち" : "公開済み"}
+              </Empty>
+              <Action
+                title={
+                  draft.phase === "installed"
+                    ? "街の範囲を確認して公開"
+                    : "街の範囲・移設・停止"
+                }
+                onPress={() => router.push("/stickers/area")}
+              />
+            </>
           )}
         </>
       )}

@@ -1,3 +1,5 @@
+import { StreetLogin } from "../../components/StreetLogin";
+import { StreetEntrySheet } from "../../components/StreetEntrySheet";
 import { StreetMapMarkers } from "../../components/StreetMapMarkers";
 import { streetMapStyles as styles } from "../../components/streetMapStyles";
 import { mapStyle } from "../../lib/mapStyle";
@@ -11,7 +13,6 @@ import {
   StyleSheet,
   Switch,
   Text,
-  TextInput,
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -93,57 +94,18 @@ export default function Street() {
     );
   if (!signed)
     return (
-      <SafeAreaView style={styles.login}>
-        <Text style={styles.logo}>夢ヶ丘</Text>
-        <Text style={styles.subtitle}>街の気配を感じる、第六感。</Text>
-        <Text style={styles.label}>招待されたメールでログイン</Text>
-        <TextInput
-          style={styles.input}
-          autoCapitalize="none"
-          autoCorrect={false}
-          spellCheck={false}
-          keyboardType="email-address"
-          placeholder="メールアドレス"
-          value={email}
-          onChangeText={setEmail}
-        />
-        {sent && (
-          <TextInput
-            style={styles.input}
-            keyboardType="number-pad"
-            placeholder="メールの確認コード"
-            value={code}
-            onChangeText={setCode}
-          />
-        )}
-        <Pressable
-          accessibilityRole="button"
-          style={styles.button}
-          disabled={busy || !email}
-          onPress={login}
-        >
-          <Text style={styles.buttonText}>
-            {busy ? "確認中…" : sent ? "ログイン" : "確認コードを送る"}
-          </Text>
-        </Pressable>
-        {sent && (
-          <Pressable
-            accessibilityRole="button"
-            disabled={busy}
-            onPress={() => {
-              setSent(false);
-              setCode("");
-              setError("");
-            }}
-          >
-            <Text style={styles.link}>メールアドレスを確認・コードを再送</Text>
-          </Pressable>
-        )}
-        <Text style={styles.error}>{error}</Text>
-        <Text style={styles.note}>
-          ローカル開発では、メールはMacのMailpitに届きます。
-        </Text>
-      </SafeAreaView>
+      <StreetLogin
+        email={email}
+        setEmail={setEmail}
+        code={code}
+        setCode={setCode}
+        sent={sent}
+        setSent={setSent}
+        error={error}
+        setError={setError}
+        busy={busy}
+        login={login}
+      />
     );
   const cells = snapshot ? liveCells(snapshot, now) : [];
   return (
@@ -228,64 +190,12 @@ export default function Street() {
         </Pressable>
       </SafeAreaView>
       <StreetChat />
-      <Modal
-        visible={sheet !== null}
-        transparent
-        animationType="slide"
-        onRequestClose={() =>
-          sheet === "success" ? setSheet(null) : void exit()
-        }
-      >
-        <View style={styles.shade}>
-          <View style={styles.sheet}>
-            <Text style={styles.heading}>
-              {sheet === "success"
-                ? "街への参加が完了しました"
-                : sheet === "explain"
-                  ? "街に参加する"
-                  : sheet === "scanning"
-                    ? "ステッカーにタッチ"
-                    : "街への参加を記録中"}
-            </Text>
-            <Text style={styles.cloud}>{sheet === "success" ? "✓" : "☁︎"}</Text>
-            <Text style={styles.subtitle}>
-              {sheet === "success"
-                ? "街の気配を感じながら、自由に過ごしてください。"
-                : sheet === "explain"
-                  ? "参加中は画面を閉じても、このあたりにいる気配を共有します。名前や正確な現在地は地図に出ません。OFFで停止できます。"
-                  : localEntry
-                    ? "開発用タグから本物と同じDB/APIへ入街を記録しています。"
-                    : "NFC読取にはiPhone標準の画面が開きます。読み取り後はステッカーから離して大丈夫です。"}
-            </Text>
-            {sheet === "success" ? (
-              <Pressable
-                accessibilityRole="button"
-                style={styles.button}
-                onPress={() => setSheet(null)}
-              >
-                <Text style={styles.buttonText}>地図へ</Text>
-              </Pressable>
-            ) : sheet === "explain" ? (
-              <Pressable
-                accessibilityRole="button"
-                style={styles.button}
-                onPress={scan}
-              >
-                <Text style={styles.buttonText}>
-                  {localEntry ? "開発用タグで入街（NFC代用）" : "NFCを読み取る"}
-                </Text>
-              </Pressable>
-            ) : (
-              <ActivityIndicator size="large" />
-            )}
-            {sheet !== "success" && (
-              <Pressable accessibilityRole="button" onPress={() => void exit()}>
-                <Text style={styles.link}>キャンセル</Text>
-              </Pressable>
-            )}
-          </View>
-        </View>
-      </Modal>
+      <StreetEntrySheet
+        sheet={sheet}
+        setSheet={setSheet}
+        exit={exit}
+        scan={scan}
+      />
       <Modal
         visible={settings || params.panel === "account"}
         animationType="slide"
@@ -311,10 +221,7 @@ export default function Street() {
           >
             <Text style={styles.buttonText}>ログアウト</Text>
           </Pressable>
-          <Pressable
-            accessibilityRole="button"
-            onPress={closeAccount}
-          >
+          <Pressable accessibilityRole="button" onPress={closeAccount}>
             <Text style={styles.link}>地図に戻る</Text>
           </Pressable>
         </SafeAreaView>
