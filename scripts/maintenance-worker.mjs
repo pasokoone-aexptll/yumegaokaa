@@ -11,6 +11,7 @@ if (new URL(env.API_URL).hostname !== "127.0.0.1")
 async function request(path, method, body) {
   return fetch(env.API_URL + path, {
     method,
+    signal: AbortSignal.timeout(15000),
     headers: {
       apikey: env.SERVICE_ROLE_KEY,
       Authorization: "Bearer " + env.SERVICE_ROLE_KEY,
