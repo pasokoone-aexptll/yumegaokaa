@@ -124,6 +124,20 @@ final class Smoke: XCTestCase {
   XCTAssertTrue(message.waitForExistence(timeout:20))
   attach(app,"peer-visible-after-unblock")
  }
+ @MainActor func testOperatorInvitePagination() throws {
+  let app=try operatorApp()
+  tap(app,"‹ 戻る")
+  let used=app.staticTexts["UIページ発行者 → UIページ受領者"]
+  for _ in 0..<5 {if used.isHittable {break};app.swipeUp()}
+  XCTAssertTrue(used.waitForExistence(timeout:15))
+  let more=app.buttons["続きを表示"]
+  for _ in 0..<60 {if more.isHittable {break};app.swipeUp()}
+  XCTAssertTrue(more.isHittable);more.tap()
+  let last=app.staticTexts["UIページ末尾 → UIページ受領者"]
+  for _ in 0..<12 {if last.isHittable {break};app.swipeUp()}
+  XCTAssertTrue(last.waitForExistence(timeout:15))
+  attach(app,"operator-used-invite-next-page")
+ }
  @MainActor func testOperatorInviteRevocation() throws {
   let app=try operatorApp()
   tap(app,"‹ 戻る")

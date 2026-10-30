@@ -636,3 +636,6 @@ cp103追記：035でprivate broadcast読取policyを削除。config realtime.ena
 R03/R16/R18。LIMIT_ACCEPTANCEで要件8章全上限・認可・再送を現行実装/既存証拠に対応付け。chat-flowに他人受付拒否、本文変更conflict、受付削除後再送not_foundと行数非増加を追加し実DB成功。製品変更なし、型/Lintはcp103を再利用。T029 DONE、全体13/33。残量26→25、追加必須0。
 
 cp104追記：T022/R15/R18。recruitment-flowでブロックの募集一覧/直接取得拒否、解除後取得、check-in人数維持を実DB成功。useStreetMap/useHomePins/useStreetChatと募集詳細のlocalBlocksによる遅延応答除外、event/presenceに適用しないことを現行コード照合。cp66 arrival-chat、cp44/47/70実UI・実機と既存state試験を再利用しDONE。製品変更なし、追加ビルド不要。
+
+## cp105：T025運営招待の残UI確認
+R03/R16/R18。test-invite-pagination-uiで専用101件の使用済招待を実DBへ作成し、既存ReleaseのMFA運営画面で発行者→受領者、続きを表示、101件目の専用発行者をXCTest確認。/tmp/yumegaoka-invites105.xcresult成功。最初のfixtureはmembers作成不足でFK拒否、補正後成功。fixture全削除、専用シミュレータの運営資格/MFAを復元。製品変更なし、本体ビルド/実機/無関連テスト省略。cp88/89の無効化/枠/停止操作、032権限/ページングと合わせT025 DONE。
