@@ -12,7 +12,8 @@ export function useEventEditor(id: string) {
     [point, setPoint] = useState<[number, number]>(),
     [ongoing, setOngoing] = useState(false),
     [busy, setBusy] = useState(false),
-    [error, setError] = useState("");
+    [error, setError] = useState(""),
+    [latest, setLatest] = useState<StreetEvent>();
   const load = useCallback(async () => {
     try {
       const [e, clock] = await Promise.all([
@@ -20,6 +21,7 @@ export function useEventEditor(id: string) {
         native.rpc<{ server_time: string }>("time", {}),
       ]);
       if (!e.mine) throw Error("not_host");
+      setLatest(undefined);
       setEvent(e);
       setTitle(e.title);
       setDescription(e.description);
@@ -63,15 +65,38 @@ export function useEventEditor(id: string) {
         latitude: point[1],
       });
       router.back();
-    } catch {
-      setError(
-        "保存できません。日時・定員・場所と最新の状態を確認してください",
-      );
+    } catch (cause) {
+      if (String(cause).includes("conflict")) {
+        try {
+          const current = await native.rpc<StreetEvent>("event_get", { id });
+          setLatest(current);
+          setError(
+            "イベントが変更されています。入力は残しています。最新内容を確認してください。",
+          );
+        } catch {
+          setError("最新のイベントを取得できません。入力は残しています。");
+        }
+      } else {
+        setError("保存できません。日時・定員・場所と接続を確認してください。");
+      }
+    } finally {
+      setBusy(false);
+    }
+  }
+  async function useLatest() {
+    if (!latest || busy) return;
+    setBusy(true);
+    try {
+      // The user explicitly chose to discard local input. Read again so the
+      // replacement also reflects changes made while the comparison was open.
+      await load();
     } finally {
       setBusy(false);
     }
   }
   return {
+    latest,
+    useLatest,
     event,
     title,
     setTitle,

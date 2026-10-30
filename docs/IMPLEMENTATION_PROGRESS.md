@@ -46,7 +46,7 @@ Expoの雛形がRN 0.88.1を生成したが、`expo install --check` は0.88.0�
 
 2026-10-29：ユーザーがADP未加入と訂正。当面Personal Teamで進め、加入は約1か月後の予定。NFC読取・書込の実機確認を延期し、他の開発を止めない。
 
-`YUMEGAOKA_LOCAL_ENTRY=1` の構成はNFC entitlementを除外。デバッグビルドかつローカルAPIの場合のみ、開発用ボタンで既存のタグIDを入力し、通常と同じ `native.checkin` → prepare/commit → 気配更新 → 集約 → 退出を実行する。会員認可や期限を迂回するAPIは追加しない。実NFCの成功として数えない。本番の毎回NFC必須は維持する。NFC付き構成へ戻すときはフラグを外してprebuildし、有効なADPチームで署名する。
+`YUMEGAOKA_LOCAL_ENTRY=1` の構成はNFC entitlementを除外。Debugまたは明示的な検証用Release（`YUMEGAOKA_VALIDATION_RELEASE=1`）かつローカルAPIの場合のみ、開発用ボタンで既存のタグIDを入力し、通常と同じ `native.checkin` → prepare/commit → 気配更新 → 集約 → 退出を実行する。会員認可や期限を迂回するAPIは追加しない。実NFCの成功として数えない。本番の毎回NFC必須は維持する。NFC付き構成へ戻すときはフラグを外してprebuildし、有効なADPチームで署名する。
 
 Personal Team用Debug iPhoneビルドは2026-10-29に成功。変更後のTypeScriptとExpo ESLintも通過。R04/R11の実NFC確認は未実施であり、R05〜R10の実機通信確認も別途必要。開発用入力は仕様上のNFC必須を置き換えない。
 

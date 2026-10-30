@@ -653,3 +653,9 @@ T003/T004/T007/T030：チャット画像との別設定、本人と地図で同�
 - 未送信下書きの再起動永続化は追加しなかった。現行T015の下書き条件はMap往復保持であり、未確認送信の永続化とは区別する。先に全機能の一巡を優先。
 - 依存監査：highは既存Expo CLI経由のzod oversized collection検証DoSとその上位依存。expo-blur自体の指摘なし。npmの提案はExpo51へのmajor downgradeで互換性を壊すため自動適用しない。開発ツールの修正版適合確認は残る。
 - 全体5/33（15.2%）、実装到達7/33（21.2%）、DONE5/IMPLEMENTED2/IN_PROGRESS21/TODO2/BLOCKED3維持。次はRelease実機検証構成と残る画面統合。pushなし。
+
+## 実装チェックポイント33：Release検証構成・イベント編集競合
+- T032/R19/R21：app.config/developmentへ検証Releaseの明示フラグを追加。非ローカルAPIとNFC代替なしの組合せを構成段階で拒否。通常Releaseでは代替無効。scripts/ios-validation-release.mjsにprebuild→Release/実機インストールの手順を保存。ユーザーの「後で」に従い今回ビルド/転送は行っていない。
+- validation-release.test.mjs成功：検証Releaseのlocal許可、通常Release/公開ホスト拒否、NFC設定分離。初回試験のConstants代替がESModuleのdefaultを二重ラップしたため失敗し、試験境界を修正後成功。型チェック・Lint・diff check成功。
+- T017/R13：イベント編集のconflict時は入力を保持し最新内容を比較表示。保存を止め、ユーザーが破棄確認した場合だけ最新内容を再取得してフォームへ反映。初回取得失敗の再取得ボタン、送信中の入力ロックを追加。実機での競合/再編集は未確認。
+- 仕様変更はユーザー指定の実機検証方式のみ。未送信下書きの永続化は追加していない。全体5/33（15.2%）、実装到達7/33（21.2%）、DONE5/IMPLEMENTED2/IN_PROGRESS21/TODO2/BLOCKED3。次は残る機能の統合と、まとめたReleaseビルド準備。pushなし。

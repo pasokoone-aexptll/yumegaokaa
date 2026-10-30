@@ -1,6 +1,6 @@
 import Constants from "expo-constants";
 import { url } from "./native";
-// Fixture entry is restricted to a debug build explicitly configured for a local API.
+// Fixture entry requires an explicit local configuration, including in validation Release builds.
 export const localHost = (() => {
   try {
     const h = new URL(url).hostname;
@@ -23,4 +23,7 @@ export const localHost = (() => {
   }
 })();
 export const nfcDisabled = Constants.expoConfig?.extra?.localEntry === true;
-export const localEntry = __DEV__ && nfcDisabled && localHost;
+const validationRelease =
+  Constants.expoConfig?.extra?.validationRelease === true;
+export const localEntry =
+  (__DEV__ || validationRelease) && nfcDisabled && localHost;

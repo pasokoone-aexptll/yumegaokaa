@@ -53,3 +53,11 @@ expo-location＋expo-task-managerは背景位置取得を提供し、有力な�
 ## 初回の実装結果
 
 Expo 58.0.21、RN 0.88.0、React 19.3.0、MapLibre 11.5.0、NFC manager 4.2.0をlockfileへ固定。Expo互換チェック、型/Lint、Releaseシミュレータビルドに合格。Swift nativeの認証actor、Core Location、Keychain、背景送信、画面の単調時計を接続。詳細な証拠と限界はTECH_VALIDATION。実機署名はPersonal TeamのNFC権限制限で未完。
+
+## JS内蔵の実機検証Release（2026-10-30）
+ユーザー指定により実機テストは後でReleaseを直接インストールして行う。`node scripts/ios-validation-release.mjs <iPhone device ID>` はiOS prebuildで現行設定・ネイティブ依存を反映し、Releaseをビルド/署名/インストールする。今は実行していない。
+- `YUMEGAOKA_LOCAL_ENTRY=1`と`YUMEGAOKA_VALIDATION_RELEASE=1`を明示して「夢ヶ丘 検証用」とする。前者なし、または非ローカルSupabase URLなら構成を拒否。
+- 通常ReleaseはNFC代替を無効のまま維持。ローカル代替も通常の会員/滞在認可APIを通す。公開用・実NFC確認とは扱わない。
+- JSは内蔵するためMetro不要。ただしローカルSupabase/Auth/Storage/RealtimeはMacで稼働し、iPhoneからそのLAN URLへ到達する必要がある。メールOTPは現状Mailpit。
+- Personal Teamの署名・端末接続が必要。ADPの実NFC・プッシュ・クラウド公開は別の保留事項。
+- expo-blur追加を含むネイティブ変更をまとめて一度ビルドし、写真選択・街pool表示・チャット拡大/キーボード・イベント一巡を確認する。構成試験は実機インストール成功の代用ではない。

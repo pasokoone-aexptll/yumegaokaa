@@ -259,7 +259,7 @@ export function useStreetMap() {
   async function scan() {
     if (nfcDisabled && !localEntry) {
       setError(
-        "この構成はローカルAPIに接続したDebugビルドで使用してください。",
+        "NFC代替はローカルAPIに接続した開発・検証用ビルドで使用してください。",
       );
       setSheet(null);
       return;
