@@ -504,3 +504,9 @@ T012をIMPLEMENTED/INTEGRATEDへ更新。DONE8、IMPLEMENTED15、IN_PROGRESS7、
 - イベント初回試験は高速typeTextで題名が「UI event」から「Uevent」になり、作成後の題名一致で失敗。作成自体は成功し、UI階層に欠落題名が記録された。原因は未特定であり製品入力の問題を解消したとは扱わない。試験を1文字ずつ入力し直後に完全一致確認する形に変更。
 - 失敗したイベント試験だけ本体再ビルドなしで再実行し成功（/tmp/yumegaoka-ui81-event-retry.xcresult）：入力一致→日時/場所選択→作成→参加→Home→地図を開く→Home→詳細→参加取消→中止。Homeの見出し横作成・下線タブ・ピン行と、Mapで対象イベントの表示・横並びチャット行を画像確認。実際の気配の表示証拠ではない（チェックイン0人）。
 - T003/T006/T007/T020/T031、R03/R13/R15/R19。実装23/33、統合20/33、実機11/33、DONE8/33、BLOCKED3を維持。個別導線の証拠追加であり全画面/Figma完全一致ではない。次は入力欠落の原因調査と未完了導線。pushなし。
+
+## チェックポイント82：ピン題名の入力更新（2026-10-31）
+- T015/T031/R13/R19：cp81の高速入力欠落を調査。RN0.88同梱TextInput.jsではonChangeText呼出し後にlastNativeText/eventCountを更新する。pinDraftはuseSyncExternalStoreでそのコールバック中に同期再描画し得る構造だったため、画面の購読を通常のuseState/useEffectへ変更。共有下書きストア、地図選択からの復帰、送信済み内容の固定、logout時clearは維持。
+- 原因候補に対する修正であり、OS/入力メソッドまで含む根本原因の断定ではない。UI試験を1文字ずつから元の高速typeTextへ戻し、入力直後の完全一致を維持。Releaseビルド（/tmp/yumegaoka-input82-build.log）、testEventCreateJoinCancel（/tmp/yumegaoka-input82.xcresult）成功。高速入力一致→地図選択後の題名一致→作成/参加→Home/Map→取消/中止まで通過。実機/日本語変換での入力は未確認。
+- 型/Lint/diffチェック成功。既存成功済みの招待試験やDB全体は再実行せず、変更した入力フローだけ再確認。iPhone転送/pushなし。
+- 実装23/33、統合20/33、実機11/33、DONE8/33、BLOCKED3を維持。全画面の完了条件を満たしたとはしない。次は未完了の画面・運営導線を継続。

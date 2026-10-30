@@ -1,4 +1,4 @@
-import { useSyncExternalStore } from "react";
+import { useEffect, useState } from "react";
 export type PinDraft = {
   kind: "event" | "recruitment";
   title: string;
@@ -27,13 +27,16 @@ export function clearDraft() {
   listeners.forEach((f) => f());
 }
 export function usePinDraft() {
-  return useSyncExternalStore(
-    (f) => {
-      listeners.add(f);
-      return () => {
-        listeners.delete(f);
-      };
-    },
-    () => draft,
-  );
+  const [value, setValue] = useState(() => draft);
+  useEffect(() => {
+    // Let TextInput's native event bookkeeping and this value update batch.
+    // A synchronous external-store render can run inside onChangeText.
+    const refresh = () => setValue(draft);
+    listeners.add(refresh);
+    refresh();
+    return () => {
+      listeners.delete(refresh);
+    };
+  }, []);
+  return value;
 }

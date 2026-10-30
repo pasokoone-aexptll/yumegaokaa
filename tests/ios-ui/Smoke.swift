@@ -519,7 +519,7 @@ final class Smoke: XCTestCase {
   let title="UI event "+String(Int(Date().timeIntervalSince1970))
   let titleField=app.textFields["オフ会名を入力"]
   titleField.tap()
-  for character in title { titleField.typeText(String(character)) }
+  titleField.typeText(title)
   XCTAssertEqual(titleField.value as? String,title)
   titleField.typeText("\n")
   tap(app,"開始日時を選択")
