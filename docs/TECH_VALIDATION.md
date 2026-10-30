@@ -306,3 +306,11 @@ scripts/avatar-smoke.mjs成功：所有者アップロード、プロフィー�
 - 日時置換の初回試験はフィールド途中のカーソルで末尾文字が残り、保存前の値assertで停止。疑似右矢印では解決せず、最初の長押しはフォーカスのみ。フォーカス後の長押し→標準全選択→置換で成功。製品の値検査を弱めていない。失敗runnerはすべて終了済み、sysdiagnose省略で余分な待機を避けた。
 - 結果 /tmp/yumegaoka-release-host-focused.xcresult、ログ同名.log。scripts/prepare-ui-test.mjs --host-eventで実Auth/API経由の専用UI host workflowイベント作成/参加を再現可能に追加し、準備成功。テストの固定過去タイトルをこの専用名へ変更。成功したUIケースの再実行はタイトルだけの差分なので省略。新fixtureは次の試験用に保持。
 - T017 IN_PROGRESS→IMPLEMENTED。DONE5/IMPLEMENTED4/IN_PROGRESS21/TODO0/BLOCKED3、完了5/33=15.2%、実装到達9/33=27.3%。完了増分0。一般参加者側の複数端末UI、全通知削除/再試行、定員境界、実機は今回の保証外。次：募集/チャット拡大/他利用者への同期、全タスク完了条件の残り照合。pushなし。
+
+## 実装チェックポイント46：チャットのキーボード修正と募集の通し操作
+- T014/T020/T031/R06/R12/R15/R19：StreetChatの拡大中に入力すると「地図へ」が画面外（y=-30）へ出る不具合を実操作で再現。flexShrinkのみ、KeyboardAvoidingViewのheight指定のみでは解消せず。利用可能な高さをonLayoutで測定し、SafeArea余白を除いた上限内へパネルを収めて修正。型チェック/Lint成功。
+- 修正後のJS内蔵シミュレータReleaseでtestRecruitmentAndChatExpansion成功39.682秒。拡大→入力→縮小で下書き保持、現在地確認→募集作成→題名編集→終了→Homeから消える→退出。DBのUI recruitment 1793337467 editedはrevision=3、募集/滞在とも終了済み。
+- 結果 /tmp/yumegaoka-recruitment-flow.xcresult、ログ同名.log。キーボード画像 /tmp/yumegaoka-chat-measured-images/9E7CFD7A-B86E-4D9C-A069-306F7D75C8FC.pngを目視し、戻る操作と入力が表示領域内にあることを確認。
+- expo-blurの部分強度アニメーションでXCTestのidle待ちが終わらないため、当該テストだけライブラリ内蔵のDetox判定引数でアニメーションを止めた。操作試験は強いblurであり、通常intensity45の外観/操作保証とは分ける。製品のblur設定は変更していない。
+- シミュレータ本体再ビルドは再現不具合の修正に限定。完了シートを閉じ忘れた試験はrunnerのみ修正し本体再ビルドなし。実機用成果物は旧版のまま、実機転送/実機検証は未実施。pushなし。
+- T014 IN_PROGRESS→IMPLEMENTED。DONE5/IMPLEMENTED5/IN_PROGRESS20/TODO0/BLOCKED3。完了5/33=15.2%、実装到達10/33=30.3%、DONE増分0。次：他利用者との同期、通報/運営の画面統合とタスク完了条件の照合。未公開pool24時間期限はチェックポイント41で実装・検証済み。

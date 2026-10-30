@@ -262,6 +262,62 @@ final class Smoke: XCTestCase {
   attach(app,"onboarding-complete")
   tap(app,"アカウント・接続状態");tap(app,"ログアウト")
  }
+ @MainActor func testRecruitmentAndChatExpansion() throws {
+  continueAfterFailure=false
+  let app=XCUIApplication(bundleIdentifier:"jp.yumegaoka.development")
+  addUIInterruptionMonitor(withDescription:"Location") { alert in
+   for title in ["Allow While Using App","Allow","OK","Appの使用中は許可","許可"] {
+    if alert.buttons[title].exists {alert.buttons[title].tap();return true}
+   }
+   return false
+  }
+  XCUIDevice.shared.location=XCUILocation(location:CLLocation(latitude:35.7295,longitude:139.7109))
+  defer {XCUIDevice.shared.location=nil}
+  // Expo BlurEffectView has a built-in no-animation mode for UI automation.
+  // This tests interaction, not the production intensity=45 appearance.
+  app.launchArguments += ["-detoxServer", "-detoxSessionId"]
+  app.launch()
+  let toggle=app.switches["街への参加"]
+  XCTAssertTrue(toggle.waitForExistence(timeout:30))
+  tap(app,"街のチャット ⌃ 広げる")
+  XCTAssertTrue(app.buttons["街のチャット ⌄ 地図へ"].waitForExistence(timeout:10))
+  let draft="未送信の入力を保持"
+  let input=app.textFields["入力…"]
+  input.tap();input.typeText(draft)
+  attach(app,"expanded-chat-with-keyboard")
+  tap(app,"街のチャット ⌄ 地図へ")
+  XCTAssertEqual(input.value as? String,draft)
+  attach(app,"chat-collapsed-with-draft")
+  if toggle.value as? String != "1" {
+   toggle.tap();tap(app,"開発用タグで入街（NFC代用）");app.tap()
+  }
+  XCTAssertTrue(app.staticTexts["気配を観測中"].waitForExistence(timeout:25) || app.staticTexts["新しい気配を共有しました"].exists)
+  if app.buttons["地図へ"].exists {tap(app,"地図へ")}
+  app.descendants(matching:.any).matching(identifier:"Home").firstMatch.tap()
+  tap(app,"ピンを作成")
+  let title="UI recruitment "+String(Int(Date().timeIntervalSince1970))
+  let field=app.textFields["募集ピン名を入力"]
+  XCTAssertTrue(field.waitForExistence(timeout:15));field.tap();field.typeText(title);field.typeText("\n")
+  tap(app,"公開する現在地を確認")
+  let location=app.staticTexts.matching(NSPredicate(format:"label CONTAINS %@","この位置を公開")).firstMatch
+  XCTAssertTrue(location.waitForExistence(timeout:20));tap(app,"ピンを作成")
+  XCTAssertTrue(app.staticTexts[title].waitForExistence(timeout:20))
+  let name=app.textFields["募集の題名"]
+  name.tap();name.press(forDuration:1.2)
+  let selectAll=app.descendants(matching:.any).matching(NSPredicate(format:"label IN %@",["Select All","すべてを選択","すべて選択","全選択"])).firstMatch
+  XCTAssertTrue(selectAll.waitForExistence(timeout:5));selectAll.tap();name.typeText(title+" edited");name.typeText("\n")
+  tap(app,"題名を保存")
+  XCTAssertTrue(app.staticTexts[title+" edited"].waitForExistence(timeout:15))
+  tap(app,"募集を終了")
+  XCTAssertTrue(app.staticTexts["募集は終了しました"].waitForExistence(timeout:15))
+  tap(app,"‹ 戻る")
+  tap(app,"募集中のピン")
+  XCTAssertFalse(app.descendants(matching:.any).matching(NSPredicate(format:"label CONTAINS %@",title)).firstMatch.exists)
+  app.descendants(matching:.any).matching(identifier:"Map").firstMatch.tap()
+  toggle.tap()
+  XCTAssertTrue(app.staticTexts["未参加"].waitForExistence(timeout:20))
+  attach(app,"recruitment-ended-and-checked-out")
+ }
  @MainActor func testHostEditRosterNotifications() throws {
   continueAfterFailure=false
   let app=XCUIApplication(bundleIdentifier:"jp.yumegaoka.development")

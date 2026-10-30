@@ -1,6 +1,9 @@
-import { useRef, type ComponentRef } from "react";
+import { useRef, useState, type ComponentRef } from "react";
 import { BlurView } from "expo-blur";
-import { SafeAreaView } from "react-native-safe-area-context";
+import {
+  SafeAreaView,
+  useSafeAreaInsets,
+} from "react-native-safe-area-context";
 import { Avatar } from "./Avatar";
 import { router } from "expo-router";
 import {
@@ -43,6 +46,8 @@ export function StreetChat() {
     reload,
   } = useStreetChat();
   const { height } = useWindowDimensions();
+  const insets = useSafeAreaInsets();
+  const [availableHeight, setAvailableHeight] = useState(height);
   const scroll = useRef<ComponentRef<typeof ScrollView>>(null);
   function menu(m: Message) {
     Alert.alert(m.display_name, "操作を選択", [
@@ -98,11 +103,19 @@ export function StreetChat() {
         </BlurView>
       )}
       <KeyboardAvoidingView
-        behavior="padding"
+        behavior="height"
         style={{ flex: 1 }}
         pointerEvents="box-none"
       >
         <SafeAreaView
+          onLayout={({ nativeEvent }) => {
+            setAvailableHeight(
+              Math.max(
+                0,
+                nativeEvent.layout.height - insets.top - insets.bottom - 8,
+              ),
+            );
+          }}
           edges={["top", "bottom"]}
           style={{
             flex: 1,
@@ -117,8 +130,12 @@ export function StreetChat() {
               backgroundColor: expanded ? "#fff" : "#ffffffed",
               borderRadius: 24,
               padding: 12,
-              height: expanded ? height * 0.75 : height * 0.38,
+              height: Math.min(
+                expanded ? height * 0.75 : height * 0.38,
+                availableHeight,
+              ),
               maxHeight: "100%",
+              flexShrink: 1,
               gap: 8,
             }}
           >
