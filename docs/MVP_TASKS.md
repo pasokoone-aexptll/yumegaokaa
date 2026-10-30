@@ -119,7 +119,7 @@ P0=再利用する土台/次の着手、P1=全画面と主要機能、P2=統合�
 - **実装対象**：Expo Router Home/Map/Settings・共通シート・開発用adapter。
 - **完了条件**：既存Figmaに沿う3タブと全機能への導線、戻る・シート往復が操作可能。ここだけは明示したモック可。機能別完了とは区別。
 - **検証方法**：画面一覧との照合、シミュレータで全導線を一巡。
-- **監査根拠・再利用判断**：E04。現在はStack+indexの単一画面。
+- **実装・検証根拠**：初期監査E04から3タブ/各機能ルートへ拡張済み。チェックポイント43でJS内蔵Releaseの実OTP・再起動・Home/作成/地点選択・設定7画面往復に成功。イベント詳細や全運営導線の一巡が残るためIN_PROGRESS。
 
 ### T007 Map画面・背景地図・現在地
 
@@ -717,3 +717,12 @@ T003/T004/T007/T030：チャット画像との別設定、本人と地図で同�
 - useWithdrawalの確認コード送信/確定にも共通の同期ガードを追加、実行中はコード入力を固定。認証・退会API・削除要件は変更していない。
 - email-change-state.test.mjsの3件成功（送信応答紛失の変更先復元、連打/離脱、読込失敗から復帰）。typecheck/Lint成功。既存Auth/DB契約は未変更のためaccount-smokeの再実行は省略。実メール2通確認/退会のネイティブUI操作は未確認。
 - 全体5/33=15.2%、実装到達7/33=21.2%。DONE5/IMPLEMENTED2/IN_PROGRESS23/TODO0/BLOCKED3維持。今回完了増分0。ネイティブビルド/転送/pushなし。再開地点：全画面操作の統合と次のまとめたRelease実機確認。
+
+## 実装チェックポイント43：JS内蔵Releaseでの画面統合
+- T006/T031/T032/R03/R19：iPhoneのpaired表示を再照会したがdevice infoは接続不可/unavailable。実機転送は未実施。シミュレータiPhone17（6410E701-1891-45E2-B35D-CB42F5891EF8）へ現在ソース4389f25基点のReleaseをまとめて生成・インストール。
+- 初回CODE_SIGNING_ALLOWED=NOの成果物は起動したがOTP後にKeychain保存エラー。手動entitlements署名はcodesign検証成功でもlaunchd spawn163で起動不可。既存DerivedDataを再利用しCODE_SIGNING_ALLOWED=YES/CODE_SIGN_IDENTITY=-のXcode標準シミュレータ署名で再リンク・ビルド成功。その版でOTP保存/再起動が成功。製品の認証処理は弱めていない。
+- 成果物 /tmp/yumegaoka-validation-release/Build/Products/Release-iphonesimulator/app.app（JS内蔵）。標準署名ビルドログ /tmp/yumegaoka-validation-simulator-signing.log。実機用Releaseは引き続き70ac9d6基点で別成果物、今回JS修正を含まない。
+- prepare-ui-test.mjs --registered-fixtureでローカル専用アカウントを実Auth/API/Storageにより名前・pool画像登録済みに準備。初回のAuth直接応答形式を修正後成功。初回登録/ネイティブ写真選択の証拠にはしない。製品の登録必須条件は維持。
+- testRegisteredNavigation成功（80.432秒）：実OTPログイン→Mapトグル表示→再起動→Home→オフ会作成シート→Map地点選択→タイトル維持→設定のプロフィール/街アイコン/アカウント管理/招待/通知/ブロック/運営→Map復帰。結果 /tmp/yumegaoka-release-navigation-signed.xcresult、ログ同名.log。Map画像 /tmp/yumegaoka-release-map.pngで地図・ヘッダー・トグル・現在地/追加・チャット・タブを確認。
+- 未確認：イベント等の作成確定と他利用者同期、全運営操作、写真選択、実機背景動作。画面表示だけで機能DONEにしない。次は同じシミュレータReleaseでイベント作成/参加・チャット送信を通す。本体の再ビルドは関連変更がない限り不要。
+- 分母33、DONE5/IMPLEMENTED2/IN_PROGRESS23/TODO0/BLOCKED3維持。完了5/33=15.2%、実装到達7/33=21.2%、完了増分0。今回本体コード変更なし、UIテストと準備スクリプト更新。pushなし。
