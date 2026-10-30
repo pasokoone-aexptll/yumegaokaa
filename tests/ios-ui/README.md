@@ -50,3 +50,5 @@ runnerも未変更なら`test-without-building`。`-collect-test-diagnostics nev
 `testRecruitmentAndChatExpansion`だけはexpo-blur内蔵の自動操作用引数を使い、部分強度アニメーションによるXCTestのidle待ちを回避する。製品のintensity45は変更していないが、当該試験のblur外観は製品と同一ではない。
 
 実機写真選択は手動確認中。`--registered-fixture`は実Auth/API/Storageで登録済み状態を用意するだけで、初回登録やネイティブ写真選択の成功証拠にしない。最新の実行結果・制限はdocs/MVP_TASKS.md、TECH_VALIDATION.mdを参照する。
+
+`testOperatorMemberDateSelection`は`--operator`で準備し、実MFA→参加者管理の制限終了日時のキャンセル/確定→運営一覧復帰を確認する。利用者の制限状態は変更しない。終了後に`--revoke-operator`を実行する。

@@ -363,3 +363,6 @@ T024/T025、R16/R18/R19。membersからMemberRowを分離し、投稿制限の�
 
 ### チェックポイント54：運営招待の全件取得
 T024/T025、R03/R16/R18。useOperatorDashboardへ分離、複合カーソルと続き取得を接続。migration032ローカル適用済み。operator-access.test.mjsで同時刻105件のページ越境を重複/欠落なし確認、既存MFA/資格失効拒否も成功。operator-dashboard-state.test.mjsの3件で離脱後一覧/MFAキー非復活、二重操作抑止、無効化応答紛失後の再取得を確認。typecheck/Lint成功。実画面ページングと実機は未確認。
+
+### チェックポイント55：Release運営フロー
+T024/T025/T031、R16/R18/R19。dd23225基点のReleaseビルド成功。testOperatorMemberDateSelectionが37.594秒で成功し、実TOTP→運営→参加者管理の日時キャンセル/確定→運営再取得を確認。結果 /tmp/yumegaoka-operator-member54.xcresult。招待ページングは前回DB検証のみ、制限API送信と実機写真保存は今回の対象外。一時運営資格/MFAは試験後解除済み。

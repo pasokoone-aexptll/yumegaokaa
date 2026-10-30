@@ -55,6 +55,25 @@ final class Smoke: XCTestCase {
   XCTAssertTrue(message.waitForExistence(timeout:20))
   attach(app,"peer-visible-after-unblock")
  }
+ @MainActor func testOperatorMemberDateSelection() throws {
+  let app=try operatorApp()
+  tap(app,"‹ 戻る")
+  tap(app,"参加者・招待枠・利用停止")
+  let date=app.buttons.matching(identifier:"制限終了日時を選択").firstMatch
+  XCTAssertTrue(date.waitForExistence(timeout:20))
+  date.tap()
+  XCTAssertTrue(app.pickerWheels.firstMatch.waitForExistence(timeout:10))
+  tap(app,"キャンセル")
+  XCTAssertEqual(date.value as? String,"未設定")
+  date.tap()
+  XCTAssertTrue(app.pickerWheels.firstMatch.waitForExistence(timeout:10))
+  tap(app,"決定")
+  XCTAssertNotEqual(date.value as? String,"未設定")
+  attach(app,"operator-member-date-selected")
+  tap(app,"‹ 戻る")
+  tap(app,"最新の状態を取得")
+  XCTAssertTrue(app.staticTexts["招待の監督"].waitForExistence(timeout:15))
+ }
  @MainActor func testOperatorStickerPreparation() throws {
   let app=try operatorApp()
   let title="UI sticker "+String(Int(Date().timeIntervalSince1970))

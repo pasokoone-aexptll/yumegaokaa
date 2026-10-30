@@ -808,3 +808,9 @@ T003/T004/T007/T030：チャット画像との別設定、本人と地図で同�
 - migration032をローカル適用。operator_invitesはcreated_atとidの降順複合カーソルを使用。同時刻の招待が100件境界に並んでも取りこぼさない。既存の運営MFA認可・委譲チェーン・無効化監査は維持。
 - 無効化応答不明でも一覧再取得。取得失敗時は運営一覧/集計を閉じる。typecheck/Lint、状態試験3件成功。operator-access実DB試験成功：同時刻105件を重複なし全件取得、運営資格/MFA失効拒否。fixtureはrollback済み。
 - ネイティブ変更なし。画面での複数ページ操作は次回のまとめたReleaseで確認する。ビルド/実機転送/pushなし。DONE5/IMPLEMENTED9/IN_PROGRESS16/TODO0/BLOCKED3維持。次：運営画面の統合操作、ユーザー帰宅後の画像保存確認。
+
+## 実装チェックポイント55：運営変更をまとめたRelease統合
+- T024/T025/T031/R16/R18/R19：チェックポイント52〜54の変更をまとめてJS内蔵シミュレータReleaseを生成・インストール。ビルド成功 /tmp/yumegaoka-operator54-release.log。Metro不要。
+- testOperatorMemberDateSelection成功37.594秒。専用アカウントで実TOTP登録→追加認証→ステッカー画面→運営へ戻る→参加者管理→制限終了日時のキャンセル（未設定維持）→選択確定→運営一覧復帰→再取得を確認。終了日時のAPI送信や招待100件超の画面スクロールはこの試験に含まない。結果 /tmp/yumegaoka-operator-member54.xcresult、同名.log。
+- 試験後に専用ローカルアカウントの一時運営資格・TOTPを解除。実機転送/写真保存の手動確認は未実施。完了件数は維持、DONE5/IMPLEMENTED9/IN_PROGRESS16/TODO0/BLOCKED3。
+- 次：画像処理のネイティブ側の確認、残る主要画面フロー。iPhoneは旧版のままであり、最新版インストールと写真保存は帰宅後。pushなし。
