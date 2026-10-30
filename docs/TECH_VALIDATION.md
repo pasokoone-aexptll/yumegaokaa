@@ -396,3 +396,8 @@ T018/T031/R14/R19。画面復帰時の取得を前画面の要求で塞がず、
 
 ### チェックポイント65：入街成功画面の経路差
 実NFCのscan経路もnative.checkin確定後にsuccessへ遷移するよう修正。開発経路は既存UI試験済みだが、実NFCはADP待ちで未検証。型/Lint成功。Home実装と既存証拠を照合しT013をIMPLEMENTEDへ訂正。今回の新しい実機確認を意味しない。
+
+
+### チェックポイント66：通知と入街ログの統合
+最新シミュレータReleaseビルド成功。登録済みOTP/画面復帰77.998秒、testHostEditRosterNotifications48.660秒で成功。イベント編集→変更通知→中止→既読→再起動保持、今回のイベント通知read_atを実DB照合。/tmp/yumegaoka-login66.xcresult、/tmp/yumegaoka-notifications66.xcresult。
+arrival-chat-flow.test.mjsで実入街→再送/再利用/気配更新後のログ1件、現在名、ブロック/解除、30日期限、visit ID非公開を確認。fixture rollback。T021をIMPLEMENTEDへ訂正。実機、入街ログ画像描画、配信待ち全条件は未確認。製品変更なし、型/Lint反復なし。
