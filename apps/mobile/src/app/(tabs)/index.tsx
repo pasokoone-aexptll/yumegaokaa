@@ -208,30 +208,21 @@ export default function Street() {
             <Text style={{ fontSize: 22 }}>＋</Text>
           </Pressable>
         </View>
-        <View style={{ flex: 1 }} pointerEvents="none" />
+
         {!!error && (
           <View style={styles.errorCard}>
             <Text style={styles.error}>{error}</Text>
           </View>
         )}
-        <StreetChat />
-        <View style={styles.bottom}>
-          <Text style={styles.note}>
-            {!snapshot
-              ? "街の気配を取得しています。通信状態を確認してください。"
-              : cells.length
-                ? "話しかけなくても、ここに誰かの気配。"
-                : "今見える気配はありません。人がいないとは限りません。"}
-          </Text>
-          <Text style={styles.note}>気配は10分で薄くなって消えます。</Text>
-          <Pressable
-            accessibilityRole="button"
-            onPress={() => setSettings(true)}
-          >
-            <Text style={styles.link}>アカウント・接続状態</Text>
-          </Pressable>
-        </View>
+        <Pressable
+          accessibilityRole="button"
+          onPress={() => setSettings(true)}
+          style={{ alignSelf: "flex-end" }}
+        >
+          <Text style={styles.link}>アカウント・接続状態</Text>
+        </Pressable>
       </SafeAreaView>
+      <StreetChat />
       <Modal
         visible={sheet !== null}
         transparent

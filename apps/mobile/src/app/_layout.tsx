@@ -50,6 +50,14 @@ export default function Layout() {
         >
           <Stack.Screen name="(tabs)" />
           <Stack.Screen
+            name="events/[id]"
+            options={{ presentation: "modal" }}
+          />
+          <Stack.Screen
+            name="recruitments/[id]"
+            options={{ presentation: "modal" }}
+          />
+          <Stack.Screen
             name="pins/create"
             options={{ presentation: "modal" }}
           />
