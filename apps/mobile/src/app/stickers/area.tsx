@@ -64,7 +64,7 @@ export default function Area() {
     try {
       await work();
     } catch {
-      setError("完了していません。状態を再取得してください。");
+      setError("完了を確認できません。状態を再取得してください。");
     } finally {
       setBusy(false);
     }
@@ -80,6 +80,19 @@ export default function Area() {
         latitude: point[1],
       });
       setMoving(undefined);
+      setPreview(undefined);
+      router.push({ pathname: "/stickers/[id]", params: { id: r.id } });
+    });
+  }
+  async function replaceSticker(p: Placement) {
+    await run(async () => {
+      const r = await submitCommand<{ id: string }>("sticker_create", {
+        street_id: streetID,
+        title: p.title,
+        replaces_tag: p.tag_id,
+        longitude: p.longitude,
+        latitude: p.latitude,
+      });
       setPreview(undefined);
       router.push({ pathname: "/stickers/[id]", params: { id: r.id } });
     });
@@ -190,6 +203,23 @@ export default function Area() {
                 title="移設する"
                 disabled={busy}
                 onPress={() => setMoving(p)}
+              />
+              <Action
+                title="新しいステッカーに交換"
+                disabled={busy}
+                onPress={() =>
+                  Alert.alert(
+                    "交換用ステッカーを準備しますか？",
+                    "新タグの設置と範囲公開が完了すると、旧タグを廃止します。紛失した旧タグは先に停止してください。",
+                    [
+                      { text: "戻る", style: "cancel" },
+                      {
+                        text: "準備する",
+                        onPress: () => void replaceSticker(p),
+                      },
+                    ],
+                  )
+                }
               />
               {p.active && (
                 <Action
