@@ -691,3 +691,9 @@ T003/T004/T007/T030：チャット画像との別設定、本人と地図で同�
 - 成果物：/tmp/yumegaoka-validation-release/Build/Products/Release-iphoneos/app.app。名称「夢ヶ丘 検証用」、bundleID jp.yumegaoka.development、main.jsbundle 3.5MiB内蔵、ローカルネットワーク/ATS設定を確認。codesign --verify --deep --strict成功。ログ：/tmp/yumegaoka-validation-release-build.log（容量不足）、/tmp/yumegaoka-validation-release-retry.log（成功）。ソース基点70ac9d6、以降は進捗文書のみ。
 - iPhone 00008150-0002059A3488C01Cはpaired/available表示だったが、devicectl installはCoreDevice4000/NWError60接続タイムアウトで失敗。未インストール・未起動・実機操作未確認。再ビルドせず同じappを転送する。ユーザーへUSB接続/ロック解除を依頼中。他作業は継続可能。
 - この成功は全機能DONEの根拠にはしない。次：端末接続後に転送、初回登録/街pool/入退街/チャット/イベント/運営の操作と実DBを照合。実NFC/Push/クラウドは既存BLOCKEDのまま。pushなし。
+
+## 実装チェックポイント39：pool取り下げと書込の競合
+- T004/T030/R17：029でStorage書込認可をstreet_icons行ロックと直列化。取り下げ/公開を待った書込は最新行状態を検査し、削除後の遅延書込を拒否。通常読取の公開範囲は変更しない。ローカルDB適用済み、アプリの再ビルド不要。
+- street-icon-pool.test.mjs成功。icon-upload-race.test.mjsで独立接続の実ロック待ちをpg_blocking_pidsから観測し、取り下げコミット後の書込拒否を確認。street-icon-smoke.mjsで実HTTP保存/会員読取/上書き拒否/取り下げ/worker物理削除/登録完了維持を確認。
+- 未完了アップロードの保持期限は未決定。24時間削除案をユーザーへ確認中。回答前に期限清掃を追加しない。公開済み画像や登録完了とは別扱い。
+- Release成果物は70ac9d6基点のまま保持し、今回変更はサーバー認可のみ。iPhone接続の回答待ち。全体5/33、実装到達7/33、DONE5/IMPLEMENTED2/IN_PROGRESS23/TODO0/BLOCKED3維持。型/Lint/ネイティブは対象コード変更なしで省略。pushなし。
