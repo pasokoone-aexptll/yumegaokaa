@@ -12,7 +12,7 @@ test("Home expires saved cards using monotonic server time even after network fa
   let index = 0,
     focus,
     mono = 100,
-    offline = false;
+    offline = true;
   const exports = {};
   new Function("require", "exports", "setInterval", "clearInterval", source)(
     (id) => {
@@ -77,6 +77,13 @@ test("Home expires saved cards using monotonic server time even after network fa
   const hook = exports.useHomePins();
   const blur = focus();
   await new Promise((r) => setImmediate(r));
+  assert.equal(state[0].length, 0);
+  assert.equal(state[1].length, 0);
+  assert.ok(state[2]);
+  assert.equal(state[3], false);
+  offline = false;
+  await hook.load();
+  assert.equal(state[2], "");
   assert.equal(state[0].length, 1);
   assert.equal(state[1].length, 1);
   offline = true;
