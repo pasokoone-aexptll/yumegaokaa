@@ -372,3 +372,6 @@ T024/T025/T031、R16/R18/R19。dd23225基点のReleaseビルド成功。testOper
 
 ### チェックポイント57：Homeの期限失効
 T013/R12/R13/R19。サーバー同期＋単調時計でHomeの募集/参加予定を表示中にも期限除外。通信失敗中の期限超過と期限切れ応答の非復活をhook試験で確認。型/Lint成功。実ネットワーク遮断、最新版Releaseでの表示は未確認。サーバー側の中止や退出をオフラインで即時検出できるという保証ではない。
+
+### チェックポイント58：EXIF除去後の実Storage保存
+c337e2e基点Release生成成功。testStreetIconPhotoSelectionが16.621秒で成功。実Storageで今回作成の公開画像を取得し、512×512JPEG・39513bytes、APP1（EXIF/XMP）/APP13/COM領域なしを確認。結果 /tmp/yumegaoka-photo-save58.xcresult。T004はIMPLEMENTED。実機・大画像・本人画像往復は未検証。Home期限表示は同Releaseに収録したがUI通信断試験は行っていない。
