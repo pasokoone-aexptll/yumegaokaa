@@ -1,3 +1,4 @@
+import { sessionState } from "./sessionState";
 import { requireNativeModule } from "expo-modules-core";
 export type Visit = {
   visit_id: string;
@@ -25,7 +26,7 @@ export type Snapshot = {
     expiry_groups: { expires_at: string; count: number }[];
   }[];
 };
-export const native = requireNativeModule("PresenceNative") as {
+const bridge = requireNativeModule("PresenceNative") as {
   currentLocation(): Promise<{
     longitude: number;
     latitude: number;
@@ -58,6 +59,48 @@ export const native = requireNativeModule("PresenceNative") as {
     event: "onChange",
     listener: (state: NativeState) => void,
   ): { remove(): void };
+};
+// Reset mounted screens when the local identity changes. Same-account OTP
+// reauthentication (for withdrawal) must keep its current operation alive.
+const session = async () => {
+  const result = await bridge.session();
+  sessionState.publish(result);
+  return result;
+};
+const authMethods = {
+  session,
+  async verifyOTP(email: string, code: string) {
+    const result = await bridge.verifyOTP(email, code);
+    await session();
+    return result;
+  },
+  async verifyEmailChange(email: string, code: string) {
+    const result = await bridge.verifyEmailChange(email, code);
+    if (result.complete) await session();
+    return result;
+  },
+  async logout() {
+    await bridge.logout();
+    sessionState.publish({ signed_in: false, email: "" });
+  },
+};
+export const native: typeof bridge = {
+  ...authMethods,
+  currentLocation: () => bridge.currentLocation(),
+  monotonicTime: () => bridge.monotonicTime(),
+  realtimeToken: () => bridge.realtimeToken(),
+  accountDetails: () => bridge.accountDetails(),
+  changeEmail: (email) => bridge.changeEmail(email),
+  mfaFactors: () => bridge.mfaFactors(),
+  mfaEnroll: () => bridge.mfaEnroll(),
+  mfaVerify: (factor, code) => bridge.mfaVerify(factor, code),
+  configure: (url, key) => bridge.configure(url, key),
+  sendOTP: (email) => bridge.sendOTP(email),
+  rpc: (operation, payload) => bridge.rpc(operation, payload),
+  checkin: (tag) => bridge.checkin(tag),
+  stop: () => bridge.stop(),
+  resume: () => bridge.resume(),
+  addListener: (event, listener) => bridge.addListener(event, listener),
 };
 export const streetID =
   process.env.EXPO_PUBLIC_STREET_ID ?? "11111111-1111-4111-8111-111111111111";

@@ -524,3 +524,12 @@ Git is now initialized with baseline commit555969d on codex/mvp-integration. Sec
 - DONE5/IMPLEMENTED2/IN_PROGRESS21/TODO2/BLOCKED3。完成率15.2%、実装到達率7/33=21.2%。分母変更なし。
 - T030：npm run db:maintenanceでローカル期限清掃/退会清掃workerを継続起動。起動後の清掃0件成功を確認。通信15秒上限を設定。構文確認済み。現在のexec sessionは8482、再開時は生存確認してから扱い、二重起動しない。Mac/プロセス停止後は起動し直す手順をREADMEへ記載。
 - 次：全画面の認証失効/再ログイン連動、チャットと通知の接続、主要機能をまたぐ一巡。NFC/実Push/クラウドは外部依存のまま。
+
+
+## 実装チェックポイント17：認証切替と画面状態
+- T005/T006/T031：native認証操作から共有sessionStateへ結果を通知し、identity変更時にStackを再生成。ピン下書きを消去し、未ログイン時はMapのログインへ戻す。同アカウントOTP再認証はepochを変えず退会処理を維持。
+- 初回のProxy方式はネイティブonChangeで「native state unsupported on Proxy」の描画エラーを起こしたため廃止。各bridgeメソッドを直接呼ぶ明示的wrapperへ修正。
+- session-state.test成功：同identity再認証維持、ログアウトでメール/下書き破棄、別identityで再生成、購読解除。型検査/Lint成功。
+- 修正後のtestLoginEntryRestartExit成功（59.996秒、/tmp/yumegaoka-session-ui-retry.log）。実OTP→開発入街→更新→再起動→退出→再起動を一本で確認。本体再ビルドなし。
+- 未確認：遠隔での資格/認証失効時に全画面のキャッシュを消す連動、別アカウントとの往復実操作、退会応答消失からの再開。メール変更もidentity変更として画面を再生成する。全認証例外を完了とはしない。
+- 次は遠隔失効と未登録会員の導線、チャット/通知の更新接続を進める。完了件数5/33、実装到達7/33を維持。
