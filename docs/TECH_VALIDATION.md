@@ -655,3 +655,6 @@ R13/R19・T007/T015。実行中Release107成功、同版でtestPresenceHeader成
 
 ## cp110：T018配信競合の残条件
 R13/R14/R17。notification-concurrency.test.mjs成功。実2worker接続でAのclaim行ロック中にBが同一通知を取得しないこと、同一leaseの同時simulateは1件だけ確定、recheck後に参加取消が確定するとsimulate/retryはactive:false・outboxなしを確認。専用fixture削除済み。Bの他通知claimはrollback。cp67期限/停止/古い版・疑似配送、cp69実機一覧/詳細を再利用しT018 DONE。APNs配送成功や送信済みPush取消は未検証でT019。製品コード変更なし、型/Lint/本体ビルド反復なし。残20→19、DONE17/33。
+
+## cp111：T020複数閲覧と切断復帰
+R15/R16/R19。chat-live-clients.test.mjs成功。専用2アカウントをGoTrueで認証、ゲートウェイへ2WS接続、command経由実投稿、双方通知とchat_list表示内容を確認。片方切断→追加投稿→再接続ready→両投稿取得成功。fixture削除済み。画面はこの試験では操作せず、cp44/46/70の入力/拡大/再起動/実機とcp86の実DB125件差分回復、cp103共通transport復帰を再利用。現行hookの通知→取得→描画呼出しを照合しT020 DONE。2台iPhone同時操作は未確認。製品変更なし、追加ビルド/型/Lintなし。残19→18、DONE18/33。
