@@ -1178,3 +1178,9 @@ cp96再試験：/tmp/yumegaoka-entry96-retry.xcresult成功。入街前取消→
 - presence-header試験成功：狭幅/広幅/8個全件/大きいラベル/未測定/人数保存。型/Lint結果は下記。新しい実画面確認は次のまとめたビルドへ。
 - T029ゲートウェイ方式を採用済みとしてQ12を更新。承認は実装完了ではない。次はローカル認証受付・3接続・直接迂回防止・停止切断の接続を進める。
 - DONE12/33、コード23/33、統合22/33、実機11/33、BLOCKED3。iPhone/ビルド/pushなし。
+
+## チェックポイント100：配信ゲートウェイの物理接続受付（2026-10-31）
+- T029/R16/R18：wsをroot依存へ固定し、scripts/lib/realtime-gateway.mjsを実装。HTTP upgradeでBearerを認証callbackへ渡し、認証後のaccount単位でソケットを同期予約。最大3本、TCP closeまで枠維持、資格再確認/失効切断、街changed通知（データなし）、受信専用を実装。URLへ認証情報を載せない。公式wsのupgrade/noServer仕様を参照（https://github.com/websockets/ws/blob/master/doc/ws.md）。
+- realtime-gateway.test.mjs成功：実ループバックWebSocket4本同時の3受理/429、1本close後の再接続、changed受信、資格失効再確認後の全切断、403拒否。最初はsandboxのlisten EPERMで失敗し、ローカル待受の承認後成功。認証はcallbackの試験用代替であり実JWT/DB検査ではない。
+- 未接続：実Auth資格検査、DB通知/停止イベント、アプリの配信経路切替、Supabase直接Realtimeの迂回防止。単一プロセス内の上限であり、独立複数プロセスの配備は未対応。起動/運用まで含めたT029完了とは扱わない。既存アプリは引き続き従来経路で動作する。
+- 製品モバイルコード変更なし、型/Lint/ネイティブビルドの反復なし。DONE12/33、コード23/33、統合22/33、実機11/33、BLOCKED3。iPhone/pushなし。次は実認証とDB配信/直接迂回防止を接続する。
