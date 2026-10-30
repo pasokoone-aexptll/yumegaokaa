@@ -1293,3 +1293,8 @@ T029はLIMIT_ACCEPTANCEの全上限/認可と共通受付再送、T022は募集�
 - T031/R01/R03〜R19/R21：LOCAL_FLOW_ACCEPTANCEで固定完了条件の役割別操作を既存実UI/DB証拠へ対応付け。新構成のRN Mapへ別参加者の実DB新着が自動反映されることを追加確認。testGatewayLiveChat成功（/tmp/yumegaoka-gateway128.xcresult、7.034秒）。fixtureだけ直接DB投入、表示は実アプリ/API。ポーリングも動くため単独でWS配送と断定せず、cp101/103/104/111の配信証拠と併用。
 - T031をDONE。未決仕様と実機/外部の条件は対応タスクに維持。既存成功フローの全件再試験・製品再ビルド・実機転送なし。T029の方式再検討なし、pushなし。
 - DONE24/33（72.7%）、IMPLEMENTED2、IN_PROGRESS4、BLOCKED3。実装26/33（78.8%）、統合25/33（75.8%）、実機11/33（33.3%）。残10→9、新規必須0、推測7.5–15.5→5.5–11.5h＋判断/実機/外部待ち不明。今回cp126からは11→9。
+
+## チェックポイント129：最新版iPhone Releaseの生成
+- T032-01/R20/R21：ソースbcf09edを基に、cp68以降の変更をまとめてiPhone向けReleaseビルド成功。ログ `/tmp/yumegaoka-device129-build.log`。成果物 `/tmp/yumegaoka-validation-release/Build/Products/Release-iphoneos/app.app`。同じ成果物を実機再開時に転送し、ソース変更がなければ再ビルドしない。
+- codesign --verify --deep --strict成功。bundle jp.yumegaoka.development、表示名「夢ヶ丘 検証用」、localEntry=true/validationRelease=true、main.jsbundle同梱（3,316,654 bytes、SHA256 512770b7fc317fa200e27ad903a344eb2f198ffc6f8ab16a9ea81bb6647cc406）。APIの172.30.100.165は生成時のMac LANアドレスと一致。検証用ローカル設定であり公開版ではない。
+- ユーザーの実機確認保留を維持し、端末転送・起動・操作なし。T032-01は転送が残るため未完。残9→9、新規必須0。推測5.5–11.5h＋判断/実機/外部待ち不明は据置き（部分実行を根拠なく時間減算しない）。DONE24/33、実装26/33、統合25/33、実機11/33、BLOCKED3/33を維持。無関係なテストは反復せず。
