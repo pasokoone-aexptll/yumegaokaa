@@ -20,28 +20,35 @@ export function useNotifications() {
   const [reading, setReading] = useState<string | null>(null);
   const generation = useRef(0);
   const fetching = useRef(false);
+  const request = useRef(0);
+  const writing = useRef(false);
   const load = useCallback(async () => {
     if (fetching.current) return;
     fetching.current = true;
     const gen = generation.current;
+    const seq = ++request.current;
     try {
       const result = await native.rpc<{ items: Notice[] }>(
         "notification_list",
         {},
       );
-      if (gen !== generation.current) return;
+      if (gen !== generation.current || seq !== request.current) return;
       setItems(result.items);
       setError("");
     } catch {
-      if (gen === generation.current) setError("お知らせを取得できません。");
+      if (gen === generation.current && seq === request.current)
+        setError("お知らせを取得できません。");
     } finally {
-      fetching.current = false;
-      if (gen === generation.current) setLoading(false);
+      if (seq === request.current) fetching.current = false;
+      if (gen === generation.current && seq === request.current)
+        setLoading(false);
     }
   }, []);
   useFocusEffect(
     useCallback(() => {
       generation.current++;
+      fetching.current = false;
+      setLoading(true);
       void load();
       const refresh = () => {
         if (AppState.currentState === "active") void load();
@@ -51,6 +58,8 @@ export function useNotifications() {
       const foreground = AppState.addEventListener("change", refresh);
       return () => {
         generation.current++;
+        request.current++;
+        fetching.current = false;
         clearInterval(timer);
         unsubscribe();
         foreground.remove();
@@ -58,14 +67,17 @@ export function useNotifications() {
     }, [load]),
   );
   async function markRead(notice: Notice) {
-    if (reading) return false;
+    if (writing.current) return false;
+    writing.current = true;
     setReading(notice.id);
     const gen = generation.current;
     try {
       await native.rpc("notification_read", { id: notice.id });
       if (gen !== generation.current) return false;
       // Invalidate older list responses so they cannot undo the acknowledgement.
-      generation.current++;
+      request.current++;
+      fetching.current = false;
+      setLoading(false);
       setItems((previous) =>
         previous.map((n) => (n.id === notice.id ? { ...n, read: true } : n)),
       );
@@ -75,6 +87,7 @@ export function useNotifications() {
       if (gen === generation.current) setError("確認を保存できませんでした。");
       return false;
     } finally {
+      writing.current = false;
       setReading(null);
     }
   }
