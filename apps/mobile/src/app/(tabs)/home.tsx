@@ -10,6 +10,7 @@ export default function Home() {
   return (
     <Page
       title="ピン一覧"
+      grid
       headerAction={
         <Pressable
           accessibilityRole="button"

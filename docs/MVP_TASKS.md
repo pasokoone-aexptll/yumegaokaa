@@ -1090,3 +1090,9 @@ T012をIMPLEMENTED/INTEGRATEDへ更新。DONE8、IMPLEMENTED15、IN_PROGRESS7、
 - T025/T031/R03/R16/R18：prepare-ui-test --invite-supervisionで専用ローカル発行者と招待を準備。testOperatorInviteRevocationでMFA→運営一覧→「UI招待監督 → 未使用」→招待無効化→無効化表示を確認。成功（/tmp/yumegaoka-invite89.xcresult）。DBで専用code_hashの1件がrevokedかつ発行者一致であることを確認。試験後にシミュレータの運営資格/MFAを解除。
 - 本体はcp88ビルドを再利用、製品コード変更/再ビルドなし。使用済み受領者の表示・100件超の画面操作・実機は未確認。既存032 APIページング試験と区別する。試験データはローカルだけ、通常保持期限で清掃対象。iPhone操作/pushなし。
 - cp88の枠変更/停止/再開と今回の一覧/無効化を合わせT025をINTEGRATEDへ。コード23/33（69.7%）、統合22/33（66.7%）、実機11/33（33.3%）、DONE8/33（24.2%）、BLOCKED3。作業状態IMPLEMENTEDは維持し、未確認事項をDONE扱いしない。
+
+## チェックポイント90：Homeの格子背景（2026-10-31）
+- T006/T013/R19：Figma81の格子背景をGridBackgroundとして追加し、Homeへ適用。白地・細線で構成し、タッチを透過、アクセシビリティツリーから装飾線を除外する。ウィンドウ寸法に合わせて描画し、画像素材や新ライブラリは不要。共通Pageは任意grid指定時だけ適用。
+- Homeの参加条件とevent_listのjoined条件も照合し、主催者であるだけで参加予定に入れる仕様変更は行っていない。機能や保存対象に変更なし。
+- 型/Lint/diff確認成功。装飾変更のため新規単体試験とビルドを省略。実画面でのヘッダー/タブ/文字との最終外観照合は次のまとめた確認へ。Figma全体の再現完了ではない。
+- 実装23/33、統合22/33、実機11/33、DONE8/33、BLOCKED3。iPhone操作/pushなし。

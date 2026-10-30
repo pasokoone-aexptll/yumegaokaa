@@ -1,3 +1,4 @@
+import { GridBackground } from "./GridBackground";
 import { router, usePathname } from "expo-router";
 import { ReactNode } from "react";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
@@ -6,14 +7,17 @@ export function Page({
   title,
   children,
   headerAction,
+  grid = false,
 }: {
   title: string;
   children: ReactNode;
   headerAction?: ReactNode;
+  grid?: boolean;
 }) {
   const path = usePathname();
   return (
-    <SafeAreaView style={ui.page}>
+    <SafeAreaView style={[ui.page, grid && { backgroundColor: "white" }]}>
+      {grid && <GridBackground />}
       <ScrollView
         contentContainerStyle={ui.content}
         keyboardShouldPersistTaps="handled"
