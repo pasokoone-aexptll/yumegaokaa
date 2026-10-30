@@ -22,6 +22,7 @@ function harness(rpc) {
 test('a pre-mutation read cannot restore an old registration; duplicate taps send once', async () => {
   let resolveOld, resolveMutation, writes = 0, reads = 0;
   const h = harness(op => {
+    if (op === 'operator_status') return Promise.resolve({ operator: false });
     if (op === 'event_get') {
       reads++;
       return reads === 1 ? new Promise(r => { resolveOld = r; }) : Promise.resolve({ joined: true });
@@ -55,4 +56,11 @@ test('a lost mutation response re-reads server state instead of reporting false 
   assert.equal(h.state[0].joined, false);
   assert.match(h.state[1], /操作結果/);
   assert.equal(h.state[3], false);
+});
+
+test('non-host operator gets roster control without host mutation rights', async () => {
+  const h = harness(async op => op === 'operator_status' ? { operator: true } : { mine: false });
+  await h.hook.load();
+  assert.equal(h.state[0].mine, false);
+  assert.equal(h.state[7], true);
 });

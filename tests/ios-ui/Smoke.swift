@@ -115,6 +115,8 @@ final class Smoke: XCTestCase {
   let app=try operatorApp()
   tap(app,"‹ 戻る")
   tap(app,"参加者・招待枠・利用停止")
+  let member=app.buttons.matching(NSPredicate(format:"label CONTAINS %@", " · 利用")).firstMatch
+  XCTAssertTrue(member.waitForExistence(timeout:20));member.tap()
   let date=app.buttons.matching(identifier:"制限終了日時を選択").firstMatch
   XCTAssertTrue(date.waitForExistence(timeout:20))
   date.tap()
@@ -264,11 +266,13 @@ final class Smoke: XCTestCase {
   tap(app,"ピンを作成");tap(app,"オフ会通知")
   let title=app.textFields["オフ会名を入力"]
   title.tap();title.typeText("Navigation check");title.typeText("\n")
+  let enteredTitle=title.value as? String
+  XCTAssertFalse((enteredTitle ?? "").isEmpty)
   tap(app,"場所を選択")
   XCTAssertTrue(app.buttons["この場所にする"].waitForExistence(timeout:10))
   app.coordinate(withNormalizedOffset:CGVector(dx:0.5,dy:0.45)).tap()
   tap(app,"この場所にする")
-  XCTAssertEqual(title.value as? String,"Navigation check")
+  XCTAssertEqual(title.value as? String,enteredTitle)
   tap(app,"閉じる")
   app.descendants(matching:.any).matching(identifier:"Settings").firstMatch.tap()
   for (button,heading) in [("プロフィール","プロフィール"),("街のアイコン","街のアイコン"),("アカウント管理","アカウント管理"),("友人を招待","友人を招待"),("お知らせ","お知らせ"),("ブロック設定","ブロック設定"),("運営","運営")] {

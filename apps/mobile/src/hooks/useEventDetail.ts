@@ -14,6 +14,7 @@ export function useEventDetail(id: string) {
   const [canceled, setCanceled] = useState(false);
   const [roster, setRoster] = useState<Participant[]>();
   const [rosterLoading, setRosterLoading] = useState(false);
+  const [operator, setOperator] = useState(false);
   const generation = useRef(0);
   const request = useRef(0);
   const mutating = useRef(false);
@@ -28,10 +29,20 @@ export function useEventDetail(id: string) {
       if (gen !== generation.current || seq !== request.current) return;
       setEvent(result);
       setError("");
+      // This flag only exposes the control. event_roster still enforces MFA
+      // and operator authorization on the server for non-hosts.
+      const access = result.mine
+        ? { operator: false }
+        : await native
+            .rpc<{ operator: boolean }>("operator_status", {})
+            .catch(() => ({ operator: false }));
+      if (gen === generation.current && seq === request.current)
+        setOperator(access.operator === true);
     } catch {
       if (gen !== generation.current || seq !== request.current) return;
       // Do not leave actionable stale details after an unsuccessful refresh.
       setEvent(undefined);
+      setOperator(false);
       setRoster(undefined);
       setError(
         "イベントを取得できません。接続を確認して再試行してください。終了・中止後は表示されません。",
@@ -46,6 +57,7 @@ export function useEventDetail(id: string) {
     useCallback(() => {
       generation.current++;
       setRoster(undefined);
+      setOperator(false);
       void load();
       return () => {
         generation.current++;
@@ -103,7 +115,9 @@ export function useEventDetail(id: string) {
         setRoster(result.items);
     } catch {
       if (gen === generation.current && seq === rosterRequest.current)
-        setError("参加者一覧を取得できません。");
+        setError(
+          "参加者一覧を取得できません。運営の場合は追加認証と通信を確認してください。",
+        );
     } finally {
       if (seq === rosterRequest.current) setRosterLoading(false);
     }
@@ -116,6 +130,7 @@ export function useEventDetail(id: string) {
     canceled,
     roster,
     rosterLoading,
+    operator,
     load,
     act,
     loadRoster,

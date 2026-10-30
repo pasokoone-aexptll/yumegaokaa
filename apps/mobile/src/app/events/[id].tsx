@@ -12,6 +12,7 @@ export default function Event() {
     canceled,
     roster,
     rosterLoading,
+    operator,
     load,
     act,
     loadRoster,
@@ -79,9 +80,8 @@ export default function Event() {
               })
             }
           />
-          {event.mine && (
+          {(event.mine || operator) && (
             <View style={ui.card}>
-              <Text>主催者の操作</Text>
               <Action
                 title="参加者一覧"
                 disabled={busy || rosterLoading}
@@ -92,6 +92,17 @@ export default function Event() {
               {roster?.map((p) => (
                 <Text key={p.account_id}>{p.display_name}</Text>
               ))}
+              {operator && !!error && (
+                <Action
+                  title="運営の追加認証"
+                  onPress={() => router.push("/admin")}
+                />
+              )}
+            </View>
+          )}
+          {event.mine && (
+            <View style={ui.card}>
+              <Text>主催者の操作</Text>
               <Action
                 title="イベントを編集"
                 disabled={busy || loading}
