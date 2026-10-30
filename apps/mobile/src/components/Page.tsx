@@ -5,9 +5,11 @@ import { SafeAreaView } from "react-native-safe-area-context";
 export function Page({
   title,
   children,
+  headerAction,
 }: {
   title: string;
   children: ReactNode;
+  headerAction?: ReactNode;
 }) {
   const path = usePathname();
   return (
@@ -28,7 +30,18 @@ export function Page({
             <Text style={{ color: "#008cff", fontSize: 17 }}>‹ 戻る</Text>
           </Pressable>
         )}
-        <Text style={ui.title}>{title}</Text>
+        <View
+          style={{
+            flexDirection: "row",
+            alignItems: "center",
+            justifyContent: "space-between",
+            gap: 12,
+            flexWrap: "wrap",
+          }}
+        >
+          <Text style={ui.title}>{title}</Text>
+          {headerAction}
+        </View>
         {children}
       </ScrollView>
     </SafeAreaView>
