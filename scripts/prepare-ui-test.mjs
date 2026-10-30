@@ -58,6 +58,10 @@ try {
     const receipt=await rpc("command_prepare",{kind:"event_create"});
     const created=await rpc("command_execute",{id:receipt.id,body:{street_id,title,description:"運営UI試験",longitude:139.7109,latitude:35.7295,starts_at:new Date(Date.now()+3600000).toISOString(),ends_at:new Date(Date.now()+7200000).toISOString(),capacity:20}});
     await rpc("event_register",{id:created.id,joined:true,revision:0});
+    if(process.argv.includes("--notify-change")) {
+     const current=await rpc("event_get",{id:created.id});
+     await rpc("event_edit",{...current,ends_at:new Date(Date.parse(current.ends_at)+300000).toISOString()});
+    }
    }
   } finally {
    await rm(dir,{recursive:true,force:true});

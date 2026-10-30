@@ -56,3 +56,5 @@ runnerも未変更なら`test-without-building`。`-collect-test-diagnostics nev
 `testStreetIconPhotoSelection`は登録済み専用アカウントで使用する。先に`simctl addmedia <SIMULATOR_ID> apps/mobile/assets/icon.png`でfixtureを追加し、最新画像がこのfixtureであることを確認する。写真選択の`PXGGridLayout-Info`を待ち、標準編集の`Done`で確定して保存復帰を確認。UI結果だけでなく専用アカウントの最新公開行とStorage画像の容量/寸法を照合する。個人写真のライブラリには実行しない。
 
 `testProfilePhotoPersistence`は写真fixtureと登録済み専用アカウントを使用し、本人画像選択→保存→再起動→プロフィール復帰を確認する。画像描画は添付画像の目視、保存は本人avatarsのStorage/DB照合で補う。街poolの公開行が変更されていないことも別途照合する。
+
+実機の変更通知を中止通知と切り分ける際は、専用アカウントに`node scripts/prepare-ui-test.mjs --host-event --notify-change`で作成→参加→終了時刻変更を実APIで用意できる。画面での通知確認・参加取消の代わりにはならない。MFA初期化は行わない。
