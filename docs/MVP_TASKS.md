@@ -1273,3 +1273,8 @@ T029はLIMIT_ACCEPTANCEの全上限/認可と共通受付再送、T022は募集�
 - 実URLCache試験で旧応答削除/新規保存拒否を確認。純Swift一時ファイル試験も成功。Release124ビルド/install成功、testProfileImageDisplay成功、/tmp/yumegaoka-cache124.xcresult。画面画像/tmp/yumegaoka-cache124.pngは代替文字であり実画像表示成功の証拠ではない。
 - 更新後Cache.dbの読取ではcfurl_cache_response表自体がなく旧記録消去を確認。初回読取はSQLite readonly共有メモリエラー、権限付き再読取で表不存在。実画像取得後の保存抑止確認は未完。
 - 残12→12、新規必須0、推測9.5–20.5h＋待ち不明は据置き。DONE23/33、実装25/33、統合24/33、実機11/33、BLOCKED3/33。次は実画像fixtureを使い表示と保存なしを確認。iPhone操作なし。
+
+## チェックポイント125：実画像表示とHTTP非保存
+- T030-03/R17：cp124の代替文字は検証アカウント画像未設定（pathなし/Storageなし）が原因。scripts/test-image-cache-ui.mjsで専用アカウントへ一時JPEGを設定、Release124のプロフィールに画像が描画されたことを目視確認。/tmp/yumegaoka-image125.png、UI結果/tmp/yumegaoka-image125.xcresult成功。
+- 表示後のOS HTTPキャッシュにStorage記録0件。fixtureのプロフィール値を復元、専用Storage画像と生成JPEGをfinally削除。cp123の一時コピー回収と合わせT030-03完了。実機への再インストールはT032に残す。
+- 残12→11、新規必須0。推測9.5–20.5→8.5–18.5h＋待ち不明。T030はQ08未決のためIN_PROGRESS維持。DONE23/33、実装25/33、統合24/33、実機11/33、BLOCKED3/33。新規製品ビルドなし。次T024-02。

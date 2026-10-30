@@ -17,7 +17,7 @@ cp119。MVP_REQUIREMENTS 9章を基準とする。既存成功証拠はTECH_VALI
 | ステッカー下書き | 最終更新から7日 | feature-retentionの6日保持/8日削除 | なし |
 | 未公開街pool画像 | 24h | 031、cp41のStorage実削除、street-icon-smoke | cp120：稼働PID48042と直近周期成功、既存lease/retryコード照合 |
 | 取り下げ/退会画像 | 非公開化後Storage清掃 | 026/031、maintenance-workerのlease/retry、cp41 | Q08、端末キャッシュは下記 |
-| 選択画像の端末コピー | upload/変換終了finallyで削除 | avatar.ts、cp84 avatar-cache3件。原本と対象外パスを保護 | cp121起動時回収実装・Swift実ファイル試験成功。cp123本体起動で既存4件→0件。表示用HTTPキャッシュ抑止は未完 |
+| 選択画像の端末コピー | upload/変換終了finallyで削除 | avatar.ts、cp84 avatar-cache3件。原本と対象外パスを保護 | cp121起動時回収実装・Swift実ファイル試験成功。cp123本体起動で既存4件→0件。cp125実画像表示後もHTTPキャッシュ0件を確認 |
 
 ## 今回の検証範囲
 
@@ -25,6 +25,8 @@ cp119はfeature-retentionへ受付24hと制限用7日を追加し、実DBのwork
 
 ログ確認：maintenance-workerは件数と固定エラー文のみ、APIClientは資格保存失敗のOSStatusのみ。秘密値・本文・座標の出力はこの経路にはない。全インフラログを確認済みとはしない。
 
-T030は未完。残作業台帳のT030-02はcp120で上表の最終照合/worker確認を完了、T030-03は端末キャッシュ、T030-01はQ08として維持する。
+T030は未完。残作業台帳のT030-02はcp120で上表の最終照合/worker確認を完了、T030-03はcp125で端末キャッシュ完了、T030-01はQ08として維持する。
 
 cp120：feature-retentionに終了滞在・入街試行・入街ログの期限前後を追加し成功。DB cron有効、19:02/19:03 UTCの2周期succeeded。画像worker PID48042稼働、maintenance67.logの直近2周期は清掃正常（対象0件）。これは現時点のローカル稼働確認であり、Mac停止後/クラウド常時稼働保証ではない。
+
+cp125：検証専用アカウントは画像未設定であったため、一時JPEGをStorageに置きプロフィール表示を確認（/tmp/yumegaoka-image125.png）。既存Release124、testProfileImageDisplay成功。表示後のStorage HTTPキャッシュ件数0。プロフィール設定復元・一時Storage画像削除済み。端末写真原本・実ユーザー画像を変更していない。
