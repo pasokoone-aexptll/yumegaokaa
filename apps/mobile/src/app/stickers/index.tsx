@@ -6,6 +6,8 @@ import { useStickerRegistration } from "../../hooks/useStickerRegistration";
 export default function Stickers() {
   const {
     items,
+    loading,
+    load,
     title,
     setTitle,
     point,
@@ -25,6 +27,12 @@ export default function Stickers() {
         onPress={() => router.push("/stickers/area")}
       />
       {!!error && <Text style={ui.error}>{error}</Text>}
+      <Action
+        title="登録一覧を再取得"
+        disabled={busy || loading}
+        onPress={() => void load()}
+      />
+      {loading && <Empty>読み込み中…</Empty>}
       <View style={ui.card}>
         <TextInput
           style={ui.input}
@@ -52,7 +60,7 @@ export default function Stickers() {
           />
         )}
       </View>
-      {!items.length && !error && <Empty>登録はありません。</Empty>}
+      {!loading && !items.length && !error && <Empty>登録はありません。</Empty>}
       {items.map((d) => (
         <Action
           key={d.id}

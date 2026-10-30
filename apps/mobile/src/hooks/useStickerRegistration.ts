@@ -15,7 +15,9 @@ export function useStickerRegistration() {
     [busy, setBusy] = useState(false),
     [error, setError] = useState("");
   const [pending, setPending] = useState<Record<string, unknown> | null>(null);
+  const [loading, setLoading] = useState(true);
   const load = useCallback(async () => {
+    setLoading(true);
     try {
       const saved = await pendingCommand("sticker_create");
       setPending(saved?.body ?? null);
@@ -30,6 +32,8 @@ export function useStickerRegistration() {
       setError("");
     } catch {
       setError("運営の追加認証と通信を確認してください。");
+    } finally {
+      setLoading(false);
     }
   }, []);
   useFocusEffect(
@@ -38,7 +42,7 @@ export function useStickerRegistration() {
     }, [load]),
   );
   async function create() {
-    if (!point) return;
+    if (!point || loading || busy) return;
     setBusy(true);
     try {
       const r = await submitCommand<{ id: string }>(
@@ -62,6 +66,7 @@ export function useStickerRegistration() {
     }
   }
   async function cancelPending() {
+    if (loading || busy) return;
     setBusy(true);
     try {
       const result = await cancelPendingCommand<{ id: string }>(
@@ -83,13 +88,15 @@ export function useStickerRegistration() {
   }
   return {
     items,
+    loading,
+    load,
     title,
     setTitle,
     point,
     setPoint,
     selecting,
     setSelecting,
-    busy,
+    busy: busy || loading,
     error,
     pending,
     create,

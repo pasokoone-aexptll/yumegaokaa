@@ -1,105 +1,28 @@
 import { LocationPicker } from "../../components/LocationPicker";
-import { useCallback, useState } from "react";
-import { router, useFocusEffect, useLocalSearchParams } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 import { Alert, Modal, Text, TextInput } from "react-native";
 import { Action, Empty, Page, ui } from "../../components/Page";
-import { native } from "../../lib/native";
-import {
-  StickerDraft,
-  stickerTouch,
-  localStickerAdapter,
-} from "../../lib/stickers";
+import { localStickerAdapter } from "../../lib/stickers";
+import { useStickerDetail } from "../../hooks/useStickerDetail";
 export default function Sticker() {
   const { id } = useLocalSearchParams<{ id: string }>();
-  const [draft, setDraft] = useState<StickerDraft>(),
-    [busy, setBusy] = useState(false),
-    [error, setError] = useState("");
-  const [editing, setEditing] = useState(false);
-  const [title, setTitle] = useState("");
-  const [point, setPoint] = useState<[number, number]>();
-  const [selecting, setSelecting] = useState(false);
-  const load = useCallback(async () => {
-    try {
-      setDraft(await native.rpc<StickerDraft>("sticker_get", { id }));
-      setError("");
-    } catch {
-      setError("登録を取得できません。認証と期限を確認してください。");
-    }
-  }, [id]);
-  useFocusEffect(
-    useCallback(() => {
-      void load();
-    }, [load]),
-  );
-  async function step() {
-    if (!draft) return;
-    setBusy(true);
-    setError("");
-    try {
-      const phase =
-        draft.phase === "draft"
-          ? "written"
-          : draft.phase === "written"
-            ? "verified"
-            : "installed";
-      const payload =
-        phase === "installed"
-          ? {}
-          : {
-              tag_payload: await stickerTouch(
-                draft.tag_id,
-                phase === "written",
-              ),
-            };
-      setDraft(
-        await native.rpc<StickerDraft>("sticker_step", {
-          id,
-          revision: draft.revision,
-          phase,
-          ...payload,
-        }),
-      );
-    } catch {
-      setError(
-        "完了を確認できません。通信・ステッカーを確認し、状態を再取得してください。",
-      );
-    } finally {
-      setBusy(false);
-    }
-  }
-  async function save() {
-    if (!draft || !point) return;
-    setBusy(true);
-    try {
-      setDraft(
-        await native.rpc<StickerDraft>("sticker_edit", {
-          id,
-          revision: draft.revision,
-          title: title.trim(),
-          longitude: point[0],
-          latitude: point[1],
-        }),
-      );
-      setEditing(false);
-      setError("");
-    } catch {
-      setError("変更を確認できません。状態を再取得してください。");
-    } finally {
-      setBusy(false);
-    }
-  }
-  async function cancel() {
-    if (!draft) return;
-    setBusy(true);
-    try {
-      await native.rpc("sticker_cancel", { id, revision: draft.revision });
-      router.replace("/stickers");
-    } catch {
-      setError("取消を確認できません。状態を再取得してください。");
-    } finally {
-      setBusy(false);
-    }
-  }
+  const {
+    draft,
+    busy,
+    error,
+    editing,
+    setEditing,
+    title,
+    setTitle,
+    point,
+    setPoint,
+    selecting,
+    setSelecting,
+    load,
+    step,
+    save,
+    cancel,
+  } = useStickerDetail(id);
   return (
     <Page title={draft?.title ?? "ステッカー"}>
       {!!error && <Text style={ui.error}>{error}</Text>}
