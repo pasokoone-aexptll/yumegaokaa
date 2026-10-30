@@ -7,6 +7,7 @@ public class PresenceNativeModule: Module {
   Events("onChange")
   Function("monotonicTime") { PresenceEngine.mono()*1000 }
   AsyncFunction("configure") { [weak self] (url:String,key:String) in
+   TemporaryImageCleanup.prepareOnce()
    try await APIClient.shared.configure(url:url,key:key)
    await MainActor.run {PresenceEngine.shared.onChange = { [weak self] state in self?.sendEvent("onChange",state)}}
   }

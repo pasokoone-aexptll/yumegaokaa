@@ -17,7 +17,7 @@ cp119。MVP_REQUIREMENTS 9章を基準とする。既存成功証拠はTECH_VALI
 | ステッカー下書き | 最終更新から7日 | feature-retentionの6日保持/8日削除 | なし |
 | 未公開街pool画像 | 24h | 031、cp41のStorage実削除、street-icon-smoke | cp120：稼働PID48042と直近周期成功、既存lease/retryコード照合 |
 | 取り下げ/退会画像 | 非公開化後Storage清掃 | 026/031、maintenance-workerのlease/retry、cp41 | Q08、端末キャッシュは下記 |
-| 選択画像の端末コピー | upload/変換終了finallyで削除 | avatar.ts、cp84 avatar-cache3件。原本と対象外パスを保護 | 強制終了時の残存、表示用OSキャッシュ、実ファイル確認 |
+| 選択画像の端末コピー | upload/変換終了finallyで削除 | avatar.ts、cp84 avatar-cache3件。原本と対象外パスを保護 | cp121起動時回収実装・Swift実ファイル試験成功。本体組込/既存残存回収、表示用OSキャッシュ未確認 |
 
 ## 今回の検証範囲
 
