@@ -6,6 +6,7 @@ const db = new pg.Client({
   connectionString: "postgresql://postgres:postgres@127.0.0.1:54322/postgres",
 });
 await db.connect();
+const chat = process.argv.includes("--chat");
 const user = randomUUID(),
   visit = randomUUID();
 try {
@@ -41,7 +42,9 @@ try {
       process.env.UI_RESULT_PATH ?? "/tmp/yumegaoka-stop126.xcresult",
       "-collect-test-diagnostics",
       "never",
-      "-only-testing:Smoke/Smoke/testOperatorStopRestore",
+      chat
+        ? "-only-testing:Smoke/Smoke/testOperatorChatRestriction"
+        : "-only-testing:Smoke/Smoke/testOperatorStopRestore",
       "test",
     ],
     { stdio: "inherit" },
@@ -62,7 +65,7 @@ try {
         visit,
       ])
     ).rows[0].end_reason,
-    "banned",
+    chat ? null : "banned",
   );
   const audit = (
     await db.query(
@@ -72,11 +75,18 @@ try {
   ).rows;
   assert.deepEqual(
     audit.map((x) => x.action),
-    ["member_stop", "member_restore"],
+    chat
+      ? ["operator_chat_restrict", "operator_chat_restore"]
+      : ["member_stop", "member_restore"],
   );
-  assert.ok(audit.every((x) => x.reason === "UI stop restore verification"));
+  assert.deepEqual(
+    audit.map((x) => x.reason),
+    ["UI stop restore verification", "UI stop restore verification"],
+  );
   console.log(
-    "Stop/restore UI, retained ended visit, and reasoned audit verified.",
+    chat
+      ? "Posting restriction/restore UI, active visit and exact audit reasons verified."
+      : "Stop/restore UI, retained ended visit, and reasoned audit verified.",
   );
 } finally {
   execFileSync(
@@ -87,6 +97,10 @@ try {
   await db.query("delete from app_private.operator_audit where target=$1", [
     user,
   ]);
+  await db.query(
+    "delete from app_private.chat_restrictions where account_id=$1",
+    [user],
+  );
   await db.query("delete from app_private.visits where id=$1", [visit]);
   await db.query("delete from app_private.profiles where account_id=$1", [
     user,

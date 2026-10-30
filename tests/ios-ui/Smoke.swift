@@ -202,6 +202,24 @@ final class Smoke: XCTestCase {
   XCTAssertTrue(app.buttons["招待発行を停止"].waitForExistence(timeout:15))
   attach(app,"operator-invite-policy-restored")
  }
+ @MainActor func testOperatorChatRestriction() throws {
+  let app=try operatorApp()
+  tap(app,"‹ 戻る");tap(app,"参加者・招待枠・利用停止")
+  let peer=app.buttons.matching(NSPredicate(format:"label BEGINSWITH %@","UI停止対象 · 利用中")).firstMatch
+  XCTAssertTrue(peer.waitForExistence(timeout:20));peer.tap()
+  let reason=app.textFields["操作理由（必須）"]
+  reason.tap();reason.typeText("UI stop restore verification");reason.typeText("\n")
+  tap(app,"制限終了日時を選択");tap(app,"決定")
+  tap(app,"投稿を制限")
+  XCTAssertTrue(app.staticTexts.containing(NSPredicate(format:"label BEGINSWITH %@","投稿制限中 · ")).firstMatch.waitForExistence(timeout:15))
+  for _ in 0..<6 {if reason.isHittable {break};app.swipeDown()}
+  reason.tap();reason.typeText("UI stop restore verification");reason.typeText("\n")
+  XCTAssertEqual(reason.value as? String,"UI stop restore verification")
+  for _ in 0..<4 {if app.buttons["投稿制限を解除"].isHittable {break};app.swipeUp()}
+  tap(app,"投稿制限を解除")
+  XCTAssertTrue(app.staticTexts["投稿制限なし"].waitForExistence(timeout:15))
+  attach(app,"operator-chat-restored")
+ }
  @MainActor func testOperatorStopRestore() throws {
   let app=try operatorApp()
   tap(app,"‹ 戻る");tap(app,"参加者・招待枠・利用停止")
@@ -677,6 +695,20 @@ final class Smoke: XCTestCase {
   app.descendants(matching:.any).matching(identifier:"Settings").firstMatch.tap();tap(app,"お知らせ")
   XCTAssertTrue(app.buttons["確認済み"].waitForExistence(timeout:15))
   attach(app,"notification-read-after-restart")
+ }
+ @MainActor func testGatewayLiveChat() async throws {
+  continueAfterFailure=false
+  let app=XCUIApplication(bundleIdentifier:"jp.yumegaoka.development")
+  app.launch()
+  XCTAssertTrue(app.switches["街への参加"].waitForExistence(timeout:30))
+  // A separate participant writes after the screen is already visible.
+  var request=URLRequest(url:URL(string:"http://127.0.0.1:54326/message")!)
+  request.httpMethod="POST"
+  let (data,response)=try await URLSession.shared.data(for:request)
+  XCTAssertEqual((response as? HTTPURLResponse)?.statusCode,200)
+  let body=String(data:data,encoding:.utf8)!
+  XCTAssertTrue(app.descendants(matching:.any).matching(NSPredicate(format:"label CONTAINS %@",body)).firstMatch.waitForExistence(timeout:20))
+  attach(app,"gateway-live-chat")
  }
  @MainActor func testChatSendReloadDelete() throws {
   continueAfterFailure=false

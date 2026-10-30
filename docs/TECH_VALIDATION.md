@@ -731,3 +731,13 @@ R11/R18。sticker-flowに同一点3登録の退化拒否と競合公開拒否を
 - T024-02/R16/R18：専用参加者と有効滞在を実DBへ作成し、MFA運営画面から理由入力→利用停止→解除を操作。testOperatorStopRestore成功、/tmp/yumegaoka-stop126.xcresult。解除後active=true、既存滞在end_reason=bannedを維持、member_stop/member_restoreの理由付き監査2件をDB照合。
 - scripts/test-member-stop-ui.mjsのfinallyでfixtureと監査を削除、シミュレータ運営資格を解除。既存Release124利用、製品再ビルド/実機操作なし。投稿制限・解除のAPIはmember-operations既存証拠、画面での確定操作は次に確認。Q07/Q09は未決のまま。
 - 残11→11、新規必須0、推測8.5–18.5h＋待ち不明は据置き。DONE23/33、実装25/33、統合24/33、実機11/33、BLOCKED3/33。T024はIMPLEMENTED維持。
+
+## チェックポイント127：投稿制限・解除の画面と監査
+- T024-02/R16/R18：MFA運営画面から理由と期限を指定して投稿制限→解除。専用参加者のactive=true・有効滞在end_reason=null維持、operator_chat_restrict/operator_chat_restoreの理由一致を実DB照合。/tmp/yumegaoka-chat-restrict127c.xcresult成功（38.744秒）。fixture/MFAをfinally回収。
+- 最初のUI操作は成功したが理由一致で失敗。理由欄の保持を仮定した再試験も失敗。保存後に再生成された理由欄を画面内へ戻し、入力値を照合する試験へ修正して成功。製品コードの変更なし。cp126の停止後非復活を再利用。
+- Q09は承認済み方式とcp101/103/104の認可証拠で解決済み。Q01の通常ログイン方針、Q07の一般参加登録波及は未決。T024はIMPLEMENTED維持。残11→10、新規必須0、推測8.5–18.5→7.5–15.5h＋待ち不明。DONE23/33・実装25/33・統合24/33・実機11/33を維持。製品ビルド/実機転送なし。
+
+## チェックポイント128：主要フロー統合の収束
+- T031/R01/R03〜R19/R21：LOCAL_FLOW_ACCEPTANCEで固定完了条件の役割別操作を既存実UI/DB証拠へ対応付け。新構成のRN Mapへ別参加者の実DB新着が自動反映されることを追加確認。testGatewayLiveChat成功（/tmp/yumegaoka-gateway128.xcresult、7.034秒）。fixtureだけ直接DB投入、表示は実アプリ/API。ポーリングも動くため単独でWS配送と断定せず、cp101/103/104/111の配信証拠と併用。
+- T031をDONE。未決仕様と実機/外部の条件は対応タスクに維持。既存成功フローの全件再試験・製品再ビルド・実機転送なし。T029の方式再検討なし、pushなし。
+- DONE24/33（72.7%）、IMPLEMENTED2、IN_PROGRESS4、BLOCKED3。実装26/33（78.8%）、統合25/33（75.8%）、実機11/33（33.3%）。残10→9、新規必須0、推測7.5–15.5→5.5–11.5h＋判断/実機/外部待ち不明。今回cp126からは11→9。
