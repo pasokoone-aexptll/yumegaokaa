@@ -60,9 +60,9 @@ export const streetMapStyles = StyleSheet.create({
     fontWeight: "600",
   },
   orb: {
-    width: 34,
-    height: 34,
-    borderRadius: 17,
+    width: 42,
+    height: 42,
+    borderRadius: 21,
     borderWidth: 2,
     borderColor: "white",
     alignItems: "center",
