@@ -18,10 +18,12 @@ test('pool contribution, daily stability, replacement, removal and withdrawal', 
   };
   const prepare=await rpc('street_icon_prepare');
   assert.deepEqual(await rpc('street_icon_prepare'),prepare);
+  assert.equal(prepare.contributed,false);
   assert.equal(prepare.upload_path.includes(uid),false);
   // Metadata fixture tests DB acceptance, not image bytes or Storage transport.
   await c.query("insert into storage.objects(bucket_id,name,metadata) values('street-icons',$1,$2)",[prepare.upload_path,{size:100,mimetype:'image/jpeg'}]);
   const published=await rpc('street_icon_publish',{id:prepare.id});
+  assert.equal(published.contributed,true);
   assert.equal(published.contribution_path,prepare.upload_path);
   assert.equal((await rpc('street_icon_get')).daily_path,published.daily_path);
   const replacement=await rpc('street_icon_prepare');
@@ -37,6 +39,8 @@ test('pool contribution, daily stability, replacement, removal and withdrawal', 
   await c.query("select app_private.my_daily_icon($1,$2,'2026-10-30T15:00:00Z')",[uid,street]);
   assert.equal((await c.query("select day::text from app_private.daily_street_icons where account_id=$1",[uid])).rows[0].day,'2026-10-31');
   assert.equal((await c.query('select count(*)::int n from app_private.daily_street_icons where account_id=$1',[uid])).rows[0].n,1);
+  await rpc('street_icon_remove',{id:replacement.id});
+  assert.equal((await rpc('street_icon_get')).contributed,true,'Removal must not force enrollment again');
   await c.query('update app_private.members set withdrawn_at=clock_timestamp(),active=false where account_id=$1',[uid]);
   assert.equal((await c.query('select count(*)::int n from app_private.street_icons where owner_id=$1 and active',[uid])).rows[0].n,0);
   assert.equal((await c.query('select count(*)::int n from app_private.daily_street_icons where account_id=$1',[uid])).rows[0].n,0);

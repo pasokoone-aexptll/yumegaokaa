@@ -32,7 +32,7 @@ export default function Profile() {
         onChangeText={setName}
       />
       <Action
-        title={onboarding ? "街を開く" : "保存"}
+        title={onboarding ? "次へ" : "保存"}
         disabled={busy || !name.trim()}
         onPress={() =>
           void (async () => {

@@ -8,13 +8,14 @@ const source = ts.transpileModule(
   { compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022 } },
 ).outputText;
 
-async function check(status, name, failure = false) {
+async function check(status, name, failure = false, contributed = true) {
   const states = [], calls = [], exports = {};
   const native = {
     rpc: async (operation) => {
       calls.push(operation);
       if (operation === 'account_access') return { status };
       if (failure) throw Error('network_error');
+      if (operation === 'street_icon_get') return { contributed };
       return { display_name: name };
     },
     stop: async () => {},
@@ -48,4 +49,9 @@ test('unregistered and suspended users do not read profiles; network failure can
     assert.equal(result.states[0].status, status);
   }
   assert.deepEqual((await check('active', '', true)).states, []);
+});
+
+test('first enrollment requires pool contribution independently of the saved display name', async () => {
+  assert.deepEqual((await check('active', 'name', false, false)).states,
+    [{ revision: 7, status: 'pool_required' }]);
 });

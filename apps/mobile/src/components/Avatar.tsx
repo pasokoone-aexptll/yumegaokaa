@@ -6,11 +6,13 @@ export function Avatar({
   version,
   name,
   size = 40,
+  bucket = "avatars",
 }: {
   path?: string;
   version?: string;
   name: string;
   size?: number;
+  bucket?: "avatars" | "street-icons";
 }) {
   const [token, setToken] = useState("");
   useEffect(() => {
@@ -32,7 +34,9 @@ export function Avatar({
       source={{
         uri:
           url +
-          "/storage/v1/object/authenticated/avatars/" +
+          "/storage/v1/object/authenticated/" +
+          bucket +
+          "/" +
           path +
           "?v=" +
           encodeURIComponent(version ?? ""),

@@ -4,6 +4,10 @@ export default function Settings() {
   return (
     <Page title="アカウント">
       <Action title="プロフィール" onPress={() => router.push("/profile")} />
+      <Action
+        title="街のアイコン"
+        onPress={() => router.push("/street-icons")}
+      />
       <Action title="友人を招待" onPress={() => router.push("/invitations")} />
       <Action title="お知らせ" onPress={() => router.push("/notifications")} />
       <Action title="ブロック設定" onPress={() => router.push("/blocks")} />

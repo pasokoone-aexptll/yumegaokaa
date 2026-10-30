@@ -15,7 +15,9 @@ export default function Layout() {
   const access = useAccountAccess(session.signed_in, session.revision);
   const previousAccess = useRef(access.status);
   useEffect(() => {
-    const wasSetup = previousAccess.current === "profile_required";
+    const wasSetup = ["profile_required", "pool_required"].includes(
+      previousAccess.current,
+    );
     previousAccess.current = access.status;
     if (session.ready && !session.signed_in && path !== "/")
       router.replace("/");
@@ -27,11 +29,14 @@ export default function Layout() {
         router.replace("/access");
       else if (access.status === "unregistered" && path !== "/invitations")
         router.replace("/invitations");
+      else if (access.status === "pool_required" && path !== "/street-icons")
+        router.replace("/street-icons");
       else if (access.status === "profile_required" && path !== "/profile")
         router.replace("/profile");
       else if (
         access.status === "active" &&
-        (path === "/access" || (wasSetup && path === "/profile"))
+        (path === "/access" ||
+          (wasSetup && ["/profile", "/street-icons"].includes(path)))
       )
         router.replace("/");
     }

@@ -1,7 +1,8 @@
 import { createContext, useCallback, useEffect, useRef, useState } from "react";
 import { AppState } from "react-native";
-import { native } from "../lib/native";
+import { native, streetID } from "../lib/native";
 export type AccessStatus =
+  | "pool_required"
   | "profile_required"
   | "unknown"
   | "active"
@@ -36,6 +37,13 @@ export function useAccountAccess(signed: boolean, revision: number) {
           {},
         );
         if (!profile.display_name.trim()) status = "profile_required";
+        else {
+          const pool = await native.rpc<{ contributed: boolean }>(
+            "street_icon_get",
+            { street_id: streetID },
+          );
+          if (!pool.contributed) status = "pool_required";
+        }
       }
       if (gen === generation.current) {
         setAccess({ revision, status });
