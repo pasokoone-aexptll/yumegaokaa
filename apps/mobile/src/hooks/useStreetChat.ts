@@ -1,6 +1,7 @@
 import { readChatWindow, ChatCursor } from "../lib/chatWindow";
 import { streetChanges } from "../lib/streetChanges";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useContext, useEffect, useRef, useState } from "react";
+import { AccountAccessContext } from "./useAccountAccess";
 import { AppState } from "react-native";
 import { native, streetID } from "../lib/native";
 import { pendingCommand, submitCommand } from "../lib/commands";
@@ -17,6 +18,7 @@ export type Message = {
   mine: boolean;
 };
 export function useStreetChat() {
+  const { chatRestrictedUntil } = useContext(AccountAccessContext);
   const [items, setItems] = useState<Message[]>([]),
     [text, setText] = useState(""),
     [error, setError] = useState(""),
@@ -121,7 +123,7 @@ export function useStreetChat() {
     };
   }, []);
   async function send() {
-    if (busy || !text.trim()) return;
+    if (busy || chatRestrictedUntil || !text.trim()) return;
     setBusy(true);
     try {
       await submitCommand("chat_send", {
@@ -185,6 +187,7 @@ export function useStreetChat() {
     setHasNew(false);
   }
   return {
+    chatRestrictedUntil,
     hasNew,
     followLatest,
     readingHistory: older,

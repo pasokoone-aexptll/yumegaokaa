@@ -38,8 +38,8 @@ async function check(status, name, failure = false, contributed = true) {
 }
 
 test('invited member without a name must complete profile; saved name resumes Map access', async () => {
-  assert.deepEqual((await check('active', '')).states, [{ revision: 7, status: 'profile_required' }]);
-  assert.deepEqual((await check('active', '街の人')).states, [{ revision: 7, status: 'active' }]);
+  assert.deepEqual((await check('active', '')).states, [{ revision: 7, chatRestrictedUntil: null, status: 'profile_required' }]);
+  assert.deepEqual((await check('active', '街の人')).states, [{ revision: 7, chatRestrictedUntil: null, status: 'active' }]);
 });
 
 test('unregistered and suspended users do not read profiles; network failure cannot complete onboarding', async () => {
@@ -53,5 +53,5 @@ test('unregistered and suspended users do not read profiles; network failure can
 
 test('first enrollment requires pool contribution independently of the saved display name', async () => {
   assert.deepEqual((await check('active', 'name', false, false)).states,
-    [{ revision: 7, status: 'pool_required' }]);
+    [{ revision: 7, chatRestrictedUntil: null, status: 'pool_required' }]);
 });

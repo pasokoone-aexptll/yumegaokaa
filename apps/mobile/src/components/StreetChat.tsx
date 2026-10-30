@@ -19,6 +19,7 @@ import { useStreetChat, Message } from "../hooks/useStreetChat";
 import { ui } from "./Page";
 export function StreetChat() {
   const {
+    chatRestrictedUntil,
     hasNew,
     followLatest,
     readingHistory,
@@ -187,6 +188,12 @@ export function StreetChat() {
                 <Text style={ui.error}>{error}</Text>
               </Pressable>
             )}
+            {chatRestrictedUntil && (
+              <Text style={ui.error}>
+                チャット投稿は{new Date(chatRestrictedUntil).toLocaleString()}
+                まで制限されています
+              </Text>
+            )}
             <View style={{ flexDirection: "row", gap: 8 }}>
               <TextInput
                 style={[ui.input, { flex: 1, padding: 10 }]}
@@ -196,7 +203,7 @@ export function StreetChat() {
                 onChangeText={setText}
               />
               <Pressable
-                disabled={busy || !text.trim()}
+                disabled={busy || !!chatRestrictedUntil || !text.trim()}
                 onPress={() => void send()}
                 style={{ padding: 10 }}
               >

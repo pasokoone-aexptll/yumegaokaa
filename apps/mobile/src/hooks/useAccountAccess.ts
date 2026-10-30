@@ -13,11 +13,13 @@ export type AccessStatus =
 export const AccountAccessContext = createContext({
   status: "unknown" as AccessStatus,
   retry: () => {},
+  chatRestrictedUntil: null as string | null,
 });
 export function useAccountAccess(signed: boolean, revision: number) {
   const [access, setAccess] = useState<{
     revision: number;
     status: AccessStatus;
+    chatRestrictedUntil?: string | null;
   }>({ revision: -1, status: "unknown" });
   const generation = useRef(0);
   const inFlight = useRef(false);
@@ -26,10 +28,10 @@ export function useAccountAccess(signed: boolean, revision: number) {
     inFlight.current = true;
     const gen = generation.current;
     try {
-      const result = await native.rpc<{ status: AccessStatus }>(
-        "account_access",
-        {},
-      );
+      const result = await native.rpc<{
+        status: AccessStatus;
+        chat_restricted_until?: string | null;
+      }>("account_access", {});
       let status = result.status;
       if (status === "active") {
         const profile = await native.rpc<{ display_name: string }>(
@@ -46,7 +48,11 @@ export function useAccountAccess(signed: boolean, revision: number) {
         }
       }
       if (gen === generation.current) {
-        setAccess({ revision, status });
+        setAccess({
+          revision,
+          status,
+          chatRestrictedUntil: result.chat_restricted_until ?? null,
+        });
         if (result.status === "suspended" || result.status === "withdrawn")
           void native.stop().catch(() => {});
       }
@@ -86,6 +92,10 @@ export function useAccountAccess(signed: boolean, revision: number) {
     };
   }, [revision, refresh]);
   return {
+    chatRestrictedUntil:
+      access.revision === revision
+        ? (access.chatRestrictedUntil ?? null)
+        : null,
     status:
       access.revision === revision
         ? access.status
