@@ -1,5 +1,6 @@
 // Local server worker. The privileged key never enters mobile configuration.
 import { execFileSync } from "node:child_process";
+import { simulateNotifications } from "./lib/notification-delivery.mjs";
 const env = JSON.parse(
   execFileSync("npx", ["supabase", "status", "-o", "json"], {
     encoding: "utf8",
@@ -30,12 +31,20 @@ async function job(operation, payload = {}, endpoint = "maintenance_jobs") {
 }
 async function tick() {
   await job("cleanup");
+  const notices = await simulateNotifications((operation, payload = {}) =>
+    job(operation, payload, "notification_delivery"),
+  );
+  console.log("通知の疑似配信（実Pushではありません）:", notices, "件");
   let icons = 0;
   for (let i = 0; i < 100; i++) {
     const item = await job("claim", {}, "icon_cleanup");
     if (!item.id) break;
     try {
-      const result = await request("/storage/v1/object/street-icons", "DELETE", { prefixes: [item.path] });
+      const result = await request(
+        "/storage/v1/object/street-icons",
+        "DELETE",
+        { prefixes: [item.path] },
+      );
       if (!result.ok) throw Error("icon_cleanup_failed");
       await job("finish", { id: item.id, lease: item.lease }, "icon_cleanup");
       icons++;

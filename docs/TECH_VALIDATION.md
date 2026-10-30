@@ -401,3 +401,9 @@ T018/T031/R14/R19。画面復帰時の取得を前画面の要求で塞がず、
 ### チェックポイント66：通知と入街ログの統合
 最新シミュレータReleaseビルド成功。登録済みOTP/画面復帰77.998秒、testHostEditRosterNotifications48.660秒で成功。イベント編集→変更通知→中止→既読→再起動保持、今回のイベント通知read_atを実DB照合。/tmp/yumegaoka-login66.xcresult、/tmp/yumegaoka-notifications66.xcresult。
 arrival-chat-flow.test.mjsで実入街→再送/再利用/気配更新後のログ1件、現在名、ブロック/解除、30日期限、visit ID非公開を確認。fixture rollback。T021をIMPLEMENTEDへ訂正。実機、入街ログ画像描画、配信待ち全条件は未確認。製品変更なし、型/Lint反復なし。
+
+
+### チェックポイント67：通知配信待ちワーカー
+033適用、service専用RPCとmaintenance-workerのローカル疑似配信を接続。notification-delivery.test.mjsで実DBの宛先・期限・版・参加取消・中止・利用停止・lease回収・再試行・通常会員拒否を確認。HTTPワーカー単発で疑似配信4件。simulated_atのみ記録し実配信delivered_atは未設定。多ワーカー競合/実APNs/外部配送途中の取消/常時稼働は未確認。ネイティブ変更なし、ビルド省略。T018 IMPLEMENTED、全体5/33維持。
+
+チェックポイント67運用追記：旧ローカルworker PID49934の稼働を確認してTERMで停止し、新版を1プロセス起動。/tmp/yumegaoka-maintenance67.logで初回周期（疑似配信0件・清掃0件）の正常完了を確認。Mac停止後の自動復帰や常時稼働の保証ではない。
