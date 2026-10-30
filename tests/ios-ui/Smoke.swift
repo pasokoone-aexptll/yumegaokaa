@@ -518,7 +518,10 @@ final class Smoke: XCTestCase {
   tap(app,"ピンを作成");tap(app,"オフ会通知")
   let title="UI event "+String(Int(Date().timeIntervalSince1970))
   let titleField=app.textFields["オフ会名を入力"]
-  titleField.tap();titleField.typeText(title);titleField.typeText("\n")
+  titleField.tap()
+  for character in title { titleField.typeText(String(character)) }
+  XCTAssertEqual(titleField.value as? String,title)
+  titleField.typeText("\n")
   tap(app,"開始日時を選択")
   XCTAssertTrue(app.pickerWheels.firstMatch.waitForExistence(timeout:10))
   tap(app,"キャンセル")
@@ -537,7 +540,14 @@ final class Smoke: XCTestCase {
   tap(app,"参加する")
   XCTAssertTrue(app.buttons["参加を取り消す"].waitForExistence(timeout:15))
   tap(app,"‹ 戻る")
-  let card=app.descendants(matching:.any).matching(NSPredicate(format:"label CONTAINS %@",title)).firstMatch
+  let mapButton=app.buttons[title+"の地図を開く"]
+  XCTAssertTrue(mapButton.waitForExistence(timeout:15))
+  attach(app,"home-event-row")
+  mapButton.tap()
+  XCTAssertTrue(app.switches["街への参加"].waitForExistence(timeout:15))
+  attach(app,"home-event-map")
+  home.tap()
+  let card=app.buttons[title+"の詳細"]
   XCTAssertTrue(card.waitForExistence(timeout:15));card.tap()
   tap(app,"参加を取り消す")
   XCTAssertTrue(app.buttons["参加する"].waitForExistence(timeout:15))
