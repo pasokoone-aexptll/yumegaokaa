@@ -34,6 +34,7 @@ export function useProfile() {
       if (p) {
         setProfile(p);
         setStatus("保存しました");
+        return true;
       }
     } catch (e) {
       setStatus(
@@ -44,6 +45,7 @@ export function useProfile() {
     } finally {
       setBusy(false);
     }
+    return false;
   }
   return {
     profile,

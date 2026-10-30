@@ -2,7 +2,7 @@ import {
   AccountAccessContext,
   useAccountAccess,
 } from "../hooks/useAccountAccess";
-import { useEffect, useSyncExternalStore } from "react";
+import { useEffect, useRef, useSyncExternalStore } from "react";
 import { sessionState } from "../lib/sessionState";
 import { Stack, router, usePathname } from "expo-router";
 import { SafeAreaProvider } from "react-native-safe-area-context";
@@ -13,7 +13,10 @@ export default function Layout() {
   );
   const path = usePathname();
   const access = useAccountAccess(session.signed_in, session.revision);
+  const previousAccess = useRef(access.status);
   useEffect(() => {
+    const wasSetup = previousAccess.current === "profile_required";
+    previousAccess.current = access.status;
     if (session.ready && !session.signed_in && path !== "/")
       router.replace("/");
     else if (session.signed_in) {
@@ -24,7 +27,12 @@ export default function Layout() {
         router.replace("/access");
       else if (access.status === "unregistered" && path !== "/invitations")
         router.replace("/invitations");
-      else if (access.status === "active" && path === "/access")
+      else if (access.status === "profile_required" && path !== "/profile")
+        router.replace("/profile");
+      else if (
+        access.status === "active" &&
+        (path === "/access" || (wasSetup && path === "/profile"))
+      )
         router.replace("/");
     }
   }, [session.ready, session.signed_in, path, access.status]);

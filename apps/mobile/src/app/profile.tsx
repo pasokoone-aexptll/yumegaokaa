@@ -1,8 +1,12 @@
+import { useContext } from "react";
+import { AccountAccessContext } from "../hooks/useAccountAccess";
 import { Text, TextInput } from "react-native";
 import { Action, Page, ui } from "../components/Page";
 import { Avatar } from "../components/Avatar";
 import { useProfile } from "../hooks/useProfile";
 export default function Profile() {
+  const access = useContext(AccountAccessContext);
+  const onboarding = access.status === "profile_required";
   const { profile, name, setName, status, busy, save, selectAvatar } =
     useProfile();
   return (
@@ -26,9 +30,15 @@ export default function Profile() {
         onChangeText={setName}
       />
       <Action
-        title="保存"
+        title={onboarding ? "街を開く" : "保存"}
         disabled={busy || !name.trim()}
-        onPress={() => void save()}
+        onPress={() =>
+          void (async () => {
+            if (await save()) {
+              access.retry();
+            }
+          })()
+        }
       />
       {!!status && <Text>{status}</Text>}
     </Page>

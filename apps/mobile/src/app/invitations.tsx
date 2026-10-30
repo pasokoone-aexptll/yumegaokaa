@@ -12,20 +12,22 @@ type Invite = {
 };
 export default function Invitations() {
   const access = useContext(AccountAccessContext);
+  const receiving = access.status === "unregistered";
   const [items, setItems] = useState<Invite[]>([]),
     [code, setCode] = useState(""),
     [issued, setIssued] = useState(""),
     [status, setStatus] = useState(""),
     [busy, setBusy] = useState(false);
   const refresh = useCallback(async () => {
+    if (receiving) return;
     try {
       setItems(
         (await native.rpc<{ items: Invite[] }>("invite_list", {})).items,
       );
     } catch {
-      setStatus("招待を受け取った方は、ログイン後にコードを入力してください。");
+      setStatus("招待一覧を取得できませんでした。");
     }
-  }, []);
+  }, [receiving]);
   useFocusEffect(
     useCallback(() => {
       void refresh();
@@ -38,9 +40,7 @@ export default function Invitations() {
       if (r.code) setIssued(r.code);
       if (op === "invite_accept") access.retry();
       setStatus(
-        op === "invite_accept"
-          ? "招待を受け付けました。プロフィールを設定し、Mapを開いてください。"
-          : "更新しました。",
+        op === "invite_accept" ? "招待を受け付けました。" : "更新しました。",
       );
       await refresh();
     } catch (e) {
@@ -54,27 +54,31 @@ export default function Invitations() {
     }
   }
   return (
-    <Page title="友人を招待">
-      <Text style={ui.muted}>
-        招待は1回限り、7日間有効です。コードを公開の場所に載せないでください。
-      </Text>
-      <Action
-        title="招待を発行"
-        disabled={busy}
-        onPress={() => void act("invite_create")}
-      />
-      {!!issued && (
-        <View style={ui.card}>
-          <Text selectable>{issued}</Text>
+    <Page title={receiving ? "招待を受け取る" : "友人を招待"}>
+      {!receiving && (
+        <>
+          <Text style={ui.muted}>
+            招待は1回限り、7日間有効です。コードを公開の場所に載せないでください。
+          </Text>
           <Action
-            title="コードを共有"
-            onPress={() =>
-              void Share.share({
-                message: `夢ヶ丘の招待コード：${issued}（7日間・1回限り）`,
-              })
-            }
+            title="招待を発行"
+            disabled={busy}
+            onPress={() => void act("invite_create")}
           />
-        </View>
+          {!!issued && (
+            <View style={ui.card}>
+              <Text selectable>{issued}</Text>
+              <Action
+                title="コードを共有"
+                onPress={() =>
+                  void Share.share({
+                    message: `夢ヶ丘の招待コード：${issued}（7日間・1回限り）`,
+                  })
+                }
+              />
+            </View>
+          )}
+        </>
       )}
       <TextInput
         style={ui.input}

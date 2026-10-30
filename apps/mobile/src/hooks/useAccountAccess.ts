@@ -2,7 +2,13 @@ import { createContext, useCallback, useEffect, useRef, useState } from "react";
 import { AppState } from "react-native";
 import { native } from "../lib/native";
 export type AccessStatus =
-  "unknown" | "active" | "unregistered" | "suspended" | "withdrawn" | "expired";
+  | "profile_required"
+  | "unknown"
+  | "active"
+  | "unregistered"
+  | "suspended"
+  | "withdrawn"
+  | "expired";
 export const AccountAccessContext = createContext({
   status: "unknown" as AccessStatus,
   retry: () => {},
@@ -23,8 +29,16 @@ export function useAccountAccess(signed: boolean, revision: number) {
         "account_access",
         {},
       );
+      let status = result.status;
+      if (status === "active") {
+        const profile = await native.rpc<{ display_name: string }>(
+          "profile_get",
+          {},
+        );
+        if (!profile.display_name.trim()) status = "profile_required";
+      }
       if (gen === generation.current) {
-        setAccess({ revision, status: result.status });
+        setAccess({ revision, status });
         if (result.status === "suspended" || result.status === "withdrawn")
           void native.stop().catch(() => {});
       }
