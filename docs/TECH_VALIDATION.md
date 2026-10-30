@@ -413,3 +413,7 @@ arrival-chat-flow.test.mjsで実入街→再送/再利用/気配更新後のロ�
 feature-retention.test.mjs成功。実worker入口maintenance_jobs(cleanup)で期限前後26行を照合。終了/中止イベントと参加・通知・outboxの24h連鎖削除、チャット30日、通報180/30日、運営90日、未完了下書き7日。fixture rollback。全データ種別/常時稼働/バックアップは未確認。iPhone用Releaseのまとめたビルドを開始し、結果は後記する。
 
 チェックポイント68実機更新追記：iPhone用Releaseビルド成功、codesign --verify --deep --strict成功、main.jsbundle 3.5MiB同梱。検証用iPhoneへのinstall成功（/tmp/yumegaoka-iphone68-install.log）。画像切り抜き/圧縮・日時選択・通知/退会の修正を収録。devicectl起動は端末ロック（Locked）により拒否。インストール成功と起動成功を混同しない。帰宅後の手動起動・写真保存は未確認。
+
+
+### チェックポイント69：実機全体確認へ移行
+ユーザー帰宅後、統合・実機優先へ変更。33件を維持しMVP_TASKSに達成段階と未完了理由を追加。今回のデバイス起動要求はLockedで拒否されたが、ユーザーが最新版を手動起動しログイン画面を確認。最初のメール確認は古い21:43のものだけだったため案内せず、再送後の新着のみ案内。写真保存の結果待ち。再ビルド・再転送・例外条件の追加テストは実行していない。
