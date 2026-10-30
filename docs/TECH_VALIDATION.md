@@ -580,3 +580,12 @@ T012をIMPLEMENTED/INTEGRATEDへ更新。DONE8、IMPLEMENTED15、IN_PROGRESS7、
 - T012/R04/R06/R19：useStreetMapに入街処理中のrefガードを追加。取消後もnative.checkin応答待ちが残る間の再scanでcanceledがfalseへ戻り、旧結果を成功表示し得る経路を閉じた。処理終了後にガードを解放する。DB/Swiftの退出優先は変更しない。
 - entry-state.test.mjsを追加。初回はmockのdefault export指定を修正、その後に製品でcheckin呼出2件を再現。修正後は取消→再scanでも1件、遅延成功を無視、pending_exitを維持、権限拒否/別端末/通信不明は成功表示なし、確定応答後だけ成功/activeとなる3試験が成功。NativeとNFCはmockであり、実機・実NFC・画面のピクセル描画の証拠ではない。
 - 型/Lint/diff成功。既存cp77の実UI成功/退出を再利用。今回の取消/拒否の実画面確認はまだ不足するためT012をDONEにしない。次のまとめたUI確認に含める。iPhone/ビルド/pushなし。実装23/33、統合22/33、実機11/33、DONE11/33、BLOCKED3を維持。
+
+## チェックポイント96：招待完了・承認ヘッダーと入街拒否表示（2026-10-31）
+- T003/R03/R16：invitations試験へ7日有効期間、期限切れ消費拒否、拒否後未会員を追加し実DBで成功。既存cp50同時消費/上限とcp60のOTP→招待→名前→pool→Map/再起動を再利用。既定条件を満たしDONEへ。Realtime接続枠や追加実機通信断を招待固有条件に重複計上しない。
+- Q05はユーザー承認：有効気配の街pool画像最大7個＋残り件数、チェックイン人数は別表示。現行liveCellsの失効後スロットを使いMapへ接続。新たな個人IDや位置APIは追加なし。画像なし枠は既存Avatar代替。Q12は方式の説明希望で未承認を維持。直接接続迂回防止/物理接続上限/運用負担を説明済み。
+- T012のシミュレータ試験は最初に取消成功・拒否文言の待機失敗（/tmp/yumegaoka-entry96.xcresult）。権限をlocation/always両方で拒否する条件を整備。コード照合で地図取得成功が操作エラーを消す経路を発見し、refreshErrorを分離。entry-stateに成功refresh後も操作エラー保持を追加し3試験成功。型/Lint成功。
+- cp95とヘッダー/エラー保持をまとめたシミュレータReleaseビルド成功（/tmp/yumegaoka-entry96-build.log）。iPhone操作/転送/pushなし。新画像列の人数あり描画、別端末/通信不明/退出待ちの全実画面は未確認。T012/T007はDONEにしない。
+- DONE12/33（36.4%）、IMPLEMENTED11、IN_PROGRESS7、BLOCKED3。コード23/33、統合22/33、実機11/33。外部依存以外の残り18件。
+
+cp96再試験：/tmp/yumegaoka-entry96-retry.xcresult成功。入街前取消→OFF維持、位置情報拒否→案内表示→成功表示なし/OFF維持を実Release画面で確認。試験後シミュレータの位置情報許可を復元。最初の失敗には権限条件とエラー消去の両方を修正したため、単一原因と断定しない。

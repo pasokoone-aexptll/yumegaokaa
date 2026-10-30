@@ -111,6 +111,8 @@ test("permission and writer rejection never show success and explain how to reco
     await h.render().scan();
     assert.equal(h.render().sheet, null);
     assert.match(h.render().error, new RegExp(text));
+    await h.render().exit(); // successful map refresh must not clear the action error
+    assert.match(h.render().error, new RegExp(text));
     assert.equal(h.render().active, false);
   }
 });

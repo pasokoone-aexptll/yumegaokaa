@@ -53,6 +53,7 @@ export function useStreetMap() {
     [snapshot, setSnapshot] = useState<Snapshot>(),
     [now, setNow] = useState(0),
     [name, setName] = useState("夢ヶ丘");
+  const [refreshError, setRefreshError] = useState("");
   const [error, setError] = useState(
       !url || !key
         ? "開発接続設定がありません。npm run setup:local を実行してください。"
@@ -108,10 +109,10 @@ export function useStreetMap() {
       setRecruitments(
         recruiting.items.filter((p) => !localBlocks.hidden(p.author_id)),
       );
-      setError("");
+      setRefreshError("");
     } catch (e) {
       if (generation !== snapshotGeneration.current) return;
-      setError(friendly(e));
+      setRefreshError(friendly(e));
       if (
         ["membership_required", "unauthorized", "login_required"].some((x) =>
           String(e).includes(x),
@@ -408,7 +409,7 @@ export function useStreetMap() {
     snapshot,
     now,
     name,
-    error,
+    error: error || refreshError,
     setError,
     busy,
     sheet,

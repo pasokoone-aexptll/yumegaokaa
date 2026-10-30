@@ -1,3 +1,4 @@
+import { Avatar } from "../../components/Avatar";
 import { StreetLogin } from "../../components/StreetLogin";
 import { StreetEntrySheet } from "../../components/StreetEntrySheet";
 import { StreetMapMarkers } from "../../components/StreetMapMarkers";
@@ -111,6 +112,9 @@ export default function Street() {
       />
     );
   const cells = snapshot ? liveCells(snapshot, now) : [];
+  const presenceIcons = cells.flatMap((cell) =>
+    cell.clusters.flatMap((cluster) => cluster.icons),
+  );
   return (
     <View style={styles.root}>
       <Map style={StyleSheet.absoluteFill} mapStyle={mapStyle}>
@@ -135,6 +139,29 @@ export default function Street() {
             trackColor={{ true: "#28c967" }}
           />
         </View>
+        {presenceIcons.length > 0 && (
+          <View
+            style={[
+              styles.people,
+              { flexDirection: "row", alignItems: "center", gap: 4 },
+            ]}
+            accessible
+            accessibilityLabel={`気配の街アイコン ${presenceIcons.length}人分`}
+          >
+            {presenceIcons.slice(0, 7).map((path, index) => (
+              <Avatar
+                key={index}
+                bucket="street-icons"
+                path={path ?? undefined}
+                name="✦"
+                size={34}
+              />
+            ))}
+            {presenceIcons.length > 7 && (
+              <Text style={styles.peopleText}>+{presenceIcons.length - 7}</Text>
+            )}
+          </View>
+        )}
         <View style={styles.people}>
           <Text style={styles.peopleText}>
             ✦{" "}

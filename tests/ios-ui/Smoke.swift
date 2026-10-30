@@ -317,6 +317,24 @@ final class Smoke: XCTestCase {
   XCTAssertFalse(app.textFields["入力…"].exists)
   attach(app,"suspended-account-gate")
  }
+ @MainActor func testEntryCancelAndDeniedLocation() throws {
+  continueAfterFailure=false
+  let app=XCUIApplication(bundleIdentifier:"jp.yumegaoka.development")
+  app.launch()
+  let toggle=app.switches["街への参加"]
+  XCTAssertTrue(toggle.waitForExistence(timeout:30))
+  XCTAssertEqual(toggle.value as? String,"0")
+  toggle.tap()
+  XCTAssertTrue(app.staticTexts["街に参加する"].waitForExistence(timeout:10))
+  tap(app,"キャンセル")
+  XCTAssertFalse(app.staticTexts["街への参加が完了しました"].exists)
+  XCTAssertEqual(toggle.value as? String,"0")
+  toggle.tap();tap(app,"開発用タグで入街（NFC代用）")
+  XCTAssertTrue(app.staticTexts["位置情報を許可してから、もう一度入街してください。設定アプリで許可を変更できます。"].waitForExistence(timeout:10))
+  XCTAssertFalse(app.staticTexts["街への参加が完了しました"].exists)
+  XCTAssertEqual(toggle.value as? String,"0")
+  attach(app,"entry-denied-location")
+ }
  @MainActor func testMVPNavigation() throws {
   continueAfterFailure=false
   let app=XCUIApplication(bundleIdentifier:"jp.yumegaoka.development")
