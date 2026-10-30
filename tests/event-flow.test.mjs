@@ -19,8 +19,24 @@ test('統合: 作成→参加→Home→取消/再送→変更通知→名簿権�
  let e=await rpc(0,'event_get',{id});await rpc(0,'event_edit',{...e,ends_at:new Date(Date.now()+9000000).toISOString()});
  assert.equal((await rpc(1,'notification_list')).items[0].kind,'changed');assert.equal((await rpc(2,'notification_list')).items.length,0);
  assert.equal((await rpc(0,'event_roster',{id})).items.length,1);await denied(1,'event_roster',{id},/membership_required/);
+ // Finish the host edit contract: capacity cannot undercut registrations,
+ // stale revisions and non-host edits do not overwrite the current event.
+ e=await rpc(0,'event_get',{id});
+ await rpc(0,'event_edit',{...e,capacity:2});
+ await denied(0,'event_edit',{...e,title:'古い編集'},/conflict/);
+ await rpc(2,'event_register',{id,joined:true,revision:0});
+ e=await rpc(0,'event_get',{id});
+ await denied(0,'event_edit',{...e,capacity:1},/invalid_input/);
+ await denied(1,'event_edit',{...e,title:'他人の編集'},/membership_required/);
+ assert.equal((await rpc(0,'event_get',{id})).capacity,2);
  e=await rpc(0,'event_get',{id});await rpc(0,'event_cancel',{id,revision:e.revision});await rpc(0,'event_cancel',{id,revision:e.revision});
  assert.equal((await rpc(1,'event_list',{street_id:street,mine_only:true})).items.length,0);assert.equal((await rpc(1,'notification_list')).items[0].kind,'canceled');
  await denied(1,'event_get',{id},/not_found/);
+ await denied(0,'event_edit',{...e,title:'中止後の再開'},/not_found/);
+ // Model an elapsed event inside this rolled-back fixture; no wall-clock wait.
+ await c.query("update app_private.events set canceled_at=null,starts_at=clock_timestamp()-interval '2 hours',ends_at=clock_timestamp()-interval '1 hour' where id=$1",[id]);
+ await denied(1,'event_register',{id,joined:true,revision:3},/not_found/);
+ await denied(0,'event_edit',{...e,ends_at:new Date(Date.now()+3600000).toISOString()},/not_found/);
+
  }finally{await c.query('rollback');await c.end();}
 });
