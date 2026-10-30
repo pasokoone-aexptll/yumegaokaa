@@ -1,7 +1,7 @@
 import { stripJpegMetadata } from "./jpegMetadata";
 import * as ImagePicker from "expo-image-picker";
 import { ImageManipulator, SaveFormat } from "expo-image-manipulator";
-import { File } from "expo-file-system";
+import { File, Paths } from "expo-file-system";
 import { native, key, url, streetID } from "./native";
 export type Profile = {
   display_name: string;
@@ -40,9 +40,31 @@ async function chooseImage<T>(
     quality: 1,
   });
   if (selection.canceled) return null;
+  try {
+    return await convertAndUpload(selection.assets[0].uri, upload);
+  } finally {
+    // Only the app-owned picker copy may be removed, never the photo library.
+    try {
+      const selected = new URL(selection.assets[0].uri);
+      const cache = new URL(
+        "ImagePicker/",
+        Paths.cache.uri.replace(/\/?$/, "/"),
+      );
+      if (selected.protocol === "file:" && selected.href.startsWith(cache.href))
+        discard(new File(selected.href));
+    } catch {
+      // Cleanup must not obscure the upload result.
+    }
+  }
+}
+
+async function convertAndUpload<T>(
+  uri: string,
+  upload: (file: File) => Promise<T>,
+): Promise<T> {
   let output: File | undefined;
   try {
-    const context = ImageManipulator.manipulate(selection.assets[0].uri, {
+    const context = ImageManipulator.manipulate(uri, {
       maxWidth: 512,
       maxHeight: 512,
     });

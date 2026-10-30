@@ -516,3 +516,9 @@ T012をIMPLEMENTED/INTEGRATEDへ更新。DONE8、IMPLEMENTED15、IN_PROGRESS7、
 - ステッカー一覧へ再取得・読み込みを接続。読み込み完了前の「登録なし」表示を止め、保留操作の復元中は入力/作成を無効化。
 - sticker-detail-state.test.mjs 4件成功：NFC失敗後の再試行、読取中の離画面、二重操作と応答紛失後の再取得、取消応答後の不要遷移防止。hookの模擬RPCでの検証であり、実NFC/実通信断/画面再開完了の証明ではない。型/Lint成功。最後の読み込み中ガードは同じboolean条件の追加で、追加ビルドは省略。
 - 実装23/33、統合20/33、実機11/33、DONE8/33、BLOCKED3を維持。UI再実行は次のまとめたシミュレータ確認へ。iPhone操作/転送/pushなし。
+
+## チェックポイント84：選択画像キャッシュの片付け（2026-10-31）
+- T004/T030/R03/R17：本人/街pool画像の送信終了時、変換済みJPEGだけでなくアプリ所有ImagePickerコピーも削除。成功・変換失敗・アップロード失敗のfinallyから実行。URL正規化後にアプリcache/ImagePicker/配下だけを許可し、写真ライブラリ原本・Documents・類似名ディレクトリ・親パス参照を対象外とする。削除失敗で保存成功をエラーにしない。
+- Expo58 ImagePicker/FileSystem公式仕様と同梱MediaHandler.swiftのcachesDirectory/ImagePicker出力を確認（https://docs.expo.dev/versions/v58.0.0/sdk/imagepicker/ 、https://docs.expo.dev/versions/v58.0.0/sdk/filesystem/）。新規の保持期限や全キャッシュ削除は導入しない。
+- avatar-cache.test.mjs 3件成功（成功、変換/送信失敗、原本/対象外パス保護）。型/Lint成功。実機ファイル削除、強制終了時の残存ファイル、OS画像キャッシュ等は未確認。T030全対象完了ではない。ネイティブビルド・iPhone操作・pushなし。
+- 実装23/33、統合20/33、実機11/33、DONE8/33、BLOCKED3を維持。
