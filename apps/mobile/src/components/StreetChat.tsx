@@ -172,24 +172,26 @@ export function StreetChat() {
                 <Pressable
                   key={m.id}
                   onLongPress={() => menu(m)}
-                  style={{ paddingVertical: 7 }}
+                  style={{ paddingVertical: 7, flexDirection: "row", gap: 8 }}
                 >
                   <Avatar
                     path={m.avatar_path}
                     version={m.avatar_updated_at}
                     name={m.display_name}
                   />
-                  <Text style={{ color: "#80909b", fontSize: 12 }}>
-                    {m.display_name} ·{" "}
-                    {new Date(m.created_at).toLocaleTimeString()}
-                  </Text>
-                  <Text style={{ color: "#34434b" }}>
-                    {m.deleted
-                      ? "削除されたメッセージ"
-                      : m.kind === "arrival"
-                        ? "街に参加しました"
-                        : m.body}
-                  </Text>
+                  <View style={{ flex: 1, minWidth: 0 }}>
+                    <Text style={{ color: "#80909b", fontSize: 12 }}>
+                      {m.display_name} ·{" "}
+                      {new Date(m.created_at).toLocaleTimeString()}
+                    </Text>
+                    <Text style={{ color: "#34434b" }}>
+                      {m.deleted
+                        ? "削除されたメッセージ"
+                        : m.kind === "arrival"
+                          ? "街に参加しました"
+                          : m.body}
+                    </Text>
+                  </View>
                 </Pressable>
               ))}
             </ScrollView>
