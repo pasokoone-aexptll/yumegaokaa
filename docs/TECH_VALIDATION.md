@@ -384,3 +384,6 @@ testProfilePhotoPersistence成功25.215秒。既存Release、専用ローカル�
 
 ### チェックポイント61：退会受付の再試行
 T005/R03/R17。useWithdrawalでサーバー受付期限切れ時は古いrequest/code/authenticated状態を破棄し本人確認へ戻す。状態試験3件で期限切れ、確認応答紛失、logout失敗の再試行を確認。型/Lint成功。実OTP/DB経由の既存試験とは区別し、今回実機退会は未実施。
+
+### チェックポイント62：チャット上限
+chat-limits.test.mjs成功。実DBの公開APIで500/501文字、10秒5件、1分20件、履歴10秒5回、成功済み再送の件数非増加を確認。時間窓はfixtureの使用時刻を更新して検証、並列実行ではない。初回fixtureのプロフィール不足を修正。全fixture rollback。T020/T029/R15/R16。製品変更なしのため型/Lint/ビルドは再実行せず。
