@@ -652,3 +652,6 @@ T007-02/R10/R19。tabs/index.recenterはnative.currentLocationの結果をcamera
 
 ## cp109：イベントピン描画を確認
 R13/R19・T007/T015。実行中Release107成功、同版でtestPresenceHeader成功（/tmp/yumegaoka-header109.xcresult）。画像で雲文字置換を確認したが白背景が軸を隠すため、背景を題名部分だけに限定修正。型/Lint成功、変更に必要なRelease109成功、再install/起動画像 /tmp/yumegaoka-pin109.pngで題名/残時間/グラデーション雲/斜め非常口/軸/接地点を目視確認。元Figma書き出しではなくベクター再構成。T015はcp69作成実機・cp98境界証拠と合わせDONE。T007全体はQ10判断が残る。実機未更新。残22→20、DONE16/33。
+
+## cp110：T018配信競合の残条件
+R13/R14/R17。notification-concurrency.test.mjs成功。実2worker接続でAのclaim行ロック中にBが同一通知を取得しないこと、同一leaseの同時simulateは1件だけ確定、recheck後に参加取消が確定するとsimulate/retryはactive:false・outboxなしを確認。専用fixture削除済み。Bの他通知claimはrollback。cp67期限/停止/古い版・疑似配送、cp69実機一覧/詳細を再利用しT018 DONE。APNs配送成功や送信済みPush取消は未検証でT019。製品コード変更なし、型/Lint/本体ビルド反復なし。残20→19、DONE17/33。
