@@ -5,8 +5,11 @@ export default function Layout() {
     <SafeAreaProvider>
       <Stack screenOptions={{ headerShown: false }}>
         <Stack.Screen name="(tabs)" />
-        <Stack.Screen name="pins/create" options={{presentation:"modal"}} />
-        <Stack.Screen name="pins/location" options={{presentation:"modal"}} />
+        <Stack.Screen name="pins/create" options={{ presentation: "modal" }} />
+        <Stack.Screen
+          name="pins/location"
+          options={{ presentation: "modal" }}
+        />
       </Stack>
     </SafeAreaProvider>
   );

@@ -1,2 +1,34 @@
-export type StreetEvent = { id: string; street_id: string; title: string; description: string; longitude: number; latitude: number; starts_at: string; ends_at: string; capacity: number; revision: number; mine: boolean; count: number; joined: boolean; registration_revision: number };
-export function countdown(event: StreetEvent, now = Date.now()) { const start = Date.parse(event.starts_at), end = Date.parse(event.ends_at), seconds = Math.max(0, Math.floor(((now < start ? start : end) - now) / 1000)); const days = Math.floor(seconds / 86400), hours = Math.floor(seconds / 3600); return (now < start ? '開催まで ' : '残り ') + (days ? `${days}日` : hours ? `${hours}時間` : `${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, '0')}`); }
+export type StreetEvent = {
+  id: string;
+  street_id: string;
+  title: string;
+  description: string;
+  longitude: number;
+  latitude: number;
+  starts_at: string;
+  ends_at: string;
+  capacity: number;
+  revision: number;
+  mine: boolean;
+  count: number;
+  joined: boolean;
+  registration_revision: number;
+};
+export function countdown(event: StreetEvent, now = Date.now()) {
+  const start = Date.parse(event.starts_at),
+    end = Date.parse(event.ends_at),
+    seconds = Math.max(
+      0,
+      Math.floor(((now < start ? start : end) - now) / 1000),
+    );
+  const days = Math.floor(seconds / 86400),
+    hours = Math.floor(seconds / 3600);
+  return (
+    (now < start ? "開催まで " : "残り ") +
+    (days
+      ? `${days}日`
+      : hours
+        ? `${hours}時間`
+        : `${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, "0")}`)
+  );
+}

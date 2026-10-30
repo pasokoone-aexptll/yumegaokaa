@@ -21,7 +21,12 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Camera, CameraRef, Map, Marker } from "@maplibre/maplibre-react-native";
+import {
+  Camera,
+  CameraRef,
+  Map,
+  Marker,
+} from "@maplibre/maplibre-react-native";
 import NfcManager, { NfcTech, Ndef } from "react-native-nfc-manager";
 import {
   key,
@@ -66,8 +71,10 @@ const initial: NativeState = {
 };
 const friendly = (error: unknown) => {
   const s = String(error);
-  if (s.includes("otp_expired")) return "確認コードが無効か期限切れです。新しいコードを送信してください。";
-  if (s.includes("credential_storage_failed")) return "認証情報を端末に保存できませんでした。アプリを開き直してお試しください。";
+  if (s.includes("otp_expired"))
+    return "確認コードが無効か期限切れです。新しいコードを送信してください。";
+  if (s.includes("credential_storage_failed"))
+    return "認証情報を端末に保存できませんでした。アプリを開き直してお試しください。";
   if (s.includes("membership_required"))
     return "このアカウントはまだ招待登録されていません。開発環境では運営用コマンドで登録してください。";
   if (s.includes("location_permission_required"))
@@ -81,11 +88,37 @@ const friendly = (error: unknown) => {
 };
 export default function Street() {
   const camera = useRef<CameraRef>(null);
-  const params = useLocalSearchParams<{ longitude?: string; latitude?: string }>();
+  const params = useLocalSearchParams<{
+    longitude?: string;
+    latitude?: string;
+  }>();
   const [events, setEvents] = useState<StreetEvent[]>([]);
-  const [recruitments,setRecruitments]=useState<Recruitment[]>([]);
-  useEffect(() => { const lon = Number(params.longitude), lat = Number(params.latitude); if (params.longitude && params.latitude && Number.isFinite(lon) && Number.isFinite(lat)) camera.current?.flyTo({ center: [lon, lat], zoom: 16, duration: 600 }); }, [params.longitude, params.latitude]);
-  async function recenter() { try { const p = await native.currentLocation(); camera.current?.flyTo({ center: [p.longitude, p.latitude], zoom: 16, duration: 500 }); } catch { setError("現在地を取得できませんでした。位置情報の許可と接続アプリの版を確認してください。"); } }
+  const [recruitments, setRecruitments] = useState<Recruitment[]>([]);
+  useEffect(() => {
+    const lon = Number(params.longitude),
+      lat = Number(params.latitude);
+    if (
+      params.longitude &&
+      params.latitude &&
+      Number.isFinite(lon) &&
+      Number.isFinite(lat)
+    )
+      camera.current?.flyTo({ center: [lon, lat], zoom: 16, duration: 600 });
+  }, [params.longitude, params.latitude]);
+  async function recenter() {
+    try {
+      const p = await native.currentLocation();
+      camera.current?.flyTo({
+        center: [p.longitude, p.latitude],
+        zoom: 16,
+        duration: 500,
+      });
+    } catch {
+      setError(
+        "現在地を取得できませんでした。位置情報の許可と接続アプリの版を確認してください。",
+      );
+    }
+  }
   const [ready, setReady] = useState(!url || !key),
     [signed, setSigned] = useState(false),
     [email, setEmail] = useState(""),
@@ -96,14 +129,14 @@ export default function Street() {
     [now, setNow] = useState(0),
     [name, setName] = useState("夢ヶ丘");
   const [error, setError] = useState(
-    !url || !key
-      ? "開発接続設定がありません。npm run setup:local を実行してください。"
-      : "",
-  ),
-    [busy, setBusy] = useState(false),
-    [sheet, setSheet] = useState<"explain" | "scanning" | "checking" | "success" | null>(
-      null,
+      !url || !key
+        ? "開発接続設定がありません。npm run setup:local を実行してください。"
+        : "",
     ),
+    [busy, setBusy] = useState(false),
+    [sheet, setSheet] = useState<
+      "explain" | "scanning" | "checking" | "success" | null
+    >(null),
     [settings, setSettings] = useState(false);
   const canceled = useRef(false),
     fetching = useRef(false),
@@ -136,11 +169,16 @@ export default function Street() {
       });
       if (generation !== snapshotGeneration.current) return;
       setName(config.name);
-      const pins = await native.rpc<{ items: StreetEvent[] }>("event_list", { street_id: streetID });
+      const pins = await native.rpc<{ items: StreetEvent[] }>("event_list", {
+        street_id: streetID,
+      });
       if (generation !== snapshotGeneration.current) return;
       setEvents(pins.items);
-      const recruiting=await native.rpc<{items:Recruitment[]}>("recruitment_list",{street_id:streetID});
-      if(generation!==snapshotGeneration.current)return;
+      const recruiting = await native.rpc<{ items: Recruitment[] }>(
+        "recruitment_list",
+        { street_id: streetID },
+      );
+      if (generation !== snapshotGeneration.current) return;
       setRecruitments(recruiting.items);
       setError("");
     } catch (e) {
@@ -161,7 +199,10 @@ export default function Street() {
     }
   }, []);
   useEffect(() => {
-    if (__DEV__) { setToolsButtonVisible(false); closeMenu(); }
+    if (__DEV__) {
+      setToolsButtonVisible(false);
+      closeMenu();
+    }
     if (!url || !key) return;
     native
       .configure(url, key)
@@ -207,7 +248,7 @@ export default function Street() {
             if (status === "SUBSCRIBED") void refresh();
           });
       })
-      .catch(() => { });
+      .catch(() => {});
     const timer = setInterval(() => {
       if (AppState.currentState === "active") void refresh();
     }, 10000);
@@ -224,7 +265,7 @@ export default function Street() {
         native
           .resume()
           .then(setState)
-          .catch(() => { });
+          .catch(() => {});
       }
     });
     return () => {
@@ -257,7 +298,7 @@ export default function Street() {
     canceled.current = true;
     setSheet(null);
     const stopping = native.stop();
-    await NfcManager.cancelTechnologyRequest().catch(() => { });
+    await NfcManager.cancelTechnologyRequest().catch(() => {});
     try {
       setState(await stopping);
       await refresh();
@@ -333,7 +374,7 @@ export default function Street() {
         setSheet(null);
       }
     } finally {
-      await NfcManager.cancelTechnologyRequest().catch(() => { });
+      await NfcManager.cancelTechnologyRequest().catch(() => {});
     }
   }
 
@@ -375,7 +416,7 @@ export default function Street() {
                     : "NDEF形式で書き込み可能なタグか確認してください。",
                 );
               } finally {
-                await NfcManager.cancelTechnologyRequest().catch(() => { });
+                await NfcManager.cancelTechnologyRequest().catch(() => {});
               }
             })(),
         },
@@ -418,7 +459,8 @@ export default function Street() {
             onChangeText={setCode}
           />
         )}
-        <Pressable accessibilityRole="button"
+        <Pressable
+          accessibilityRole="button"
           style={styles.button}
           disabled={busy || !email}
           onPress={login}
@@ -428,7 +470,15 @@ export default function Street() {
           </Text>
         </Pressable>
         {sent && (
-          <Pressable accessibilityRole="button" disabled={busy} onPress={() => { setSent(false); setCode(""); setError(""); }}>
+          <Pressable
+            accessibilityRole="button"
+            disabled={busy}
+            onPress={() => {
+              setSent(false);
+              setCode("");
+              setError("");
+            }}
+          >
             <Text style={styles.link}>メールアドレスを確認・コードを再送</Text>
           </Pressable>
         )}
@@ -441,11 +491,11 @@ export default function Street() {
   const cells = snapshot ? liveCells(snapshot, now) : [];
   return (
     <View style={styles.root}>
-      <Map
-        style={StyleSheet.absoluteFill}
-        mapStyle={mapStyle}
-      >
-        <Camera ref={camera} initialViewState={{ center: [139.7109, 35.7295], zoom: 15 }} />
+      <Map style={StyleSheet.absoluteFill} mapStyle={mapStyle}>
+        <Camera
+          ref={camera}
+          initialViewState={{ center: [139.7109, 35.7295], zoom: 15 }}
+        />
         {cells.map((cell) => (
           <Marker
             key={`${cell.area_version}:${cell.cell_id}`}
@@ -495,8 +545,66 @@ export default function Street() {
             </View>
           </Marker>
         ))}
-        {events.filter(e => Date.parse(e.ends_at) > now).map(event => <Marker key={event.id} lngLat={[event.longitude, event.latitude]}><Pressable accessibilityRole="button" onPress={() => router.push({ pathname: "/events/[id]", params: { id: event.id } })} style={{ backgroundColor: "white", padding: 8, borderRadius: 16, maxWidth: 180 }}><Text style={{ color: "#ff4f88", fontWeight: "700" }}>{countdown(event, now)}</Text><Text numberOfLines={1}>{event.title}</Text><Text style={{ fontSize: 25, color: "#ff5d9c", textAlign: "center" }}>☁︎</Text></Pressable></Marker>)}
-        {recruitments.filter(p=>Date.parse(p.expires_at)>now).map(pin=><Marker key={pin.id} lngLat={[pin.longitude,pin.latitude]}><Pressable onPress={()=>router.push({pathname:"/recruitments/[id]",params:{id:pin.id}})} style={{backgroundColor:"white",padding:8,borderRadius:16}}><Text style={{color:"#4799ff"}}>{pin.display_name} が募集中</Text><Text>{pin.title}</Text><Text style={{textAlign:"center",color:"#469fff"}}>●</Text></Pressable></Marker>)}
+        {events
+          .filter((e) => Date.parse(e.ends_at) > now)
+          .map((event) => (
+            <Marker key={event.id} lngLat={[event.longitude, event.latitude]}>
+              <Pressable
+                accessibilityRole="button"
+                onPress={() =>
+                  router.push({
+                    pathname: "/events/[id]",
+                    params: { id: event.id },
+                  })
+                }
+                style={{
+                  backgroundColor: "white",
+                  padding: 8,
+                  borderRadius: 16,
+                  maxWidth: 180,
+                }}
+              >
+                <Text style={{ color: "#ff4f88", fontWeight: "700" }}>
+                  {countdown(event, now)}
+                </Text>
+                <Text numberOfLines={1}>{event.title}</Text>
+                <Text
+                  style={{
+                    fontSize: 25,
+                    color: "#ff5d9c",
+                    textAlign: "center",
+                  }}
+                >
+                  ☁︎
+                </Text>
+              </Pressable>
+            </Marker>
+          ))}
+        {recruitments
+          .filter((p) => Date.parse(p.expires_at) > now)
+          .map((pin) => (
+            <Marker key={pin.id} lngLat={[pin.longitude, pin.latitude]}>
+              <Pressable
+                onPress={() =>
+                  router.push({
+                    pathname: "/recruitments/[id]",
+                    params: { id: pin.id },
+                  })
+                }
+                style={{
+                  backgroundColor: "white",
+                  padding: 8,
+                  borderRadius: 16,
+                }}
+              >
+                <Text style={{ color: "#4799ff" }}>
+                  {pin.display_name} が募集中
+                </Text>
+                <Text>{pin.title}</Text>
+                <Text style={{ textAlign: "center", color: "#469fff" }}>●</Text>
+              </Pressable>
+            </Marker>
+          ))}
       </Map>
       <SafeAreaView style={styles.overlay} pointerEvents="box-none">
         <View style={styles.header}>
@@ -523,7 +631,10 @@ export default function Street() {
           <Text>{state.status}</Text>
           {state.visit.can_update === false &&
             state.visit.state === "active" && (
-              <Pressable accessibilityRole="button" onPress={() => setSheet("explain")}>
+              <Pressable
+                accessibilityRole="button"
+                onPress={() => setSheet("explain")}
+              >
                 <Text style={styles.link}>
                   {localEntry ? "開発用の入街を開始" : "この端末でNFCを読む"}
                 </Text>
@@ -531,8 +642,22 @@ export default function Street() {
             )}
         </View>
         <View style={{ alignSelf: "flex-end", gap: 12 }}>
-          <Pressable accessibilityRole="button" accessibilityLabel="現在地へ戻る" onPress={() => void recenter()} style={{ backgroundColor: "white", borderRadius: 30, padding: 18 }}><Text style={{ fontSize: 22 }}>➤</Text></Pressable>
-          <Pressable accessibilityRole="button" accessibilityLabel="ピンを追加" onPress={() => router.push("/pins/create")} style={{ backgroundColor: "white", borderRadius: 30, padding: 18 }}><Text style={{ fontSize: 22 }}>＋</Text></Pressable>
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel="現在地へ戻る"
+            onPress={() => void recenter()}
+            style={{ backgroundColor: "white", borderRadius: 30, padding: 18 }}
+          >
+            <Text style={{ fontSize: 22 }}>➤</Text>
+          </Pressable>
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel="ピンを追加"
+            onPress={() => router.push("/pins/create")}
+            style={{ backgroundColor: "white", borderRadius: 30, padding: 18 }}
+          >
+            <Text style={{ fontSize: 22 }}>＋</Text>
+          </Pressable>
         </View>
         <View style={{ flex: 1 }} pointerEvents="none" />
         {!!error && (
@@ -549,10 +674,11 @@ export default function Street() {
                 ? "話しかけなくても、ここに誰かの気配。"
                 : "今見える気配はありません。人がいないとは限りません。"}
           </Text>
-          <Text style={styles.note}>
-            気配は10分で薄くなって消えます。
-          </Text>
-          <Pressable accessibilityRole="button" onPress={() => setSettings(true)}>
+          <Text style={styles.note}>気配は10分で薄くなって消えます。</Text>
+          <Pressable
+            accessibilityRole="button"
+            onPress={() => setSettings(true)}
+          >
             <Text style={styles.link}>アカウント・接続状態</Text>
           </Pressable>
         </View>
@@ -561,27 +687,45 @@ export default function Street() {
         visible={sheet !== null}
         transparent
         animationType="slide"
-        onRequestClose={() => sheet === "success" ? setSheet(null) : void exit()}
+        onRequestClose={() =>
+          sheet === "success" ? setSheet(null) : void exit()
+        }
       >
         <View style={styles.shade}>
           <View style={styles.sheet}>
             <Text style={styles.heading}>
-              {sheet === "success" ? "街への参加が完了しました" : sheet === "explain"
-                ? "街に参加する"
-                : sheet === "scanning"
-                  ? "ステッカーにタッチ"
-                  : "街への参加を記録中"}
+              {sheet === "success"
+                ? "街への参加が完了しました"
+                : sheet === "explain"
+                  ? "街に参加する"
+                  : sheet === "scanning"
+                    ? "ステッカーにタッチ"
+                    : "街への参加を記録中"}
             </Text>
             <Text style={styles.cloud}>{sheet === "success" ? "✓" : "☁︎"}</Text>
             <Text style={styles.subtitle}>
-              {sheet === "success" ? "街の気配を感じながら、自由に過ごしてください。" : sheet === "explain"
-                ? "参加中は画面を閉じても、このあたりにいる気配を共有します。名前や正確な現在地は地図に出ません。OFFで停止できます。"
-                : localEntry
-                  ? "開発用タグから本物と同じDB/APIへ入街を記録しています。"
-                  : "NFC読取にはiPhone標準の画面が開きます。読み取り後はステッカーから離して大丈夫です。"}
+              {sheet === "success"
+                ? "街の気配を感じながら、自由に過ごしてください。"
+                : sheet === "explain"
+                  ? "参加中は画面を閉じても、このあたりにいる気配を共有します。名前や正確な現在地は地図に出ません。OFFで停止できます。"
+                  : localEntry
+                    ? "開発用タグから本物と同じDB/APIへ入街を記録しています。"
+                    : "NFC読取にはiPhone標準の画面が開きます。読み取り後はステッカーから離して大丈夫です。"}
             </Text>
-            {sheet === "success" ? <Pressable accessibilityRole="button" style={styles.button} onPress={() => setSheet(null)}><Text style={styles.buttonText}>地図へ</Text></Pressable> : sheet === "explain" ? (
-              <Pressable accessibilityRole="button" style={styles.button} onPress={scan}>
+            {sheet === "success" ? (
+              <Pressable
+                accessibilityRole="button"
+                style={styles.button}
+                onPress={() => setSheet(null)}
+              >
+                <Text style={styles.buttonText}>地図へ</Text>
+              </Pressable>
+            ) : sheet === "explain" ? (
+              <Pressable
+                accessibilityRole="button"
+                style={styles.button}
+                onPress={scan}
+              >
                 <Text style={styles.buttonText}>
                   {localEntry ? "開発用タグで入街（NFC代用）" : "NFCを読み取る"}
                 </Text>
@@ -589,9 +733,11 @@ export default function Street() {
             ) : (
               <ActivityIndicator size="large" />
             )}
-            {sheet !== "success" && <Pressable accessibilityRole="button" onPress={() => void exit()}>
-              <Text style={styles.link}>キャンセル</Text>
-            </Pressable>}
+            {sheet !== "success" && (
+              <Pressable accessibilityRole="button" onPress={() => void exit()}>
+                <Text style={styles.link}>キャンセル</Text>
+              </Pressable>
+            )}
           </View>
         </View>
       </Modal>
@@ -606,7 +752,8 @@ export default function Street() {
               <Text style={styles.link}>開発用の空NFCタグを設定</Text>
             </Pressable>
           )}
-          <Pressable accessibilityRole="button"
+          <Pressable
+            accessibilityRole="button"
             style={styles.button}
             onPress={async () => {
               snapshotGeneration.current++;
@@ -625,7 +772,10 @@ export default function Street() {
           >
             <Text style={styles.buttonText}>ログアウト</Text>
           </Pressable>
-          <Pressable accessibilityRole="button" onPress={() => setSettings(false)}>
+          <Pressable
+            accessibilityRole="button"
+            onPress={() => setSettings(false)}
+          >
             <Text style={styles.link}>地図に戻る</Text>
           </Pressable>
         </SafeAreaView>

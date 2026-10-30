@@ -59,3 +59,9 @@ T003/T004/T006/T013〜T018/T020〜T022/T029/T030を接続中。プロフィー�
 ## 2026-10-30 MFA/通報接続（R03/R15〜R18）
 運営資格＋JWT AAL2＋現存セッション/検証済みTOTPのDB guardを実装。operator-access.test.mjsで資格なし・追加認証なし・factor失効・運営失効の拒否を確認。report-flow.test.mjsで通報、重複統合、サーバー由来証拠、運営削除、解決、30日後清掃を確認。SQLの列名/変数衝突を修正して再実行成功。chat-flow.test.mjsに取消後遅延再送拒否と確定済み結果回収を追加し成功。
 型検査成功、Lintエラー0/既存StreetChat警告1。SwiftのMFA APIは未ビルド、稼働AuthのMFA設定反映・実Auth通信・新規画面実操作・実機転送は未確認。これらをDBテスト成功で代替しない。
+
+
+## 2026-10-30 運営認証の実Auth確認と制限（R03/R16/R18）
+scripts/mfa-smoke.mjs成功：実OTP→TOTP→運営API、資格失効後403。試験fixture削除済み。MFAネイティブビルドも成功（/tmp/yumegaoka-mfa-build.log）、iPhone転送はまだ。
+member-operations.test.mjs成功：投稿制限中も滞在維持、解除後送信、利用停止で主催イベント中止/通知・滞在終了、解除しても復活なし、招待枠と発行停止を反映。report-flow.test.mjs再実行成功。改行整形とuseStreetChat分離後、型検査・Lintとも成功、警告なし。
+UI新機能の実操作・競合全ケースは未確認。通報済み証拠は通常投稿削除後も運営限定期限で保持する。
