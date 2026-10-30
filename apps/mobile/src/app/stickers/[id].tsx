@@ -1,6 +1,7 @@
+import { LocationPicker } from "../../components/LocationPicker";
 import { useCallback, useState } from "react";
-import { useFocusEffect, useLocalSearchParams } from "expo-router";
-import { Alert, Text } from "react-native";
+import { router, useFocusEffect, useLocalSearchParams } from "expo-router";
+import { Alert, Modal, Text, TextInput } from "react-native";
 import { Action, Empty, Page, ui } from "../../components/Page";
 import { native } from "../../lib/native";
 import {
@@ -13,6 +14,10 @@ export default function Sticker() {
   const [draft, setDraft] = useState<StickerDraft>(),
     [busy, setBusy] = useState(false),
     [error, setError] = useState("");
+  const [editing, setEditing] = useState(false);
+  const [title, setTitle] = useState("");
+  const [point, setPoint] = useState<[number, number]>();
+  const [selecting, setSelecting] = useState(false);
   const load = useCallback(async () => {
     try {
       setDraft(await native.rpc<StickerDraft>("sticker_get", { id }));
@@ -56,8 +61,41 @@ export default function Sticker() {
       );
     } catch {
       setError(
-        "完了していません。通信・ステッカーを確認し、状態を再取得してください。",
+        "完了を確認できません。通信・ステッカーを確認し、状態を再取得してください。",
       );
+    } finally {
+      setBusy(false);
+    }
+  }
+  async function save() {
+    if (!draft || !point) return;
+    setBusy(true);
+    try {
+      setDraft(
+        await native.rpc<StickerDraft>("sticker_edit", {
+          id,
+          revision: draft.revision,
+          title: title.trim(),
+          longitude: point[0],
+          latitude: point[1],
+        }),
+      );
+      setEditing(false);
+      setError("");
+    } catch {
+      setError("変更を確認できません。状態を再取得してください。");
+    } finally {
+      setBusy(false);
+    }
+  }
+  async function cancel() {
+    if (!draft) return;
+    setBusy(true);
+    try {
+      await native.rpc("sticker_cancel", { id, revision: draft.revision });
+      router.replace("/stickers");
+    } catch {
+      setError("取消を確認できません。状態を再取得してください。");
     } finally {
       setBusy(false);
     }
@@ -70,6 +108,74 @@ export default function Sticker() {
         disabled={busy}
         onPress={() => void load()}
       />
+      {draft && draft.phase !== "published" && (
+        <>
+          {editing ? (
+            <>
+              <TextInput
+                style={ui.input}
+                value={title}
+                onChangeText={setTitle}
+                maxLength={50}
+                placeholder="管理名"
+              />
+              <Action
+                title="設置場所を変更"
+                disabled={busy}
+                onPress={() => setSelecting(true)}
+              />
+              <Action
+                title="変更を保存"
+                disabled={busy || !title.trim() || !point}
+                onPress={() => void save()}
+              />
+              <Action
+                title="編集をやめる"
+                disabled={busy}
+                onPress={() => setEditing(false)}
+              />
+            </>
+          ) : (
+            <Action
+              title="登録内容を編集"
+              disabled={busy}
+              onPress={() => {
+                setTitle(draft.title);
+                setPoint([draft.longitude, draft.latitude]);
+                setEditing(true);
+              }}
+            />
+          )}
+          <Action
+            title="この登録を取り消す"
+            disabled={busy}
+            onPress={() =>
+              Alert.alert(
+                "登録を取り消しますか？",
+                "新規タグは使用できなくなります。移設中のタグは停止したままです。",
+                [
+                  { text: "戻る", style: "cancel" },
+                  {
+                    text: "取り消す",
+                    style: "destructive",
+                    onPress: () => void cancel(),
+                  },
+                ],
+              )
+            }
+          />
+        </>
+      )}
+      <Modal visible={selecting} onRequestClose={() => setSelecting(false)}>
+        <LocationPicker
+          initial={point}
+          onCancel={() => setSelecting(false)}
+          onConfirm={(p) => {
+            setPoint(p);
+            setSelecting(false);
+          }}
+        />
+      </Modal>
       {draft && (
         <>
           {localStickerAdapter && (

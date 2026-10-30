@@ -19,7 +19,12 @@ test('ステッカー3枚準備→凸包公開→再送→停止で旧範囲保�
  }
  assert.equal((await call('sticker_preview',{street_id:street,draft_ids:[drafts[0].id]})).valid,false);
  const preview=await call('sticker_preview',{street_id:street,draft_ids:drafts.map(d=>d.id)});assert.equal(preview.valid,true);assert.equal(preview.boundary.type,'Polygon');
- const result=await call('sticker_publish',{id:preview.id});assert.equal(result.area_version,2);assert.equal((await call('sticker_publish',{id:preview.id})).area_version,2);
+ let edited=await call('sticker_edit',{id:drafts[0].id,revision:drafts[0].revision,title:'変更',longitude:139.7001,latitude:35.72});
+ assert.equal(edited.phase,'verified');
+ await c.query('savepoint stale_edit');await assert.rejects(()=>call('sticker_publish',{id:preview.id}),/conflict/);await c.query('rollback to savepoint stale_edit');
+ edited=await call('sticker_step',{id:edited.id,revision:edited.revision,phase:'installed'});
+ const updatedPreview=await call('sticker_preview',{street_id:street,draft_ids:drafts.map(d=>d.id)});
+ const result=await call('sticker_publish',{id:updatedPreview.id});assert.equal(result.area_version,2);assert.equal((await call('sticker_publish',{id:updatedPreview.id})).area_version,2);
  assert.equal((await c.query('select ended_at from app_private.visits where id=$1',[visit])).rows[0].ended_at,null);
  const list=await call('placement_list',{street_id:street});assert.equal(list.items.length,3);assert.ok(list.items.every(x=>x.active));
  const stale=await call('sticker_preview',{street_id:street,draft_ids:[]});
@@ -27,5 +32,12 @@ test('ステッカー3枚準備→凸包公開→再送→停止で旧範囲保�
  await c.query('savepoint stale');await assert.rejects(()=>call('sticker_publish',{id:stale.id}),/tag_changed/);await c.query('rollback to savepoint stale');
  assert.equal((await call('sticker_preview',{street_id:street,draft_ids:[]})).valid,false);
  assert.equal((await c.query('select area_version from app_private.streets where id=$1',[street])).rows[0].area_version,'2');
+ const ticket=await call('command_prepare',{kind:'sticker_create'});
+ const fresh=await call('command_execute',{id:ticket.id,body:{street_id:street,title:'取消',longitude:139.72,latitude:35.73}});
+ const draft=await call('sticker_get',{id:fresh.id});
+ await call('sticker_cancel',{id:draft.id,revision:draft.revision});
+ assert.equal((await call('sticker_cancel',{id:draft.id,revision:draft.revision})).canceled,true);
+ assert.equal((await c.query('select retired from app_private.tags where id=$1',[draft.tag_id])).rows[0].retired,true);
+ await c.query('savepoint canceled');await assert.rejects(()=>call('sticker_step',{id:draft.id,revision:draft.revision,phase:'written',tag_payload:{v:1,tag_id:draft.tag_id}}),/not_found/);await c.query('rollback to savepoint canceled');
  }finally{await c.query('rollback');await c.end();}
 });
