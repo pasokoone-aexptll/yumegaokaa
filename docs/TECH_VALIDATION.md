@@ -322,3 +322,10 @@ scripts/avatar-smoke.mjs成功：所有者アップロード、プロフィー�
 - 結果 /tmp/yumegaoka-peer-moderation.xcresult と /tmp/yumegaoka-operator-report-query.xcresult（ログ同名）。node --checkとgit diff --check成功。本体の型/Lint・ネイティブビルドは変更なしで省略。実機転送/pushなし。
 - T022/T023をIMPLEMENTEDへ。DONE5/IMPLEMENTED7/IN_PROGRESS18/TODO0/BLOCKED3、完了5/33=15.2%、実装到達12/33=36.4%、DONE増分0。募集/イベント通報、全取得経路のブロック、実機統合は未確認。MVP_TASKSとACCEPTANCEの該当する旧「未実装」表記を現在の証拠へ更新。
 - 次：登録/画像選択と全タブ・運営導線の残る受入条件を照合。実NFC/実Push/クラウドは既存の保留。実機検証は接続可能になってから、最新JSをまとめたReleaseで実施する。
+
+## 実装チェックポイント48：最新版ReleaseのiPhone転送・起動
+- T031/T032/R03/R19：iPhone接続が回復。9f927fe基点の製品コード（チャット高さ修正を含む）をPersonal TeamのJS内蔵Releaseとしてまとめてビルド成功。codesign --verify --deep --strict成功。
+- /tmp/yumegaoka-validation-release/Build/Products/Release-iphoneos/app.app をiPhoneへインストール成功、devicectl起動成功。ユーザーもログイン画面表示を確認。旧70ac9d6成果物から更新した。ログ /tmp/yumegaoka-release-checkpoint47-device.log、/tmp/yumegaoka-checkpoint47-install.log、/tmp/yumegaoka-checkpoint47-launch.log。
+- 開発サーバーは不要。ローカルSupabaseへ通信するためMacと同一LANが必要。Macの現在IPと埋込設定172.30.100.165を照合済み。実NFC/Pushは対象外。
+- 写真選択/保存、実機ログイン後の全機能操作はまだ未確認。ユーザーへローカル専用アカウントのOTP送信を案内し、コード入力画面への到達を確認中。起動成功だけでT032をDONEにしない。
+- ACCEPTANCEの旧「未実装」を既存の実装・検証証拠に合わせて更新。状態件数維持：DONE5/IMPLEMENTED7/IN_PROGRESS18/TODO0/BLOCKED3、5/33=15.2%、実装到達12/33=36.4%。pushなし。
