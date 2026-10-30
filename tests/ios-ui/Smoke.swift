@@ -632,7 +632,6 @@ final class Smoke: XCTestCase {
   let springboard=XCUIApplication(bundleIdentifier:"com.apple.springboard")
   if springboard.buttons["開く"].exists {springboard.buttons["開く"].tap()}
   if app.buttons["開く"].exists {app.buttons["開く"].tap()}
-  app.tap()
   if app.buttons["Continue"].waitForExistence(timeout:4) {app.buttons["Continue"].tap()}
   if app.buttons["Reload"].exists {app.coordinate(withNormalizedOffset:CGVector(dx:0.9,dy:0.487)).tap()}
   // Repeat this scenario only with the dedicated local fixture account.
@@ -682,7 +681,7 @@ final class Smoke: XCTestCase {
   attach(app,"map-before-entry")
   toggle.tap()
   tap(app,"開発用タグで入街（NFC代用）")
-  app.tap() // Handle the system location permission prompt through the monitor.
+  if springboard.alerts.firstMatch.exists { app.tap() } // Only trigger the permission monitor for an actual prompt.
   if app.staticTexts["位置情報を許可してから、もう一度入街してください。設定アプリで許可を変更できます。"].waitForExistence(timeout:3) {
    toggle.tap();tap(app,"開発用タグで入街（NFC代用）")
   }

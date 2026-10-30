@@ -474,3 +474,11 @@ cp70続報：実機街外のため気配更新0。開発入街→OFF→再起動
 - T007/T012/R04/R06/R10/R19：円形の待機/処理中/成功表示、画面高上限とスクロール・下端safe areaを追加。処理中は不定進捗でDB確定前に成功を示さない。説明画面の取消は閉じるだけとし、処理開始後は既存の退出優先を維持。気配画像38pxに合わせ外枠を42pxへ修正。座標/人数/期限は変更なし。
 - SCREEN_FLOW_REVIEWの古い3タブ未実装/初期Map未決定を本文で訂正し、承認済みpool登録を反映。
 - 型/Lint成功。画面実操作・Figma外観照合は未確認。DB/ネイティブ変更なし、ビルド/実機転送なし。DONE8、IMPLEMENTED14、IN_PROGRESS8、BLOCKED3。コード22/33、統合19/33、実機11/33を維持。
+
+## チェックポイント77：共通フォームのキーボード対応（2026-10-31）
+- T002/T006/T031/R03/R19：PageのScrollViewでiOSのキーボード余白自動調整とドラッグで閉じる操作を有効化。プロフィール/アカウント/招待/運営等の共通入力画面へ適用。ログインもスクロール可能にし、メール/OTP入力後のボタンへ移動できる構造へ変更。Actionは無効状態をアクセシビリティにも公開する。
+- RN0.88公式ScrollView仕様を確認（https://reactnative.dev/docs/scrollview#automaticallyadjustkeyboardinsets）。型/Lint成功。DB/認証方式は変更なし。cp76とまとめたシミュレータビルド・操作確認を実行中。現時点では画面確認済みとしない。iPhoneテスト/転送なし。
+
+### cp77統合結果
+まとめたReleaseビルド成功（/tmp/yumegaoka-forms77-build.log）。最初のUI試験は無条件の画面中央タップでチャットを拡大し、blurのidle待機に入ったことをスクリーンショットで確認して当該試験だけ停止。不要タップを除去し、本体再ビルドなしで再実行。testLoginEntryRestartExit成功（/tmp/yumegaoka-entry77-fixed.xcresult）：実OTP→開発入街→シミュレーション位置の更新→再起動→退出→再起動OFF維持。成功シートの円形表示と地図へボタンを画像確認。気配マーカーはシートに隠れており、今回の画像をMapマーカー描画完了の証拠にはしない。実歩行ではない。
+T012をIMPLEMENTED/INTEGRATEDへ更新。DONE8、IMPLEMENTED15、IN_PROGRESS7、BLOCKED3。コード23/33（69.7%）、統合20/33（60.6%）、iPhone11/33（33.3%）、DONE8/33（24.2%）。実機転送/pushなし。共通フォームの全画面キーボード確認は未完。

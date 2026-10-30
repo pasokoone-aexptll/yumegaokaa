@@ -15,6 +15,8 @@ export function Page({
       <ScrollView
         contentContainerStyle={ui.content}
         keyboardShouldPersistTaps="handled"
+        automaticallyAdjustKeyboardInsets
+        keyboardDismissMode="interactive"
       >
         {!["/", "/home", "/settings"].includes(path) && (
           <Pressable
@@ -45,6 +47,7 @@ export function Action({
     <Pressable
       accessibilityRole="button"
       disabled={disabled}
+      accessibilityState={{ disabled }}
       onPress={onPress}
       style={[ui.button, disabled && { opacity: 0.45 }]}
     >
