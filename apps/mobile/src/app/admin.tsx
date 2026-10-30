@@ -113,7 +113,9 @@ export default function Screen() {
               <Text>
                 認証アプリへ設定キーを登録してください。画面を離れると非表示になります。
               </Text>
-              <Text selectable>{secret}</Text>
+              <Text selectable testID="totp-setup-key">
+                {secret}
+              </Text>
             </>
           )}
           {!!factor && (

@@ -1,7 +1,54 @@
 import XCTest
 import CoreLocation
+import CryptoKit
 
 final class Smoke: XCTestCase {
+ @MainActor func testOperatorStickerPreparation() throws {
+  continueAfterFailure=false
+  let app=XCUIApplication(bundleIdentifier:"jp.yumegaoka.development")
+  app.launch()
+  XCTAssertTrue(app.descendants(matching:.any).matching(identifier:"Settings").firstMatch.waitForExistence(timeout:40))
+  app.descendants(matching:.any).matching(identifier:"Map").firstMatch.tap()
+  tap(app,"アカウント・接続状態")
+  XCTAssertTrue(app.staticTexts["iphone-validation@example.test"].waitForExistence(timeout:10),"Use only the dedicated local fixture")
+  tap(app,"地図に戻る")
+  app.descendants(matching:.any).matching(identifier:"Settings").firstMatch.tap()
+  tap(app,"運営");tap(app,"認証アプリを登録")
+  let key=app.staticTexts["totp-setup-key"]
+  XCTAssertTrue(key.waitForExistence(timeout:15))
+  let secret=key.label
+  let alphabet=Array("ABCDEFGHIJKLMNOPQRSTUVWXYZ234567")
+  var bits=0,buffer=0,bytes=[UInt8]()
+  for c in secret.uppercased() where c != "=" {
+   guard let n=alphabet.firstIndex(of:c) else {XCTFail("Invalid setup key format");return}
+   buffer=(buffer<<5)|n;bits+=5
+   if bits>=8 {bits-=8;bytes.append(UInt8((buffer>>bits)&255));buffer &= (1<<bits)-1}
+  }
+  var counter=UInt64(Date().timeIntervalSince1970/30).bigEndian
+  let data=withUnsafeBytes(of:&counter){Data($0)}
+  let hash=Array(HMAC<Insecure.SHA1>.authenticationCode(for:data,using:SymmetricKey(data:Data(bytes))))
+  let offset=Int(hash.last!&15)
+  let number=((UInt32(hash[offset])<<24)|(UInt32(hash[offset+1])<<16)|(UInt32(hash[offset+2])<<8)|UInt32(hash[offset+3]))&0x7fffffff
+  let code=String(format:"%06u",number%1000000)
+  let field=app.textFields["認証アプリのコード"];field.tap();for character in code {field.typeText(String(character))};field.typeText("\n");XCTAssertTrue((field.value as? String)==code,"Complete code input")
+  tap(app,"追加認証");tap(app,"ステッカー管理")
+  let title="UI sticker "+String(Int(Date().timeIntervalSince1970))
+  let name=app.textFields["管理名"];name.tap();name.typeText(title);name.typeText("\n")
+  tap(app,"設置場所を選択")
+  XCTAssertTrue(app.buttons["この場所にする"].waitForExistence(timeout:10))
+  app.coordinate(withNormalizedOffset:CGVector(dx:0.5,dy:0.45)).tap();tap(app,"この場所にする")
+  tap(app,"登録を開始");tap(app,"書き込む")
+  XCTAssertTrue(app.alerts.firstMatch.waitForExistence(timeout:5));app.alerts.buttons["書き込む"].tap()
+  tap(app,"再読取して照合");tap(app,"現地への設置を確認")
+  XCTAssertTrue(app.staticTexts["公開待ち"].waitForExistence(timeout:10))
+  tap(app,"登録内容を編集")
+  let edit=app.textFields["管理名"];edit.tap();edit.typeText(" edited");edit.typeText("\n");tap(app,"変更を保存")
+  XCTAssertTrue(app.staticTexts[title+" edited"].waitForExistence(timeout:10))
+  tap(app,"この登録を取り消す")
+  XCTAssertTrue(app.alerts.firstMatch.waitForExistence(timeout:5));app.alerts.buttons["取り消す"].tap()
+  XCTAssertTrue(app.buttons["登録を開始"].waitForExistence(timeout:15))
+  attach(app,"operator-sticker-canceled")
+ }
  @MainActor func testMVPNavigation() throws {
   continueAfterFailure=false
   let app=XCUIApplication(bundleIdentifier:"jp.yumegaoka.development")

@@ -12,5 +12,15 @@ try {
   user=await r.json();
  }
  await db.query("insert into app_private.members(account_id) values($1) on conflict do nothing",[user.id]);
+ if(process.argv.includes("--operator")) {
+  await db.query("insert into app_private.operators(account_id) values($1) on conflict(account_id) do update set active=true",[user.id]);
+  await db.query("update auth.sessions set factor_id=null,aal='aal1' where user_id=$1",[user.id]);
+  await db.query("delete from auth.mfa_factors where user_id=$1",[user.id]);
+ }
+ if(process.argv.includes("--revoke-operator")) {
+  await db.query("update app_private.operators set active=false where account_id=$1",[user.id]);
+  await db.query("update auth.sessions set factor_id=null,aal='aal1' where user_id=$1",[user.id]);
+  await db.query("delete from auth.mfa_factors where user_id=$1",[user.id]);
+ }
  console.log("UI検証用ローカルアカウントを準備しました。本番・外部メールへの変更なし。");
 }finally{await db.end();}
