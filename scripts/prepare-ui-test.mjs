@@ -7,7 +7,8 @@ const env=JSON.parse(execFileSync("npx",["supabase","status","-o","json"],{encod
 if(new URL(env.API_URL).hostname!=="127.0.0.1")throw Error("UI fixture is local-only");
 const db=new pg.Client({connectionString:env.DB_URL});await db.connect();
 try {
- const email="iphone-validation@example.test";
+ const peerMessage=process.argv.includes("--peer-message");
+ const email=peerMessage ? "iphone-peer@example.test" : "iphone-validation@example.test";
  let user=(await db.query("select id from auth.users where email=$1",[email])).rows[0];
  if(!user){
   const r=await fetch(env.API_URL+"/auth/v1/admin/users",{method:"POST",headers:{apikey:env.SERVICE_ROLE_KEY,Authorization:"Bearer "+env.SERVICE_ROLE_KEY,"Content-Type":"application/json"},body:JSON.stringify({email,email_confirm:true})});
@@ -15,7 +16,7 @@ try {
   user=await r.json();
  }
  await db.query("insert into app_private.members(account_id) values($1) on conflict do nothing",[user.id]);
- if(process.argv.includes("--registered-fixture") || process.argv.includes("--host-event")) {
+ if(process.argv.includes("--registered-fixture") || process.argv.includes("--host-event") || peerMessage) {
   // Prepare an already-registered account for navigation tests. This does not
   // stand in for testing the native picker or first-time onboarding.
   const headers={apikey:env.PUBLISHABLE_KEY,Authorization:"Bearer "+env.SERVICE_ROLE_KEY,"Content-Type":"application/json"};
@@ -33,7 +34,7 @@ try {
   };
   const dir=await mkdtemp(join(tmpdir(),"yumegaoka-ui-avatar-"));
   try {
-   await rpc("profile_save",{display_name:"実機確認"});
+   await rpc("profile_save",{display_name:peerMessage ? "UI別の参加者" : "実機確認"});
    const street_id="11111111-1111-4111-8111-111111111111";
    const state=await rpc("street_icon_get",{street_id});
    if(!state.contribution_id){
@@ -42,6 +43,10 @@ try {
     const upload=await fetch(env.API_URL+"/storage/v1/object/street-icons/"+pending.upload_path,{method:"POST",headers:{...headers,"Content-Type":"image/jpeg","x-upsert":"true"},body:await readFile(join(dir,"icon.jpg"))});
     if(!upload.ok)throw Error("Fixture image upload failed");
     await rpc("street_icon_publish",{street_id,id:pending.id});
+   }
+   if(peerMessage) {
+    const receipt=await rpc("command_prepare",{kind:"chat_send"});
+    await rpc("command_execute",{id:receipt.id,body:{street_id,body:"UI peer message for report and block"}});
    }
    if(process.argv.includes("--host-event")) {
     const title="UI host workflow";

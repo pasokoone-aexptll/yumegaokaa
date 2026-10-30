@@ -314,3 +314,11 @@ scripts/avatar-smoke.mjs成功：所有者アップロード、プロフィー�
 - expo-blurの部分強度アニメーションでXCTestのidle待ちが終わらないため、当該テストだけライブラリ内蔵のDetox判定引数でアニメーションを止めた。操作試験は強いblurであり、通常intensity45の外観/操作保証とは分ける。製品のblur設定は変更していない。
 - シミュレータ本体再ビルドは再現不具合の修正に限定。完了シートを閉じ忘れた試験はrunnerのみ修正し本体再ビルドなし。実機用成果物は旧版のまま、実機転送/実機検証は未実施。pushなし。
 - T014 IN_PROGRESS→IMPLEMENTED。DONE5/IMPLEMENTED5/IN_PROGRESS20/TODO0/BLOCKED3。完了5/33=15.2%、実装到達10/33=30.3%、DONE増分0。次：他利用者との同期、通報/運営の画面統合とタスク完了条件の照合。未公開pool24時間期限はチェックポイント41で実装・検証済み。
+
+## 実装チェックポイント47：別利用者の通報・ブロックから運営対応まで
+- T022/T023/T024/T031/R15/R17/R18：prepare-ui-test --peer-messageで専用の別利用者を実Auth/API/Storage経由で準備し、実APIでチャットを投稿。製品ソースと本体Releaseは変更せず再利用。
+- testPeerReportBlockUnblock成功27.297秒。別利用者の投稿表示→通報受付→ブロックで消える→Settings一覧→解除→Map再表示。DBに未対応通報1件・解除後のブロック0件を確認。リアルタイムの到達時間や2台のiPhone同時操作を保証する試験ではない。
+- testOperatorResolvePeerReport成功32.090秒。専用アカウントの一時的な運営資格＋新規TOTP登録/追加認証→通報証拠→元投稿削除→対応完了。DB resolved=true/resolution=handled、元本文null/deleted=true、証拠本文保持。終了後に専用アカウントの運営資格を解除。初回runnerのcount取得コンパイルエラーはQueryへ修正し再実行、製品コードのエラーではない。
+- 結果 /tmp/yumegaoka-peer-moderation.xcresult と /tmp/yumegaoka-operator-report-query.xcresult（ログ同名）。node --checkとgit diff --check成功。本体の型/Lint・ネイティブビルドは変更なしで省略。実機転送/pushなし。
+- T022/T023をIMPLEMENTEDへ。DONE5/IMPLEMENTED7/IN_PROGRESS18/TODO0/BLOCKED3、完了5/33=15.2%、実装到達12/33=36.4%、DONE増分0。募集/イベント通報、全取得経路のブロック、実機統合は未確認。MVP_TASKSとACCEPTANCEの該当する旧「未実装」表記を現在の証拠へ更新。
+- 次：登録/画像選択と全タブ・運営導線の残る受入条件を照合。実NFC/実Push/クラウドは既存の保留。実機検証は接続可能になってから、最新JSをまとめたReleaseで実施する。

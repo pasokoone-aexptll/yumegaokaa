@@ -3,6 +3,43 @@ import CoreLocation
 import CryptoKit
 
 final class Smoke: XCTestCase {
+ @MainActor func testOperatorResolvePeerReport() throws {
+  let app=try operatorApp()
+  tap(app,"‹ 戻る")
+  tap(app,"通報対応")
+  XCTAssertTrue(app.staticTexts["UI peer message for report and block"].waitForExistence(timeout:20))
+  XCTAssertEqual(app.buttons.matching(identifier:"元の投稿を削除").count,1,"Only act on the dedicated fixture report")
+  tap(app,"元の投稿を削除")
+  XCTAssertTrue(app.alerts.firstMatch.waitForExistence(timeout:5));app.alerts.buttons["削除"].tap()
+  tap(app,"対応完了")
+  XCTAssertTrue(app.staticTexts["未対応の通報はありません。"].waitForExistence(timeout:20))
+  attach(app,"operator-peer-report-resolved")
+ }
+ @MainActor func testPeerReportBlockUnblock() throws {
+  continueAfterFailure=false
+  let app=XCUIApplication(bundleIdentifier:"jp.yumegaoka.development")
+  app.launch()
+  XCTAssertTrue(app.switches["街への参加"].waitForExistence(timeout:30))
+  let body="UI peer message for report and block"
+  let message=app.descendants(matching:.any).matching(NSPredicate(format:"label CONTAINS %@",body)).firstMatch
+  XCTAssertTrue(message.waitForExistence(timeout:30));message.press(forDuration:1.2)
+  XCTAssertTrue(app.alerts.firstMatch.waitForExistence(timeout:5));app.alerts.buttons["通報"].tap()
+  tap(app,"運営へ送信")
+  XCTAssertTrue(app.staticTexts["通報を受け付けました。通報者の情報は相手に公開されません。"].waitForExistence(timeout:15))
+  tap(app,"戻る")
+  XCTAssertTrue(message.waitForExistence(timeout:15));message.press(forDuration:1.2)
+  XCTAssertTrue(app.alerts.firstMatch.waitForExistence(timeout:5));app.alerts.buttons["ブロック"].tap()
+  XCTAssertTrue(NSPredicate(format:"exists == false").evaluate(with:message) || XCTWaiter.wait(for:[XCTNSPredicateExpectation(predicate:NSPredicate(format:"exists == false"),object:message)],timeout:15) == .completed)
+  app.descendants(matching:.any).matching(identifier:"Settings").firstMatch.tap()
+  tap(app,"ブロック設定")
+  XCTAssertTrue(app.staticTexts["UI別の参加者"].waitForExistence(timeout:15))
+  tap(app,"解除")
+  XCTAssertTrue(app.staticTexts["ブロックしている人はいません。"].waitForExistence(timeout:15))
+  tap(app,"‹ 戻る")
+  app.descendants(matching:.any).matching(identifier:"Map").firstMatch.tap()
+  XCTAssertTrue(message.waitForExistence(timeout:20))
+  attach(app,"peer-visible-after-unblock")
+ }
  @MainActor func testOperatorStickerPreparation() throws {
   let app=try operatorApp()
   let title="UI sticker "+String(Int(Date().timeIntervalSince1970))
