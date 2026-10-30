@@ -6,7 +6,7 @@ const source = ts.transpileModule(
   readFileSync("apps/mobile/src/hooks/useStreetMap.ts", "utf8"),
   { compilerOptions: { module: ts.ModuleKind.CommonJS } },
 ).outputText;
-function harness(checkin) {
+function harness(checkin, stop) {
   const slots = [];
   let index = 0,
     calls = 0;
@@ -15,12 +15,14 @@ function harness(checkin) {
       calls++;
       return checkin();
     },
-    stop: async () => ({
-      visit: {},
-      pending_exit: true,
-      status: "退出を再送します",
-      observing: false,
-    }),
+    stop:
+      stop ??
+      (async () => ({
+        visit: {},
+        pending_exit: true,
+        status: "退出を再送します",
+        observing: false,
+      })),
     monotonicTime: () => 0,
     rpc: async (op) =>
       op === "get_street_config"
@@ -121,4 +123,25 @@ test("successful entry exposes success and active state", async () => {
   await h.render().scan();
   assert.equal(h.render().sheet, "success");
   assert.equal(h.render().active, true);
+});
+
+test("OFF immediately stays off while exit is pending and when transport fails", async () => {
+  let reject;
+  const h = harness(
+    async () => active,
+    () =>
+      new Promise((_, r) => {
+        reject = r;
+      }),
+  );
+  await h.render().scan();
+  assert.equal(h.render().active, true);
+  const exiting = h.render().exit();
+  assert.equal(h.render().active, false);
+  assert.equal(h.render().state.pending_exit, true);
+  assert.equal(h.render().state.observing, false);
+  reject(Error("network_error"));
+  await exiting;
+  assert.equal(h.render().active, false);
+  assert.match(h.render().error, /通信回復後/);
 });

@@ -1225,3 +1225,8 @@ T029はLIMIT_ACCEPTANCEの全上限/認可と共通受付再送、T022は募集�
 - tests/ios-ui/Smoke.swiftのtestOtherWriterEntryState成功（10.37秒）。証拠/tmp/yumegaoka-other-writer115.xcresult。製品再ビルド・iPhone操作なし。
 - T012はIMPLEMENTED維持。通信不明/退出待ち画面を次に確認。DONE21/33、実装24/33、統合23/33、実機11/33、BLOCKED3/33。残15→15、新規必須0、推測12.5–28.5h＋待ち不明は据置き。
 - cp114で残った専用試験街2ed97d22-1802-4976-bb09-d6ae09573948と日替わり割当3件を、名前test・滞在/タグなしを確認して削除。試験ユーザーの一括削除は行っていない。
+
+## チェックポイント116：退出待ちのトグル修正
+- T012/R06/R19：native.stopの通信待ち中にactiveがtrueのままになることをentry-state試験で再現（変更前失敗）。OFF操作直後に観測停止/退出待ちを画面へ反映し、NFC取消と退出Promiseの例外処理を分離。PresenceEngineの状態通知も、停止要求済みのactive滞在を退出待ちとして返す。完了済み/滞在なしでは停止要求だけをpendingにしない。
+- entry-state4件成功、TypeScript・Lint成功、Swift構文parse成功。Swift型検査/ネイティブビルドと通信不明・退出待ちのシミュレータ画面確認は未実施。T012をDONEにしない。次回のまとめビルドに含める。
+- 固定T012-01内の不具合修正。追加必須0、残項目15→15。推測12.5–28.5h＋待ち不明は据置き。DONE21/33、実装24/33、統合23/33、実機11/33、BLOCKED3/33。

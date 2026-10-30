@@ -244,10 +244,15 @@ export function useStreetMap() {
   async function exit() {
     canceled.current = true;
     setSheet(null);
-    const stopping = native.stop();
-    await NfcManager.cancelTechnologyRequest().catch(() => {});
+    setState((previous) => ({
+      ...previous,
+      observing: false,
+      pending_exit: true,
+      status: "退出を反映中",
+    }));
+    void NfcManager.cancelTechnologyRequest().catch(() => {});
     try {
-      setState(await stopping);
+      setState(await native.stop());
       await refresh();
     } catch {
       setError("端末の観測は停止しました。退出は通信回復後に反映します。");

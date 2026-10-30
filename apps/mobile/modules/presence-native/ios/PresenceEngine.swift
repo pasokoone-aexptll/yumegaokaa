@@ -40,7 +40,7 @@ import Darwin
   }
  }
  private func emit(_ message:String?=nil){if let message {status=message};onChange?(state())}
- func state()->[String:Any]{["observing":enabled,"status":status,"visit":visit ?? [:],"pending_exit":lifecycle?.intent.stopping ?? false]}
+ func state()->[String:Any]{["observing":enabled,"status":status,"visit":visit ?? [:],"pending_exit":(stopRequested && visit?["state"] as? String == "active") || (lifecycle?.intent.stopping ?? false)]}
  private func prepareLifecycle() async throws -> VisitLifecycle {
   let scope=try await api.lifecycleScope()
   if scope != lifecycleScope {
