@@ -378,3 +378,6 @@ c337e2e基点Release生成成功。testStreetIconPhotoSelectionが16.621秒で�
 
 ### チェックポイント59：本人画像の再起動後表示
 testProfilePhotoPersistence成功25.215秒。既存Release、専用ローカルアカウント、同梱画像で本人画像選択→切り抜き確定→保存→再起動→プロフィールの名前維持と画像目視確認。実Storageの本人画像512×512JPEG・39513bytes、pool登録非変更をDB照合。/tmp/yumegaoka-profile59.xcresult。実機/大画像/任意切り抜き移動は含まない。本体再ビルドなし。
+
+### チェックポイント60：初回登録の統合
+現行ReleaseでtestInvitationOnboarding成功67.309秒。新規OTP→招待→名前→pool写真→Map、各登録途中と完了後の再起動復帰を確認。実DBで招待消費・会員・プロフィール・pool/Storageを照合。旧中央タップがチャットを開いた初回試験は停止し、runnerだけ修正。本体ビルドなし。/tmp/yumegaoka-onboarding60-fixed.xcresult。実機通信断復帰は未確認。試験後シミュレータはログアウト。

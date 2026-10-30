@@ -271,10 +271,10 @@ final class Smoke: XCTestCase {
   let app=XCUIApplication(bundleIdentifier:"jp.yumegaoka.development")
   app.launch()
   tap(app,"画像を選んで街に提供")
-  try await Task.sleep(nanoseconds:2_000_000_000)
-  let screen=XCUIApplication(bundleIdentifier:"com.apple.springboard")
-  attach(app,"pool-picker-before-selection")
-  screen.coordinate(withNormalizedOffset:CGVector(dx:0.16,dy:0.42)).tap()
+  let photo=app.images.matching(identifier:"PXGGridLayout-Info").firstMatch
+  XCTAssertTrue(photo.waitForExistence(timeout:20));photo.tap()
+  XCTAssertTrue(app.buttons["Done"].waitForExistence(timeout:15))
+  app.buttons["Done"].tap()
   XCTAssertTrue(app.switches["街への参加"].waitForExistence(timeout:30))
   app.descendants(matching:.any).matching(identifier:"Settings").firstMatch.tap()
   tap(app,"街のアイコン")
@@ -293,12 +293,6 @@ final class Smoke: XCTestCase {
   XCUIDevice.shared.location = XCUILocation(location: CLLocation(latitude:35.7295,longitude:139.7109))
   defer {XCUIDevice.shared.location=nil}
   app.launch()
-  let springboard=XCUIApplication(bundleIdentifier:"com.apple.springboard")
-  if springboard.buttons["開く"].exists {springboard.buttons["開く"].tap()}
-  if app.buttons["開く"].exists {app.buttons["開く"].tap()}
-  app.tap()
-  if app.buttons["Continue"].waitForExistence(timeout:4) {app.buttons["Continue"].tap()}
-  if app.buttons["Reload"].exists {app.coordinate(withNormalizedOffset:CGVector(dx:0.9,dy:0.487)).tap()}
   if app.buttons["ログアウト"].exists {tap(app,"ログアウト")}
   // Repeat this scenario only with the dedicated local fixture account.
   if app.descendants(matching:.any).matching(identifier:"アカウント・接続状態").firstMatch.exists {
@@ -357,12 +351,10 @@ final class Smoke: XCTestCase {
   XCTAssertTrue(app.buttons["画像を選んで街に提供"].waitForExistence(timeout:20))
   app.terminate();app.launch()
   tap(app,"画像を選んで街に提供")
-  // iOS 27 private picker is outside the app collection-view hierarchy.
-  // The imported fixture is the first tile, verified in the captured picker.
-  attach(app,"pool-photo-picker")
-  app.coordinate(withNormalizedOffset:CGVector(dx:0.16,dy:0.42)).tap()
-  if app.buttons["Add"].exists {app.buttons["Add"].tap()}
-  if app.buttons["追加"].exists {app.buttons["追加"].tap()}
+  let photo=app.images.matching(identifier:"PXGGridLayout-Info").firstMatch
+  XCTAssertTrue(photo.waitForExistence(timeout:20));photo.tap()
+  XCTAssertTrue(app.buttons["Done"].waitForExistence(timeout:15))
+  app.buttons["Done"].tap()
 
   XCTAssertTrue(app.switches["街への参加"].waitForExistence(timeout:30))
   app.terminate();app.launch()

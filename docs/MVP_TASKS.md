@@ -95,7 +95,7 @@ P0=再利用する土台/次の着手、P1=全画面と主要機能、P2=統合�
 - **実装対象**：招待リンク画面・招待テーブル・消費API。
 - **完了条件**：参加者が7日・単回コードを発行し、認証後に一度だけ消費して会員化。7日5件上限、期限切れ・再利用・同時消費を拒否。
 - **検証方法**：ローカル2利用者で発行→受領→登録、DB同時消費。
-- **実装・検証根拠**：招待RPC/画面と共通受付を接続。invitations.test.mjsに再送・取消後の同一結果確認あり。旧testInvitationOnboardingの名前設定までの証拠と、新しい街pool登録必須フローは区別する。チェックポイント50で実DBの同時受領・5件上限、Release画面の発行→停止と共有表示消去を確認。現行の街pool写真保存を含む初回登録一巡と実機の通信断復帰は未完。
+- **実装・検証根拠**：招待RPC/画面と共通受付を接続。invitations.test.mjsに再送・取消後の同一結果確認あり。旧testInvitationOnboardingの名前設定までの証拠と、新しい街pool登録必須フローは区別する。チェックポイント50で実DBの同時受領・5件上限、Release画面の発行→停止と共有表示消去を確認。チェックポイント60で現行の街pool写真保存を含む初回登録一巡と段階別再起動復帰がReleaseで成功。実機の通信断復帰と依存T029の最終確認は未完。
 
 ### T004 名前・本人アイコン設定
 
@@ -837,3 +837,9 @@ T003/T004/T007/T030：チャット画像との別設定、本人と地図で同�
 - T004/T031/R03/R10/R17/R19：既存Releaseを再利用。testProfilePhotoPersistence成功25.215秒。Settings→プロフィール→写真選択→切り抜き確定→保存表示→再起動→プロフィールで名前維持を確認。再起動後の画像もスクリーンショットで目視確認 /tmp/yumegaoka-profile59.png。
 - 本人画像の実Storageは512×512JPEG・39513bytes、更新時刻は今回の操作と一致。街poolのcreated_atはチェックポイント58のままで、本人画像変更がpoolを上書きしないことを確認。結果 /tmp/yumegaoka-profile59.xcresult。
 - 本体ビルドなし。UI runnerだけ追加。実機写真・大画像・任意切り抜き位置は未確認。DONE5/IMPLEMENTED10/IN_PROGRESS15/TODO0/BLOCKED3維持。次：初回pool登録までの一巡と残る統合。pushなし。
+
+## 実装チェックポイント60：招待からpool登録・Mapまでの一巡
+- T003/T004/T006/T031/R03/R10/R19：testInvitationOnboardingを現在の標準写真編集に合わせ、画像要素待ち→Chooseを接続。旧開発版向けの無条件中央タップがチャットを開くため、当該試験だけ停止して不要操作を削除。本体変更/再ビルドなし。
+- 修正後のRelease統合試験成功67.309秒。新規ローカルOTP→招待受領→名前未設定で再起動復帰→名前設定→pool未登録で再起動復帰→写真選択/切り抜き/公開→Map→再起動後Map→Settings当日画像確認→ログアウト。結果 /tmp/yumegaoka-onboarding60-fixed.xcresult。
+- 実DB照合：専用招待が消費され、有効会員・Onboarding visitorプロフィール・有効pool・39513bytesのStorage画像が保存済み。シミュレータは終了時ログアウト状態。iphone-validation@example.testのデータは保持し、実機のログイン状態は変更していない。
+- 完了条件の実機通信断/依存T029の最終照合は残す。DONE5/IMPLEMENTED10/IN_PROGRESS15/TODO0/BLOCKED3維持。次：残るアカウント例外/運営・上限の統合確認。pushなし。
