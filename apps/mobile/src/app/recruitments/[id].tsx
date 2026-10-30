@@ -1,43 +1,11 @@
-import { useCallback, useState } from "react";
-import { Text, TextInput } from "react-native";
-import { router, useFocusEffect, useLocalSearchParams } from "expo-router";
+import { Alert, Text, TextInput } from "react-native";
+import { router, useLocalSearchParams } from "expo-router";
 import { Action, Empty, Page, ui } from "../../components/Page";
-import { native } from "../../lib/native";
-import { Recruitment } from "../../lib/recruitments";
+import { useRecruitmentDetail } from "../../hooks/useRecruitmentDetail";
 export default function Detail() {
   const { id } = useLocalSearchParams<{ id: string }>();
-  const [pin, setPin] = useState<Recruitment>(),
-    [title, setTitle] = useState(""),
-    [error, setError] = useState(""),
-    [busy, setBusy] = useState(false);
-  const load = useCallback(async () => {
-    try {
-      const p = await native.rpc<Recruitment>("recruitment_get", { id });
-      setPin(p);
-      setTitle(p.title);
-      setError("");
-    } catch {
-      setPin(undefined);
-      setError("募集は終了したか、取得できませんでした。");
-    }
-  }, [id]);
-  useFocusEffect(
-    useCallback(() => {
-      void load();
-    }, [load]),
-  );
-  async function act(op: string) {
-    setBusy(true);
-    try {
-      await native.rpc(op, { id, title, revision: pin?.revision });
-      if (op === "recruitment_end") router.replace("/");
-      else await load();
-    } catch {
-      setError("変更できませんでした。最新情報を確認してください。");
-    } finally {
-      setBusy(false);
-    }
-  }
+  const { pin, title, editTitle, error, busy, loading, ended, load, act } =
+    useRecruitmentDetail(id);
   return (
     <Page title={pin?.title ?? "募集"}>
       {!!error && <Text style={ui.error}>{error}</Text>}
@@ -69,11 +37,13 @@ export default function Detail() {
                 style={ui.input}
                 value={title}
                 maxLength={50}
-                onChangeText={setTitle}
+                onChangeText={editTitle}
+                editable={!busy}
+                accessibilityLabel="募集の題名"
               />
               <Action
                 title="題名を保存"
-                disabled={busy}
+                disabled={busy || !title.trim()}
                 onPress={() => void act("recruitment_edit")}
               />
               <Action
@@ -85,9 +55,33 @@ export default function Detail() {
           )}
         </>
       ) : (
-        <Empty>終了した募集の位置は表示しません。</Empty>
+        <Empty>
+          {ended
+            ? "募集は終了しました"
+            : loading
+              ? "読み込み中…"
+              : "募集を表示できません"}
+        </Empty>
       )}
-      <Action title="再読み込み" onPress={() => void load()} />
+      {!ended && (
+        <Action
+          title="再読み込み"
+          disabled={busy}
+          onPress={() => void load()}
+        />
+      )}
+      {pin?.mine && (
+        <Action
+          title="最新の題名を読み込む"
+          disabled={busy}
+          onPress={() =>
+            Alert.alert("入力を最新の題名に置き換えますか？", undefined, [
+              { text: "戻る", style: "cancel" },
+              { text: "置き換える", onPress: () => void load(true) },
+            ])
+          }
+        />
+      )}
     </Page>
   );
 }
