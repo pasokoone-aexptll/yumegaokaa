@@ -1,5 +1,6 @@
+import { AccountAccessContext } from "../hooks/useAccountAccess";
 import { useFocusEffect } from "expo-router";
-import { useCallback, useState } from "react";
+import { useCallback, useContext, useState } from "react";
 import { Share, Text, TextInput, View } from "react-native";
 import { Action, Page, ui } from "../components/Page";
 import { native } from "../lib/native";
@@ -10,6 +11,7 @@ type Invite = {
   revoked: boolean;
 };
 export default function Invitations() {
+  const access = useContext(AccountAccessContext);
   const [items, setItems] = useState<Invite[]>([]),
     [code, setCode] = useState(""),
     [issued, setIssued] = useState(""),
@@ -34,6 +36,7 @@ export default function Invitations() {
     try {
       const r = await native.rpc<{ code?: string }>(op, p);
       if (r.code) setIssued(r.code);
+      if (op === "invite_accept") access.retry();
       setStatus(
         op === "invite_accept"
           ? "招待を受け付けました。プロフィールを設定し、Mapを開いてください。"

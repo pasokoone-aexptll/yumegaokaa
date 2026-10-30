@@ -533,3 +533,12 @@ Git is now initialized with baseline commit555969d on codex/mvp-integration. Sec
 - 修正後のtestLoginEntryRestartExit成功（59.996秒、/tmp/yumegaoka-session-ui-retry.log）。実OTP→開発入街→更新→再起動→退出→再起動を一本で確認。本体再ビルドなし。
 - 未確認：遠隔での資格/認証失効時に全画面のキャッシュを消す連動、別アカウントとの往復実操作、退会応答消失からの再開。メール変更もidentity変更として画面を再生成する。全認証例外を完了とはしない。
 - 次は遠隔失効と未登録会員の導線、チャット/通知の更新接続を進める。完了件数5/33、実装到達7/33を維持。
+
+
+## 実装チェックポイント18：利用資格の画面連動
+- T003/T005/T024/T031：022 account_accessは認証済み本人の未登録/有効/停止/退会状態だけを返す。セッション失効を拒否。他人ID入力は使用しない。DB試験成功。
+- 前面で10秒間隔と復帰時に利用状態を確認。未登録は招待入力、停止/退会は専用画面へ誘導し、画面状態を破棄して観測停止。招待受付後は即再確認する。ネットワーク失敗を利用停止と誤認しない。
+- UI試験で再マウント時のconfigureがauthGenerationを更新して進行中照会を失効させる不具合を検出。接続先が同じconfigureはPromiseを共有し、一度だけ実行。失敗時は再試行可。login_requiredが一時的な再認証競合の場合はローカルsessionを再確認し、無条件logoutしない。
+- account-access、native-configuration、session-state試験成功。testSuspendedAccountGate成功（26.007秒、/tmp/yumegaoka-access-gate-ui-retry.log）。専用fixtureの停止状態でOTPログイン→停止画面、入街/投稿欄なしを確認。終了後に利用資格を復元。
+- 型検査成功。Lintのeffect内初期更新指摘に対応し、初回照会を取消可能なタイマーへ移動してLint成功。タイマー変更後のUI再実行は省略。ネイティブ変更なし・本体再ビルドなし。
+- 未確認：利用中に遠隔停止した画面の切替、解除後復帰の実操作、未登録→招待→プロフィールの一巡、実機。進捗5/33・実装到達7/33維持。次は招待とプロフィールの一巡、チャット/通知の更新接続。

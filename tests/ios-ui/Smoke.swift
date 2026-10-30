@@ -78,6 +78,55 @@ final class Smoke: XCTestCase {
   XCTAssertTrue(app.staticTexts.matching(NSPredicate(format:"label CONTAINS %@", "· 廃止")).firstMatch.waitForExistence(timeout:15))
   attach(app,"operator-replacement-published")
  }
+ @MainActor func testSuspendedAccountGate() async throws {
+  continueAfterFailure=false
+  let app=XCUIApplication(bundleIdentifier:"jp.yumegaoka.development")
+  app.launch()
+  if app.textFields["メールアドレス"].waitForExistence(timeout:5) {
+  let email=app.textFields["メールアドレス"]
+  XCTAssertTrue(email.waitForExistence(timeout:60),"Expected product login; inspect screenshot if development launcher is visible")
+  let address="iphone-validation@example.test"
+  if email.value as? String != address {
+  email.tap()
+  // Pace native keystrokes so RN's controlled input commits each change.
+  for character in address {email.typeText(String(character))}
+  }
+  XCTAssertEqual(email.value as? String,address,"Do not send to a mistyped recipient")
+  email.typeText("\n")
+  let base=ProcessInfo.processInfo.environment["TEST_MAIL_URL"] ?? "http://127.0.0.1:54324"
+  func messages() async throws -> [[String:Any]] {
+   let (data,_)=try await URLSession.shared.data(from:URL(string:base+"/api/v1/messages")!)
+   return (try JSONSerialization.jsonObject(with:data) as! [String:Any])["messages"] as! [[String:Any]]
+  }
+  let before=Set(try await messages().compactMap{$0["ID"] as? String})
+  tap(app,"確認コードを送る")
+  let codeField=app.textFields["メールの確認コード"]
+  XCTAssertTrue(codeField.waitForExistence(timeout:20))
+  var delivered:[String:Any]?
+  for _ in 0..<20 {
+   delivered=try await messages().first{m in
+    !before.contains(m["ID"] as? String ?? "") &&
+    (m["To"] as? [[String:Any]])?.contains{($0["Address"] as? String)==address} == true
+   }
+   if delivered != nil {break}
+   try await Task.sleep(nanoseconds:250_000_000)
+  }
+  let message=try XCTUnwrap(delivered,"Require a newly delivered OTP, never reuse old mail")
+  let (mailData,_)=try await URLSession.shared.data(from:URL(string:base+"/api/v1/message/"+(message["ID"] as! String))!)
+  let mail=try JSONSerialization.jsonObject(with:mailData) as! [String:Any]
+  let text=(mail["Text"] as? String ?? "")+" "+(mail["HTML"] as? String ?? "")
+  let regex=try NSRegularExpression(pattern:"\\b[0-9]{6}\\b")
+  let match=try XCTUnwrap(regex.firstMatch(in:text,range:NSRange(text.startIndex...,in:text)))
+  let code=String(text[Range(match.range,in:text)!])
+  codeField.tap();for character in code {codeField.typeText(String(character))};codeField.typeText("\n")
+  tap(app,"ログイン")
+  }
+  XCTAssertTrue(app.staticTexts["利用停止中"].waitForExistence(timeout:35))
+  XCTAssertTrue(app.buttons["ログアウト"].exists)
+  XCTAssertFalse(app.switches["街への参加"].exists)
+  XCTAssertFalse(app.textFields["入力…"].exists)
+  attach(app,"suspended-account-gate")
+ }
  @MainActor func testMVPNavigation() throws {
   continueAfterFailure=false
   let app=XCUIApplication(bundleIdentifier:"jp.yumegaoka.development")

@@ -1,3 +1,7 @@
+import {
+  AccountAccessContext,
+  useAccountAccess,
+} from "../hooks/useAccountAccess";
 import { useEffect, useSyncExternalStore } from "react";
 import { sessionState } from "../lib/sessionState";
 import { Stack, router, usePathname } from "expo-router";
@@ -8,20 +12,40 @@ export default function Layout() {
     sessionState.get,
   );
   const path = usePathname();
+  const access = useAccountAccess(session.signed_in, session.revision);
   useEffect(() => {
     if (session.ready && !session.signed_in && path !== "/")
       router.replace("/");
-  }, [session.ready, session.signed_in, path]);
+    else if (session.signed_in) {
+      if (
+        ["suspended", "withdrawn", "expired"].includes(access.status) &&
+        path !== "/access"
+      )
+        router.replace("/access");
+      else if (access.status === "unregistered" && path !== "/invitations")
+        router.replace("/invitations");
+      else if (access.status === "active" && path === "/access")
+        router.replace("/");
+    }
+  }, [session.ready, session.signed_in, path, access.status]);
   return (
-    <SafeAreaProvider>
-      <Stack key={session.revision} screenOptions={{ headerShown: false }}>
-        <Stack.Screen name="(tabs)" />
-        <Stack.Screen name="pins/create" options={{ presentation: "modal" }} />
-        <Stack.Screen
-          name="pins/location"
-          options={{ presentation: "modal" }}
-        />
-      </Stack>
-    </SafeAreaProvider>
+    <AccountAccessContext.Provider value={access}>
+      <SafeAreaProvider>
+        <Stack
+          key={`${session.revision}:${access.status}`}
+          screenOptions={{ headerShown: false }}
+        >
+          <Stack.Screen name="(tabs)" />
+          <Stack.Screen
+            name="pins/create"
+            options={{ presentation: "modal" }}
+          />
+          <Stack.Screen
+            name="pins/location"
+            options={{ presentation: "modal" }}
+          />
+        </Stack>
+      </SafeAreaProvider>
+    </AccountAccessContext.Provider>
   );
 }

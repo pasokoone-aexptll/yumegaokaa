@@ -84,6 +84,18 @@ const authMethods = {
     sessionState.publish({ signed_in: false, email: "" });
   },
 };
+let configuration:
+  { url: string; key: string; promise: Promise<void> } | undefined;
+function configure(url: string, key: string) {
+  if (configuration?.url === url && configuration.key === key)
+    return configuration.promise;
+  const promise = bridge.configure(url, key).catch((error) => {
+    if (configuration?.promise === promise) configuration = undefined;
+    throw error;
+  });
+  configuration = { url, key, promise };
+  return promise;
+}
 export const native: typeof bridge = {
   ...authMethods,
   currentLocation: () => bridge.currentLocation(),
@@ -94,7 +106,7 @@ export const native: typeof bridge = {
   mfaFactors: () => bridge.mfaFactors(),
   mfaEnroll: () => bridge.mfaEnroll(),
   mfaVerify: (factor, code) => bridge.mfaVerify(factor, code),
-  configure: (url, key) => bridge.configure(url, key),
+  configure,
   sendOTP: (email) => bridge.sendOTP(email),
   rpc: (operation, payload) => bridge.rpc(operation, payload),
   checkin: (tag) => bridge.checkin(tag),
