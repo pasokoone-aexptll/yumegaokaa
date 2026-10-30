@@ -2,7 +2,7 @@ import { localBlocks } from "../lib/localBlocks";
 import { useCallback, useRef, useState } from "react";
 import { AppState } from "react-native";
 import { useFocusEffect } from "expo-router";
-import { native, streetID } from "../lib/native";
+import { native, streetID, displayClock } from "../lib/native";
 import { Recruitment } from "../lib/recruitments";
 import { StreetEvent } from "../lib/events";
 import { streetChanges } from "../lib/streetChanges";
@@ -15,12 +15,14 @@ export function useHomePins() {
   const generation = useRef(0);
   const request = useRef(0);
   const fetching = useRef(false);
+  const clock = useRef<{ server: number; local: number } | null>(null);
   const load = useCallback(async () => {
     if (fetching.current) return;
     fetching.current = true;
     const gen = generation.current;
     const seq = ++request.current;
     try {
+      const synced = await displayClock();
       const [events, pins] = await Promise.all([
         native.rpc<{ items: StreetEvent[] }>("event_list", {
           street_id: streetID,
@@ -31,9 +33,14 @@ export function useHomePins() {
         }),
       ]);
       if (gen !== generation.current || seq !== request.current) return;
-      setItems(events.items);
+      clock.current = synced;
+      const now = synced.server + native.monotonicTime() - synced.local;
+      setItems(events.items.filter((e) => Date.parse(e.ends_at) > now));
       setRecruitments(
-        pins.items.filter((p) => !localBlocks.hidden(p.author_id)),
+        pins.items.filter(
+          (p) =>
+            !localBlocks.hidden(p.author_id) && Date.parse(p.expires_at) > now,
+        ),
       );
       setError("");
     } catch {
@@ -54,6 +61,19 @@ export function useHomePins() {
         if (AppState.currentState === "active") void load();
       };
       const timer = setInterval(refresh, 10000);
+      const expiry = setInterval(() => {
+        const synced = clock.current;
+        if (!synced) return;
+        const now = synced.server + native.monotonicTime() - synced.local;
+        setItems((previous) => {
+          const active = previous.filter((e) => Date.parse(e.ends_at) > now);
+          return active.length === previous.length ? previous : active;
+        });
+        setRecruitments((previous) => {
+          const active = previous.filter((p) => Date.parse(p.expires_at) > now);
+          return active.length === previous.length ? previous : active;
+        });
+      }, 1000);
       const unsubscribeBlocks = localBlocks.subscribe(() => {
         setRecruitments((items) =>
           items.filter((p) => !localBlocks.hidden(p.author_id)),
@@ -65,6 +85,7 @@ export function useHomePins() {
       return () => {
         generation.current++;
         clearInterval(timer);
+        clearInterval(expiry);
         unsubscribe();
         unsubscribeBlocks();
         foreground.remove();
