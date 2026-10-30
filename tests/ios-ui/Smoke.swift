@@ -3,6 +3,32 @@ import CoreLocation
 import CryptoKit
 
 final class Smoke: XCTestCase {
+ @MainActor func testProfilePhotoPersistence() throws {
+  continueAfterFailure=false
+  let app=XCUIApplication(bundleIdentifier:"jp.yumegaoka.development")
+  app.launch()
+  XCTAssertTrue(app.switches["街への参加"].waitForExistence(timeout:30))
+  app.descendants(matching:.any).matching(identifier:"Settings").firstMatch.tap()
+  tap(app,"プロフィール")
+  let name=app.textFields["表示名"]
+  XCTAssertTrue(name.waitForExistence(timeout:15))
+  let previousName=name.value as? String
+  tap(app,"写真を選ぶ")
+  let photo=app.images.matching(identifier:"PXGGridLayout-Info").firstMatch
+  XCTAssertTrue(photo.waitForExistence(timeout:20));photo.tap()
+  XCTAssertTrue(app.buttons["Done"].waitForExistence(timeout:15))
+  app.buttons["Done"].tap()
+  XCTAssertTrue(app.staticTexts["保存しました"].waitForExistence(timeout:30))
+  XCTAssertEqual(name.value as? String,previousName)
+  attach(app,"profile-photo-saved")
+  app.terminate();app.launch()
+  XCTAssertTrue(app.switches["街への参加"].waitForExistence(timeout:30))
+  app.descendants(matching:.any).matching(identifier:"Settings").firstMatch.tap()
+  tap(app,"プロフィール")
+  XCTAssertTrue(name.waitForExistence(timeout:15))
+  XCTAssertEqual(name.value as? String,previousName)
+  attach(app,"profile-photo-reopened")
+ }
  @MainActor func testStreetIconPhotoSelection() throws {
   continueAfterFailure=false
   let app=XCUIApplication(bundleIdentifier:"jp.yumegaoka.development")

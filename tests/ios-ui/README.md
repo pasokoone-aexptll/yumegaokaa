@@ -54,3 +54,5 @@ runnerも未変更なら`test-without-building`。`-collect-test-diagnostics nev
 `testOperatorMemberDateSelection`は`--operator`で準備し、実MFA→参加者管理の制限終了日時のキャンセル/確定→運営一覧復帰を確認する。利用者の制限状態は変更しない。終了後に`--revoke-operator`を実行する。
 
 `testStreetIconPhotoSelection`は登録済み専用アカウントで使用する。先に`simctl addmedia <SIMULATOR_ID> apps/mobile/assets/icon.png`でfixtureを追加し、最新画像がこのfixtureであることを確認する。写真選択の`PXGGridLayout-Info`を待ち、標準編集の`Done`で確定して保存復帰を確認。UI結果だけでなく専用アカウントの最新公開行とStorage画像の容量/寸法を照合する。個人写真のライブラリには実行しない。
+
+`testProfilePhotoPersistence`は写真fixtureと登録済み専用アカウントを使用し、本人画像選択→保存→再起動→プロフィール復帰を確認する。画像描画は添付画像の目視、保存は本人avatarsのStorage/DB照合で補う。街poolの公開行が変更されていないことも別途照合する。

@@ -103,7 +103,7 @@ P0=再利用する土台/次の着手、P1=全画面と主要機能、P2=統合�
 - **実装対象**：初回プロフィール・Settings・profiles・Storage処理。
 - **完了条件**：名前と本人画像を保存・再表示。2MB制限、縮小・再エンコード・メタデータ除去、所有者以外の更新拒否。過去投稿表示はQ09決定に従う。
 - **検証方法**：画像処理の入力/出力確認、別アカウント更新拒否、設定往復。
-- **実装・検証根拠**：profiles/非公開Storage/useProfile、avatar-smoke.mjs、初回名前設定のtestInvitationOnboarding成功。チェックポイント56/58で共通画像処理を使う街poolの標準写真選択→切り抜き→保存をReleaseで操作し、実Storageの512×512JPEG・39513bytes・EXIF等の領域なしを確認。実機写真・大画像・本人画像の設定往復は残り、DONEにはしない。
+- **実装・検証根拠**：profiles/非公開Storage/useProfile、avatar-smoke.mjs、初回名前設定のtestInvitationOnboarding成功。チェックポイント56/58で共通画像処理を使う街poolの標準写真選択→切り抜き→保存をReleaseで操作し、実Storageの512×512JPEG・39513bytes・EXIF等の領域なしを確認。チェックポイント59で本人画像の選択/保存/再起動後の再表示とpool非変更も確認。実機写真・大画像・切り抜き位置変更は残り、DONEにはしない。
 
 ### T005 アカウント例外・復旧・退会
 
@@ -832,3 +832,8 @@ T003/T004/T007/T030：チャット画像との別設定、本人と地図で同�
 - 既存写真保存runnerをtest-without-buildingで再利用。標準写真選択→切り抜きChoose→保存が16.621秒で成功 /tmp/yumegaoka-photo-save58.xcresult。同時刻に作成された専用アカウントの公開画像を実Storageから読み、512×512JPEG・39513bytes・APP1/APP13/COMなしを確認。前回の画像を再利用した結果ではない。
 - T004をIMPLEMENTEDへ。縮小/圧縮/明示的メタデータ除去/Storage保存のコードと一部ネイティブ実行証拠が揃った。大画像、任意領域へ切り抜き移動、本人画像設定往復、実機写真は未確認のためDONEではない。
 - DONE5/IMPLEMENTED10/IN_PROGRESS15/TODO0/BLOCKED3。完了5/33=15.2%、実装到達15/33=45.5%。実機のインストール済み版は更新していない。次：本人画像設定と登録の残るフロー、ユーザー帰宅後の実機写真保存。pushなし。
+
+## 実装チェックポイント59：本人プロフィール画像の保存・復元
+- T004/T031/R03/R10/R17/R19：既存Releaseを再利用。testProfilePhotoPersistence成功25.215秒。Settings→プロフィール→写真選択→切り抜き確定→保存表示→再起動→プロフィールで名前維持を確認。再起動後の画像もスクリーンショットで目視確認 /tmp/yumegaoka-profile59.png。
+- 本人画像の実Storageは512×512JPEG・39513bytes、更新時刻は今回の操作と一致。街poolのcreated_atはチェックポイント58のままで、本人画像変更がpoolを上書きしないことを確認。結果 /tmp/yumegaoka-profile59.xcresult。
+- 本体ビルドなし。UI runnerだけ追加。実機写真・大画像・任意切り抜き位置は未確認。DONE5/IMPLEMENTED10/IN_PROGRESS15/TODO0/BLOCKED3維持。次：初回pool登録までの一巡と残る統合。pushなし。

@@ -375,3 +375,6 @@ T013/R12/R13/R19。サーバー同期＋単調時計でHomeの募集/参加予�
 
 ### チェックポイント58：EXIF除去後の実Storage保存
 c337e2e基点Release生成成功。testStreetIconPhotoSelectionが16.621秒で成功。実Storageで今回作成の公開画像を取得し、512×512JPEG・39513bytes、APP1（EXIF/XMP）/APP13/COM領域なしを確認。結果 /tmp/yumegaoka-photo-save58.xcresult。T004はIMPLEMENTED。実機・大画像・本人画像往復は未検証。Home期限表示は同Releaseに収録したがUI通信断試験は行っていない。
+
+### チェックポイント59：本人画像の再起動後表示
+testProfilePhotoPersistence成功25.215秒。既存Release、専用ローカルアカウント、同梱画像で本人画像選択→切り抜き確定→保存→再起動→プロフィールの名前維持と画像目視確認。実Storageの本人画像512×512JPEG・39513bytes、pool登録非変更をDB照合。/tmp/yumegaoka-profile59.xcresult。実機/大画像/任意切り抜き移動は含まない。本体再ビルドなし。
