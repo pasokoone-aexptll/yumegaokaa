@@ -522,3 +522,8 @@ T012をIMPLEMENTED/INTEGRATEDへ更新。DONE8、IMPLEMENTED15、IN_PROGRESS7、
 - Expo58 ImagePicker/FileSystem公式仕様と同梱MediaHandler.swiftのcachesDirectory/ImagePicker出力を確認（https://docs.expo.dev/versions/v58.0.0/sdk/imagepicker/ 、https://docs.expo.dev/versions/v58.0.0/sdk/filesystem/）。新規の保持期限や全キャッシュ削除は導入しない。
 - avatar-cache.test.mjs 3件成功（成功、変換/送信失敗、原本/対象外パス保護）。型/Lint成功。実機ファイル削除、強制終了時の残存ファイル、OS画像キャッシュ等は未確認。T030全対象完了ではない。ネイティブビルド・iPhone操作・pushなし。
 - 実装23/33、統合20/33、実機11/33、DONE8/33、BLOCKED3を維持。
+
+## チェックポイント85：入街ログの統合証拠を反映（2026-10-31）
+- T021/R04/R15/R17：現行chat_readのarrival_logs union、プロフィール結合、30日/ブロック条件、useStreetChatの画像/種別フィールド、StreetChatのAvatar/入街文言を照合。cp66の実DB試験は新規入街・再送・reuse・気配更新でも1ログ、現在名反映、ブロック/解除、期限、visit ID非公開を対象にする。該当サーバー処理は変更されていないため反復しない。
+- cp81の成功時画像 /tmp/yumegaoka-ui81-event-images/EAE6E47A-FA41-4436-B713-9A7081AF5BB6.png に本人画像・名前・「街に参加しました」が描画されている。APIだけだったcp66以降の描画証拠を対応付け、T021のINTEGRATEDを○へ更新。画像のないアカウントは既存の文字フォールバック。リアルタイム到達秒数や実機確認の証明にはしない。
+- コード23/33（69.7%）、統合21/33（63.6%）、実機11/33（33.3%）、DONE8/33（24.2%）、BLOCKED3。33タスク分母と完了条件は変更なし。T021の作業状態はIMPLEMENTEDを維持（依存T020未完）。今回コード変更/テスト/ビルド/実機/pushなし。次はT020の残る複数閲覧・切断差分の確認を進める。
