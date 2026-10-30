@@ -611,3 +611,10 @@ T003/T004/T007/T030：チャット画像との別設定、本人と地図で同�
 - maintenance-workerへpool清掃を接続。既存worker PID87802を確認して終了し、新版を1プロセス起動。Mac停止後はREADMEの手順で再起動が必要。
 - scripts/street-icon-smoke.mjs成功。ローカルAuthの専用2利用者と実JPEGで、HTTP保存→公開→別会員が同一バイト取得→他人/公開済み画像の上書き拒否→公開URL拒否→取り下げ後読取拒否→通常会員の清掃API拒否→worker物理削除を確認。fixtureは削除。
 - 未確認：アップロードと取り下げ/workerの同時競合、通信断再試行、端末キャッシュ、写真選択とMap描画。未完了アップロードの清掃期限/処理は残る。これらを完了とはしない。全体5/33・実装到達7/33維持。ネイティブ変更なし、本体ビルド省略。pushなし。
+
+
+## 実装チェックポイント27：写真選択のUI検証は未完
+- T003/T004/T007：testInvitationOnboardingを新仕様の名前→pool画像提供へ更新。シミュレータにアプリ同梱icon.pngを検証素材として追加。名前設定とpool画面への再起動復帰までは到達。
+- 写真ピッカー表示後にUIテストが画像を選択できず失敗。collectionViewsに現れず、確認済み画面の先頭画像への座標操作でも選択されなかった。対象シミュレータは6410E701（iOS27）、アプリ/画面frameは402x874。写真ピッカーは表示されるが、アプリのaccessibility treeには背後の登録画面だけが出る。原因をOSの確定不具合とは断定しない。
+- OTPを繰り返さないtestPoolRegistrationFromPendingへ範囲を絞って確認したが未解決。診断結果は/tmp/yumegaoka-pool-picker-diagnostic.log、スクリーンショット/tmp/yumegaoka-pool-focused.png。写真選択後の保存・Map遷移・表示を成功扱いにしない。
+- 本体ネイティブ再ビルドなし。テストrunnerのみ変更。これ以上同条件での反復はせず、実機/手動選択またはシステムpicker自動操作の解決が必要。既存の実Storage HTTP試験の成功とは別の確認層。全体5/33・実装到達7/33維持。

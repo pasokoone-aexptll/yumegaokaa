@@ -150,6 +150,21 @@ final class Smoke: XCTestCase {
   app.descendants(matching:.any).matching(identifier:"Map").firstMatch.tap()
   attach(app,"mvp-navigation-map")
  }
+ @MainActor func testPoolRegistrationFromPending() async throws {
+  continueAfterFailure=false
+  let app=XCUIApplication(bundleIdentifier:"jp.yumegaoka.development")
+  app.launch()
+  tap(app,"画像を選んで街に提供")
+  try await Task.sleep(nanoseconds:2_000_000_000)
+  let screen=XCUIApplication(bundleIdentifier:"com.apple.springboard")
+  attach(app,"pool-picker-before-selection")
+  screen.coordinate(withNormalizedOffset:CGVector(dx:0.16,dy:0.42)).tap()
+  XCTAssertTrue(app.switches["街への参加"].waitForExistence(timeout:30))
+  app.descendants(matching:.any).matching(identifier:"Settings").firstMatch.tap()
+  tap(app,"街のアイコン")
+  XCTAssertTrue(app.staticTexts["今日のあなたのアイコン"].waitForExistence(timeout:15))
+  attach(app,"pool-image-confirmed")
+ }
  @MainActor func testInvitationOnboarding() async throws {
   continueAfterFailure=false
   let app=XCUIApplication(bundleIdentifier:"jp.yumegaoka.development")
@@ -222,11 +237,28 @@ final class Smoke: XCTestCase {
   app.terminate();app.launch()
   XCTAssertTrue(name.waitForExistence(timeout:30),"Resume unfinished profile after restart")
   name.tap();name.typeText("Onboarding visitor");name.typeText("\n")
-  tap(app,"街を開く")
+  tap(app,"次へ")
+  XCTAssertTrue(app.buttons["画像を選んで街に提供"].waitForExistence(timeout:20))
+  app.terminate();app.launch()
+  tap(app,"画像を選んで街に提供")
+  // iOS 27 private picker is outside the app collection-view hierarchy.
+  // The imported fixture is the first tile, verified in the captured picker.
+  attach(app,"pool-photo-picker")
+  app.coordinate(withNormalizedOffset:CGVector(dx:0.16,dy:0.42)).tap()
+  if app.buttons["Add"].exists {app.buttons["Add"].tap()}
+  if app.buttons["追加"].exists {app.buttons["追加"].tap()}
+
   XCTAssertTrue(app.switches["街への参加"].waitForExistence(timeout:30))
   app.terminate();app.launch()
   XCTAssertTrue(app.switches["街への参加"].waitForExistence(timeout:30))
   XCTAssertFalse(app.textFields["表示名"].exists)
+  app.descendants(matching:.any).matching(identifier:"Settings").firstMatch.tap()
+  tap(app,"街のアイコン")
+  XCTAssertTrue(app.staticTexts["今日のあなたのアイコン"].waitForExistence(timeout:15))
+  XCTAssertTrue(app.buttons["提供画像を差し替える"].exists)
+  attach(app,"pool-image-confirmed")
+  tap(app,"‹ 戻る")
+  app.descendants(matching:.any).matching(identifier:"Map").firstMatch.tap()
   attach(app,"onboarding-complete")
   tap(app,"アカウント・接続状態");tap(app,"ログアウト")
  }
