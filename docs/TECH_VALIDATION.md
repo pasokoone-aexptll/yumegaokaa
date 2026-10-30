@@ -407,3 +407,7 @@ arrival-chat-flow.test.mjsで実入街→再送/再利用/気配更新後のロ�
 033適用、service専用RPCとmaintenance-workerのローカル疑似配信を接続。notification-delivery.test.mjsで実DBの宛先・期限・版・参加取消・中止・利用停止・lease回収・再試行・通常会員拒否を確認。HTTPワーカー単発で疑似配信4件。simulated_atのみ記録し実配信delivered_atは未設定。多ワーカー競合/実APNs/外部配送途中の取消/常時稼働は未確認。ネイティブ変更なし、ビルド省略。T018 IMPLEMENTED、全体5/33維持。
 
 チェックポイント67運用追記：旧ローカルworker PID49934の稼働を確認してTERMで停止し、新版を1プロセス起動。/tmp/yumegaoka-maintenance67.logで初回周期（疑似配信0件・清掃0件）の正常完了を確認。Mac停止後の自動復帰や常時稼働の保証ではない。
+
+
+### チェックポイント68：期限清掃の接続確認
+feature-retention.test.mjs成功。実worker入口maintenance_jobs(cleanup)で期限前後26行を照合。終了/中止イベントと参加・通知・outboxの24h連鎖削除、チャット30日、通報180/30日、運営90日、未完了下書き7日。fixture rollback。全データ種別/常時稼働/バックアップは未確認。iPhone用Releaseのまとめたビルドを開始し、結果は後記する。
