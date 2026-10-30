@@ -103,3 +103,5 @@ cp110：T018 DONE、17/33、残19。次T020-01：chat-reconnect-integration/cp86
 cp111：T020 DONE、18/33、残18。gateway PID70930が54325待受を確認。次T023-01募集/イベント通報UIの未確認2入口を既存Smoke/operator fixtureで確認する。製品変更なし。
 
 cp112再開：T023 DONE、19/33、残17。次T026-01。既存sticker-detail-stateとsticker-flowを読み、fake失敗/不一致/再開の実UI/DB不足だけ補う。シミュレータRelease109、専用通報fixture清掃済み。
+
+cp113：T026 DONE、20/33、残16。次T027-01：sticker-flow既存の版競合/地点不足とnative新版観測の証拠を照合。シミュレータ運営資格は復元済み、試験登録はUIで取消済み。

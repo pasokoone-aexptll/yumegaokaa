@@ -661,3 +661,6 @@ R15/R16/R19。chat-live-clients.test.mjs成功。専用2アカウントをGoTrue
 
 ## cp112：T023募集/イベント通報UI
 R15/R17/R18。testPinReportEntrypointsが既存Release109上で成功。Home参加予定→イベント詳細/募集一覧→募集詳細から各通報画面→送信→受付を確認し、実DB2行の対象種別/ID/通報者/理由spamを照合。/tmp/yumegaoka-report112-retry.xcresult。初回fixtureはstarted_at不足、次の試験はカード名の完全一致誤り（実際は「〜の詳細」）で失敗し、試験側だけ修正。製品変更なし。fixture/通報は削除済み。既存cp47/70投稿通報・運営証拠と合わせT023 DONE。実機再実行/本体ビルド/無関連試験なし。残18→17。
+
+## cp113：T026登録再開と未照合拒否
+R11/R18。sticker-flowへwritten/verifiedで別tag_id拒否・段階不変・タグinactive、同一操作再送のphase/revision非増加を追加し実DB成功。sticker-detail-stateの容量不足/離画面/応答紛失/取消4試験も成功。既存Release109でtestOperatorStickerPreparationに照合待ち→一覧→同登録再開を追加、設置/編集/取消まで成功（/tmp/yumegaoka-sticker113.xcresult）。物理NFCはfake、通信失敗はhook模擬、画面再開は実DBという範囲を区別。運営資格復元済み。T026 DONE、残17→16。製品変更なし、本体ビルド・実機確認なし。
