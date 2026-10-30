@@ -93,6 +93,17 @@ export default function Invitations() {
         onPress={() => void act("invite_accept", { code })}
       />
       <Text>{status}</Text>
+      {receiving && (
+        <Action
+          title="ログアウト"
+          disabled={busy}
+          onPress={() =>
+            void native
+              .logout()
+              .catch(() => setStatus("ログアウトできませんでした。"))
+          }
+        />
+      )}
       {items.map((i) => (
         <View key={i.id} style={ui.card}>
           <Text>
