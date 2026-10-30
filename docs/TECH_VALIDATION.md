@@ -646,3 +646,6 @@ R03/R16/R18。test-invite-pagination-uiで専用101件の使用済招待を実DB
 
 ## cp107：イベントピンの仮文字を置換（描画未確認）
 T007/T015・R13/R19。EventCloudPinを追加しStreetMapMarkersの☁︎を置換。添付Figmaを元にSVGで雲/ピンク赤グラデーション/白縁/斜め非常口/軸と接地点を再構成。元ロゴの書き出しデータではない。Expo58公式手順でreact-native-svg互換版を導入しlockfile固定、pod install成功。型/Lint成功。native追加のためReleaseビルドを開始、/tmp/yumegaoka-release107.log。まだ描画成功/DONEと扱わない。残23、推測20–47.5時間据置、新規必須0（T007-01/T015-01内）。
+
+## cp108：Map現在地経路と状態表示照合
+T007-02/R10/R19。tabs/index.recenterはnative.currentLocationの結果をcamera.flyToだけへ渡す。NativeModuleは独立ForegroundLocation.readを呼び、許可→requestLocation→新鮮な座標をPromiseへ返し終了。APIClient/観測upsert/保存呼出しなし。進行中の既存観測とは別経路で、ボタン自体が公開を開始しない。未取得は確認中、snapshot count0は0人、取得失敗はerrorCard＋保持snapshotに最終取得時表示。cp81の0人/ cp106の非0描画も再利用。実機ネットワークキャプチャをしたという意味ではなく、全呼出し経路のコード照合。新たなビルド不要。Release107は既存session72066で継続中。残23→22、DONE15維持。
