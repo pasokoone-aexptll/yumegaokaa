@@ -42,10 +42,17 @@ try{
  assert.equal((await rpc(owner,'street_icon_get',{street_id})).contributed,true);
  const forbidden=await request('/rest/v1/rpc/icon_cleanup','POST',{operation:'claim'},owner.token);
  assert.ok(!forbidden.ok,'ordinary members cannot claim cleanup');
+ const expired=await rpc(other,'street_icon_prepare',{street_id});other.path=expired.upload_path;
+ assert.ok((await request('/storage/v1/object/street-icons/'+other.path,'POST',image,other.token,'image/jpeg')).ok,'unfinished upload bytes');
+ await db.query("update app_private.street_icons set created_at=now()-interval '25 hours' where id=$1",[expired.id]);
+ assert.ok(!(await request('/storage/v1/object/authenticated/street-icons/'+other.path,'GET',undefined,other.token)).ok,'expired unfinished image inaccessible');
  execFileSync('node',['scripts/maintenance-worker.mjs','--once'],{stdio:'pipe'});
+ assert.equal((await db.query("select count(*)::int n from storage.objects where bucket_id='street-icons' and name=$1",[other.path])).rows[0].n,0);
+ assert.equal((await db.query('select count(*)::int n from app_private.street_icons where id=$1',[expired.id])).rows[0].n,0);
+
  assert.equal((await db.query("select count(*)::int n from storage.objects where bucket_id='street-icons' and name=$1",[path])).rows[0].n,0);
  assert.equal((await db.query('select count(*)::int n from app_private.street_icons where id=$1',[pending.id])).rows[0].n,0);
- console.log('街pool実Storage統合成功: 画像保存/会員読取/上書き拒否/取り下げ拒否/worker物理削除/登録完了維持。');
+ console.log('街pool実Storage統合成功: 画像保存/会員読取/上書き拒否/取り下げ拒否/worker物理削除/24時間未公開画像削除/登録完了維持。');
 
 }finally{
  for(const user of fixtures){

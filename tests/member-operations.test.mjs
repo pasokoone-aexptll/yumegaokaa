@@ -14,11 +14,14 @@ test('利用停止で主催イベント通知・滞在終了、解除で復活�
  const call=async(i,op,p={})=>{await c.query("select set_config('request.jwt.claims',$1,true)",[JSON.stringify({sub:users[i],session_id:sessions[i],role:'authenticated',aal:i===0?'aal2':'aal1'})]);await c.query('set local role authenticated');const r=(await c.query('select public.street_api($1,$2) r',[op,p])).rows[0].r;await c.query('reset role');return r;};
  assert.ok((await call(0,'operator_members')).items.some(x=>x.account_id===users[1]));
  await call(1,'profile_save',{display_name:'主催者'});
+ const invite=async()=>{const receipt=await call(1,'command_prepare',{kind:'invite_create'});return call(1,'command_execute',{id:receipt.id,body:{}});};
  const ticket=await call(1,'command_prepare',{kind:'chat_send'});
  await call(0,'operator_chat_restrict',{account_id:users[1],until_at:new Date(Date.now()+3600000).toISOString(),reason:'投稿制限'});
+ assert.ok((await call(0,'operator_members')).items.find(x=>x.account_id===users[1]).chat_restricted_until);
  assert.equal((await c.query('select ended_at from app_private.visits where id=$1',[visit])).rows[0].ended_at,null);
  await c.query('savepoint restricted');await assert.rejects(()=>call(1,'command_execute',{id:ticket.id,body:{street_id:street,body:'投稿'}}),/membership_required/);await c.query('rollback to savepoint restricted');
  await call(0,'operator_chat_restore',{account_id:users[1],reason:'投稿制限解除'});
+ assert.equal((await call(0,'operator_members')).items.find(x=>x.account_id===users[1]).chat_restricted_until,null);
  assert.ok((await call(1,'command_execute',{id:ticket.id,body:{street_id:street,body:'投稿'}})).id);
  await call(0,'operator_member_state',{account_id:users[1],active:false,reason:'試験停止'});
  assert.ok((await c.query('select canceled_at from app_private.events where id=$1',[event])).rows[0].canceled_at);
@@ -27,9 +30,9 @@ test('利用停止で主催イベント通知・滞在終了、解除で復活�
  await call(0,'operator_member_state',{account_id:users[1],active:true,reason:'試験解除'});
  assert.ok((await c.query('select canceled_at from app_private.events where id=$1',[event])).rows[0].canceled_at);
  await call(0,'operator_invite_policy',{account_id:users[1],weekly_limit:0,paused:false,reason:'枠変更'});
- await c.query('savepoint denied');await assert.rejects(()=>call(1,'invite_create'),/rate_limited/);await c.query('rollback to savepoint denied');
- await call(0,'operator_invite_policy',{account_id:users[1],weekly_limit:6,paused:false,reason:'枠追加'});assert.ok((await call(1,'invite_create')).code);
+ await c.query('savepoint denied');await assert.rejects(()=>invite(),/rate_limited/);await c.query('rollback to savepoint denied');
+ await call(0,'operator_invite_policy',{account_id:users[1],weekly_limit:6,paused:false,reason:'枠追加'});assert.ok((await invite()).code);
  await call(0,'operator_invite_policy',{account_id:users[1],weekly_limit:6,paused:true,reason:'発行停止'});
- await c.query('savepoint paused');await assert.rejects(()=>call(1,'invite_create'),/membership_required/);await c.query('rollback to savepoint paused');
+ await c.query('savepoint paused');await assert.rejects(()=>invite(),/membership_required/);await c.query('rollback to savepoint paused');
  }finally{await c.query('rollback');await c.end();}
 });

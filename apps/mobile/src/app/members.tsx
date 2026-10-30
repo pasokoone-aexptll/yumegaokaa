@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import { useFocusEffect } from "expo-router";
 import { Alert, Text, TextInput, View } from "react-native";
 import { Action, Empty, Page, ui } from "../components/Page";
@@ -7,6 +7,8 @@ type Member = {
   account_id: string;
   display_name: string;
   active: boolean;
+  withdrawn_at: string | null;
+  chat_restricted_until: string | null;
   weekly_limit: number;
   invite_paused: boolean;
 };
@@ -22,32 +24,43 @@ function MemberRow({
     [reason, setReason] = useState(""),
     [error, setError] = useState(""),
     [busy, setBusy] = useState(false);
+  const writing = useRef(false);
   async function act(op: string, p: Record<string, unknown>) {
+    if (writing.current) return;
+    writing.current = true;
     setBusy(true);
     setError("");
     try {
       await native.rpc(op, { account_id: member.account_id, reason, ...p });
       await onSaved();
     } catch {
-      setError("操作できませんでした。理由・値・追加認証を確認してください。");
+      await onSaved();
+      setError("操作結果を確認できません。最新の状態と入力内容を確認してください。");
     } finally {
+      writing.current = false;
       setBusy(false);
     }
   }
   return (
     <View style={ui.card}>
       <Text>
-        {member.display_name} · {member.active ? "利用中" : "利用停止中"}
+        {member.display_name} · {member.withdrawn_at ? "退会済み" : member.active ? "利用中" : "利用停止中"}
       </Text>
       <TextInput
+        editable={!busy && !member.withdrawn_at}
         style={ui.input}
         placeholder="操作理由（必須）"
         value={reason}
         onChangeText={setReason}
         maxLength={500}
       />
-      <Text>投稿制限</Text>
+      <Text>
+        {member.chat_restricted_until
+          ? `投稿制限中 · ${new Date(member.chat_restricted_until).toLocaleString("ja-JP")}まで`
+          : "投稿制限なし"}
+      </Text>
       <TextInput
+        editable={!busy && !member.withdrawn_at}
         style={ui.input}
         placeholder="終了日時（例: 2026-11-01T18:00）"
         value={until}
@@ -55,7 +68,7 @@ function MemberRow({
       />
       <Action
         title="投稿を制限"
-        disabled={busy || !reason.trim()}
+        disabled={busy || !!member.withdrawn_at || !reason.trim()}
         onPress={() => {
           const date = new Date(until);
           if (!Number.isFinite(date.getTime())) {
@@ -67,11 +80,12 @@ function MemberRow({
       />
       <Action
         title="投稿制限を解除"
-        disabled={busy || !reason.trim()}
+        disabled={busy || !!member.withdrawn_at || !reason.trim()}
         onPress={() => void act("operator_chat_restore", {})}
       />
       <Text>7日間の招待枠</Text>
       <TextInput
+        editable={!busy && !member.withdrawn_at}
         style={ui.input}
         value={limit}
         onChangeText={setLimit}
@@ -79,7 +93,7 @@ function MemberRow({
       />
       <Action
         title="招待枠を保存"
-        disabled={busy || !reason.trim()}
+        disabled={busy || !!member.withdrawn_at || !reason.trim()}
         onPress={() =>
           void act("operator_invite_policy", {
             weekly_limit: Number(limit),
@@ -89,7 +103,7 @@ function MemberRow({
       />
       <Action
         title={member.invite_paused ? "招待発行を再開" : "招待発行を停止"}
-        disabled={busy || !reason.trim()}
+        disabled={busy || !!member.withdrawn_at || !reason.trim()}
         onPress={() =>
           void act("operator_invite_policy", {
             weekly_limit: member.weekly_limit,
@@ -99,7 +113,7 @@ function MemberRow({
       />
       <Action
         title={member.active ? "利用停止" : "利用停止を解除"}
-        disabled={busy || !reason.trim()}
+        disabled={busy || !!member.withdrawn_at || !reason.trim()}
         onPress={() =>
           Alert.alert(
             member.active ? "利用を停止しますか？" : "利用停止を解除しますか？",
@@ -169,7 +183,11 @@ export default function Members() {
             ":" +
             m.invite_paused +
             ":" +
-            m.active
+            m.active +
+            ":" +
+            m.chat_restricted_until +
+            ":" +
+            m.withdrawn_at
           }
           member={m}
           onSaved={() => load()}

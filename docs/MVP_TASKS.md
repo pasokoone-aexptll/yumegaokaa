@@ -704,3 +704,10 @@ T003/T004/T007/T030：チャット画像との別設定、本人と地図で同�
 - moderation-state.test.mjsの3ケース（離脱後の証拠復活防止、重複操作と古い一覧、応答紛失後の再取得）成功。型チェックの初回で抽出時の残コードを検出・修正後、typecheck/Lint成功。既存DB通報フローの呼び出し契約を照合し、変更していないDB試験は再実行しない。
 - 実機での通報→運営対応は未確認。JS変更を含むため、次のまとめたRelease生成で取り込む。現存Release成果物は70ac9d6基点で、この修正を含まない。今回はビルド・転送・pushなし。
 - 全体5/33（15.2%）、実装到達7/33（21.2%）。DONE5/IMPLEMENTED2/IN_PROGRESS23/TODO0/BLOCKED3、増分0。次は運営・利用者間の操作統合とRelease実機確認。外部NFC/Push/クラウドの保留を維持。
+
+## 実装チェックポイント41：運営の現在状態と未公開画像の期限
+- T024/T025/R15/R18：030でMFA運営の参加者一覧に有効な投稿制限の終了日時と退会状態を追加。members画面へ接続し、制限の有無を表示、退会済みへの操作を無効化。連打を同期ガードし、応答不明時も一覧を再取得。利用者側は既存account_accessの前面/10秒更新を再利用。一般利用者への運営情報公開は増やさない。
+- T004/T030/R17：ユーザーが未公開画像の準備開始24時間期限を承認。031で期限切れ準備の再利用・読取・書込・公開を拒否。清掃claimは期限切れ未公開画像をロックして取り下げ、既存Storage削除→finishへ接続。公開済み画像と登録完了は維持。ローカル030/031適用済み。
+- icon-expiry.test.mjs、street-icon-pool.test.mjs、member-operations.test.mjs成功。運営試験の旧invite_create直呼びは現在の承認済みcommand_prepare/executeへ更新。制限状態の反映、投稿拒否/解除、利用停止で主催イベント中止/滞在終了、解除で復活なしを確認。
+- street-icon-smoke.mjsで実JPEGアップロード→25時間前の未公開準備fixture→会員読取拒否→maintenance-worker --once→Storageオブジェクト/DB行削除を確認。試験画像/アカウントは清掃。時刻を変更したfixtureによる確認であり24時間の実待機試験ではない。typecheck/Lint成功。
+- 状態件数・完了数は維持：DONE5/IMPLEMENTED2/IN_PROGRESS23/TODO0/BLOCKED3、5/33=15.2%、実装到達7/33=21.2%。未完は実機UI統合と運用時のworker稼働確認。既存Releaseに今回JSは未収録、次のまとめたビルドで反映。ビルド/転送/pushなし。次：全画面の操作統合、実機Release確認。
