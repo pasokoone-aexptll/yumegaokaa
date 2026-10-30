@@ -15,7 +15,7 @@ try {
   user=await r.json();
  }
  await db.query("insert into app_private.members(account_id) values($1) on conflict do nothing",[user.id]);
- if(process.argv.includes("--registered-fixture")) {
+ if(process.argv.includes("--registered-fixture") || process.argv.includes("--host-event")) {
   // Prepare an already-registered account for navigation tests. This does not
   // stand in for testing the native picker or first-time onboarding.
   const headers={apikey:env.PUBLISHABLE_KEY,Authorization:"Bearer "+env.SERVICE_ROLE_KEY,"Content-Type":"application/json"};
@@ -42,6 +42,17 @@ try {
     const upload=await fetch(env.API_URL+"/storage/v1/object/street-icons/"+pending.upload_path,{method:"POST",headers:{...headers,"Content-Type":"image/jpeg","x-upsert":"true"},body:await readFile(join(dir,"icon.jpg"))});
     if(!upload.ok)throw Error("Fixture image upload failed");
     await rpc("street_icon_publish",{street_id,id:pending.id});
+   }
+   if(process.argv.includes("--host-event")) {
+    const title="UI host workflow";
+    const list=await rpc("event_list",{street_id,mine_only:true});
+    for(const event of list.items.filter(item=>item.title===title && item.mine)) {
+     const current=await rpc("event_get",{id:event.id});
+     await rpc("event_cancel",{id:event.id,revision:current.revision});
+    }
+    const receipt=await rpc("command_prepare",{kind:"event_create"});
+    const created=await rpc("command_execute",{id:receipt.id,body:{street_id,title,description:"運営UI試験",longitude:139.7109,latitude:35.7295,starts_at:new Date(Date.now()+3600000).toISOString(),ends_at:new Date(Date.now()+7200000).toISOString(),capacity:20}});
+    await rpc("event_register",{id:created.id,joined:true,revision:0});
    }
   } finally {
    await rm(dir,{recursive:true,force:true});

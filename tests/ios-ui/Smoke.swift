@@ -262,6 +262,45 @@ final class Smoke: XCTestCase {
   attach(app,"onboarding-complete")
   tap(app,"アカウント・接続状態");tap(app,"ログアウト")
  }
+ @MainActor func testHostEditRosterNotifications() throws {
+  continueAfterFailure=false
+  let app=XCUIApplication(bundleIdentifier:"jp.yumegaoka.development")
+  app.launch()
+  let home=app.descendants(matching:.any).matching(identifier:"Home").firstMatch
+  XCTAssertTrue(home.waitForExistence(timeout:30));home.tap()
+  // Run scripts/prepare-ui-test.mjs --host-event before this scenario.
+  let title="UI host workflow"
+  let card=app.descendants(matching:.any).matching(NSPredicate(format:"label CONTAINS %@",title)).firstMatch
+  XCTAssertTrue(card.waitForExistence(timeout:15));card.tap()
+  app.swipeUp();tap(app,"参加者一覧")
+  XCTAssertTrue(app.staticTexts["実機確認"].waitForExistence(timeout:15))
+  tap(app,"イベントを編集")
+  XCTAssertTrue(app.textFields["オフ会名"].waitForExistence(timeout:15))
+  let end=app.textFields.element(boundBy:2)
+  let replacement=ISO8601DateFormatter().string(from:Date().addingTimeInterval(10800))
+  end.tap();end.press(forDuration:1.2)
+  let selectAll=app.descendants(matching:.any).matching(NSPredicate(format:"label IN %@",["Select All","すべてを選択","すべて選択","全選択"])).firstMatch
+  XCTAssertTrue(selectAll.waitForExistence(timeout:5));selectAll.tap();end.typeText(replacement)
+  XCTAssertEqual(end.value as? String,replacement)
+  end.typeText("\n");app.swipeUp();tap(app,"保存")
+  XCTAssertTrue(app.buttons["再取得"].waitForExistence(timeout:15))
+  tap(app,"‹ 戻る")
+  app.descendants(matching:.any).matching(identifier:"Settings").firstMatch.tap();tap(app,"お知らせ")
+  XCTAssertTrue(app.staticTexts["参加予定のイベントに変更があります"].waitForExistence(timeout:15))
+  tap(app,"詳細を確認")
+  XCTAssertTrue(app.staticTexts[title].waitForExistence(timeout:15))
+  app.swipeUp();tap(app,"イベントを中止")
+  XCTAssertTrue(app.alerts.buttons["中止する"].waitForExistence(timeout:5));app.alerts.buttons["中止する"].tap()
+  XCTAssertTrue(app.staticTexts["イベントを中止しました"].waitForExistence(timeout:15))
+  tap(app,"‹ 戻る")
+  XCTAssertTrue(app.staticTexts["参加予定のイベントが中止されました"].waitForExistence(timeout:15))
+  tap(app,"確認しました")
+  XCTAssertTrue(app.buttons["確認済み"].waitForExistence(timeout:15))
+  app.terminate();app.launch()
+  app.descendants(matching:.any).matching(identifier:"Settings").firstMatch.tap();tap(app,"お知らせ")
+  XCTAssertTrue(app.buttons["確認済み"].waitForExistence(timeout:15))
+  attach(app,"notification-read-after-restart")
+ }
  @MainActor func testChatSendReloadDelete() throws {
   continueAfterFailure=false
   let app=XCUIApplication(bundleIdentifier:"jp.yumegaoka.development")
