@@ -4,7 +4,11 @@ import { Alert, Text, View } from "react-native";
 import { Action, Page, ui } from "../components/Page";
 import { Avatar } from "../components/Avatar";
 import { AccountAccessContext } from "../hooks/useAccountAccess";
-import { chooseStreetIcon, StreetIconState } from "../lib/avatar";
+import {
+  chooseStreetIcon,
+  imageErrorMessage,
+  StreetIconState,
+} from "../lib/avatar";
 import { native, streetID } from "../lib/native";
 
 export default function StreetIcons() {
@@ -50,8 +54,8 @@ export default function StreetIcons() {
         setState(result);
         access.retry();
       }
-    } catch {
-      setError("保存できませんでした。2MB以内の画像と通信を確認してください。");
+    } catch (error) {
+      setError(imageErrorMessage(error));
     } finally {
       setBusy(false);
     }

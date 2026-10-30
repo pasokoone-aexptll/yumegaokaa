@@ -1,7 +1,7 @@
 import { useCallback, useState } from "react";
 import { useFocusEffect } from "expo-router";
 import { native } from "../lib/native";
-import { Profile, chooseAvatar } from "../lib/avatar";
+import { Profile, chooseAvatar, imageErrorMessage } from "../lib/avatar";
 export function useProfile() {
   const [profile, setProfile] = useState<Profile>(),
     [name, setName] = useState(""),
@@ -37,11 +37,7 @@ export function useProfile() {
         return true;
       }
     } catch (e) {
-      setStatus(
-        String(e).includes("image_too_large")
-          ? "2MB以内の画像を選択してください"
-          : "保存できませんでした。再試行してください",
-      );
+      setStatus(imageErrorMessage(e));
     } finally {
       setBusy(false);
     }

@@ -8,37 +8,71 @@ export type Profile = {
   avatar_updated_at?: string;
   avatar_upload_path: string;
 };
+export function imageErrorMessage(error: unknown): string {
+  const message = error instanceof Error ? error.message : "";
+  if (message === "image_too_large")
+    return "画像を小さくできませんでした。別の写真を選んでください。";
+  if (message === "image_conversion_failed")
+    return "画像を読み込めませんでした。別の写真を選んでください。";
+  if (message === "image_upload_failed")
+    return "画像を送信できませんでした。接続を確認して再試行してください。";
+  return "保存を確認できませんでした。再読み込みして確認してください。";
+}
+
+function discard(file: File | undefined) {
+  // A cache cleanup failure must not turn a successful publication into an error.
+  try {
+    if (file?.exists) file.delete();
+  } catch {
+    // The OS can reclaim the image cache later.
+  }
+}
+
 async function chooseImage<T>(
   upload: (file: File) => Promise<T>,
 ): Promise<T | null> {
   const selection = await ImagePicker.launchImageLibraryAsync({
     mediaTypes: ["images"],
-    allowsEditing: false,
+    allowsEditing: true,
+    aspect: [1, 1],
     exif: false,
     quality: 1,
   });
   if (selection.canceled) return null;
-  const asset = selection.assets[0],
-    source = new File(asset.uri);
-  if (source.size > 2097152) throw Error("image_too_large");
-  const context = ImageManipulator.manipulate(asset.uri, {
-    maxWidth: 512,
-    maxHeight: 512,
-  });
   let output: File | undefined;
   try {
-    const image = await context.renderAsync();
-    const saved = await image.saveAsync({
-      format: SaveFormat.JPEG,
-      compress: 0.85,
+    const context = ImageManipulator.manipulate(selection.assets[0].uri, {
+      maxWidth: 512,
+      maxHeight: 512,
     });
-    image.release();
-    output = new File(saved.uri);
-    if (output.size > 2097152) throw Error("image_too_large");
+    try {
+      const image = await context.renderAsync();
+      try {
+        for (const compress of [0.85, 0.65, 0.4]) {
+          const saved = await image.saveAsync({
+            format: SaveFormat.JPEG,
+            compress,
+          });
+          output = new File(saved.uri);
+          if (output.size > 0 && output.size <= 2097152) break;
+          discard(output);
+          output = undefined;
+        }
+      } finally {
+        image.release();
+      }
+    } finally {
+      context.release();
+    }
+  } catch {
+    discard(output);
+    throw Error("image_conversion_failed");
+  }
+  if (!output) throw Error("image_too_large");
+  try {
     return await upload(output);
   } finally {
-    context.release();
-    if (output?.exists) output.delete();
+    discard(output);
   }
 }
 
@@ -71,8 +105,10 @@ async function uploadImage(bucket: string, path: string, file: File) {
       },
       body: await file.arrayBuffer(),
     },
-  );
-  if (!response.ok) throw Error("avatar_upload_failed");
+  ).catch(() => {
+    throw Error("image_upload_failed");
+  });
+  if (!response.ok) throw Error("image_upload_failed");
 }
 export async function chooseStreetIcon(): Promise<StreetIconState | null> {
   return chooseImage(async (file) => {
