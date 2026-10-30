@@ -63,6 +63,7 @@ export function useStreetMap() {
       "explain" | "scanning" | "checking" | "success" | null
     >(null),
     [settings, setSettings] = useState(false);
+  const entryInFlight = useRef(false);
   const canceled = useRef(false),
     fetching = useRef(false),
     refreshQueued = useRef(false),
@@ -267,6 +268,18 @@ export function useStreetMap() {
     }
   }
   async function scan() {
+    if (entryInFlight.current) {
+      setError(friendly("operation_in_progress"));
+      return;
+    }
+    entryInFlight.current = true;
+    try {
+      await performScan();
+    } finally {
+      entryInFlight.current = false;
+    }
+  }
+  async function performScan() {
     if (nfcDisabled && !localEntry) {
       setError(
         "NFC代替はローカルAPIに接続した開発・検証用ビルドで使用してください。",

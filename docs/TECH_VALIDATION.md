@@ -575,3 +575,8 @@ T012をIMPLEMENTED/INTEGRATEDへ更新。DONE8、IMPLEMENTED15、IN_PROGRESS7、
 - T021/R04/R15/R17：既定条件「新規滞在1ログ・本人名/画像・30日・reuse/更新非追加・ブロック・非公開visitへの追跡APIなし」をcp66実DB試験とcp81実Map画像、現行useStreetChat→StreetChatへ対応付け直した。全条件の証拠が揃っておりDONEへ変更。T020全体が未完という理由で入街ログも未完としていた扱いを修正。条件自体は変更していない。未指定の到達時間測定を追加しない。
 - cp93競合試験に両接続のpg_stat_activityロック待ち到達を追加し、同時要求であることを確認して再実行成功。製品コードは不変。今回既存arrival試験の反復・ビルド・iPhone・pushなし。cp93の型/Lint成功を再利用。
 - DONE11/33（33.3%）、IMPLEMENTED12、IN_PROGRESS7、BLOCKED3。コード23/33、統合22/33、実機11/33を維持。今回の収束指示後の新規DONEはT013/T014/T021の3件。非外部30件の残り19件。未完のチャット切断復帰と実機観測を別タスクへ正しく残す。
+
+## チェックポイント95：取消中の再入街競合を修正（2026-10-31）
+- T012/R04/R06/R19：useStreetMapに入街処理中のrefガードを追加。取消後もnative.checkin応答待ちが残る間の再scanでcanceledがfalseへ戻り、旧結果を成功表示し得る経路を閉じた。処理終了後にガードを解放する。DB/Swiftの退出優先は変更しない。
+- entry-state.test.mjsを追加。初回はmockのdefault export指定を修正、その後に製品でcheckin呼出2件を再現。修正後は取消→再scanでも1件、遅延成功を無視、pending_exitを維持、権限拒否/別端末/通信不明は成功表示なし、確定応答後だけ成功/activeとなる3試験が成功。NativeとNFCはmockであり、実機・実NFC・画面のピクセル描画の証拠ではない。
+- 型/Lint/diff成功。既存cp77の実UI成功/退出を再利用。今回の取消/拒否の実画面確認はまだ不足するためT012をDONEにしない。次のまとめたUI確認に含める。iPhone/ビルド/pushなし。実装23/33、統合22/33、実機11/33、DONE11/33、BLOCKED3を維持。
