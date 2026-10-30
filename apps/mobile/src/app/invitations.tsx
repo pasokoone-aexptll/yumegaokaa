@@ -1,3 +1,4 @@
+import { pendingCommand, submitCommand } from "../lib/commands";
 import { AccountAccessContext } from "../hooks/useAccountAccess";
 import { useFocusEffect } from "expo-router";
 import { useCallback, useContext, useState } from "react";
@@ -13,6 +14,7 @@ type Invite = {
 export default function Invitations() {
   const access = useContext(AccountAccessContext);
   const receiving = access.status === "unregistered";
+  const [pending, setPending] = useState(false);
   const [items, setItems] = useState<Invite[]>([]),
     [code, setCode] = useState(""),
     [issued, setIssued] = useState(""),
@@ -21,6 +23,7 @@ export default function Invitations() {
   const refresh = useCallback(async () => {
     if (receiving) return;
     try {
+      setPending(!!(await pendingCommand("invite_create")));
       setItems(
         (await native.rpc<{ items: Invite[] }>("invite_list", {})).items,
       );
@@ -36,7 +39,10 @@ export default function Invitations() {
   async function act(op: string, p: Record<string, unknown> = {}) {
     setBusy(true);
     try {
-      const r = await native.rpc<{ code?: string }>(op, p);
+      const r =
+        op === "invite_create"
+          ? await submitCommand<{ code?: string }>("invite_create", {})
+          : await native.rpc<{ code?: string }>(op, p);
       if (r.code) setIssued(r.code);
       if (op === "invite_accept") access.retry();
       setStatus(
@@ -44,6 +50,9 @@ export default function Invitations() {
       );
       await refresh();
     } catch (e) {
+      if (op === "invite_create") {
+        setPending(!!(await pendingCommand("invite_create").catch(() => null)));
+      }
       setStatus(
         String(e).includes("rate_limited")
           ? "招待は7日間に5件までです。"
@@ -61,7 +70,7 @@ export default function Invitations() {
             招待は1回限り、7日間有効です。コードを公開の場所に載せないでください。
           </Text>
           <Action
-            title="招待を発行"
+            title={pending ? "前回の招待を確認" : "招待を発行"}
             disabled={busy}
             onPress={() => void act("invite_create")}
           />
