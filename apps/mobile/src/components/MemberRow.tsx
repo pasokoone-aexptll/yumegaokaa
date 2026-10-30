@@ -96,6 +96,7 @@ export function MemberRow({
       <TextInput
         editable={!busy && !member.withdrawn_at}
         style={ui.input}
+        accessibilityLabel="7日間の招待枠"
         value={limit}
         onChangeText={setLimit}
         keyboardType="number-pad"

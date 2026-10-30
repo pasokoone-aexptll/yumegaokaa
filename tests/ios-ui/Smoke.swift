@@ -124,6 +124,43 @@ final class Smoke: XCTestCase {
   XCTAssertTrue(message.waitForExistence(timeout:20))
   attach(app,"peer-visible-after-unblock")
  }
+ @MainActor func testOperatorInvitationPolicy() throws {
+  let app=try operatorApp()
+  tap(app,"‹ 戻る");tap(app,"参加者・招待枠・利用停止")
+  let peer=app.buttons.matching(NSPredicate(format:"label BEGINSWITH %@","UI別の参加者 · 利用中")).firstMatch
+  XCTAssertTrue(peer.waitForExistence(timeout:20));peer.tap()
+  let field=app.textFields["7日間の招待枠"]
+  for _ in 0..<4 { if field.isHittable {break}; app.swipeUp() }
+  XCTAssertTrue(field.waitForExistence(timeout:10))
+  let original=field.value as? String ?? ""
+  XCTAssertNotNil(Int(original))
+  func reason() {
+   let input=app.textFields["操作理由（必須）"]
+   for _ in 0..<4 {if input.isHittable {break};app.swipeDown()}
+   XCTAssertTrue(XCTWaiter.wait(for:[XCTNSPredicateExpectation(predicate:NSPredicate(format:"value == %@ OR value == %@","操作理由（必須）",""),object:input)],timeout:15) == .completed)
+   input.tap();input.typeText("UI invitation policy verification");input.typeText("\n")
+  }
+  func setLimit(_ value:String) {
+   for _ in 0..<4 {if field.isHittable {break};app.swipeUp()}
+   field.tap()
+   let current=field.value as? String ?? ""
+   field.typeText(String(repeating:XCUIKeyboardKey.delete.rawValue,count:current.count)+value)
+   XCTAssertEqual(field.value as? String,value)
+   tap(app,"招待枠を保存")
+  }
+  reason();setLimit(original == "7" ? "8" : "7")
+  XCTAssertTrue(XCTWaiter.wait(for:[XCTNSPredicateExpectation(predicate:NSPredicate(format:"value == %@",original == "7" ? "8" : "7"),object:field)],timeout:15) == .completed)
+  reason();setLimit(original)
+  reason()
+  for _ in 0..<4 {if app.buttons["招待発行を停止"].isHittable {break};app.swipeUp()}
+  tap(app,"招待発行を停止")
+  XCTAssertTrue(app.buttons["招待発行を再開"].waitForExistence(timeout:15))
+  reason()
+  for _ in 0..<4 {if app.buttons["招待発行を再開"].isHittable {break};app.swipeUp()}
+  tap(app,"招待発行を再開")
+  XCTAssertTrue(app.buttons["招待発行を停止"].waitForExistence(timeout:15))
+  attach(app,"operator-invite-policy-restored")
+ }
  @MainActor func testOperatorMemberDateSelection() throws {
   let app=try operatorApp()
   tap(app,"‹ 戻る")
