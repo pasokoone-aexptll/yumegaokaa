@@ -7,9 +7,10 @@ const env=JSON.parse(execFileSync("npx",["supabase","status","-o","json"],{encod
 if(new URL(env.API_URL).hostname!=="127.0.0.1")throw Error("UI fixture is local-only");
 const db=new pg.Client({connectionString:env.DB_URL});await db.connect();
 try {
+ const inviteSupervision=process.argv.includes("--invite-supervision");
  const peerMessage=process.argv.includes("--peer-message");
  const peerEvent=process.argv.includes("--reported-event");
- const email=(peerMessage || peerEvent) ? "iphone-peer@example.test" : process.argv.includes("--simulator") ? "simulator-validation@example.test" : "iphone-validation@example.test";
+ const email=inviteSupervision ? "invite-supervision@example.test" : (peerMessage || peerEvent) ? "iphone-peer@example.test" : process.argv.includes("--simulator") ? "simulator-validation@example.test" : "iphone-validation@example.test";
  let user=(await db.query("select id from auth.users where email=$1",[email])).rows[0];
  if(!user){
   const r=await fetch(env.API_URL+"/auth/v1/admin/users",{method:"POST",headers:{apikey:env.SERVICE_ROLE_KEY,Authorization:"Bearer "+env.SERVICE_ROLE_KEY,"Content-Type":"application/json"},body:JSON.stringify({email,email_confirm:true})});
@@ -73,6 +74,10 @@ try {
  if(process.argv.includes("--onboarding")) {
   // Dedicated local-only code consumed by testInvitationOnboarding.
   await db.query("insert into app_private.invitations(issuer,code_hash,expires_at) values($1,sha256(convert_to('local-ui-onboarding-test','UTF8')),clock_timestamp()+interval '1 hour') on conflict(code_hash) do update set used_by=null,used_at=null,revoked_at=null,expires_at=excluded.expires_at",[user.id]);
+ }
+ if(inviteSupervision) {
+  await db.query("insert into app_private.profiles(account_id,display_name) values($1,'UI招待監督') on conflict(account_id) do update set display_name=excluded.display_name",[user.id]);
+  await db.query("insert into app_private.invitations(issuer,code_hash) values($1,sha256(convert_to('local-ui-supervision-only','UTF8'))) on conflict(code_hash) do update set revoked_at=null,used_at=null,used_by=null,created_at=clock_timestamp(),expires_at=clock_timestamp()+interval '1 hour'",[user.id]);
  }
  if(process.argv.includes("--operator")) {
   await db.query("insert into app_private.operators(account_id) values($1) on conflict(account_id) do update set active=true",[user.id]);

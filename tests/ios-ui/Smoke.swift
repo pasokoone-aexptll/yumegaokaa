@@ -124,6 +124,17 @@ final class Smoke: XCTestCase {
   XCTAssertTrue(message.waitForExistence(timeout:20))
   attach(app,"peer-visible-after-unblock")
  }
+ @MainActor func testOperatorInviteRevocation() throws {
+  let app=try operatorApp()
+  tap(app,"‹ 戻る")
+  let issuer=app.staticTexts["UI招待監督 → 未使用"]
+  for _ in 0..<4 { if issuer.isHittable {break};app.swipeUp() }
+  XCTAssertTrue(issuer.waitForExistence(timeout:15))
+  let revoke=app.buttons.matching(identifier:"招待を無効化").firstMatch
+  XCTAssertTrue(revoke.waitForExistence(timeout:15));revoke.tap()
+  XCTAssertTrue(app.staticTexts.matching(identifier:"無効化済み").firstMatch.waitForExistence(timeout:15))
+  attach(app,"operator-invite-revoked")
+ }
  @MainActor func testOperatorInvitationPolicy() throws {
   let app=try operatorApp()
   tap(app,"‹ 戻る");tap(app,"参加者・招待枠・利用停止")
