@@ -1184,3 +1184,9 @@ cp96再試験：/tmp/yumegaoka-entry96-retry.xcresult成功。入街前取消→
 - realtime-gateway.test.mjs成功：実ループバックWebSocket4本同時の3受理/429、1本close後の再接続、changed受信、資格失効再確認後の全切断、403拒否。最初はsandboxのlisten EPERMで失敗し、ローカル待受の承認後成功。認証はcallbackの試験用代替であり実JWT/DB検査ではない。
 - 未接続：実Auth資格検査、DB通知/停止イベント、アプリの配信経路切替、Supabase直接Realtimeの迂回防止。単一プロセス内の上限であり、独立複数プロセスの配備は未対応。起動/運用まで含めたT029完了とは扱わない。既存アプリは引き続き従来経路で動作する。
 - 製品モバイルコード変更なし、型/Lint/ネイティブビルドの反復なし。DONE12/33、コード23/33、統合22/33、実機11/33、BLOCKED3。iPhone/pushなし。次は実認証とDB配信/直接迂回防止を接続する。
+
+## チェックポイント101：ゲートウェイの実Auth・DB認可（2026-10-31）
+- T029/R03/R16/R18：gateway-authorizeを追加。Supabase Auth /userで署名/期限を検証後にclaimsを読み、sub一致・authenticated role・session UUIDを確認。DBでactive/withdrawn_at・Authセッション存在/not_after・街存在を再確認する。JWTのdecodeだけでは受理しない。Auth通信4秒制限、失敗は受理しない。
+- gateway-auth.test.mjs成功（実ローカルAuth/DB、約1.9秒）。未会員拒否→会員受理→sub改ざん拒否→利用停止拒否→退会拒否→セッション削除拒否。専用Authユーザーはfinallyで削除、DBfixture rollback。ユーザーの既存アカウント・セッションは変更なし。秘密トークン出力なし。
+- ゲートウェイ起動処理への接続、DB変更/停止通知、アプリ切替、直接Supabase経路の閉鎖は残る。今回は認可関数の実バックエンド試験であり、アプリ接続済みや本番安全性を意味しない。モバイル型/Lint/ビルドは対象外なので反復なし。
+- DONE12/33、コード23/33、統合22/33、実機11/33、BLOCKED3。iPhone/pushなし。
