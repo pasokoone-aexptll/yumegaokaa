@@ -62,7 +62,7 @@ try {
       "-derivedDataPath",
       "/tmp/yumegaoka-ui-release",
       "-resultBundlePath",
-      "/tmp/yumegaoka-header97.xcresult",
+      process.env.UI_RESULT_PATH ?? "/tmp/yumegaoka-header97.xcresult",
       "-collect-test-diagnostics",
       "never",
       "-only-testing:Smoke/Smoke/testPresenceHeader",

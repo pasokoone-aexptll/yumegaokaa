@@ -89,3 +89,5 @@ T029：アプリ共通通信はgatewayConnection/useStreetMapへ接続済み。0
 cp104再開地点：T029/T022 DONE、14/33、残24項目。次T025-01の使用済招待受領者/ページング実UI。gateway起動はnpm run realtime:local、現在常駐は未起動。次のバッチReleaseではgateway接続・幅可変ヘッダー・ピン外観をまとめて確認する。今回はDB試験chat-flow/recruitment-flowのみ、製品変更なし。
 
 cp105再開地点：T025 DONE、15/33、残23。次はT007-01/T015-01の幅可変ヘッダー/ピン描画とT031のgateway画面接続をまとめたRelease確認。シミュレータはcp96のまま。gateway常駐未起動。運営fixture清掃済み。
+
+cp106再開地点：新Releaseをシミュレータへ反映済み（gateway/adaptive headerを含む）。testPresenceHeader成功、8枚/チェックイン10人を目視。イベントロゴは☁︎仮表示が残るためT007-01/T015-01未完。画像素材はapps/mobile/assetsに未収録。Figmaの雲＋斜め非常口ロゴ表現を次に具体化する。ローカルgateway session20058起動、再開時はlsofで確認。残23/DONE15。実機未更新。

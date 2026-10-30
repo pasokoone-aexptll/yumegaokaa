@@ -639,3 +639,7 @@ cp104追記：T022/R15/R18。recruitment-flowでブロックの募集一覧/直�
 
 ## cp105：T025運営招待の残UI確認
 R03/R16/R18。test-invite-pagination-uiで専用101件の使用済招待を実DBへ作成し、既存ReleaseのMFA運営画面で発行者→受領者、続きを表示、101件目の専用発行者をXCTest確認。/tmp/yumegaoka-invites105.xcresult成功。最初のfixtureはmembers作成不足でFK拒否、補正後成功。fixture全削除、専用シミュレータの運営資格/MFAを復元。製品変更なし、本体ビルド/実機/無関連テスト省略。cp88/89の無効化/枠/停止操作、032権限/ページングと合わせT025 DONE。
+
+## cp106：まとめたReleaseとヘッダー描画
+新Releaseビルド成功（/tmp/yumegaoka-release106.log）、シミュレータへinstall。ローカルgatewayはnpm run realtime:localで起動、54325。testPresenceHeaderを実DBfixtureで成功、/tmp/yumegaoka-header106.xcresult。画像3B0B0307-F239-47AA-ABBF-ECBD1F522477.pngを目視し、可変幅で8画像が全て収まり、チェックイン10人の別表示を確認。既存の幅/余剰計算試験cp99は再利用。fixture削除済み。
+イベントピンは☁︎文字の仮表示で、FigmaのDreamCloud斜めロゴの再現未達。T007-01/T015-01内の既存不足であり追加必須項目ではない。画面が取得できたことだけではgateway通知経由と定期pollを区別できないため、RN通知一巡T031の完了証拠にはしない。実機未転送。今回項目数23→23、DONE15/33維持。
