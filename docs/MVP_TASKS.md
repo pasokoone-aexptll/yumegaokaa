@@ -1190,3 +1190,9 @@ cp96再試験：/tmp/yumegaoka-entry96-retry.xcresult成功。入街前取消→
 - gateway-auth.test.mjs成功（実ローカルAuth/DB、約1.9秒）。未会員拒否→会員受理→sub改ざん拒否→利用停止拒否→退会拒否→セッション削除拒否。専用Authユーザーはfinallyで削除、DBfixture rollback。ユーザーの既存アカウント・セッションは変更なし。秘密トークン出力なし。
 - ゲートウェイ起動処理への接続、DB変更/停止通知、アプリ切替、直接Supabase経路の閉鎖は残る。今回は認可関数の実バックエンド試験であり、アプリ接続済みや本番安全性を意味しない。モバイル型/Lint/ビルドは対象外なので反復なし。
 - DONE12/33、コード23/33、統合22/33、実機11/33、BLOCKED3。iPhone/pushなし。
+
+## チェックポイント102：ゲートウェイ起動・DB通知の接続（2026-10-31）
+- T029/R16/R18：034 migrationをローカル適用。主要街データ・会員/セッション変更をpg_notifyの空payloadで通知。内容・位置・トークンは通知へ入れない。従来Realtime policyはアプリ切替前なので維持し、まだ迂回防止完了とはしない。
+- gateway-runtimeで実Auth認可とWebSocketを接続。専用LISTEN接続のDB advisory lockにより独立2プロセスの起動を拒否。LISTEN/DB接続エラー時は全ソケットを閉じる。変更通知ごとの認可再確認、5秒補完再確認を実装。ローカル専用起動はnpm run realtime:local、54325番。クラウド設定なし。
+- gateway-auth試験を拡張して成功：実Auth/DB会員→実WebSocket ready→街DB更新→changed受信→利用停止→3秒以内のclose、同一DBへの2起動拒否。専用データとAuthユーザーはfinallyで削除。以前の認可単体試験だけでなくruntimeまで通した。常駐プロセスはまだ起動していない。
+- 残り：アプリWebSocket切替・直接Supabase迂回閉鎖・再接続/無応答ソケット回収・DB切断の障害確認。T029未完。既存モバイルは直接Realtimeを使用中。DONE12/33、コード23/33、統合22/33、実機11/33、BLOCKED3。モバイル変更なし、ビルド/実機/pushなし。

@@ -3,6 +3,9 @@ import assert from "node:assert/strict";
 import { execFileSync } from "node:child_process";
 import { randomUUID } from "node:crypto";
 import pg from "pg";
+import WebSocket from "ws";
+import { once } from "node:events";
+import { startGateway } from "../scripts/lib/gateway-runtime.mjs";
 import { gatewayAuthorizer } from "../scripts/lib/gateway-authorize.mjs";
 
 test("gateway uses real Auth signature and active DB membership/session", async () => {
@@ -16,7 +19,7 @@ test("gateway uses real Auth signature and active DB membership/session", async 
   const db = new pg.Client({ connectionString: env.DB_URL });
   await db.connect();
   const street = randomUUID();
-  let uid;
+  let uid, runtime, socket;
   const headers = {
     apikey: env.PUBLISHABLE_KEY,
     Authorization: `Bearer ${env.SERVICE_ROLE_KEY}`,
@@ -44,7 +47,7 @@ test("gateway uses real Auth signature and active DB membership/session", async 
       token_hash: link.hashed_token,
     });
     const token = session.access_token;
-    await db.query("begin");
+
     await db.query(
       "insert into app_private.streets(id,name) values($1,'gateway auth fixture')",
       [street],
@@ -61,6 +64,30 @@ test("gateway uses real Auth signature and active DB membership/session", async 
     ]);
     const identity = await authorize(token);
     assert.equal(identity.accountId, uid);
+    const config = {
+      dbURL: env.DB_URL,
+      apiURL: env.API_URL,
+      publishableKey: env.PUBLISHABLE_KEY,
+      streetId: street,
+      port: 0,
+    };
+    runtime = await startGateway(config);
+    await assert.rejects(() => startGateway(config), /already owns/);
+    socket = new WebSocket(`ws://127.0.0.1:${runtime.address.port}/street`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    assert.equal(JSON.parse((await once(socket, "message"))[0]).type, "ready");
+    const changed = once(socket, "message", {
+      signal: AbortSignal.timeout(3000),
+    });
+    await db.query("update app_private.streets set name=name where id=$1", [
+      street,
+    ]);
+    assert.equal(JSON.parse((await changed)[0]).type, "changed");
+    const disconnected = once(socket, "close", {
+      signal: AbortSignal.timeout(3000),
+    });
+
     const parts = token.split(".");
     const payload = JSON.parse(Buffer.from(parts[1], "base64url"));
     payload.sub = randomUUID();
@@ -71,6 +98,7 @@ test("gateway uses real Auth signature and active DB membership/session", async 
       [uid],
     );
     assert.equal(await authorize(token), null);
+    await disconnected;
     await db.query(
       "update app_private.members set active=true,withdrawn_at=clock_timestamp() where account_id=$1",
       [uid],
@@ -85,7 +113,13 @@ test("gateway uses real Auth signature and active DB membership/session", async 
     ]);
     assert.equal(await authorize(token), null);
   } finally {
-    await db.query("rollback");
+    socket?.terminate();
+    await runtime?.close();
+    if (uid)
+      await db.query("delete from app_private.members where account_id=$1", [
+        uid,
+      ]);
+    await db.query("delete from app_private.streets where id=$1", [street]);
     await db.end();
     if (uid) {
       const r = await fetch(env.API_URL + "/auth/v1/admin/users/" + uid, {

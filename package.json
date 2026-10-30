@@ -16,7 +16,8 @@
     "test:otp": "node scripts/otp-smoke.mjs",
     "test:lifecycle-http": "node scripts/lifecycle-http.mjs",
     "db:maintenance": "node scripts/maintenance-worker.mjs",
-    "db:maintenance:once": "node scripts/maintenance-worker.mjs --once"
+    "db:maintenance:once": "node scripts/maintenance-worker.mjs --once",
+    "realtime:local": "node scripts/realtime-gateway.mjs"
   },
   "devDependencies": {
     "pg": "8.16.3",
