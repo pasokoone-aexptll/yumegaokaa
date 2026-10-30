@@ -290,3 +290,12 @@ scripts/avatar-smoke.mjs成功：所有者アップロード、プロフィー�
 - testRegisteredNavigation成功（80.432秒）：実OTPログイン→Mapトグル表示→再起動→Home→オフ会作成シート→Map地点選択→タイトル維持→設定のプロフィール/街アイコン/アカウント管理/招待/通知/ブロック/運営→Map復帰。結果 /tmp/yumegaoka-release-navigation-signed.xcresult、ログ同名.log。Map画像 /tmp/yumegaoka-release-map.pngで地図・ヘッダー・トグル・現在地/追加・チャット・タブを確認。
 - 未確認：イベント等の作成確定と他利用者同期、全運営操作、写真選択、実機背景動作。画面表示だけで機能DONEにしない。次は同じシミュレータReleaseでイベント作成/参加・チャット送信を通す。本体の再ビルドは関連変更がない限り不要。
 - 分母33、DONE5/IMPLEMENTED2/IN_PROGRESS23/TODO0/BLOCKED3維持。完了5/33=15.2%、実装到達7/33=21.2%、完了増分0。今回本体コード変更なし、UIテストと準備スクリプト更新。pushなし。
+
+## 実装チェックポイント44：イベント・チャットのRelease実操作
+- T015/T016/T017/T020/T022/T031/R13/R14/R15/R19：前回と同じJS内蔵Releaseを再利用、本体再ビルドなし。UI runnerへ実操作2ケースを追加。
+- 初回はチャット行/イベントカードを個別StaticTextで検索して失敗。DB保存と画面を照合するとチャット本文・イベント作成/参加は成立していた。Pressableのまとまったアクセシビリティ要素へ検索を修正。製品コード変更なし。
+- 初回テスト終了後、XcodeがcollectSimulatorDiagnosticsのsemaphore待ちで終了しなかったため、終了済みケースのログを保持してSIGINT→SIGTERMで当該プロセスだけ終了（exit143）。再実行は-collect-test-diagnostics neverでsysdiagnoseのみ省略。結果/画面添付は残す。
+- testChatSendReloadDelete成功20.051秒：未入街で投稿→再起動後表示→長押し本人削除→削除跡。DBで最新投稿のbody=null/deleted_atありを確認。
+- testEventCreateJoinCancel成功38.129秒：日時/題名/Map地点から作成→参加→Homeで表示→詳細から取消→主催者中止。DBで試験イベントUI event 1793336001のcanceled=true/有効参加0件を確認。初回失敗試験のUI event 1793335696は参加1件の試験データとして残り、次の操作確認で整理する。一般利用者データは変更していない。
+- 結果 /tmp/yumegaoka-release-actions-query.xcresult、ログ同名.log。入力境界、一般参加者の複数端末UI、編集/名簿/通知、実機はこの試験の範囲外。成功済みの関連DB競合/名簿権限試験はコード確認で再利用、無関係な再実行はしない。
+- T016をIN_PROGRESS→IMPLEMENTED。ローカルUI接続が揃った証拠を追加したが依存T015全条件・実機統合をDONEと誤認しない。DONE5/IMPLEMENTED3/IN_PROGRESS22/TODO0/BLOCKED3。完了5/33=15.2%、実装到達8/33=24.2%、完了増分0。次：同じReleaseで主催編集/名簿/通知とチャット拡大・他利用者反映。pushなし。

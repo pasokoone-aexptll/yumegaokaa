@@ -262,6 +262,59 @@ final class Smoke: XCTestCase {
   attach(app,"onboarding-complete")
   tap(app,"アカウント・接続状態");tap(app,"ログアウト")
  }
+ @MainActor func testChatSendReloadDelete() throws {
+  continueAfterFailure=false
+  let app=XCUIApplication(bundleIdentifier:"jp.yumegaoka.development")
+  app.launch()
+  XCTAssertTrue(app.switches["街への参加"].waitForExistence(timeout:30))
+  let body="UI chat "+String(Int(Date().timeIntervalSince1970))
+  let input=app.textFields["入力…"]
+  XCTAssertTrue(input.waitForExistence(timeout:15))
+  input.tap();input.typeText(body)
+  tap(app,"送信")
+  XCTAssertTrue(app.descendants(matching:.any).matching(NSPredicate(format:"label CONTAINS %@",body)).firstMatch.waitForExistence(timeout:20))
+  app.terminate();app.launch()
+  XCTAssertTrue(app.descendants(matching:.any).matching(NSPredicate(format:"label CONTAINS %@",body)).firstMatch.waitForExistence(timeout:30))
+  app.descendants(matching:.any).matching(NSPredicate(format:"label CONTAINS %@",body)).firstMatch.press(forDuration:1.2)
+  XCTAssertTrue(app.alerts.buttons["削除"].waitForExistence(timeout:10))
+  app.alerts.buttons["削除"].tap()
+  XCTAssertTrue(app.descendants(matching:.any).matching(NSPredicate(format:"label CONTAINS %@","削除されたメッセージ")).firstMatch.waitForExistence(timeout:20))
+  XCTAssertFalse(app.descendants(matching:.any).matching(NSPredicate(format:"label CONTAINS %@",body)).firstMatch.exists)
+  attach(app,"chat-after-delete")
+ }
+ @MainActor func testEventCreateJoinCancel() throws {
+  continueAfterFailure=false
+  let app=XCUIApplication(bundleIdentifier:"jp.yumegaoka.development")
+  app.launch()
+  let home=app.descendants(matching:.any).matching(identifier:"Home").firstMatch
+  XCTAssertTrue(home.waitForExistence(timeout:30));home.tap()
+  tap(app,"ピンを作成");tap(app,"オフ会通知")
+  let title="UI event "+String(Int(Date().timeIntervalSince1970))
+  let titleField=app.textFields["オフ会名を入力"]
+  titleField.tap();titleField.typeText(title);titleField.typeText("\n")
+  let format=ISO8601DateFormatter()
+  for (label,offset) in [("開始日時",3600.0),("終了日時",7200.0)] {
+   let field=app.textFields[label]
+   field.tap();field.typeText(format.string(from:Date().addingTimeInterval(offset)));field.typeText("\n")
+  }
+  app.swipeUp()
+  tap(app,"場所を選択")
+  XCTAssertTrue(app.buttons["この場所にする"].waitForExistence(timeout:10))
+  app.coordinate(withNormalizedOffset:CGVector(dx:0.5,dy:0.45)).tap();tap(app,"この場所にする")
+  app.swipeUp();tap(app,"ピンを作成")
+  XCTAssertTrue(app.staticTexts[title].waitForExistence(timeout:20))
+  tap(app,"参加する")
+  XCTAssertTrue(app.buttons["参加を取り消す"].waitForExistence(timeout:15))
+  tap(app,"‹ 戻る")
+  let card=app.descendants(matching:.any).matching(NSPredicate(format:"label CONTAINS %@",title)).firstMatch
+  XCTAssertTrue(card.waitForExistence(timeout:15));card.tap()
+  tap(app,"参加を取り消す")
+  XCTAssertTrue(app.buttons["参加する"].waitForExistence(timeout:15))
+  app.swipeUp();tap(app,"イベントを中止")
+  XCTAssertTrue(app.alerts.buttons["中止する"].waitForExistence(timeout:5));app.alerts.buttons["中止する"].tap()
+  XCTAssertTrue(app.staticTexts["イベントを中止しました"].waitForExistence(timeout:15))
+  attach(app,"event-after-cancel")
+ }
  @MainActor func testRegisteredNavigation() async throws {
   continueAfterFailure=false
   let app=XCUIApplication(bundleIdentifier:"jp.yumegaoka.development")
