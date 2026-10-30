@@ -153,6 +153,10 @@ export default function Screen() {
             onPress={() => router.push("/members")}
           />
           <Action title="通報対応" onPress={() => router.push("/moderation")} />
+          <Action
+            title="ステッカー管理"
+            onPress={() => router.push("/stickers")}
+          />
           <Text style={ui.title}>招待の監督</Text>
           <Action
             title="最新の状態を取得"
