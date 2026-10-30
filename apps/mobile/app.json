@@ -1,0 +1,48 @@
+{
+  "expo": {
+    "name": "夢ヶ丘",
+    "slug": "yumegaoka",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "ios": {
+      "bundleIdentifier": "jp.yumegaoka.development",
+      "supportsTablet": false,
+      "infoPlist": {
+        "NSLocationWhenInUseUsageDescription": "街の範囲を端末で確認し、匿名の気配を表示するために使います。",
+        "NSLocationAlwaysAndWhenInUseUsageDescription": "入街中は画面を閉じても移動先の気配を更新します。生の座標はサーバーへ送信しません。",
+        "UIBackgroundModes": [
+          "location"
+        ],
+        "NSLocalNetworkUsageDescription": "開発中はこのMacのローカルサーバーへ接続します。",
+        "NSAppTransportSecurity": {
+          "NSAllowsLocalNetworking": true
+        }
+      }
+    },
+    "android": {
+      "adaptiveIcon": {
+        "backgroundColor": "#E6F4FE",
+        "foregroundImage": "./assets/android-icon-foreground.png",
+        "backgroundImage": "./assets/android-icon-background.png",
+        "monochromeImage": "./assets/android-icon-monochrome.png"
+      },
+      "predictiveBackGestureEnabled": false
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "plugins": [
+      "expo-router",
+      "@maplibre/maplibre-react-native",
+      [
+        "react-native-nfc-manager",
+        {
+          "nfcPermission": "街のNFCステッカーを読んで参加するために使います。"
+        }
+      ]
+    ],
+    "scheme": "yumegaoka"
+  }
+}

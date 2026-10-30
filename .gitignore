@@ -1,0 +1,24 @@
+
+.DS_Store
+**/xcuserdata/
+**/*.xcuserstate
+node_modules/
+.env
+.env.*
+!.env.example
+apps/mobile/ios/
+apps/mobile/android/
+supabase/.temp/
+supabase/.branches/
+*.log
+tests/ios-ui/Smoke.xcodeproj/
+*.xcresult/
+
+# Local agent preferences and signing credentials
+.claude/
+.codex/
+*.p8
+*.p12
+*.pem
+*.key
+*.mobileprovision

@@ -1,0 +1,16 @@
+import { execFileSync } from "node:child_process";
+import pg from "pg";
+const env=JSON.parse(execFileSync("npx",["supabase","status","-o","json"],{encoding:"utf8",stdio:["ignore","pipe","ignore"]}));
+if(new URL(env.API_URL).hostname!=="127.0.0.1")throw Error("UI fixture is local-only");
+const db=new pg.Client({connectionString:env.DB_URL});await db.connect();
+try {
+ const email="iphone-validation@example.test";
+ let user=(await db.query("select id from auth.users where email=$1",[email])).rows[0];
+ if(!user){
+  const r=await fetch(env.API_URL+"/auth/v1/admin/users",{method:"POST",headers:{apikey:env.SERVICE_ROLE_KEY,Authorization:"Bearer "+env.SERVICE_ROLE_KEY,"Content-Type":"application/json"},body:JSON.stringify({email,email_confirm:true})});
+  if(!r.ok)throw Error("Local fixture creation failed: "+r.status);
+  user=await r.json();
+ }
+ await db.query("insert into app_private.members(account_id) values($1) on conflict do nothing",[user.id]);
+ console.log("UI検証用ローカルアカウントを準備しました。本番・外部メールへの変更なし。");
+}finally{await db.end();}

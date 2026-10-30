@@ -1,0 +1,24 @@
+{
+  "name": "yumegaoka",
+  "private": true,
+  "version": "0.1.0",
+  "scripts": {
+    "db:start": "supabase start -x studio,imgproxy,edge-runtime,logflare,vector,supavisor",
+    "db:reset": "supabase db reset",
+    "test": "node --test tests/*.test.mjs",
+    "test:db": "node --test tests/database.test.mjs",
+    "mobile": "npm --prefix apps/mobile start",
+    "typecheck": "npm --prefix apps/mobile run typecheck",
+    "setup:local": "node scripts/setup-local.mjs",
+    "local:invite": "node scripts/local-invite.mjs",
+    "test:native": "sh scripts/test-native.sh",
+    "test:http": "node scripts/http-smoke.mjs",
+    "test:otp": "node scripts/otp-smoke.mjs",
+    "test:lifecycle-http": "node scripts/lifecycle-http.mjs"
+  },
+  "devDependencies": {
+    "pg": "8.16.3",
+    "supabase": "2.122.0",
+    "proj4": "2.20.2"
+  }
+}

@@ -1,0 +1,202 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 56;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		A00000000000000000000014 /* PresenceState.swift in Sources */ = {isa = PBXBuildFile; fileRef = A00000000000000000000010 /* PresenceState.swift */; };
+		A00000000000000000000015 /* ProbeModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A00000000000000000000011 /* ProbeModel.swift */; };
+		A00000000000000000000016 /* PresenceProbeApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = A00000000000000000000012 /* PresenceProbeApp.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		A00000000000000000000006 /* PresenceProbe.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PresenceProbe.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		A00000000000000000000010 /* PresenceState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PresenceState.swift; sourceTree = "<group>"; };
+		A00000000000000000000011 /* ProbeModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProbeModel.swift; sourceTree = "<group>"; };
+		A00000000000000000000012 /* PresenceProbeApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PresenceProbeApp.swift; sourceTree = "<group>"; };
+		A00000000000000000000013 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		A00000000000000000000008 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		A00000000000000000000002 = {
+			isa = PBXGroup;
+			children = (
+				A00000000000000000000005 /* PresenceProbe */,
+				A00000000000000000000003 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		A00000000000000000000003 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				A00000000000000000000006 /* PresenceProbe.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		A00000000000000000000005 /* PresenceProbe */ = {
+			isa = PBXGroup;
+			children = (
+				A00000000000000000000010 /* PresenceState.swift */,
+				A00000000000000000000011 /* ProbeModel.swift */,
+				A00000000000000000000012 /* PresenceProbeApp.swift */,
+				A00000000000000000000013 /* Info.plist */,
+			);
+			path = PresenceProbe;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		A00000000000000000000004 /* PresenceProbe */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A00000000000000000000021 /* Build configuration list for PBXNativeTarget "PresenceProbe" */;
+			buildPhases = (
+				A00000000000000000000007 /* Sources */,
+				A00000000000000000000008 /* Frameworks */,
+				A00000000000000000000009 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = PresenceProbe;
+			productName = PresenceProbe;
+			productReference = A00000000000000000000006 /* PresenceProbe.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		A00000000000000000000001 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 2700;
+			};
+			buildConfigurationList = A00000000000000000000020 /* Build configuration list for PBXProject "PresenceProbe" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = A00000000000000000000002;
+			productRefGroup = A00000000000000000000003 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				A00000000000000000000004 /* PresenceProbe */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		A00000000000000000000009 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		A00000000000000000000007 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A00000000000000000000014 /* PresenceState.swift in Sources */,
+				A00000000000000000000015 /* ProbeModel.swift in Sources */,
+				A00000000000000000000016 /* PresenceProbeApp.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		A00000000000000000000022 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				SDKROOT = iphoneos;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		A00000000000000000000023 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				SDKROOT = iphoneos;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+		A00000000000000000000024 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 8RHW9L5LBF;
+				INFOPLIST_FILE = PresenceProbe/Info.plist;
+				PRODUCT_BUNDLE_IDENTIFIER = dev.yumegaoka.presenceprobe;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Debug;
+		};
+		A00000000000000000000025 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 8RHW9L5LBF;
+				INFOPLIST_FILE = PresenceProbe/Info.plist;
+				PRODUCT_BUNDLE_IDENTIFIER = dev.yumegaoka.presenceprobe;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		A00000000000000000000020 /* Build configuration list for PBXProject "PresenceProbe" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A00000000000000000000022 /* Debug */,
+				A00000000000000000000023 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		A00000000000000000000021 /* Build configuration list for PBXNativeTarget "PresenceProbe" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A00000000000000000000024 /* Debug */,
+				A00000000000000000000025 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = A00000000000000000000001 /* Project object */;
+}
