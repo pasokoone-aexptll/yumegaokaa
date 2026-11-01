@@ -24,7 +24,7 @@ export function Page({
         automaticallyAdjustKeyboardInsets
         keyboardDismissMode="interactive"
       >
-        {!["/", "/home", "/settings"].includes(path) && (
+        {!["/", "/home", "/inbox", "/settings"].includes(path) && (
           <Pressable
             accessibilityRole="button"
             onPress={() =>

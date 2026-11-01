@@ -1,3 +1,4 @@
+import { SmoothSurface } from "./map/SmoothSurface";
 import { EventCloudPin } from "./EventCloudPin";
 import { Avatar } from "./Avatar";
 import { Marker } from "@maplibre/maplibre-react-native";
@@ -31,7 +32,7 @@ export function StreetMapMarkers({
               <View
                 key={i}
                 accessible
-                accessibilityLabel={`このあたりに${cluster.count}人`}
+                accessibilityLabel={`ここに${cluster.count}人の気配`}
                 style={[
                   styles.presence,
                   {
@@ -39,7 +40,11 @@ export function StreetMapMarkers({
                   },
                 ]}
               >
-                <Text style={styles.bubble}>このあたりに{cluster.count}人</Text>
+                <SmoothSurface color="#f4f4f4" radius={15}>
+                  <Text style={styles.bubble}>
+                    ここに{cluster.count}人の気配
+                  </Text>
+                </SmoothSurface>
                 <View style={styles.clusterRow}>
                   {cluster.opacities.map((opacity, slot) => (
                     <View
@@ -91,18 +96,31 @@ export function StreetMapMarkers({
               }
               style={{ alignItems: "center", maxWidth: 180 }}
             >
-              <View
+              <SmoothSurface
+                color="#ff426d"
+                radius={16}
                 style={{
-                  backgroundColor: "white",
-                  padding: 8,
-                  borderRadius: 16,
+                  paddingHorizontal: 9,
+                  paddingVertical: 5,
+                  marginBottom: 6,
                 }}
               >
-                <Text style={{ color: "#ff4f88", fontWeight: "700" }}>
+                <Text style={{ color: "white", fontSize: 16 }}>
                   {countdown(event, now)}
                 </Text>
-                <Text numberOfLines={1}>{event.title}</Text>
-              </View>
+              </SmoothSurface>
+              <SmoothSurface
+                color="#fff"
+                radius={14}
+                style={{ paddingHorizontal: 10, paddingVertical: 5 }}
+              >
+                <Text
+                  numberOfLines={1}
+                  style={{ color: "#ff5d91", fontSize: 16 }}
+                >
+                  ▦ {event.title}
+                </Text>
+              </SmoothSurface>
               <View style={{ alignItems: "center" }}>
                 <EventCloudPin />
               </View>
@@ -120,17 +138,15 @@ export function StreetMapMarkers({
                   params: { id: pin.id },
                 })
               }
-              style={{
-                backgroundColor: "white",
-                padding: 8,
-                borderRadius: 16,
-              }}
+              accessibilityRole="button"
             >
-              <Text style={{ color: "#4799ff" }}>
-                {pin.display_name} が募集中
-              </Text>
-              <Text>{pin.title}</Text>
-              <Text style={{ textAlign: "center", color: "#469fff" }}>●</Text>
+              <SmoothSurface color="white" radius={16} style={{ padding: 8 }}>
+                <Text style={{ color: "#4799ff" }}>
+                  {pin.display_name} が募集中
+                </Text>
+                <Text>{pin.title}</Text>
+                <Text style={{ textAlign: "center", color: "#469fff" }}>●</Text>
+              </SmoothSurface>
             </Pressable>
           </Marker>
         ))}

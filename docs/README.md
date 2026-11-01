@@ -8,6 +8,7 @@
 | --- | --- |
 | [PUSH_DELIVERY](PUSH_DELIVERY.md) | APNs直接配信・端末登録・ローカル検証と外部接続条件 |
 | [LOGIC_PROGRESS](LOGIC_PROGRESS.md) | ロジック・仮UI・最終UIを分離した達成記録 |
+| [Map再設計差分](frontend-redesign/MAP_REDESIGN.md) | 2026-11-02のFigma差替え・追加機能の後工程・未確認事項 |
 | [frontend-redesign](frontend-redesign/README.md) | 2026-11-01・全ルート/条件付き操作面/表示項目/状態/データ接続のコード調査。Figma設計の入口 |
 | [UI_LOGIC_CONTRACT](UI_LOGIC_CONTRACT.md) | Figma差替え用の画面/操作/状態/ロジック境界（草案） |
 | [MVP_TASKS](MVP_TASKS.md) | MVP全体のタスク・完了条件・進捗率・次の順序の正本 |

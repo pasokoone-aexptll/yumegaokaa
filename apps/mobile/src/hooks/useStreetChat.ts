@@ -158,6 +158,10 @@ export function useStreetChat() {
     itemsRef.current = [];
     void loadRef.current();
   }
+  function endHistoryDrag() {
+    // Collapse presentation without resetting the cursor, history or reading intent.
+    setExpanded(false);
+  }
   function beginHistory() {
     setExpanded(true);
     older.current = true;
@@ -186,6 +190,7 @@ export function useStreetChat() {
     action,
     toggleExpanded,
     beginHistory,
+    endHistoryDrag,
     loadMore,
     reload,
   };

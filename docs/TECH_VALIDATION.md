@@ -777,3 +777,10 @@ R11/R18。sticker-flowに同一点3登録の退化拒否と競合公開拒否を
 - Personal Teamの検証用Release、localEntry/validationRelease有効。Metro不要、実ローカルDB/APIへの接続にはMacと同じネットワーク/バックエンド稼働が必要。実NFC/APNsの成功ではない。起動後の全操作確認は未実施。
 - R03〜R19/R21/R22：`docs/frontend-redesign/`に23 route/2 layout、40条件付き操作面、16ダイアログ（79 ID）、14 UI TSX（16 export）、21 hooks TS（22 hook、lib内usePinDraftを含め23）、20 libを照合した資料を作成。表示フィールド・入力・状態・API・遷移・権限・復元・Figma制約を抽出。現行仕様と実装差、OS/外部未確認を分離。完了条件変更なし。
 - 既存機能テストの反復なし。文書のソース存在/画面ID/リンク/対象ファイル照合を実施。製品の全機能実機確認ではなく、T032は未完のまま。残5→4、追加必須0。推測残3–6h＋待ち不明。
+
+## チェックポイント135：MapのFigma UI差替え（2026-11-02）
+- R07/R10/R12/R13/R15/R19/R21：提供15素材を複製。ヘッダーの街名/別人数、幅可変の画像列、イベントTVピン、4タブと旧通知リンクredirect、格子チャット、中央状態ダイアログを実装。MapFeedbackはOKで表示のみ閉じ、未確定送信を勝手に取り消さない。SmoothSurfaceはfigma-squircle 1.1.0でsmoothing 0.6。
+- useStreetChat.endHistoryDragは拡大状態だけ終了。`node --test tests/chat-drag-state.test.mjs` 1件成功（履歴維持・再取得なし・閲覧意図保持・明示followのみ復帰）。画面の実スクロール位置をテストしたものではない。
+- mobile型チェック・Lint成功。`expo export --platform ios --output-dir /tmp/yumegaoka-map135-export`成功（1496 modules、Hermes bundleと画像解決）。ネイティブビルド・iPhone転送・実画面操作は未実施。シミュレータ一覧取得で稼働端末なし。既存DB/API・認可・背景位置処理は変更していないため関連の成功済み全件試験は反復しない。
+- ゴースト選択欄は無効。レベル・メンション通知・募集の当日pool画像の追加接続は未実装。地図方式/3Dテーマは未変更。ダイアログ人物素材なし。詳しい合意と後工程はfrontend-redesign/MAP_REDESIGN。完成Figma一致・UI_FINALIZED・実機成功を主張しない。
+- 33タスクの既存DONE履歴・率は維持（実装29、統合27、実機11、DONE27、BLOCKED3）。固定残4→4、解消0、新規必須0。推測3–6h＋待ち不明は旧固定範囲だけ。新たなUI差替えの描画/ジェスチャー確認とMR01〜05の追加機能工数は別枠・不明。pushなし。

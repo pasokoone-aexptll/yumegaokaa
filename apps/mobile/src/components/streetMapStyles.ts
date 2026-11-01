@@ -1,6 +1,6 @@
 import { StyleSheet } from "react-native";
 export const streetMapStyles = StyleSheet.create({
-  root: { flex: 1, backgroundColor: "#def4ff" },
+  root: { flex: 1, backgroundColor: "#243448" },
   center: { flex: 1, alignItems: "center", justifyContent: "center" },
   login: {
     flex: 1,
@@ -28,7 +28,7 @@ export const streetMapStyles = StyleSheet.create({
   buttonText: { fontSize: 18, fontWeight: "700", color: "white" },
   error: { color: "#ac354b", lineHeight: 22 },
   note: { fontSize: 12, color: "#627c8b", lineHeight: 19 },
-  overlay: { flex: 1, paddingHorizontal: 18 },
+  overlay: { flex: 1, paddingHorizontal: 14 },
   header: {
     flexDirection: "row",
     alignItems: "center",
@@ -52,9 +52,8 @@ export const streetMapStyles = StyleSheet.create({
   clusterRow: { flexDirection: "row", gap: 8 },
   presence: { alignItems: "center" },
   bubble: {
-    padding: 10,
-    backgroundColor: "white",
-    borderRadius: 20,
+    paddingHorizontal: 9,
+    paddingVertical: 5,
     color: "#6b9bff",
     fontSize: 15,
     fontWeight: "600",

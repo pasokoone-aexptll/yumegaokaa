@@ -1,3 +1,4 @@
+import { SmoothSurface } from "./map/SmoothSurface";
 import { useState } from "react";
 import { Text, View } from "react-native";
 import { Avatar } from "./Avatar";
@@ -8,14 +9,16 @@ export function PresenceHeader({ icons }: { icons: (string | null)[] }) {
   const [width, setWidth] = useState(0);
   const [badgeWidth, setBadgeWidth] = useState(0);
   if (!icons.length) return null;
-  const shown = visiblePresenceIcons(icons.length, width, badgeWidth);
+  const shown = visiblePresenceIcons(icons.length, width, badgeWidth, 38, 4);
   return (
-    <View
-      style={styles.people}
-      accessible
-      accessibilityLabel={`気配の街アイコン ${icons.length}人分`}
+    <SmoothSurface
+      color="#202020dc"
+      radius={28}
+      style={{ padding: 5, marginTop: 2 }}
     >
       <View
+        accessible
+        accessibilityLabel={`有効な気配 ${icons.length}人`}
         onLayout={({ nativeEvent }) => setWidth(nativeEvent.layout.width)}
         style={{ flexDirection: "row", alignItems: "center", gap: 4 }}
       >
@@ -26,7 +29,10 @@ export function PresenceHeader({ icons }: { icons: (string | null)[] }) {
           onLayout={({ nativeEvent }) =>
             setBadgeWidth(nativeEvent.layout.width)
           }
-          style={[styles.peopleText, { position: "absolute", opacity: 0 }]}
+          style={[
+            styles.peopleText,
+            { position: "absolute", opacity: 0, fontSize: 20 },
+          ]}
         >
           +{icons.length}
         </Text>
@@ -36,15 +42,20 @@ export function PresenceHeader({ icons }: { icons: (string | null)[] }) {
             bucket="street-icons"
             path={path ?? undefined}
             name="✦"
-            size={34}
+            size={38}
           />
         ))}
         {shown < icons.length && (
-          <Text style={[styles.peopleText, { flexShrink: 1 }]}>
+          <Text
+            style={[
+              styles.peopleText,
+              { flexShrink: 1, color: "#c8c8c8", fontSize: 20 },
+            ]}
+          >
             +{icons.length - shown}
           </Text>
         )}
       </View>
-    </View>
+    </SmoothSurface>
   );
 }

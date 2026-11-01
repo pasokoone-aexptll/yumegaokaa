@@ -1,3 +1,6 @@
+import { MapHeader } from "../../components/map/MapHeader";
+import { MapAsset } from "../../components/map/MapAsset";
+import { StatusBar } from "expo-status-bar";
 import { PresenceHeader } from "../../components/PresenceHeader";
 import { StreetLogin } from "../../components/StreetLogin";
 import { StreetEntrySheet } from "../../components/StreetEntrySheet";
@@ -12,7 +15,6 @@ import {
   Modal,
   Pressable,
   StyleSheet,
-  Switch,
   Text,
   View,
 } from "react-native";
@@ -117,6 +119,7 @@ export default function Street() {
   );
   return (
     <View style={styles.root}>
+      <StatusBar style="light" />
       <Map style={StyleSheet.absoluteFill} mapStyle={mapStyle}>
         <Camera
           ref={camera}
@@ -130,24 +133,14 @@ export default function Street() {
         />
       </Map>
       <SafeAreaView style={styles.overlay} pointerEvents="box-none">
-        <View style={styles.header}>
-          <Text style={styles.logo}>{name}</Text>
-          <Switch
-            accessibilityLabel="街への参加"
-            value={active}
-            onValueChange={(v) => (v ? setSheet("explain") : void exit())}
-            trackColor={{ true: "#28c967" }}
-          />
-        </View>
+        <MapHeader
+          name={name}
+          count={snapshot?.checked_in_count}
+          stale={!!error}
+          active={active}
+          onToggle={(value) => (value ? setSheet("explain") : void exit())}
+        />
         <PresenceHeader icons={presenceIcons} />
-        <View style={styles.people}>
-          <Text style={styles.peopleText}>
-            ✦{" "}
-            {snapshot
-              ? `${snapshot.checked_in_count}人がチェックイン中${error ? "（最終取得時）" : ""}`
-              : "街の様子を確認中…"}
-          </Text>
-        </View>
         {!["未参加", "気配を観測中"].includes(state.status) && (
           <View style={styles.status}>
             <Text>{state.status}</Text>
@@ -164,39 +157,34 @@ export default function Street() {
               )}
           </View>
         )}
-        <View style={{ alignSelf: "flex-end", gap: 12 }}>
-          <Pressable
-            accessibilityRole="button"
-            accessibilityLabel="現在地へ戻る"
-            onPress={() => void recenter()}
-            style={{ backgroundColor: "white", borderRadius: 30, padding: 18 }}
-          >
-            <Text style={{ fontSize: 22 }}>➤</Text>
-          </Pressable>
+        <View style={{ alignSelf: "flex-end", gap: 10, marginTop: 14 }}>
           <Pressable
             accessibilityRole="button"
             accessibilityLabel="ピンを追加"
             onPress={() => router.push("/pins/create")}
-            style={{ backgroundColor: "white", borderRadius: 30, padding: 18 }}
+            style={{
+              backgroundColor: "#34465bba",
+              borderRadius: 26,
+              padding: 10,
+            }}
           >
-            <Text style={{ fontSize: 22 }}>＋</Text>
+            <MapAsset name="CreatePIN" size={30} />
+          </Pressable>
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel="現在地へ戻る"
+            onPress={() => void recenter()}
+            style={{
+              backgroundColor: "#34465bba",
+              borderRadius: 26,
+              padding: 10,
+            }}
+          >
+            <MapAsset name="Navi" size={30} />
           </Pressable>
         </View>
-
-        {!!error && (
-          <View style={styles.errorCard}>
-            <Text style={styles.error}>{error}</Text>
-          </View>
-        )}
-        <Pressable
-          accessibilityRole="button"
-          onPress={() => setSettings(true)}
-          style={{ alignSelf: "flex-end" }}
-        >
-          <Text style={styles.link}>アカウント・接続状態</Text>
-        </Pressable>
       </SafeAreaView>
-      <StreetChat />
+      <StreetChat mapError={error} />
       <StreetEntrySheet
         sheet={sheet}
         setSheet={setSheet}

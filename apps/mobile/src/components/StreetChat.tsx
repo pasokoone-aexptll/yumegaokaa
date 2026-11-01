@@ -5,10 +5,14 @@ import {
   useSafeAreaInsets,
 } from "react-native-safe-area-context";
 import { Avatar } from "./Avatar";
+import { GridBackground } from "./GridBackground";
+import { MapAsset } from "./map/MapAsset";
+import { MapFeedback, type MapNotice } from "./map/MapFeedback";
+import { SmoothSurface } from "./map/SmoothSurface";
 import { router } from "expo-router";
 import {
   Alert,
-  Keyboard,
+  ActivityIndicator,
   KeyboardAvoidingView,
   StyleSheet,
   useWindowDimensions,
@@ -18,9 +22,9 @@ import {
   TextInput,
   View,
 } from "react-native";
-import { useStreetChat, Message } from "../hooks/useStreetChat";
-import { ui } from "./Page";
-export function StreetChat() {
+import { useStreetChat, type Message } from "../hooks/useStreetChat";
+
+export function StreetChat({ mapError = "" }: { mapError?: string }) {
   const {
     pending,
     revise,
@@ -40,8 +44,8 @@ export function StreetChat() {
     loading,
     send,
     action,
-    toggleExpanded,
     beginHistory,
+    endHistoryDrag,
     loadMore,
     reload,
   } = useStreetChat();
@@ -49,6 +53,44 @@ export function StreetChat() {
   const insets = useSafeAreaInsets();
   const [availableHeight, setAvailableHeight] = useState(height);
   const scroll = useRef<ComponentRef<typeof ScrollView>>(null);
+  const notice: MapNotice | null = mapError
+    ? { title: "通信・参加状態", message: mapError }
+    : busy
+      ? {
+          title: "送信を確認中",
+          message: "送信結果を確認しています。",
+          busy: true,
+        }
+      : restoreFailed
+        ? {
+            title: "送信状態を確認できません",
+            message: "前回の送信を確認してから再開してください。",
+            actions: [{ title: "再取得", onPress: () => void restore() }],
+          }
+        : pending
+          ? {
+              title: "送信結果が未確認です",
+              message: error || "同じ送信の結果を確認できます。",
+              actions: [
+                { title: "結果を確認", onPress: () => void send() },
+                {
+                  title: "未確定の送信を取り消して編集",
+                  onPress: () => void revise(),
+                },
+              ],
+            }
+          : error
+            ? {
+                title: "通信エラー",
+                message: error,
+                actions: [{ title: "再読み込み", onPress: reload }],
+              }
+            : chatRestrictedUntil
+              ? {
+                  title: "投稿制限中",
+                  message: `${new Date(chatRestrictedUntil).toLocaleString()}まで投稿できません。`,
+                }
+              : null;
   function menu(m: Message) {
     Alert.alert(m.display_name, "操作を選択", [
       ...(m.mine && m.kind === "text" && !m.deleted
@@ -90,17 +132,12 @@ export function StreetChat() {
   return (
     <View style={StyleSheet.absoluteFill} pointerEvents="box-none">
       {expanded && (
-        <BlurView intensity={45} tint="light" style={StyleSheet.absoluteFill}>
-          <Pressable
-            accessibilityRole="button"
-            accessibilityLabel="チャットを閉じる"
-            style={StyleSheet.absoluteFill}
-            onPress={() => {
-              Keyboard.dismiss();
-              toggleExpanded();
-            }}
-          />
-        </BlurView>
+        <BlurView
+          pointerEvents="auto"
+          intensity={35}
+          tint="dark"
+          style={StyleSheet.absoluteFill}
+        />
       )}
       <KeyboardAvoidingView
         behavior="height"
@@ -108,159 +145,142 @@ export function StreetChat() {
         pointerEvents="box-none"
       >
         <SafeAreaView
-          onLayout={({ nativeEvent }) => {
-            setAvailableHeight(
-              Math.max(
-                0,
-                nativeEvent.layout.height - insets.top - insets.bottom - 8,
-              ),
-            );
-          }}
-          edges={["top", "bottom"]}
-          style={{
-            flex: 1,
-            justifyContent: "flex-end",
-            paddingHorizontal: 18,
-            paddingBottom: 8,
-          }}
+          edges={["top"]}
           pointerEvents="box-none"
+          style={{ flex: 1, justifyContent: "flex-end" }}
+          onLayout={({ nativeEvent }) =>
+            setAvailableHeight(
+              Math.max(0, nativeEvent.layout.height - insets.top),
+            )
+          }
         >
           <View
             style={{
-              backgroundColor: expanded ? "#fff" : "#ffffffed",
-              borderRadius: 24,
-              padding: 12,
               height: Math.min(
-                expanded ? height * 0.75 : height * 0.38,
+                expanded ? height * 0.74 : height * 0.36,
                 availableHeight,
               ),
               maxHeight: "100%",
               flexShrink: 1,
-              gap: 8,
             }}
           >
-            <Pressable
-              accessibilityRole="button"
-              onPress={() => {
-                Keyboard.dismiss();
-                toggleExpanded();
-              }}
-            >
-              <Text style={{ color: "#008cff", fontWeight: "700" }}>
-                街のチャット {expanded ? "⌄ 地図へ" : "⌃ 広げる"}
-              </Text>
-            </Pressable>
-            <ScrollView
-              ref={scroll}
-              maintainVisibleContentPosition={{ minIndexForVisible: 1 }}
-              onContentSizeChange={() => {
-                if (!readingHistory.current)
-                  scroll.current?.scrollToEnd({ animated: false });
-              }}
-              onScrollBeginDrag={beginHistory}
-              keyboardShouldPersistTaps="handled"
-              keyboardDismissMode="interactive"
-            >
-              <Pressable onPress={loadMore}>
-                <Text style={ui.muted}>過去の会話を読む</Text>
-              </Pressable>
-              {loading && <Text>読み込み中…</Text>}
-              {!loading && !error && !items.length && (
-                <Text style={ui.muted}>まだ会話はありません</Text>
-              )}
-              {[...items].reverse().map((m) => (
-                <Pressable
-                  key={m.id}
-                  onLongPress={() => menu(m)}
-                  style={{ paddingVertical: 7, flexDirection: "row", gap: 8 }}
-                >
-                  <Avatar
-                    path={m.avatar_path}
-                    version={m.avatar_updated_at}
-                    name={m.display_name}
-                  />
-                  <View style={{ flex: 1, minWidth: 0 }}>
-                    <Text style={{ color: "#80909b", fontSize: 12 }}>
-                      {m.display_name} ·{" "}
-                      {new Date(m.created_at).toLocaleTimeString()}
-                    </Text>
-                    <Text style={{ color: "#34434b" }}>
-                      {m.deleted
-                        ? "削除されたメッセージ"
-                        : m.kind === "arrival"
-                          ? "街に参加しました"
-                          : m.body}
-                    </Text>
-                  </View>
-                </Pressable>
-              ))}
-            </ScrollView>
-            {hasNew && (
-              <Pressable
-                onPress={() => {
-                  followLatest();
-                  scroll.current?.scrollToEnd({ animated: true });
+            <View style={styles.history}>
+              <GridBackground color="#ffffff18" />
+              <ScrollView
+                ref={scroll}
+                maintainVisibleContentPosition={{ minIndexForVisible: 1 }}
+                onContentSizeChange={() => {
+                  if (!readingHistory.current)
+                    scroll.current?.scrollToEnd({ animated: false });
+                }}
+                onScrollBeginDrag={beginHistory}
+                onScrollEndDrag={endHistoryDrag}
+                onTouchCancel={endHistoryDrag}
+                keyboardShouldPersistTaps="handled"
+                keyboardDismissMode="interactive"
+                contentContainerStyle={{
+                  paddingHorizontal: 12,
+                  paddingBottom: 28,
                 }}
               >
-                <Text style={{ color: "#008cff", textAlign: "center" }}>
-                  新着へ ↓
-                </Text>
-              </Pressable>
-            )}
-            {!!error && (
-              <Pressable onPress={reload}>
-                <Text style={ui.error}>{error}</Text>
-              </Pressable>
-            )}
-            {chatRestrictedUntil && (
-              <Text style={ui.error}>
-                チャット投稿は{new Date(chatRestrictedUntil).toLocaleString()}
-                まで制限されています
-              </Text>
-            )}
-            {restoreFailed && (
-              <Pressable
-                accessibilityRole="button"
-                onPress={() => void restore()}
-              >
-                <Text style={ui.error}>送信状態を再取得</Text>
-              </Pressable>
-            )}
-            {pending && (
-              <Pressable
-                accessibilityRole="button"
-                disabled={busy}
-                onPress={() => void revise()}
-              >
-                <Text style={{ color: "#008cff" }}>
-                  未確定の送信を取り消して編集
-                </Text>
-              </Pressable>
-            )}
-            <View style={{ flexDirection: "row", gap: 8 }}>
-              <TextInput
-                style={[ui.input, { flex: 1, padding: 10 }]}
-                placeholder="入力…"
-                maxLength={500}
-                value={text}
-                onChangeText={setText}
-                editable={!pending && !restoring && !restoreFailed && !busy}
+                <Pressable onPress={loadMore} accessibilityRole="button">
+                  <Text style={styles.more}>過去の会話を読む</Text>
+                </Pressable>
+                {loading && <ActivityIndicator color="#b0b7c2" />}
+                {!loading && !error && !items.length && (
+                  <Text style={styles.more}>まだ会話はありません</Text>
+                )}
+                {[...items].reverse().map((m) => (
+                  <Pressable
+                    key={m.id}
+                    onLongPress={() => menu(m)}
+                    style={styles.message}
+                  >
+                    <Avatar
+                      path={m.avatar_path}
+                      version={m.avatar_updated_at}
+                      name={m.display_name}
+                      size={34}
+                    />
+                    <View style={{ flex: 1, minWidth: 0 }}>
+                      <Text style={styles.author}>
+                        {m.display_name}{" "}
+                        {new Date(m.created_at).toLocaleTimeString()}
+                      </Text>
+                      <Text style={styles.body}>
+                        {m.deleted
+                          ? "削除されたメッセージ"
+                          : m.kind === "arrival"
+                            ? "街に参加しました"
+                            : m.body}
+                      </Text>
+                    </View>
+                  </Pressable>
+                ))}
+              </ScrollView>
+              <View pointerEvents="none" style={styles.watermark}>
+                <MapAsset name="DreamCloud Logo" width={147} height={22} />
+              </View>
+              {hasNew && (
+                <Pressable
+                  accessibilityRole="button"
+                  onPress={() => {
+                    followLatest();
+                    scroll.current?.scrollToEnd({ animated: true });
+                  }}
+                  style={styles.new}
+                >
+                  <Text style={{ color: "#a6c7ff" }}>新着へ ↓</Text>
+                </Pressable>
+              )}
+            </View>
+            {notice && (
+              <MapFeedback
+                key={notice.title + notice.message}
+                notice={notice}
               />
-              <Pressable
-                disabled={
-                  busy ||
-                  restoring ||
-                  restoreFailed ||
-                  !!chatRestrictedUntil ||
-                  !text.trim()
-                }
-                onPress={() => void send()}
-                style={{ padding: 10 }}
+            )}
+            <View style={styles.composer}>
+              <SmoothSurface
+                color="#686868a8"
+                radius={18}
+                style={styles.inputRow}
               >
-                <Text style={{ color: "#008cff" }}>
-                  {busy ? "確認中" : pending ? "結果を確認" : "送信"}
-                </Text>
-              </Pressable>
+                <TextInput
+                  placeholder="入力…"
+                  placeholderTextColor="#a1a1a1"
+                  maxLength={500}
+                  value={text}
+                  onChangeText={setText}
+                  accessibilityLabel="街のチャットに入力"
+                  style={styles.input}
+                  editable={!pending && !restoring && !restoreFailed && !busy}
+                />
+                {!text && (
+                  <View pointerEvents="none" style={styles.inputHint}>
+                    <Text style={styles.hint}>街ローカルチャット ›</Text>
+                  </View>
+                )}
+                <Pressable
+                  accessibilityRole="button"
+                  accessibilityLabel={pending ? "送信結果を確認" : "送信"}
+                  disabled={
+                    busy ||
+                    restoring ||
+                    restoreFailed ||
+                    !!chatRestrictedUntil ||
+                    !text.trim()
+                  }
+                  onPress={() => void send()}
+                  style={[styles.send, { opacity: !text.trim() ? 0.4 : 1 }]}
+                >
+                  {busy || restoring ? (
+                    <ActivityIndicator color="white" />
+                  ) : (
+                    <Text style={styles.arrow}>↑</Text>
+                  )}
+                </Pressable>
+              </SmoothSurface>
             </View>
           </View>
         </SafeAreaView>
@@ -268,3 +288,31 @@ export function StreetChat() {
     </View>
   );
 }
+const styles = StyleSheet.create({
+  history: { flex: 1, backgroundColor: "#171c2475", overflow: "hidden" },
+  message: { paddingVertical: 7, flexDirection: "row", gap: 10 },
+  author: { color: "#9da4b1", fontSize: 12, fontWeight: "600" },
+  body: { color: "#e1e1e5", fontSize: 15, lineHeight: 21, fontWeight: "500" },
+  more: { color: "#a9b2c1", fontSize: 12, paddingVertical: 7 },
+  watermark: { position: "absolute", right: 12, bottom: 10, opacity: 0.35 },
+  new: { alignSelf: "center", padding: 7 },
+  composer: { backgroundColor: "#343434ed", padding: 10 },
+  inputRow: { flexDirection: "row", minHeight: 46, alignItems: "center" },
+  input: {
+    flex: 1,
+    minWidth: 0,
+    color: "white",
+    paddingLeft: 15,
+    paddingVertical: 12,
+    fontSize: 16,
+  },
+  inputHint: { position: "absolute", right: 58 },
+  hint: { color: "#b7b7b7", fontSize: 12 },
+  send: {
+    width: 56,
+    alignItems: "center",
+    justifyContent: "center",
+    alignSelf: "stretch",
+  },
+  arrow: { color: "white", fontSize: 32, lineHeight: 36, fontWeight: "800" },
+});

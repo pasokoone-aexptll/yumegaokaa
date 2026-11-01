@@ -2,7 +2,7 @@ import { StyleSheet, View, useWindowDimensions } from "react-native";
 
 const spacing = 26;
 
-export function GridBackground() {
+export function GridBackground({ color }: { color?: string }) {
   const { width, height } = useWindowDimensions();
   return (
     <View
@@ -15,13 +15,21 @@ export function GridBackground() {
       {Array.from({ length: Math.ceil(width / spacing) }, (_, index) => (
         <View
           key={`column-${index}`}
-          style={[styles.vertical, { left: index * spacing }]}
+          style={[
+            styles.vertical,
+            { left: index * spacing },
+            color ? { backgroundColor: color } : undefined,
+          ]}
         />
       ))}
       {Array.from({ length: Math.ceil(height / spacing) }, (_, index) => (
         <View
           key={`row-${index}`}
-          style={[styles.horizontal, { top: index * spacing }]}
+          style={[
+            styles.horizontal,
+            { top: index * spacing },
+            color ? { backgroundColor: color } : undefined,
+          ]}
         />
       ))}
     </View>

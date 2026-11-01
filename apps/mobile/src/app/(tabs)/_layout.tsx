@@ -7,8 +7,8 @@ export default function StreetTabs() {
         headerShown: false,
         tabBarShowLabel: false,
         tabBarIconStyle: { width: 60, height: 40 },
-        tabBarActiveTintColor: "#008cff",
-        tabBarStyle: { backgroundColor: "#fff", borderTopColor: "#e8edef" },
+        tabBarActiveTintColor: "#fff",
+        tabBarStyle: { backgroundColor: "#080808", borderTopWidth: 0 },
       }}
     >
       <Tabs.Screen
@@ -28,6 +28,16 @@ export default function StreetTabs() {
           tabBarAccessibilityLabel: "Map",
           tabBarIcon: ({ color, focused }) => (
             <TabIcon kind="map" color={color} focused={focused} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="inbox"
+        options={{
+          title: "お知らせ",
+          tabBarAccessibilityLabel: "お知らせ",
+          tabBarIcon: ({ color, focused }) => (
+            <TabIcon kind="notification" color={color} focused={focused} />
           ),
         }}
       />
