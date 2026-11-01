@@ -770,3 +770,10 @@ R11/R18。sticker-flowに同一点3登録の退化拒否と競合公開拒否を
 `npm run typecheck`、mobile lint成功。Expo configで既定Push entitlementなし/sandbox=development/production=productionを確認。Native subscriberのPods登録を確認。Swift追加に必要なシミュレータReleaseビルド成功（結果はログ `/tmp/yumegaoka-push133-build.log`）。実APNs署名/端末token/受信/拒否/tap、実iPhone転送は未実施。APNs受付を実配信完了と扱わない。
 
 詳細とローカル起動条件：[PUSH_DELIVERY](PUSH_DELIVERY.md)。初期30人の負荷前提は確定したが性能検証は未実施。既存の成功済み無関係テストは再実行しない。
+
+## チェックポイント134：Release配布とフロントエンド再設計調査
+- ユーザー依頼に基づき45c089eをorigin/codex/mvp-integrationへpush。製品コード変更なし。
+- T032-01/R19/R20/R21：最新のPushコードを含め、iPhone向けReleaseビルド1回成功（`/tmp/yumegaoka-redesign134-build.log`）。`/tmp/yumegaoka-validation-release/Build/Products/Release-iphoneos/app.app`をdevicectlでiPhoneへインストール成功（`/tmp/yumegaoka-redesign134-install.log`）、bundle `jp.yumegaoka.development` のprocess launch成功。
+- Personal Teamの検証用Release、localEntry/validationRelease有効。Metro不要、実ローカルDB/APIへの接続にはMacと同じネットワーク/バックエンド稼働が必要。実NFC/APNsの成功ではない。起動後の全操作確認は未実施。
+- R03〜R19/R21/R22：`docs/frontend-redesign/`に23 route/2 layout、40条件付き操作面、16ダイアログ（79 ID）、14 UI TSX（16 export）、21 hooks TS（22 hook、lib内usePinDraftを含め23）、20 libを照合した資料を作成。表示フィールド・入力・状態・API・遷移・権限・復元・Figma制約を抽出。現行仕様と実装差、OS/外部未確認を分離。完了条件変更なし。
+- 既存機能テストの反復なし。文書のソース存在/画面ID/リンク/対象ファイル照合を実施。製品の全機能実機確認ではなく、T032は未完のまま。残5→4、追加必須0。推測残3–6h＋待ち不明。

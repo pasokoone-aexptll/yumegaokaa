@@ -1,12 +1,14 @@
 # Figma差替え用ロジック契約（草案）
 
+2026-11-01追記：画面別の現行コード調査は[frontend-redesign](frontend-redesign/README.md)へ集約。以下は機能横断の契約概要。
+
 2026-10-31時点。これはデザイン案ではない。ロジック第一段階はまだ実機/外部条件が未完のため、最終引継ぎ完了とは扱わない。実装パスは `apps/mobile/src/` を基準とする。
 
 | 画面/機能 | 必要なデータ・状態 | 操作と呼出先 | 遷移/注意 |
 | --- | --- | --- | --- |
 | ログイン/利用資格 | 認証、OTP送信/検証中、未登録/有効/停止/退会 | lib/native、hooks/useAccountAccess | app/_layoutが資格で登録/Map/制限画面を分岐。ログインと入街は別 |
 | 初回/本人プロフィール | 名前、本人画像、読込/保存中/失敗 | useProfile | 名前と本人画像はチャットの識別。街pool画像と混同しない |
-| 招待 | 残枠、コード、有効/使用済/停止、送信中 | useInvitations | 招待受領→プロフィール/街pool登録。認可/消費はDB |
+| 招待 | コード、有効/使用済/停止、送信中 | useInvitations | 招待受領→プロフィール/街pool登録。認可/消費はDB |
 | 街pool | 提供画像、当日割当、登録/取下げ/失敗 | app/street-icons、lib/avatar、native.rpc | 本人画像とは別。切抜き/変換後アップロード、下書き24h。日替りは日本時間0時 |
 | Map/入退街 | config、snapshot、checkin、観測/更新中、退出待ち、別端末、エラー | useStreetMap、lib/native、native VisitLifecycle/Journal | トグルON→説明/読取/成功。OFFは端末観測を直ちに止め、未送信の退出意思を保持 |
 | 気配/人数 | 最新区画、観測鮮度、集約人数、街画像割当 | useStreetMap、表示用components | 気配10分とチェックイン3hは別。7人を5+2に分けても地理位置/人数を変えない。安定個人IDを公開しない |
@@ -16,7 +18,7 @@
 | ピン作成 | 共通下書き、募集/イベント種別、地点、日時、定員、受付/送信状態 | usePinCreation、lib/pinDraft | イベントは地点選択へ往復し下書き保持。募集位置は作成時取得、有効入街が必要 |
 | 募集詳細 | 所有者/ブロック、期限、編集/終了中、通信不明 | useRecruitmentDetail | 20分/手動終了/退出で終了。失効後に再送で復活させない |
 | イベント詳細/編集 | revision、参加状態/registration_revision、定員、主催者、名簿権限 | useEventDetail、useEventEditor | 参加/取消、編集/中止、名簿。一般利用者へ参加者名を渡さない。利用停止時は参加取消し、解除では復活なし |
-| 通知 | 未読/確認済、イベント有効性、失敗 | useNotifications | 詳細へ。実Pushは未接続、アプリ内通知と模擬配信を実Push成功と表示しない |
+| 通知 | 未読/確認済、イベント有効性、失敗 | useNotifications | 詳細へ。APNsロジック接続済み・実配信は未確認、アプリ内通知と模擬配信を実Push成功と表示しない |
 | アカウント | 現在/変更先メール、新旧コード、受付、再認証/完了/失敗 | useEmailChange、useWithdrawal | 再認証→退会→logout。通常ログインで旧端末を失効させない。メール紛失の自動復旧なし |
 | 通報/ブロック | 対象種別/ID、理由、所有者、処理中 | app/report、app/blocks、lib/localBlocks | 通報証拠は運営のみ。解除は再取得。集約人数をブロックで勝手に変えない |
 | 運営認証/一覧 | 運営資格、MFA、参加者/通報/招待一覧、読込/失敗 | useOperatorDashboard、useMembers、useModeration | 一般OTPだけでは運営操作不可。サーバーが資格とMFAを検査 |

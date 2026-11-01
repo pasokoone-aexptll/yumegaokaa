@@ -8,6 +8,7 @@
 | --- | --- |
 | [PUSH_DELIVERY](PUSH_DELIVERY.md) | APNs直接配信・端末登録・ローカル検証と外部接続条件 |
 | [LOGIC_PROGRESS](LOGIC_PROGRESS.md) | ロジック・仮UI・最終UIを分離した達成記録 |
+| [frontend-redesign](frontend-redesign/README.md) | 2026-11-01・全ルート/条件付き操作面/表示項目/状態/データ接続のコード調査。Figma設計の入口 |
 | [UI_LOGIC_CONTRACT](UI_LOGIC_CONTRACT.md) | Figma差替え用の画面/操作/状態/ロジック境界（草案） |
 | [MVP_TASKS](MVP_TASKS.md) | MVP全体のタスク・完了条件・進捗率・次の順序の正本 |
 | [LOCAL_FLOW_ACCEPTANCE](LOCAL_FLOW_ACCEPTANCE.md) | 役割別の主要フローと実UI/DB統合証拠（T031） |
