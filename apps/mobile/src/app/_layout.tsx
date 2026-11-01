@@ -1,3 +1,4 @@
+import { usePushLifecycle } from "../hooks/usePushNotifications";
 import {
   AccountAccessContext,
   useAccountAccess,
@@ -13,6 +14,7 @@ export default function Layout() {
   );
   const path = usePathname();
   const access = useAccountAccess(session.signed_in, session.revision);
+  usePushLifecycle(access.status === "active", session.revision);
   const previousAccess = useRef(access.status);
   useEffect(() => {
     const wasSetup = ["profile_required", "pool_required"].includes(

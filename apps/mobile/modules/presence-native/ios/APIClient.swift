@@ -126,11 +126,22 @@ actor APIClient {
   }
   return ["complete":false]
  }
+ func pushRegistration(_ operation:String,_ payload:[String:Any]=[:]) async throws -> [String:Any] {
+  let generation=authGeneration
+  let bearer=try await token()
+  guard generation==authGeneration else {throw ServiceError(code:"login_required")}
+  let result=try await request(path:"/rest/v1/rpc/push_registration",body:["operation":operation,"payload":payload],bearer:bearer)
+  guard generation==authGeneration else {throw ServiceError(code:"login_required")}
+  return result
+ }
  func realtimeToken() async throws -> String {try await token()}
  func logout() async {
   authGeneration+=1;refreshing?.cancel();refreshing=nil
   let oldToken=credentials["access_token"] as? String
   SecItemDelete(keychainQuery as CFDictionary);credentials=[:]
-  if let oldToken { _ = try? await request(path:"/auth/v1/logout?scope=local",body:[:],bearer:oldToken) }
+  if let oldToken {
+   _ = try? await request(path:"/rest/v1/rpc/push_registration",body:["operation":"remove","payload":[:]],bearer:oldToken)
+   _ = try? await request(path:"/auth/v1/logout?scope=local",body:[:],bearer:oldToken)
+  }
  }
 }

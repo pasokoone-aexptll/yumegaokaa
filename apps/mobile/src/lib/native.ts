@@ -31,6 +31,9 @@ export type Snapshot = {
   }[];
 };
 const bridge = requireNativeModule("PresenceNative") as {
+  pushSync(request: boolean): Promise<string>;
+  pushStatus(): Promise<string>;
+  pushOpen(): Promise<boolean>;
   currentLocation(): Promise<{
     longitude: number;
     latitude: number;
@@ -102,6 +105,9 @@ function configure(url: string, key: string) {
 }
 export const native: typeof bridge = {
   ...authMethods,
+  pushSync: (request) => bridge.pushSync(request),
+  pushStatus: () => bridge.pushStatus(),
+  pushOpen: () => bridge.pushOpen(),
   currentLocation: () => bridge.currentLocation(),
   monotonicTime: () => bridge.monotonicTime(),
   realtimeToken: () => bridge.realtimeToken(),

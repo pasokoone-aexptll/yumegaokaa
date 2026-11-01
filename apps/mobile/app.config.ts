@@ -22,9 +22,16 @@ export default ({ config }: ConfigContext): ExpoConfig => {
         "Validation Release requires local NFC substitution and a local Supabase URL",
       );
   }
+  const pushEnvironment = process.env.YUMEGAOKA_APNS_ENVIRONMENT;
+  if (pushEnvironment && !["sandbox", "production"].includes(pushEnvironment))
+    throw new Error("Invalid APNs environment");
   const entitlements = { ...config.ios?.entitlements };
   if (localEntry)
     delete entitlements["com.apple.developer.nfc.readersession.formats"];
+  delete entitlements["aps-environment"];
+  if (pushEnvironment)
+    entitlements["aps-environment"] =
+      pushEnvironment === "sandbox" ? "development" : "production";
   return {
     ...config,
     name: validationRelease
@@ -46,6 +53,10 @@ export default ({ config }: ConfigContext): ExpoConfig => {
     ios: {
       ...config.ios,
       entitlements,
+      infoPlist: {
+        ...config.ios?.infoPlist,
+        YumegaokaPushEnvironment: pushEnvironment ?? "",
+      },
       ...(process.env.APPLE_TEAM_ID
         ? { appleTeamId: process.env.APPLE_TEAM_ID }
         : {}),

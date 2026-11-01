@@ -1,1 +1,13 @@
-{"platforms":["apple"],"apple":{"modules":["PresenceNativeModule"]}}
+{
+  "platforms": [
+    "apple"
+  ],
+  "apple": {
+    "modules": [
+      "PresenceNativeModule"
+    ],
+    "appDelegateSubscribers": [
+      "PushAppDelegateSubscriber"
+    ]
+  }
+}

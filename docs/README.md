@@ -6,6 +6,7 @@
 
 | 文書 | 役割・扱い |
 | --- | --- |
+| [PUSH_DELIVERY](PUSH_DELIVERY.md) | APNs直接配信・端末登録・ローカル検証と外部接続条件 |
 | [LOGIC_PROGRESS](LOGIC_PROGRESS.md) | ロジック・仮UI・最終UIを分離した達成記録 |
 | [UI_LOGIC_CONTRACT](UI_LOGIC_CONTRACT.md) | Figma差替え用の画面/操作/状態/ロジック境界（草案） |
 | [MVP_TASKS](MVP_TASKS.md) | MVP全体のタスク・完了条件・進捗率・次の順序の正本 |

@@ -12,6 +12,9 @@ public class PresenceNativeModule: Module {
    try await APIClient.shared.configure(url:url,key:key)
    await MainActor.run {PresenceEngine.shared.onChange = { [weak self] state in self?.sendEvent("onChange",state)}}
   }
+  AsyncFunction("pushSync") { (request:Bool) in try await PushNotifications.shared.sync(request:request) }
+  AsyncFunction("pushStatus") { await PushNotifications.shared.current() }
+  AsyncFunction("pushOpen") { await PushNotifications.shared.consumeOpen() }
   AsyncFunction("currentLocation") { try await ForegroundLocation.shared.read() }
   AsyncFunction("realtimeToken") { try await APIClient.shared.realtimeToken() }
   AsyncFunction("accountDetails") { try await APIClient.shared.accountDetails() }
@@ -29,6 +32,7 @@ public class PresenceNativeModule: Module {
   AsyncFunction("resume") { await PresenceEngine.shared.resume();return await PresenceEngine.shared.state() }
   AsyncFunction("logout") {
    _ = try? await PresenceEngine.shared.stop()
+   await PushNotifications.shared.stop()
    await APIClient.shared.logout()
   }
  }

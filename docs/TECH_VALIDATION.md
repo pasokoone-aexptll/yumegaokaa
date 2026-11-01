@@ -759,3 +759,14 @@ R11/R18。sticker-flowに同一点3登録の退化拒否と競合公開拒否を
 - T032-01：a843e5dの運営hook/確認文を含めiPhone Releaseを増分生成。/tmp/yumegaoka-device132-build.logでBUILD SUCCEEDED、codesign --verify --deep --strict成功。製品再ビルドはこの1回、全件試験なし。
 - 転送待ち成果物は `/tmp/yumegaoka-validation-release/Build/Products/Release-iphoneos/app.app`。main.jsbundle SHA256 `aa7d46d9ebde03e2dbdedacb34e0343c807fd12a5bd083d1c00a4422c95bdb8d`。cp129成果物を置換。ソース変更がなければこの成果物を転送する。DB036/037は適用済み。
 - 端末転送/操作は実機再開可否の回答待ち。残5→5、新規必須0、推測3.5–7.5h＋待ち不明は据置き。DONE27/33、ロジック実装29/33・検証28/33、実機11/33は不変。最終UI作業なし。
+
+
+## チェックポイント133：APNs直接送信のローカル検証（2026-11-01）
+
+対象T019/R13。038 migrationをローカル適用。開発中にPostgreSQL正規表現量指定の上限、PL/pgSQL別名衝突、初回claimの時刻比較を対象試験で発見して修正し、同じ新規migration内容へローカル関数/制約を同期した。既存データをresetしていない。
+
+`node --test tests/push-delivery.test.mjs`：2ケース成功。P-256署名検証/更新、ローカルHTTP2ヘッダー/汎用payload、実DB登録・認可・2端末で成功先非再送・遅い無効化で新登録保護・参加取消・利用停止・session削除。fixture rollback。実DB→deliverPush→ローカルHTTP2→実DBのaccepted/retry記録も一本で成功。Appleへは接続しない。
+
+`npm run typecheck`、mobile lint成功。Expo configで既定Push entitlementなし/sandbox=development/production=productionを確認。Native subscriberのPods登録を確認。Swift追加に必要なシミュレータReleaseビルド成功（結果はログ `/tmp/yumegaoka-push133-build.log`）。実APNs署名/端末token/受信/拒否/tap、実iPhone転送は未実施。APNs受付を実配信完了と扱わない。
+
+詳細とローカル起動条件：[PUSH_DELIVERY](PUSH_DELIVERY.md)。初期30人の負荷前提は確定したが性能検証は未実施。既存の成功済み無関係テストは再実行しない。
