@@ -1,8 +1,10 @@
+import { Keyboard } from "react-native";
 import { Tabs } from "expo-router";
 import { TabIcon } from "../../components/TabIcon";
 export default function StreetTabs() {
   return (
     <Tabs
+      screenListeners={{ tabPress: Keyboard.dismiss }}
       screenOptions={{
         headerShown: false,
         tabBarShowLabel: false,

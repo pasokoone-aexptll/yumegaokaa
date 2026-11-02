@@ -1,4 +1,4 @@
-import { useRef, useState, type ComponentRef } from "react";
+import { useEffect, useRef, useState, type ComponentRef } from "react";
 import { BlurView } from "expo-blur";
 import {
   SafeAreaView,
@@ -11,6 +11,9 @@ import { MapFeedback, type MapNotice } from "./map/MapFeedback";
 import { SmoothSurface } from "./map/SmoothSurface";
 import { router } from "expo-router";
 import {
+  Animated,
+  Easing,
+  Keyboard,
   Alert,
   ActivityIndicator,
   KeyboardAvoidingView,
@@ -52,6 +55,18 @@ export function StreetChat({ mapError = "" }: { mapError?: string }) {
   const { height } = useWindowDimensions();
   const insets = useSafeAreaInsets();
   const [availableHeight, setAvailableHeight] = useState(height);
+  const [awayFromLatest, setAwayFromLatest] = useState(false);
+  const [expansion] = useState(() => new Animated.Value(0));
+  useEffect(() => {
+    const animation = Animated.timing(expansion, {
+      toValue: expanded ? 1 : 0,
+      duration: 240,
+      easing: Easing.inOut(Easing.cubic),
+      useNativeDriver: false,
+    });
+    animation.start();
+    return () => animation.stop();
+  }, [expanded, expansion]);
   const scroll = useRef<ComponentRef<typeof ScrollView>>(null);
   const notice: MapNotice | null = mapError
     ? { title: "通信・参加状態", message: mapError }
@@ -131,14 +146,13 @@ export function StreetChat({ mapError = "" }: { mapError?: string }) {
   }
   return (
     <View style={StyleSheet.absoluteFill} pointerEvents="box-none">
-      {expanded && (
-        <BlurView
-          pointerEvents="auto"
-          intensity={35}
-          tint="dark"
-          style={StyleSheet.absoluteFill}
-        />
-      )}
+      <Animated.View
+        pointerEvents={expanded ? "auto" : "none"}
+        onTouchStart={Keyboard.dismiss}
+        style={[StyleSheet.absoluteFill, { opacity: expansion }]}
+      >
+        <BlurView intensity={35} tint="dark" style={StyleSheet.absoluteFill} />
+      </Animated.View>
       <KeyboardAvoidingView
         behavior="height"
         style={{ flex: 1 }}
@@ -154,17 +168,20 @@ export function StreetChat({ mapError = "" }: { mapError?: string }) {
             )
           }
         >
-          <View
+          <Animated.View
             style={{
-              height: Math.min(
-                expanded ? height * 0.74 : height * 0.36,
-                availableHeight,
-              ),
+              height: expansion.interpolate({
+                inputRange: [0, 1],
+                outputRange: [
+                  Math.min(height * 0.36, availableHeight),
+                  Math.min(height * 0.74, availableHeight),
+                ],
+              }),
               maxHeight: "100%",
               flexShrink: 1,
             }}
           >
-            <View style={styles.history}>
+            <View style={styles.history} onTouchStart={Keyboard.dismiss}>
               <GridBackground color="#ffffff18" />
               <ScrollView
                 ref={scroll}
@@ -173,6 +190,21 @@ export function StreetChat({ mapError = "" }: { mapError?: string }) {
                   if (!readingHistory.current)
                     scroll.current?.scrollToEnd({ animated: false });
                 }}
+                scrollEventThrottle={32}
+                onScroll={({
+                  nativeEvent: {
+                    contentOffset,
+                    contentSize,
+                    layoutMeasurement,
+                  },
+                }) => {
+                  setAwayFromLatest(
+                    contentSize.height -
+                      layoutMeasurement.height -
+                      contentOffset.y >
+                      48,
+                  );
+                }}
                 onScrollBeginDrag={beginHistory}
                 onScrollEndDrag={endHistoryDrag}
                 onTouchCancel={endHistoryDrag}
@@ -180,7 +212,7 @@ export function StreetChat({ mapError = "" }: { mapError?: string }) {
                 keyboardDismissMode="interactive"
                 contentContainerStyle={{
                   paddingHorizontal: 12,
-                  paddingBottom: 28,
+                  paddingBottom: 64,
                 }}
               >
                 <Pressable onPress={loadMore} accessibilityRole="button">
@@ -221,16 +253,33 @@ export function StreetChat({ mapError = "" }: { mapError?: string }) {
               <View pointerEvents="none" style={styles.watermark}>
                 <MapAsset name="DreamCloud Logo" width={147} height={22} />
               </View>
-              {hasNew && (
+              {(hasNew || awayFromLatest) && (
                 <Pressable
                   accessibilityRole="button"
                   onPress={() => {
+                    Keyboard.dismiss();
                     followLatest();
+                    setAwayFromLatest(false);
                     scroll.current?.scrollToEnd({ animated: true });
                   }}
                   style={styles.new}
                 >
-                  <Text style={{ color: "#a6c7ff" }}>新着へ ↓</Text>
+                  <SmoothSurface
+                    color="#303d50f0"
+                    radius={18}
+                    style={{
+                      paddingHorizontal: 14,
+                      paddingVertical: 10,
+                      flexDirection: "row",
+                      alignItems: "center",
+                      gap: 8,
+                    }}
+                  >
+                    <Text style={{ color: "#e4edff" }}>最新へ</Text>
+                    <View style={{ transform: [{ rotate: "90deg" }] }}>
+                      <MapAsset name="chevron.right" size={12} />
+                    </View>
+                  </SmoothSurface>
                 </Pressable>
               )}
             </View>
@@ -240,13 +289,14 @@ export function StreetChat({ mapError = "" }: { mapError?: string }) {
                 notice={notice}
               />
             )}
-            <View style={styles.composer}>
+            <View style={styles.composer} onTouchStart={Keyboard.dismiss}>
               <SmoothSurface
                 color="#686868a8"
                 radius={18}
                 style={styles.inputRow}
               >
                 <TextInput
+                  onTouchStart={(event) => event.stopPropagation()}
                   placeholder="入力…"
                   placeholderTextColor="#a1a1a1"
                   maxLength={500}
@@ -258,7 +308,8 @@ export function StreetChat({ mapError = "" }: { mapError?: string }) {
                 />
                 {!text && (
                   <View pointerEvents="none" style={styles.inputHint}>
-                    <Text style={styles.hint}>街ローカルチャット ›</Text>
+                    <Text style={styles.hint}>街ローカルチャット</Text>
+                    <MapAsset name="chevron.right" size={12} />
                   </View>
                 )}
                 <Pressable
@@ -282,7 +333,7 @@ export function StreetChat({ mapError = "" }: { mapError?: string }) {
                 </Pressable>
               </SmoothSurface>
             </View>
-          </View>
+          </Animated.View>
         </SafeAreaView>
       </KeyboardAvoidingView>
     </View>
@@ -295,7 +346,7 @@ const styles = StyleSheet.create({
   body: { color: "#e1e1e5", fontSize: 15, lineHeight: 21, fontWeight: "500" },
   more: { color: "#a9b2c1", fontSize: 12, paddingVertical: 7 },
   watermark: { position: "absolute", right: 12, bottom: 10, opacity: 0.35 },
-  new: { alignSelf: "center", padding: 7 },
+  new: { position: "absolute", right: 12, bottom: 10 },
   composer: { backgroundColor: "#343434ed", padding: 10 },
   inputRow: { flexDirection: "row", minHeight: 46, alignItems: "center" },
   input: {
@@ -306,7 +357,13 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     fontSize: 16,
   },
-  inputHint: { position: "absolute", right: 58 },
+  inputHint: {
+    position: "absolute",
+    right: 58,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 4,
+  },
   hint: { color: "#b7b7b7", fontSize: 12 },
   send: {
     width: 56,

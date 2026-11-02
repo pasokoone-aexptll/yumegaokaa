@@ -1,3 +1,4 @@
+import { MapAsset } from "./MapAsset";
 import { useState } from "react";
 import {
   ActivityIndicator,
@@ -27,7 +28,8 @@ export function MapFeedback({ notice }: { notice: MapNotice }) {
           onPress={() => setOpen(true)}
           style={styles.reopen}
         >
-          <Text style={styles.reopenText}>{notice.title} ›</Text>
+          <Text style={styles.reopenText}>{notice.title}</Text>
+          <MapAsset name="chevron.right" size={12} />
         </Pressable>
       )}
       <Modal

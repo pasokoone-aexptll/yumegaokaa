@@ -1,5 +1,6 @@
 import { Image, Pressable, StyleSheet, Switch, Text, View } from "react-native";
 import Svg, { Circle, Path } from "react-native-svg";
+import { MapAsset } from "./MapAsset";
 import { SmoothSurface } from "./SmoothSurface";
 
 export function MapHeader({
@@ -58,7 +59,9 @@ export function MapHeader({
               { backgroundColor: active ? "#00bc83" : "#98a1ac" },
             ]}
           />
-          <Text style={styles.chevron}>⌄</Text>
+          <View style={{ transform: [{ rotate: "90deg" }] }}>
+            <MapAsset name="chevron.right" size={16} />
+          </View>
         </SmoothSurface>
       </Pressable>
       <SmoothSurface color="#637183cc" radius={26} style={styles.toggle}>

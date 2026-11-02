@@ -11,6 +11,7 @@ import { StreetChat } from "../../components/StreetChat";
 import { router, useLocalSearchParams } from "expo-router";
 import { useEffect, useRef } from "react";
 import {
+  Keyboard,
   ActivityIndicator,
   Modal,
   Pressable,
@@ -120,10 +121,18 @@ export default function Street() {
   return (
     <View style={styles.root}>
       <StatusBar style="light" />
-      <Map style={StyleSheet.absoluteFill} mapStyle={mapStyle}>
+      <Map
+        style={StyleSheet.absoluteFill}
+        mapStyle={mapStyle}
+        onPress={Keyboard.dismiss}
+      >
         <Camera
           ref={camera}
-          initialViewState={{ center: [139.7109, 35.7295], zoom: 15 }}
+          initialViewState={{
+            center: [139.7109, 35.7295],
+            zoom: 16,
+            pitch: 55,
+          }}
         />
         <StreetMapMarkers
           cells={cells}
@@ -132,7 +141,11 @@ export default function Street() {
           now={now}
         />
       </Map>
-      <SafeAreaView style={styles.overlay} pointerEvents="box-none">
+      <SafeAreaView
+        style={styles.overlay}
+        pointerEvents="box-none"
+        onTouchStart={Keyboard.dismiss}
+      >
         <MapHeader
           name={name}
           count={snapshot?.checked_in_count}

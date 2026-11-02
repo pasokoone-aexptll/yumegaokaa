@@ -784,3 +784,13 @@ R11/R18。sticker-flowに同一点3登録の退化拒否と競合公開拒否を
 - mobile型チェック・Lint成功。`expo export --platform ios --output-dir /tmp/yumegaoka-map135-export`成功（1496 modules、Hermes bundleと画像解決）。ネイティブビルド・iPhone転送・実画面操作は未実施。シミュレータ一覧取得で稼働端末なし。既存DB/API・認可・背景位置処理は変更していないため関連の成功済み全件試験は反復しない。
 - ゴースト選択欄は無効。レベル・メンション通知・募集の当日pool画像の追加接続は未実装。地図方式/3Dテーマは未変更。ダイアログ人物素材なし。詳しい合意と後工程はfrontend-redesign/MAP_REDESIGN。完成Figma一致・UI_FINALIZED・実機成功を主張しない。
 - 33タスクの既存DONE履歴・率は維持（実装29、統合27、実機11、DONE27、BLOCKED3）。固定残4→4、解消0、新規必須0。推測3–6h＋待ち不明は旧固定範囲だけ。新たなUI差替えの描画/ジェスチャー確認とMR01〜05の追加機能工数は別枠・不明。pushなし。
+
+## チェックポイント136：iPhoneの開発モード（2026-11-02）
+- ユーザー依頼によりRelease配布ではなくDebug開発ビルドへ切替。localEntry=1/validationRelease=0で生成し、expo run:ios --configuration Debug --no-bundler成功（0 errors、3 warnings、ログ/tmp/yumegaoka-debug136.log）。同じbundle IDへ「夢ヶ丘 開発用」をインストールしたことをdevicectlで確認。
+- MetroをLANのhttp://172.30.100.165:8081で起動。status応答成功、iOS 1632 modulesのbundle生成成功。ローカルAuth API応答と54325ゲートウェイ稼働も確認。ロック解除後、development-client URL付きdevicectl process launch成功。
+- 実画面の表示・操作成功はまだユーザー未確認。今回の転送を新しい機能のDEVICE_VERIFIEDへ加算しない。ネイティブDebugビルド1回、無関係な機能テスト/Release配布/pushなし。今後のJS/UI変更はMetro/Fast Refreshを利用し、ネイティブ依存/設定変更時のみ再ビルドする。
+
+## チェックポイント137：ダーク3Dとチャット操作
+- MapLibre維持、OpenFreeMap DarkスタイルへLibertyのbuilding-3dを追加。高さrender_height/baseは元データ使用、色は青灰色、初期pitch55/zoom16。@maplibre/maplibre-gl-style-specによるスタイル検証エラー0。提供元の実JSONを確認し出典/ライセンスを同梱。
+- StreetChatはAnimatedの240ms拡大縮小＋blur、履歴下部の角丸「最新へ」（新着または48pt超の距離）。chevron.right素材を入力ヒント/公開設定/状態表示へ接続。入力欄以外のMap操作とタブ移動でKeyboard.dismiss、入力タッチは伝播抑止。
+- 型チェック成功、Lintは初回Animatedのrender時refアクセスで失敗→安定したstate初期化へ修正して成功。Metro稼働・差分bundle生成確認。ネイティブ変更なしにつき再ビルド/転送なし。実機の3D描画・ドラッグ追従・キーボード解除はユーザー確認待ち。既存33タスクの達成段階/固定残4件は変更なし。pushなし。
