@@ -916,3 +916,6 @@ Mapの最新へ中央化、SmoothSurfaceへblurIntensity追加、チャットに
 - `npm run typecheck`成功。`npm --prefix apps/mobile run lint`は初回重複import警告2件→importを統合。
 - `node --test tests/pin-recovery.test.mjs` 4/4成功。初回は古いテストrequireスタブがeventInputを提供せず失敗し、実モジュールを読み込むよう修正。再送同一body、未送信破棄、作成済み結果、通信失敗時の保持を検証。
 - 新UIの実機操作・ネイティブ表示は未確認。ビルド・転送・pushなし。
+
+## cp162 — 気配/ピンの文字と背景グラデーション
+R11/R12/R13の表示変更。PinLabel（SVGグラデーション、文字マスク、吹き出し尾）を追加。`npm run typecheck`・`npm --prefix apps/mobile run lint`成功。JS表示のみのためDBテスト/ネイティブビルドは省略。iPhone上の実描画は未確認。

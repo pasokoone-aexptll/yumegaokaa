@@ -1,4 +1,9 @@
-import { SmoothSurface } from "./map/SmoothSurface";
+import {
+  PinBubble,
+  PinCountdown,
+  PinGradientText,
+  pinRed,
+} from "./map/PinLabel";
 import { EventCloudPin } from "./EventCloudPin";
 import { Avatar } from "./Avatar";
 import { Marker } from "./map/PlatformMap";
@@ -40,11 +45,9 @@ export function StreetMapMarkers({
                   },
                 ]}
               >
-                <SmoothSurface color="#f4f4f4" radius={15}>
-                  <Text style={styles.bubble}>
-                    ここに{cluster.count}人の気配
-                  </Text>
-                </SmoothSurface>
+                <PinBubble>
+                  <PinGradientText>{`ここに${cluster.count}人の気配`}</PinGradientText>
+                </PinBubble>
                 <View style={styles.clusterRow}>
                   {cluster.opacities.map((opacity, slot) => (
                     <View
@@ -96,31 +99,12 @@ export function StreetMapMarkers({
               }
               style={{ alignItems: "center", maxWidth: 180 }}
             >
-              <SmoothSurface
-                color="#ff426d"
-                radius={16}
-                style={{
-                  paddingHorizontal: 9,
-                  paddingVertical: 5,
-                  marginBottom: 6,
-                }}
-              >
-                <Text style={{ color: "white", fontSize: 16 }}>
-                  {countdown(event, now)}
-                </Text>
-              </SmoothSurface>
-              <SmoothSurface
-                color="#fff"
-                radius={14}
-                style={{ paddingHorizontal: 10, paddingVertical: 5 }}
-              >
-                <Text
-                  numberOfLines={1}
-                  style={{ color: "#ff5d91", fontSize: 16 }}
-                >
-                  ▦ {event.title}
-                </Text>
-              </SmoothSurface>
+              <PinCountdown>{countdown(event, now)}</PinCountdown>
+              <PinBubble>
+                <PinGradientText
+                  colors={pinRed}
+                >{`▦ ${event.title}`}</PinGradientText>
+              </PinBubble>
               <View style={{ alignItems: "center" }}>
                 <EventCloudPin />
               </View>
@@ -140,13 +124,9 @@ export function StreetMapMarkers({
               }
               accessibilityRole="button"
             >
-              <SmoothSurface color="white" radius={16} style={{ padding: 8 }}>
-                <Text style={{ color: "#4799ff" }}>
-                  {pin.display_name} が募集中
-                </Text>
-                <Text>{pin.title}</Text>
-                <Text style={{ textAlign: "center", color: "#469fff" }}>●</Text>
-              </SmoothSurface>
+              <PinBubble>
+                <PinGradientText>{`${pin.display_name}が募集中`}</PinGradientText>
+              </PinBubble>
             </Pressable>
           </Marker>
         ))}
