@@ -175,3 +175,7 @@ cp139：縮小時にも先頭へ到達できるよう、固定viewportと縮小�
 - 初期detent57%。シート下地の白は#FFFFFFEDから#FFFFFF66へ、light blurは維持。円背景は#FFFFFFAA、青い円周/チェックは#00ADF2を維持。
 - 処理中ロゴは今回提供のDownloads/assets/DreamCloud.pngへ差替え。原本をそのままコピーし、既存素材は削除しない。待機モノクロと文字素材は維持。
 - JS/素材のみ。実機の透け具合は未確認。
+
+## cp158：待機ロゴ更新と実線リング
+- 07:42更新のDreamCloud monoLogo.pngをentry-logo.pngへ原本のまま差替え。待機リングは破線を廃止し、黒5%（#0000000D）の実線へ。白い円背景#FFFFFFAAと処理中/成功時の青は維持。
+- 素材差替えとSVG属性のみ。実機外観は未確認。

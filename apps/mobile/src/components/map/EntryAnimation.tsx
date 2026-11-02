@@ -117,9 +117,8 @@ export function EntryAnimation({
           cy={160}
           r={146}
           fill="none"
-          stroke="#dedede"
+          stroke="#0000000d"
           strokeWidth={4}
-          strokeDasharray={phase === "explain" ? "16 16" : undefined}
           strokeLinecap="round"
         />
         {active && (
