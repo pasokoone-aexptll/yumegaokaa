@@ -96,7 +96,7 @@ export default function StreetEntry() {
           <Text
             accessibilityLiveRegion="polite"
             style={{
-              color: phase === "checking" ? "#00ADF2" : "#555",
+              color: "#000000aa",
               fontWeight: "600",
               fontSize: 17.92,
               textAlign: "center",
@@ -111,17 +111,17 @@ export default function StreetEntry() {
                   : "街への参加を記録しています"}
           </Text>
           {phase === "explain" && (
-            <Text style={{ color: "#aaa", textAlign: "center", fontSize: 13.44 }}>
+            <Text style={{ color: "#00000080", textAlign: "center", fontSize: 13.44 }}>
               名前や正確な現在地は地図には出ません
             </Text>
           )}
           {phase === "explain" && (
-            <Text style={{ color: "#aaa", textAlign: "center", fontSize: 11 }}>
+            <Text style={{ color: "#00000080", textAlign: "center", fontSize: 11 }}>
               参加中は背景でも気配を共有します。OFFで停止できます。
             </Text>
           )}
           {phase === "checking" && (
-            <Text style={{ color: "#aaa", textAlign: "center", fontSize: 13.44 }}>
+            <Text style={{ color: "#00000080", textAlign: "center", fontSize: 13.44 }}>
               {localEntry
                 ? "開発用タグで接続中"
                 : "読み取り後はステッカーから離して大丈夫です"}

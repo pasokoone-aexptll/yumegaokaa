@@ -103,7 +103,7 @@ export function EntryAnimation({
   }));
   const logoStyle = useAnimatedStyle(() => ({
     transform: [{ translateY: -reveal.value * 30 }],
-    opacity: 1,
+    opacity: 0.6 + reveal.value * 0.4,
   }));
   const textStyle = useAnimatedStyle(() => ({
     transform: [{ translateY: reveal.value * 36 }],
