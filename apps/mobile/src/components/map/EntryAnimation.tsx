@@ -1,0 +1,208 @@
+import { useEffect } from "react";
+import { Image, View } from "react-native";
+import Animated, {
+  cancelAnimation,
+  Easing,
+  useAnimatedProps,
+  useAnimatedStyle,
+  useSharedValue,
+  withDelay,
+  withRepeat,
+  withTiming,
+} from "react-native-reanimated";
+import Svg, { Circle, Path } from "react-native-svg";
+const Ring = Animated.createAnimatedComponent(Circle);
+const Check = Animated.createAnimatedComponent(Path);
+const circumference = 2 * Math.PI * 146;
+function Dot({ index }: { index: number }) {
+  const phase = useSharedValue(0);
+  useEffect(() => {
+    const row = Math.floor(index / 3),
+      column = index % 3;
+    phase.value = withDelay(
+      row * 85 + ((column * 137) % 410),
+      withRepeat(
+        withTiming(1, {
+          duration: 1100 + ((column * 173) % 600),
+          easing: Easing.linear,
+        }),
+        -1,
+      ),
+    );
+    return () => cancelAnimation(phase);
+  }, [index, phase]);
+  const style = useAnimatedStyle(() => ({
+    opacity: Math.sin(phase.value * Math.PI) * 0.75,
+    transform: [{ translateY: phase.value * 9 - 4 }],
+  }));
+  return (
+    <Animated.View
+      style={[
+        {
+          position: "absolute",
+          width: 10,
+          height: 10,
+          borderRadius: 3,
+          backgroundColor: "#4387ff",
+          left: (index % 3) * 18,
+          top: Math.floor(index / 3) * 18,
+        },
+        style,
+      ]}
+    />
+  );
+}
+/** Presentation only. Never advances the check-in state. */
+export function EntryAnimation({
+  phase,
+  size,
+}: {
+  phase: "explain" | "scanning" | "checking" | "success";
+  size: number;
+}) {
+  const reveal = useSharedValue(0),
+    rotation = useSharedValue(0),
+    completion = useSharedValue(0),
+    check = useSharedValue(0);
+  const active = phase === "scanning" || phase === "checking";
+  useEffect(() => {
+    reveal.value = withTiming(active ? 1 : 0, { duration: 350 });
+    if (active) {
+      rotation.value = 0;
+      rotation.value = withRepeat(
+        withTiming(1, { duration: 1200, easing: Easing.linear }),
+        -1,
+      );
+    }
+    if (phase === "success") {
+      completion.value = 0;
+      check.value = 0;
+      completion.value = withTiming(1, {
+        duration: 650,
+        easing: Easing.linear,
+      });
+      check.value = withDelay(650, withTiming(1, { duration: 300 }));
+    }
+    return () => {
+      cancelAnimation(reveal);
+      cancelAnimation(rotation);
+      cancelAnimation(completion);
+      cancelAnimation(check);
+    };
+  }, [phase, active, reveal, rotation, completion, check]);
+  const spin = useAnimatedProps(() => ({
+    strokeDashoffset: -rotation.value * circumference,
+  }));
+  const complete = useAnimatedProps(() => ({
+    strokeDashoffset: circumference * (1 - completion.value),
+  }));
+  const checked = useAnimatedProps(() => ({
+    strokeDashoffset: 78 * (1 - check.value),
+  }));
+  const logoStyle = useAnimatedStyle(() => ({
+    transform: [{ translateY: -reveal.value * 30 }],
+    opacity: 0.35 + reveal.value * 0.65,
+  }));
+  const textStyle = useAnimatedStyle(() => ({
+    transform: [{ translateY: reveal.value * 36 }],
+  }));
+  return (
+    <View style={{ width: size, height: size, alignSelf: "center" }}>
+      <Svg width={size} height={size} viewBox="0 0 320 320">
+        <Circle cx={160} cy={160} r={156} fill="#f7f7f7" />
+        <Circle
+          cx={160}
+          cy={160}
+          r={146}
+          fill="none"
+          stroke="#eaeaea"
+          strokeWidth={4}
+          strokeDasharray={phase === "explain" ? "16 16" : undefined}
+          strokeLinecap="round"
+        />
+        {active && (
+          <Ring
+            cx={160}
+            cy={160}
+            r={146}
+            rotation={-90}
+            origin="160,160"
+            fill="none"
+            stroke="#0088ff"
+            strokeWidth={4}
+            strokeDasharray={`${circumference * 0.73} ${circumference * 0.27}`}
+            strokeLinecap="round"
+            animatedProps={spin}
+          />
+        )}
+        {phase === "success" && (
+          <>
+            <Ring
+              cx={160}
+              cy={160}
+              r={146}
+              rotation={-90}
+              origin="160,160"
+              fill="none"
+              stroke="#0088ff"
+              strokeWidth={4}
+              strokeDasharray={`${circumference} ${circumference}`}
+              animatedProps={complete}
+            />
+            <Check
+              d="M58.0832 3.41699L20.4998 41.0003L3.4165 23.917"
+              transform="translate(129 138)"
+              fill="none"
+              stroke="#0088ff"
+              strokeWidth={6.83333}
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeDasharray="78 78"
+              animatedProps={checked}
+            />
+          </>
+        )}
+      </Svg>
+      {phase !== "success" && (
+        <View
+          pointerEvents="none"
+          style={{
+            position: "absolute",
+            inset: 0,
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          <Animated.View style={logoStyle}>
+            <Image
+              source={require("../../../assets/figma-map/entry-logo.png")}
+              style={{ width: 116, height: 80 }}
+              resizeMode="contain"
+            />
+          </Animated.View>
+          {active && (
+            <View
+              style={{
+                position: "absolute",
+                top: "49%",
+                width: 46,
+                height: 46,
+              }}
+            >
+              {Array.from({ length: 9 }, (_, index) => (
+                <Dot key={index} index={index} />
+              ))}
+            </View>
+          )}
+          <Animated.View style={textStyle}>
+            <Image
+              source={require("../../../assets/figma-map/entry-text.png")}
+              style={{ width: 113, height: 33 }}
+              resizeMode="contain"
+            />
+          </Animated.View>
+        </View>
+      )}
+    </View>
+  );
+}

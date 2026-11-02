@@ -134,3 +134,11 @@ cp139：縮小時にも先頭へ到達できるよう、固定viewportと縮小�
 - 取得エラーのアクションは再読み込み。Promise待機中はspinnerとdisabledを表示。成功でエラーが消えるとバナーも消える。失敗時は同じ場所で再試行可能。再試行導線を残すため取得エラーはautoDismiss=false、通常状態通知の7秒自動消去は維持。
 - 通知OKは14pt・iOS SF Rounded。通信エラーダイアログはカード角丸36pt、ボタン角丸24pt/幅42%/文字16pt SF Roundedへ。ボタン背後にlight BlurView intensity85を置き、画像を透かしてぼかす。入力角丸16pt。
 - 型/Lint成功。実機外観とぼかしの最終確認は未実施。JSのみにつき再ビルド不要。
+
+## cp151：標準入街シートと3×3ドット
+- 最新の訂正によりドットは9×9ではなく3×3（9個）。Downloads/assetsのDreamCloud monoLogo/monoText/check.svgを取り込む。legacy/yumegaoka/app/src/components/rain-cloud.tsx、features/profile-card.tsxの列別周期とstrokeDashoffsetの演出を参考に、新しいEntryAnimationを分離実装。
+- explainは破線円とロゴ、scanning/checkingはロゴと文字が上下へ分かれ、ドットが列別周期・行別遅延で下へ流れる。外周は1200ms周期で回転。successは650msで円周を描き、続く300msでcheck.svgと同じpathを描く。演出から成功や滞在状態を変更しない。成功は既存checkin応答に従う。
+- StreetEntrySheetは透明Modal内の背景付きスライドを廃止。元のMapに固定BlurViewを置き、iOSのpageSheetだけをスライド。prepareEntrySheetが標準UISheetPresentationControllerへ65%/large detent、grabber、角丸36を設定。シート表示後に高さ設定が適用されるため、表示遷移の実機確認が必要。
+- iOS26は公開UIGlassEffect(.regular)＋白tintをシート背面へ配置しlight外観。以前のOSはsystemMaterialLight。Androidは既存機能を利用するfullScreenの代替で、同一外観の検証対象外。
+- 開発用入街、共有説明、キャンセル、成功後の地図へを保持。スワイプによる閉じ操作も既存closeへ接続。読み取り後に不要な「離さないで」の表示はしない。
+- 型/Lint・Debugビルド・iPhone転送成功。最終外観、標準シートのスワイプ操作、Core NFCの実読取は未確認。

@@ -1,5 +1,6 @@
 import ExpoModulesCore
 import CoreLocation
+import UIKit
 
 public class PresenceNativeModule: Module {
  public func definition() -> ModuleDefinition {
@@ -13,6 +14,33 @@ public class PresenceNativeModule: Module {
    ViewName("ChatTouchRegion")
    Prop("surface", false) { (view: ChatTouchRegion, value: Bool) in view.surface = value }
   }
+  AsyncFunction("prepareEntrySheet") { await MainActor.run {
+   guard let scene = UIApplication.shared.connectedScenes.compactMap({ $0 as? UIWindowScene }).first(where: { $0.activationState == .foregroundActive }),
+         var controller = scene.windows.first(where: { $0.isKeyWindow })?.rootViewController else { return }
+   while let presented = controller.presentedViewController { controller = presented }
+   guard let sheet = controller.sheetPresentationController else { return }
+   controller.overrideUserInterfaceStyle = .light
+   sheet.prefersGrabberVisible = true
+   sheet.preferredCornerRadius = 36
+   if #available(iOS 16.0, *) {
+    sheet.animateChanges { sheet.detents = [.custom(identifier: .init("entry")) { context in context.maximumDetentValue * 0.65 }, .large()] }
+   }
+   let tag = 809151
+   guard controller.view.viewWithTag(tag) == nil else { return }
+   let effect: UIVisualEffect
+   if #available(iOS 26.0, *) {
+    let glass = UIGlassEffect(style: .regular)
+    glass.tintColor = UIColor.white.withAlphaComponent(0.85)
+    effect = glass
+   } else { effect = UIBlurEffect(style: .systemMaterialLight) }
+   let backdrop = UIVisualEffectView(effect: effect)
+   backdrop.tag = tag
+   backdrop.isUserInteractionEnabled = false
+   backdrop.frame = controller.view.bounds
+   backdrop.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+   controller.view.backgroundColor = .clear
+   controller.view.insertSubview(backdrop, at: 0)
+  } }
   Function("monotonicTime") { PresenceEngine.mono()*1000 }
   AsyncFunction("configure") { [weak self] (url:String,key:String) in
    PrivateHTTPCache.prepareOnce()

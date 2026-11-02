@@ -868,3 +868,9 @@ Mapの最新へ中央化、SmoothSurfaceへblurIntensity追加、チャットに
 - R15/R19/R21。readErrorと送信errorを分離し、安定したreload callbackを親Mapのバナーへ接続。取得エラーのOKを再読み込み＋待機spinnerへ変更。再試行可能なまま保持し、成功時に除去。通知を閉じたことを通信成功と扱わない。
 - OKの文字・カード/ボタン角丸・ボタン背景blur・入力角丸16ptを修正。
 - 型チェック/Lint成功。変更したuseStreetChatに対するchat-drag-stateテスト1件成功。無関係なDB試験/ネイティブ再ビルドは省略。実機表示・再読み込み操作は未確認。33タスク/固定残4件は変更しない。
+
+## チェックポイント151：iOS標準入街シートと演出
+- R15/R19/R21。StreetEntrySheetをpageSheetへ、背景blurをMapに固定。PresenceNativeModuleにUI専用prepareEntrySheetを追加。UIKit公開ヘッダーのUIGlassEffectと既存Expo module構成を確認し、iOS26 glass/旧OSmaterialのavailability分岐を実装。認証/DB/入街判定は変更しない。
+- legacyのRainCloud/profile-cardを参照。新EntryAnimationは3×3ドット、分離ロゴ、回転ring、成功ring→check。ユーザーの9×9訂正を反映。素材原本を保存。
+- 型チェック・Lint成功。Debugビルド成功（0 errors/3 warnings、/tmp/yumegaoka-entry151.log）。ネイティブ変更があるためこの1回のビルドを実施。JS調整後の再ネイティブビルドは省略。
+- devicectl転送成功（installation 3FED2D8D-AE31-4A8D-BA5E-0F8B35CE167E）。実機のglass外観、シート高さ遷移、ドット・円周・チェックの見え方、スワイプ閉じは未確認。実NFCはADP依存のまま。33タスク/固定残4件は変更なし。
