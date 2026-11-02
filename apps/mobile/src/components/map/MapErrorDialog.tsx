@@ -1,5 +1,13 @@
 import { useState } from "react";
-import { Image, Modal, Pressable, StyleSheet, Text, View } from "react-native";
+import {
+  Image,
+  Modal,
+  Platform,
+  Pressable,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
 import { BlurView } from "expo-blur";
 import { SmoothSurface } from "./SmoothSurface";
 export function MapErrorDialog({ message }: { message: string }) {
@@ -23,12 +31,12 @@ export function MapErrorDialog({ message }: { message: string }) {
         <BlurView intensity={35} tint="dark" style={StyleSheet.absoluteFill} />
         <SmoothSurface
           color="#222222"
-          radius={28}
+          radius={36}
           style={{
             width: "100%",
             maxWidth: 360,
             minHeight: 230,
-            borderRadius: 28,
+            borderRadius: 36,
             borderCurve: "continuous",
             overflow: "hidden",
             padding: 20,
@@ -66,14 +74,27 @@ export function MapErrorDialog({ message }: { message: string }) {
             onPress={onClose}
             style={{
               marginTop: "auto",
-              width: "46%",
-              borderRadius: 28,
-              backgroundColor: "#ffffffb3",
+              width: "42%",
+              borderRadius: 24,
+              overflow: "hidden",
               padding: 12,
               alignItems: "center",
             }}
           >
-            <Text style={{ color: "black", fontWeight: "700", fontSize: 20 }}>
+            <BlurView
+              pointerEvents="none"
+              intensity={85}
+              tint="light"
+              style={StyleSheet.absoluteFill}
+            />
+            <Text
+              style={{
+                color: "black",
+                fontWeight: "700",
+                fontSize: 16,
+                fontFamily: Platform.OS === "ios" ? "ui-rounded" : undefined,
+              }}
+            >
               OK
             </Text>
           </Pressable>

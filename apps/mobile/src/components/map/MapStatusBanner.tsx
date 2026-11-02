@@ -1,19 +1,43 @@
 import { useEffect, useState } from "react";
-import { Animated, Image, Pressable, Text, View } from "react-native";
+import {
+  ActivityIndicator,
+  Animated,
+  Image,
+  Platform,
+  Pressable,
+  Text,
+  View,
+} from "react-native";
 import { SmoothSurface } from "./SmoothSurface";
 
 /** Dismissing this notice never changes the underlying visit or observation state. */
 export function MapStatusBanner({
   message,
   children,
+  actionLabel = "OK",
+  onAction,
+  autoDismiss = true,
 }: {
   message: string;
+  actionLabel?: string;
+  onAction?: () => Promise<void>;
+  autoDismiss?: boolean;
   children?: React.ReactNode;
 }) {
+  const [busy, setBusy] = useState(false);
   const [visible, setVisible] = useState(true);
   const [progress] = useState(() => new Animated.Value(0));
   const [appearance] = useState(() => new Animated.Value(0));
   useEffect(() => {
+    const enter = Animated.timing(appearance, {
+      toValue: 1,
+      duration: 220,
+      useNativeDriver: false,
+    });
+    if (!autoDismiss) {
+      enter.start();
+      return () => enter.stop();
+    }
     const animation = Animated.sequence([
       Animated.timing(appearance, {
         toValue: 1,
@@ -35,7 +59,7 @@ export function MapStatusBanner({
       if (finished) setVisible(false);
     });
     return () => animation.stop();
-  }, [appearance, progress]);
+  }, [appearance, progress, autoDismiss]);
   if (!visible) return null;
   return (
     <Animated.View
@@ -93,7 +117,20 @@ export function MapStatusBanner({
           </View>
           <Pressable
             accessibilityRole="button"
-            onPress={() => setVisible(false)}
+            disabled={busy}
+            accessibilityState={{ busy, disabled: busy }}
+            onPress={async () => {
+              if (!onAction) {
+                setVisible(false);
+                return;
+              }
+              setBusy(true);
+              try {
+                await onAction();
+              } finally {
+                setBusy(false);
+              }
+            }}
             style={{
               backgroundColor: "#ffffffb3",
               borderRadius: 24,
@@ -101,21 +138,34 @@ export function MapStatusBanner({
               paddingVertical: 12,
             }}
           >
-            <Text style={{ color: "black", fontWeight: "700", fontSize: 17 }}>
-              OK
-            </Text>
+            {busy ? (
+              <ActivityIndicator color="black" />
+            ) : (
+              <Text
+                style={{
+                  color: "black",
+                  fontWeight: "700",
+                  fontSize: 14,
+                  fontFamily: Platform.OS === "ios" ? "ui-rounded" : undefined,
+                }}
+              >
+                {actionLabel}
+              </Text>
+            )}
           </Pressable>
         </View>
-        <Animated.View
-          style={{
-            height: 2,
-            backgroundColor: "white",
-            width: progress.interpolate({
-              inputRange: [0, 1],
-              outputRange: ["0%", "100%"],
-            }),
-          }}
-        />
+        {autoDismiss && (
+          <Animated.View
+            style={{
+              height: 2,
+              backgroundColor: "white",
+              width: progress.interpolate({
+                inputRange: [0, 1],
+                outputRange: ["0%", "100%"],
+              }),
+            }}
+          />
+        )}
       </SmoothSurface>
     </Animated.View>
   );

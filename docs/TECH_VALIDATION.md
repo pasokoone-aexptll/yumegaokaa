@@ -863,3 +863,8 @@ Mapの最新へ中央化、SmoothSurfaceへblurIntensity追加、チャットに
 - 共通ActionのPromise待機中spinner/連打抑止を追加し、既存再読み込み呼び出しがPromiseを返すよう接続。チャットreloadだけloadingを開始し、自動ポーリングで繰り返しspinnerを出さない。
 - 型チェック・Lint成功（初回のPromise<boolean>型不整合とEffect/Ref規則エラーは修正後に再確認）。chat-drag-state/chat-window計4件成功。DB/API/native変更なしのためネイティブビルド・DB再試験省略。
 - スイッチ中央位置、OS標準外観、通知タイミング、ダイアログ画像の見え方はiPhone未確認。追加提供されたgirl viewing.pngを目視確認して通知左端へ配置。実機外観は未確認。33タスク/固定残4件は変更なし。
+
+## チェックポイント150：チャット取得エラーを上部通知へ
+- R15/R19/R21。readErrorと送信errorを分離し、安定したreload callbackを親Mapのバナーへ接続。取得エラーのOKを再読み込み＋待機spinnerへ変更。再試行可能なまま保持し、成功時に除去。通知を閉じたことを通信成功と扱わない。
+- OKの文字・カード/ボタン角丸・ボタン背景blur・入力角丸16ptを修正。
+- 型チェック/Lint成功。変更したuseStreetChatに対するchat-drag-stateテスト1件成功。無関係なDB試験/ネイティブ再ビルドは省略。実機表示・再読み込み操作は未確認。33タスク/固定残4件は変更しない。

@@ -13,7 +13,7 @@ import { streetMapStyles as styles } from "../../components/streetMapStyles";
 import { mapStyle } from "../../lib/mapStyle";
 import { StreetChat } from "../../components/StreetChat";
 import { router, useLocalSearchParams } from "expo-router";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   Keyboard,
   ActivityIndicator,
@@ -30,6 +30,10 @@ import { liveCells } from "../../lib/presence";
 import { localEntry, nfcDisabled } from "../../lib/development";
 import { useStreetMap } from "../../hooks/useStreetMap";
 export default function Street() {
+  const [chatRead, setChatRead] = useState<{
+    error: string;
+    reload: () => Promise<void>;
+  } | null>(null);
   const camera = useRef<CameraRef>(null);
   const params = useLocalSearchParams<{
     longitude?: string;
@@ -172,6 +176,14 @@ export default function Street() {
         <View style={{ minHeight: 48 }}>
           <PresenceHeader icons={presenceIcons} />
         </View>
+        {!!chatRead?.error && (
+          <MapStatusBanner
+            message={chatRead.error}
+            actionLabel="再読み込み"
+            onAction={chatRead.reload}
+            autoDismiss={false}
+          />
+        )}
         {!["未参加", "気配を観測中"].includes(state.status) && (
           <MapStatusBanner key={state.status} message={state.status}>
             {state.visit.can_update === false &&
@@ -234,7 +246,7 @@ export default function Street() {
           </Pressable>
         </View>
       </SafeAreaView>
-      <StreetChat />
+      <StreetChat onReadStatus={setChatRead} />
       {!!error && <MapErrorDialog key={error} message={error} />}
       <StreetEntrySheet
         sheet={sheet}

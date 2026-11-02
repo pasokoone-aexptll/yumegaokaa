@@ -32,8 +32,18 @@ import {
 } from "react-native";
 import { useStreetChat, type Message } from "../hooks/useStreetChat";
 
-export function StreetChat({ mapError = "" }: { mapError?: string }) {
+export function StreetChat({
+  mapError = "",
+  onReadStatus,
+}: {
+  mapError?: string;
+  onReadStatus?: (status: {
+    error: string;
+    reload: () => Promise<void>;
+  }) => void;
+}) {
   const {
+    readError,
     pending,
     pendingText,
     confirmedEchoes,
@@ -59,6 +69,9 @@ export function StreetChat({ mapError = "" }: { mapError?: string }) {
     loadMore,
     reload,
   } = useStreetChat();
+  useEffect(() => {
+    onReadStatus?.({ error: readError, reload });
+  }, [readError, reload, onReadStatus]);
   const { height } = useWindowDimensions();
   const insets = useSafeAreaInsets();
   const { root, overlap, measure, translation } = useKeyboardOverlap(
@@ -453,7 +466,7 @@ export function StreetChat({ mapError = "" }: { mapError?: string }) {
                   color="#ffffff26"
                   blurIntensity={0}
                   backdrop={<ProgressiveBlur edge="solid" intensity={85} />}
-                  radius={14}
+                  radius={16}
                   style={styles.inputRow}
                 >
                   <TextInput
@@ -552,7 +565,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     minHeight: 46,
     alignItems: "center",
-    borderRadius: 14,
+    borderRadius: 16,
     borderCurve: "continuous",
     overflow: "hidden",
   },

@@ -175,14 +175,14 @@ export function useStreetChat() {
     older.current = true;
     void loadRef.current(true);
   }
-  async function reload() {
+  const reload = useCallback(async () => {
     setLoading(true);
     try {
       await loadRef.current();
     } finally {
       setLoading(false);
     }
-  }
+  }, []);
   function followLatest() {
     older.current = false;
     setHasNew(false);
@@ -194,7 +194,8 @@ export function useStreetChat() {
     readingHistory: older,
     items,
     ...composer,
-    error: composer.error || error,
+    error: composer.error,
+    readError: error,
     expanded,
     loading,
     action,
