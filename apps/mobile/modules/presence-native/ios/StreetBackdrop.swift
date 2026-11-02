@@ -16,6 +16,16 @@ final class StreetBackdrop: ExpoView {
     maskSurface.layer.addSublayer(gradient)
   }
 
+  func setActive(_ active: Bool) {
+    guard window != nil else {
+      effect.effect = active ? UIBlurEffect(style: .systemMaterialDark) : nil
+      return
+    }
+    UIView.animate(withDuration: 0.24, delay: 0, options: [.beginFromCurrentState, .allowUserInteraction]) {
+      self.effect.effect = active ? UIBlurEffect(style: .systemMaterialDark) : nil
+    }
+  }
+
   override func layoutSubviews() {
     super.layoutSubviews()
     effect.frame = bounds

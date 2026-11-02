@@ -835,3 +835,12 @@ Mapの最新へ中央化、SmoothSurfaceへblurIntensity追加、チャットに
 - 型チェック・Lint・keyboard-overlap/chat-drag-state計2件成功。最初のbottom-tabs型import不可は追加依存せず除去。Swiftを含むDebugビルド成功（0 errors/3 warnings、/tmp/yumegaoka-backdrop145.log）。ネイティブ変更のため今回はビルド必要。DB/API/認証変更なし、関連しないバックエンドテストは省略。
 - 最終的な実機のぼかし・キーボード追従・スクロール操作感は未確認。固定33タスクと残4件を変更しない。
 - devicectlで開発版インストール成功（installation 8E900299-E652-43D8-89A2-562238C9CD51）、10.0.20.108:8081のdevelopment-client URLで起動成功。インストール・起動を外観検証済みとは扱わない。
+
+## チェックポイント146：チャット空白タッチとキーボード時の末尾
+- R15/R19/R21。ユーザーから空白の地図操作がチャットドラッグへ奪われる、拡大時背景blur不足、入力時に末尾投稿が隠れると報告。
+- ChatTouchRegion.swiftでsurfaceのhitTestを名前/本文/履歴取得用region内の対象に限定。ScrollView自体のpanを維持し、外側の親をbox-noneへ。空白はUIKit hit-testで背後の地図へ通す。アイコン/空行/行の右余白はスクロール開始対象外。
+- StreetBackdropにactiveのeffectアニメーションを追加。拡大時Mapの地図/ヘッダーをぼかし、チャット/入力/ロゴは手前に保持（タブバーはMap外）。
+- chatGeometryでキーボード前後のviewportと上paddingを固定。自動keyboard/content insetを無効化。可視クリップ/フェードと全体translateだけ変える。
+- 型チェック・Lint成功。chat-geometry、chat-drag-state、keyboard-overlapの計4件成功。実機のタッチ伝播/最新行維持はこれらのモデル検査だけでは保証しない。
+- 初回Debugビルドは新規SwiftがPodsプロジェクトへ未登録で失敗。pod installで登録後に再実行。関連native変更のため今回ビルド必要。DB/API変更なし、無関係なバックエンドテスト省略。33タスクと固定残4件は変更なし。
+- 再ビルド成功（0 errors/3 warnings、/tmp/yumegaoka-chat146.log）。devicectlでインストール成功（4A3FC55B-A9C0-4C7D-8F60-2872991117BD）、Metro接続URL付き起動成功。地図ピンチ/本文ドラッグ/入力時の末尾の実機動作確認は未実施。インストール成功だけではDEVICE_VERIFIEDへ加算しない。

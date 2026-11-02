@@ -13,10 +13,13 @@ const Mask = NativeMaskedView as unknown as ComponentType<
 export function ProgressiveBlur({
   edge,
   intensity = 30,
+  active = true,
 }: {
   edge: "top" | "bottom" | "solid";
   intensity?: number;
+  active?: boolean;
 }) {
+  if (!active) return null;
   if (edge === "solid")
     return (
       <BlurView

@@ -14,7 +14,7 @@
 | イベント | 提供pin.pngへ置換。日時・題名と詳細への遷移を維持 | EventCloudPin、StreetMapMarkers |
 | 募集 | 現在の名前・題名・地点・詳細接続を維持。当日pool画像の接続は後工程 | StreetMapMarkers |
 | 操作ボタン | ピン作成、現在地へ戻る。位置公開とは別 | (tabs)/index.tsx、MapAsset |
-| チャット | 本人画像・名前・日時・本文・長押し操作を維持。ドラッグ中だけ拡大、離すと縮小。履歴・閲覧意図はリセットしない | StreetChat、useStreetChat.endHistoryDrag |
+| チャット | 本人画像・名前・日時・本文・長押し操作を維持。本文・名前の領域から始めたドラッグ中だけ拡大、離すと縮小。空白からの地図操作を通す。履歴・閲覧意図はリセットしない | StreetChat、useStreetChat.endHistoryDrag |
 | 送信状態 | 最新指示：送信中は本文を薄く仮表示、サーバー確認後は通常濃度。未確認/復元失敗/投稿制限/通信エラーは入力欄上のインライン表示。再取得・結果確認・取消操作を維持。自動Modalなし | useChatComposer、MapFeedback、StreetChat |
 | 4タブ | Home／Map＋街チャット／お知らせ／Settings。旧/notificationsリンクは/inboxへ移す | (tabs)/_layout、inbox、NotificationsScreen |
 | 角丸 | 新規パネルはfigma-squircle 1.1.0でcornerSmoothing=0.6。円形アイコン・OS標準Switch/AlertはOS描画 | SmoothSurface |
@@ -61,7 +61,7 @@ cp139：縮小時にも先頭へ到達できるよう、固定viewportと縮小�
 - Map/LocationPicker/街範囲プレビュー/全マーカーを共通PlatformMapの型へ接続。MetroがiOS専用実装を選ぶ。Android/defaultは既存MapLibreを保持。react-native.config.jsでreact-native-mapsのAndroid自動リンクを無効化し、Google Mapsへ意図せず移行しない。
 - iOSの経緯度は[lng,lat]からMapKitのlongitude/latitudeへ変換。カメラのzoomはaltitudeへ変換。初回/詳細地点/現在地の移動を共通flyToへ維持。街範囲Polygonの穴も維持。利用者の現在地レイヤーは自動公開しない。
 - progressive blurはcp143で帯分割を廃止。iOSはStreetBackdropのUIVisualEffectView本体に連続alphaマスクを適用し地図側0→端側1へ合成する（cp145）。ぼかし半径そのものの連続変更ではない。私有APIは使わない。実機の合成結果/性能は確認待ち。
-- 拡大時の全画面blurを除去し、透明な背面操作遮断だけ維持。方眼なし。履歴末尾padding64→4。先頭の画面高由来paddingと固定viewportは維持。
+- cp146で拡大時のMap全面blurを復帰。チャット/入力/ロゴより背面に置き、地図とヘッダーをぼかす。空白タッチを遮断する透明Viewは除去。方眼なし。履歴末尾padding64→4。先頭の画面高由来paddingと固定viewportは維持。
 - 右の2ボタンは46×46pt。cp144で両SVGの可視path境界に基づく正方形viewBoxを使い、26ptの表示枠内で図形の中心・サイズを揃える。原本素材は保持。
 
 ## cp142：投稿のフェードと非モーダル状態表示
@@ -89,3 +89,10 @@ cp139：縮小時にも先頭へ到達できるよう、固定viewportと縮小�
 - 入力欄は同じnative部品のsolidモードを角丸内に置く。投稿マスクや半透明親の内側へぼかしを入れない。ロゴは引き続き前面。
 - キーボードイベント時の非同期measure待ちを除去。事前計測したルート＋初期計測前の画面高/下部safe area/標準タブ高によるfallbackで即座に移動量を決定し、native-driverで入力欄と履歴を同時移動。didShow/didHideでも最終位置を再確認する。
 - 根拠：https://developer.apple.com/documentation/uikit/uivisualeffectview/ （祖先maskとalpha制約）。実機での最終的な操作感・ぼかし外観の確認は別途必要。
+
+## cp146：本文からのスクロール・フォーカス背景・入力時の末尾維持
+- R15/R19/R21。iOSのChatTouchRegion(surface)はhitTestの結果が内側の明示したChatTouchRegion（名前/本文/履歴取得）を含む場合だけ受理。それ以外はnilを返し、地図へ通す。本文から開始したタッチはUIScrollViewが保持するため、指が枠外へ動いても継続。行全幅や履歴paddingは開始対象にしない。長押しメニューは維持。
+- 親Animated/Viewはbox-none。空白を押した後からスクロール無効化する方式ではなく、最初のタッチ対象選定時に振り分ける。Androidの同等native判定は移植時の未検証事項で、現段階で成立を保証しない。
+- Map背景のsolid blurをチャットの背面に置き、expandedに合わせてUIKit effectを240msで切替。親alphaを変えずに実装。本文・入力・ロゴは手前。これはMap画面領域（地図・ヘッダー）への効果で、別階層のタブバーは対象外。
+- chatGeometryはキーボード高でScrollViewの高さ/paddingを変えない。キーボード高は親の可視範囲の制限と全体移動だけへ反映。ScrollViewの自動content/keyboard insetを無効化し二重回避を避ける。フェード開始位置は可視範囲へ追従。
+- テストはviewport/topPadding/末尾offsetがキーボード前後で不変、向き/入力部高さ変更時の再計算、従来の履歴維持・キーボード移動の計4件。実機での地図ピンチ、本文ドラッグ、最新投稿を表示した入力開始は未確認。

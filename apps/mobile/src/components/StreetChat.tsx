@@ -1,3 +1,5 @@
+import { ChatTouchRegion } from "./map/ChatTouchRegion";
+import { chatGeometry } from "../lib/chatGeometry";
 import { useKeyboardOverlap } from "../hooks/useKeyboardOverlap";
 import { ChatFade } from "./map/ChatFade";
 import { useEffect, useRef, useState, type ComponentRef } from "react";
@@ -62,20 +64,11 @@ export function StreetChat({ mapError = "" }: { mapError?: string }) {
   );
   const [availableHeight, setAvailableHeight] = useState(height);
   const [footerHeight, setFooterHeight] = useState(66);
-  const collapsedHeight = Math.max(
-    footerHeight,
-    Math.min(height * 0.36, availableHeight - overlap),
-  );
-  const expandedHeight = Math.max(
-    footerHeight,
-    Math.min(height * 0.74, availableHeight - overlap),
-  );
-  const historyViewportHeight = Math.max(0, expandedHeight - footerHeight);
-  const collapsedHistoryHeight = Math.max(0, collapsedHeight - footerHeight);
-  // Reserve the clipped region even while expanded. Changing this during a drag
-  // would move the touched message again. At offset zero, the first row is visible
-  // just below the collapsed window's top edge on every screen size.
-  const historyTopPadding = historyViewportHeight - collapsedHistoryHeight;
+  const geometry = chatGeometry(height, availableHeight, footerHeight, overlap);
+  const collapsedHeight = geometry.collapsed;
+  const expandedHeight = geometry.expanded;
+  const historyViewportHeight = geometry.viewport;
+  const historyTopPadding = geometry.topPadding;
   const [awayFromLatest, setAwayFromLatest] = useState(false);
   const [expansion] = useState(() => new Animated.Value(0));
   useEffect(() => {
@@ -172,11 +165,7 @@ export function StreetChat({ mapError = "" }: { mapError?: string }) {
         measure();
       }}
     >
-      <View
-        pointerEvents={expanded ? "auto" : "none"}
-        onTouchStart={Keyboard.dismiss}
-        style={StyleSheet.absoluteFill}
-      />
+      <ProgressiveBlur edge="solid" active={expanded} />
       <Animated.View
         style={[
           StyleSheet.absoluteFill,
@@ -216,6 +205,7 @@ export function StreetChat({ mapError = "" }: { mapError?: string }) {
             </Svg>
           </View>
           <Animated.View
+            pointerEvents="box-none"
             style={{
               height: expansion.interpolate({
                 inputRange: [0, 1],
@@ -225,129 +215,166 @@ export function StreetChat({ mapError = "" }: { mapError?: string }) {
               flexShrink: 1,
             }}
           >
-            <View style={styles.history} onTouchStart={Keyboard.dismiss}>
-              <ChatFade
-                fadeTop={expansion.interpolate({
-                  inputRange: [0, 1],
-                  outputRange: [historyTopPadding, 0],
-                })}
-                style={{
-                  position: "absolute",
-                  left: 0,
-                  right: 0,
-                  bottom: 0,
-                  height: historyViewportHeight,
-                }}
-              >
-                <ScrollView
-                  ref={scroll}
-                  // Keep the native scroll viewport fixed while the parent reveals it.
-                  // Resizing its top edge during a drag moves the touched row away from the finger.
-                  style={{ flex: 1 }}
-                  maintainVisibleContentPosition={{ minIndexForVisible: 1 }}
-                  onContentSizeChange={() => {
-                    if (!readingHistory.current)
-                      scroll.current?.scrollToEnd({ animated: false });
-                  }}
-                  scrollEventThrottle={32}
-                  onScroll={({
-                    nativeEvent: {
-                      contentOffset,
-                      contentSize,
-                      layoutMeasurement,
-                    },
-                  }) => {
-                    setAwayFromLatest(
-                      contentSize.height -
-                        layoutMeasurement.height -
-                        contentOffset.y >
-                        48,
-                    );
-                  }}
-                  onScrollBeginDrag={beginHistory}
-                  onScrollEndDrag={endHistoryDrag}
-                  onTouchCancel={endHistoryDrag}
-                  keyboardShouldPersistTaps="handled"
-                  keyboardDismissMode="interactive"
-                  contentContainerStyle={{
-                    minHeight: historyViewportHeight,
-                    justifyContent: "flex-end",
-                    paddingHorizontal: 12,
-                    paddingTop: historyTopPadding,
-                    paddingBottom: 4,
+            <View
+              pointerEvents="box-none"
+              style={styles.history}
+              onTouchStart={Keyboard.dismiss}
+            >
+              <ChatTouchRegion surface style={StyleSheet.absoluteFill}>
+                <ChatFade
+                  fadeTop={expansion.interpolate({
+                    inputRange: [0, 1],
+                    outputRange: [
+                      historyViewportHeight -
+                        Math.max(0, collapsedHeight - footerHeight),
+                      historyViewportHeight -
+                        Math.max(0, expandedHeight - footerHeight),
+                    ],
+                  })}
+                  style={{
+                    position: "absolute",
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    height: historyViewportHeight,
                   }}
                 >
-                  <Pressable onPress={loadMore} accessibilityRole="button">
-                    <Text style={styles.more}>過去の会話を読む</Text>
-                  </Pressable>
-                  {loading && <ActivityIndicator color="#ffffff80" />}
-                  {!loading && !error && !items.length && (
-                    <Text style={styles.more}>まだ会話はありません</Text>
-                  )}
-                  {[...items].reverse().map((m) => (
-                    <Pressable
-                      key={m.id}
-                      onLongPress={() => menu(m)}
-                      style={styles.message}
-                    >
-                      <Avatar
-                        path={m.avatar_path}
-                        version={m.avatar_updated_at}
-                        name={m.display_name}
-                        size={34}
-                      />
-                      <View style={{ flex: 1, minWidth: 0 }}>
-                        <Text style={styles.author}>
-                          {m.display_name}{" "}
-                          {new Date(m.created_at).toLocaleTimeString()}
-                        </Text>
-                        <Text style={styles.body}>
-                          {m.deleted
-                            ? "削除されたメッセージ"
-                            : m.kind === "arrival"
-                              ? "街に参加しました"
-                              : m.body}
-                        </Text>
-                      </View>
+                  <ScrollView
+                    ref={scroll}
+                    // Keep the native scroll viewport fixed while the parent reveals it.
+                    // Resizing its top edge during a drag moves the touched row away from the finger.
+                    style={{ flex: 1 }}
+                    automaticallyAdjustKeyboardInsets={false}
+                    automaticallyAdjustContentInsets={false}
+                    contentInsetAdjustmentBehavior="never"
+                    maintainVisibleContentPosition={{ minIndexForVisible: 1 }}
+                    onContentSizeChange={() => {
+                      if (!readingHistory.current)
+                        scroll.current?.scrollToEnd({ animated: false });
+                    }}
+                    scrollEventThrottle={32}
+                    onScroll={({
+                      nativeEvent: {
+                        contentOffset,
+                        contentSize,
+                        layoutMeasurement,
+                      },
+                    }) => {
+                      setAwayFromLatest(
+                        contentSize.height -
+                          layoutMeasurement.height -
+                          contentOffset.y >
+                          48,
+                      );
+                    }}
+                    onScrollBeginDrag={beginHistory}
+                    onScrollEndDrag={endHistoryDrag}
+                    onTouchCancel={endHistoryDrag}
+                    keyboardShouldPersistTaps="handled"
+                    keyboardDismissMode="interactive"
+                    contentContainerStyle={{
+                      minHeight: historyViewportHeight,
+                      justifyContent: "flex-end",
+                      paddingHorizontal: 12,
+                      paddingTop: historyTopPadding,
+                      paddingBottom: 4,
+                    }}
+                  >
+                    <Pressable onPress={loadMore} accessibilityRole="button">
+                      <ChatTouchRegion style={{ alignSelf: "flex-start" }}>
+                        <Text style={styles.more}>過去の会話を読む</Text>
+                      </ChatTouchRegion>
                     </Pressable>
-                  ))}
-                  {confirmedEchoes
-                    .filter((e) => !items.some((m) => m.id === e.id))
-                    .map((e) => (
-                      <View key={`confirmed-${e.id}`} style={styles.message}>
-                        <View style={{ width: 34 }} />
+                    {loading && <ActivityIndicator color="#ffffff80" />}
+                    {!loading && !error && !items.length && (
+                      <Text style={styles.more}>まだ会話はありません</Text>
+                    )}
+                    {[...items].reverse().map((m) => (
+                      <Pressable
+                        key={m.id}
+                        onLongPress={() => menu(m)}
+                        style={styles.message}
+                      >
+                        <Avatar
+                          path={m.avatar_path}
+                          version={m.avatar_updated_at}
+                          name={m.display_name}
+                          size={34}
+                        />
+                        <View style={{ flex: 1, minWidth: 0 }}>
+                          <ChatTouchRegion
+                            style={{
+                              alignSelf: "flex-start",
+                              maxWidth: "100%",
+                            }}
+                          >
+                            <Text style={styles.author}>
+                              {m.display_name}{" "}
+                              {new Date(m.created_at).toLocaleTimeString()}
+                            </Text>
+                            <Text style={styles.body}>
+                              {m.deleted
+                                ? "削除されたメッセージ"
+                                : m.kind === "arrival"
+                                  ? "街に参加しました"
+                                  : m.body}
+                            </Text>
+                          </ChatTouchRegion>
+                        </View>
+                      </Pressable>
+                    ))}
+                    {confirmedEchoes
+                      .filter((e) => !items.some((m) => m.id === e.id))
+                      .map((e) => (
+                        <View key={`confirmed-${e.id}`} style={styles.message}>
+                          <View style={{ width: 34 }} />
+                          <View style={{ flex: 1 }}>
+                            <Text style={styles.author}>自分</Text>
+                            <ChatTouchRegion
+                              style={{
+                                alignSelf: "flex-start",
+                                maxWidth: "100%",
+                              }}
+                            >
+                              <Text style={styles.body}>{e.body}</Text>
+                            </ChatTouchRegion>
+                          </View>
+                        </View>
+                      ))}
+                    {pendingText !== null && (
+                      <View
+                        style={[styles.message, { opacity: 0.45 }]}
+                        accessibilityLabel={`${busy ? "送信中" : "結果未確認"}：${pendingText}`}
+                      >
+                        <View
+                          style={{
+                            width: 34,
+                            alignItems: "center",
+                            justifyContent: "center",
+                          }}
+                        >
+                          {busy && (
+                            <ActivityIndicator size="small" color="white" />
+                          )}
+                        </View>
                         <View style={{ flex: 1 }}>
-                          <Text style={styles.author}>自分</Text>
-                          <Text style={styles.body}>{e.body}</Text>
+                          <Text style={styles.author}>
+                            自分 · {busy ? "送信中" : "結果未確認"}
+                          </Text>
+                          <ChatTouchRegion
+                            style={{
+                              alignSelf: "flex-start",
+                              maxWidth: "100%",
+                            }}
+                          >
+                            <Text style={styles.body}>{pendingText}</Text>
+                          </ChatTouchRegion>
                         </View>
                       </View>
-                    ))}
-                  {pendingText !== null && (
-                    <View
-                      style={[styles.message, { opacity: 0.45 }]}
-                      accessibilityLabel={`${busy ? "送信中" : "結果未確認"}：${pendingText}`}
-                    >
-                      <View
-                        style={{
-                          width: 34,
-                          alignItems: "center",
-                          justifyContent: "center",
-                        }}
-                      >
-                        {busy && (
-                          <ActivityIndicator size="small" color="white" />
-                        )}
-                      </View>
-                      <View style={{ flex: 1 }}>
-                        <Text style={styles.author}>
-                          自分 · {busy ? "送信中" : "結果未確認"}
-                        </Text>
-                        <Text style={styles.body}>{pendingText}</Text>
-                      </View>
-                    </View>
-                  )}
-                </ScrollView>
-              </ChatFade>
+                    )}
+                  </ScrollView>
+                </ChatFade>
+              </ChatTouchRegion>
               <View pointerEvents="none" style={styles.watermark}>
                 <MapAsset name="DreamCloud Logo" width={147} height={22} />
               </View>

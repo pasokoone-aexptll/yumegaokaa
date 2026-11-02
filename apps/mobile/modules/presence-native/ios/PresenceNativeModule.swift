@@ -7,6 +7,11 @@ public class PresenceNativeModule: Module {
   Events("onChange")
   View(StreetBackdrop.self) {
    Prop("edge") { (view: StreetBackdrop, value: String) in view.edge = value }
+   Prop("active", true) { (view: StreetBackdrop, value: Bool) in view.setActive(value) }
+  }
+  View(ChatTouchRegion.self) {
+   ViewName("ChatTouchRegion")
+   Prop("surface", false) { (view: ChatTouchRegion, value: Bool) in view.surface = value }
   }
   Function("monotonicTime") { PresenceEngine.mono()*1000 }
   AsyncFunction("configure") { [weak self] (url:String,key:String) in
