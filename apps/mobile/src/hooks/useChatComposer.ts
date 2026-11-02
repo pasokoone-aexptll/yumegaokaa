@@ -9,6 +9,9 @@ import { streetID } from "../lib/native";
 export function useChatComposer(onSent: () => void, restricted: boolean) {
   const [text, setText] = useState("");
   const [pendingText, setPendingText] = useState<string | null>(null);
+  const [confirmedEchoes, setConfirmedEchoes] = useState<
+    { id: string; body: string }[]
+  >([]);
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
   const [restoring, setRestoring] = useState(true);
@@ -62,8 +65,16 @@ export function useChatComposer(onSent: () => void, restricted: boolean) {
     const body = pendingText ?? text.trim();
     setPendingText(body);
     try {
-      await submitCommand("chat_send", { street_id: streetID, body });
+      const result = await submitCommand<{ id: string }>("chat_send", {
+        street_id: streetID,
+        body,
+      });
       if (gen !== generation.current) return;
+      if (!result?.id) throw Error("missing_message_identity");
+      setConfirmedEchoes((old) => [
+        ...old.filter((e) => e.id !== result.id),
+        { id: result.id, body },
+      ]);
       setText("");
       setPendingText(null);
       onSent();
@@ -83,10 +94,15 @@ export function useChatComposer(onSent: () => void, restricted: boolean) {
     setBusy(true);
     const gen = generation.current;
     try {
-      const completed = await cancelPendingCommand("chat_send");
+      const completed = await cancelPendingCommand<{ id: string }>("chat_send");
       if (gen !== generation.current) return;
       setPendingText(null);
       if (completed) {
+        if (completed.id)
+          setConfirmedEchoes((old) => [
+            ...old.filter((e) => e.id !== completed.id),
+            { id: completed.id, body: pendingText ?? text },
+          ]);
         setText("");
         setError("送信済みでした。削除する場合は投稿を長押ししてください。");
         onSent();
@@ -101,7 +117,13 @@ export function useChatComposer(onSent: () => void, restricted: boolean) {
       if (gen === generation.current) setBusy(false);
     }
   }
+  const reconcileEchoes = useCallback((ids: string[]) => {
+    setConfirmedEchoes((old) => old.filter((e) => !ids.includes(e.id)));
+  }, []);
   return {
+    pendingText,
+    confirmedEchoes,
+    reconcileEchoes,
     text,
     setText,
     error,

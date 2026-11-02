@@ -810,3 +810,9 @@ Mapの最新へ中央化、SmoothSurfaceへblurIntensity追加、チャットに
 - 末尾padding64→4、方眼・拡大時全画面blur除去。20帯の強度差による端方向progressive blur、2操作ボタン46×46と素材内余白補正。既存先頭padding/固定viewport維持。
 - 型チェック/Lint成功（初回MapLibre ref/children型差をadapterで修正）。Debugビルド成功0 errors/2 warnings、/tmp/yumegaoka-applemap141.log。devicectl install成功（bundle jp.yumegaoka.development、installation 24FABDB7-6BA4-4C6D-BCFC-C38F11CC1622）。Release配布なし。
 - 更新前の旧nativeへFast Refreshした際にRNMapsAirModule不足を検知。新native導入後の起動で再確認。Apple Maps上の各ピン押下/境界/位置選択、blurの帯境界/性能、実表示の確認はユーザー未確認。ビルド成功を全機能DEVICE_VERIFIEDへ加算しない。API/DB/公開方式の変更なし。
+- 最終インストール後のprocess launchは端末ロックで拒否（CoreDevice10002/FBS Locked）。インストール成功と起動成功を区別する。ユーザーがロック解除して「夢ヶ丘 開発用」を開く必要あり。更新後の実画面は未確認。
+
+## チェックポイント142：投稿alphaフェードとローカル送信表示
+- ChatFadeのMaskedViewで上端40ptをalpha0→1。既にPodfile.lockとcp141 nativeに存在するRNCMaskedView0.3.2を直接依存へ明記。RN0.88のNativeMethods型との不整合は公開propsに限定したwrapperで扱う。ネイティブ再ビルドなし。
+- useChatComposerでpendingTextと確認済みechoを管理。id付きサーバー応答で通常表示へ、一覧取得の同一IDでecho除去。失敗ではpending維持、取消結果が完了なら確認済みecho。UIに直接DB処理を追加せず、commands永続/再送処理は未変更。MapFeedbackはModal/自動Alertを廃止しインライン化。送信中は行内表示のみ。
+- chat-composer5件＋chat-drag-state1件、計6件成功。復元/取消/保存読取失敗、送信中→ID確認→一覧照合、応答紛失→確認の状態を検証。型チェック・Lint成功。Metro差分bundle生成確認。実機のフェード合成/即時表示/スクロール位置は未確認。実DB送信処理は変更していないため全件再試験なし。33タスクの達成率据置き、pushなし。

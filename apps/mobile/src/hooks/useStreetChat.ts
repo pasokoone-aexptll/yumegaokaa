@@ -25,6 +25,7 @@ export function useStreetChat() {
     [expanded, setExpanded] = useState(false),
     [loading, setLoading] = useState(true),
     [hasNew, setHasNew] = useState(false);
+  const reconcileEchoes = useRef<(ids: string[]) => void>(() => {});
   const fetching = useRef(false),
     generation = useRef(0),
     older = useRef(false),
@@ -78,6 +79,7 @@ export function useStreetChat() {
         setHasNew(true);
       itemsRef.current = next.filter((m) => !localBlocks.hidden(m.author_id));
       setItems(itemsRef.current);
+      reconcileEchoes.current(itemsRef.current.map((m) => m.id));
       setError("");
     } catch {
       if (gen === generation.current)
@@ -128,6 +130,9 @@ export function useStreetChat() {
     older.current = false;
     void loadRef.current();
   }, !!chatRestrictedUntil);
+  useEffect(() => {
+    reconcileEchoes.current = composer.reconcileEchoes;
+  }, [composer.reconcileEchoes]);
   async function action(op: string, p: Record<string, unknown>) {
     generation.current++;
     try {

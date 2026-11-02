@@ -1,3 +1,4 @@
+import { ChatFade } from "./map/ChatFade";
 import { useEffect, useRef, useState, type ComponentRef } from "react";
 import Svg, { Defs, LinearGradient, Stop, Rect } from "react-native-svg";
 import {
@@ -30,6 +31,8 @@ import { useStreetChat, type Message } from "../hooks/useStreetChat";
 export function StreetChat({ mapError = "" }: { mapError?: string }) {
   const {
     pending,
+    pendingText,
+    confirmedEchoes,
     revise,
     restoring,
     restoreFailed,
@@ -77,43 +80,39 @@ export function StreetChat({ mapError = "" }: { mapError?: string }) {
     return () => animation.stop();
   }, [expanded, expansion]);
   const scroll = useRef<ComponentRef<typeof ScrollView>>(null);
-  const notice: MapNotice | null = mapError
-    ? { title: "通信・参加状態", message: mapError }
-    : busy
+  const notice: MapNotice | null = busy
+    ? null
+    : restoreFailed
       ? {
-          title: "送信を確認中",
-          message: "送信結果を確認しています。",
-          busy: true,
+          title: "送信状態を確認できません",
+          message: "前回の送信を確認してから再開してください。",
+          actions: [{ title: "再取得", onPress: () => void restore() }],
         }
-      : restoreFailed
+      : pending
         ? {
-            title: "送信状態を確認できません",
-            message: "前回の送信を確認してから再開してください。",
-            actions: [{ title: "再取得", onPress: () => void restore() }],
+            title: "送信結果が未確認です",
+            message: "送信結果を確認できません。",
+            actions: [
+              { title: "結果を確認", onPress: () => void send() },
+              {
+                title: "未確定の送信を取り消して編集",
+                onPress: () => void revise(),
+              },
+            ],
           }
-        : pending
+        : error
           ? {
-              title: "送信結果が未確認です",
-              message: error || "同じ送信の結果を確認できます。",
-              actions: [
-                { title: "結果を確認", onPress: () => void send() },
-                {
-                  title: "未確定の送信を取り消して編集",
-                  onPress: () => void revise(),
-                },
-              ],
+              title: "通信エラー",
+              message: error,
+              actions: [{ title: "再読み込み", onPress: reload }],
             }
-          : error
+          : chatRestrictedUntil
             ? {
-                title: "通信エラー",
-                message: error,
-                actions: [{ title: "再読み込み", onPress: reload }],
+                title: "投稿制限中",
+                message: `${new Date(chatRestrictedUntil).toLocaleString()}まで投稿できません。`,
               }
-            : chatRestrictedUntil
-              ? {
-                  title: "投稿制限中",
-                  message: `${new Date(chatRestrictedUntil).toLocaleString()}まで投稿できません。`,
-                }
+            : mapError
+              ? { title: "通信・参加状態", message: mapError }
               : null;
   function menu(m: Message) {
     Alert.alert(m.display_name, "操作を選択", [
@@ -185,7 +184,7 @@ export function StreetChat({ mapError = "" }: { mapError?: string }) {
               flexShrink: 1,
             }}
           >
-            <View style={styles.history} onTouchStart={Keyboard.dismiss}>
+            <ChatFade style={styles.history} onTouchStart={Keyboard.dismiss}>
               <ProgressiveBlur edge="bottom" intensity={24} />
               <Svg
                 pointerEvents="none"
@@ -279,6 +278,39 @@ export function StreetChat({ mapError = "" }: { mapError?: string }) {
                     </View>
                   </Pressable>
                 ))}
+                {confirmedEchoes
+                  .filter((e) => !items.some((m) => m.id === e.id))
+                  .map((e) => (
+                    <View key={`confirmed-${e.id}`} style={styles.message}>
+                      <View style={{ width: 34 }} />
+                      <View style={{ flex: 1 }}>
+                        <Text style={styles.author}>自分</Text>
+                        <Text style={styles.body}>{e.body}</Text>
+                      </View>
+                    </View>
+                  ))}
+                {pendingText !== null && (
+                  <View
+                    style={[styles.message, { opacity: 0.45 }]}
+                    accessibilityLabel={`${busy ? "送信中" : "結果未確認"}：${pendingText}`}
+                  >
+                    <View
+                      style={{
+                        width: 34,
+                        alignItems: "center",
+                        justifyContent: "center",
+                      }}
+                    >
+                      {busy && <ActivityIndicator size="small" color="white" />}
+                    </View>
+                    <View style={{ flex: 1 }}>
+                      <Text style={styles.author}>
+                        自分 · {busy ? "送信中" : "結果未確認"}
+                      </Text>
+                      <Text style={styles.body}>{pendingText}</Text>
+                    </View>
+                  </View>
+                )}
               </ScrollView>
               <View pointerEvents="none" style={styles.watermark}>
                 <MapAsset name="DreamCloud Logo" width={147} height={22} />
@@ -314,7 +346,7 @@ export function StreetChat({ mapError = "" }: { mapError?: string }) {
                   </Pressable>
                 </View>
               )}
-            </View>
+            </ChatFade>
             <View
               onLayout={({ nativeEvent }) =>
                 setFooterHeight(nativeEvent.layout.height)
@@ -338,7 +370,7 @@ export function StreetChat({ mapError = "" }: { mapError?: string }) {
                     placeholder="入力…"
                     placeholderTextColor="#ffffff66"
                     maxLength={500}
-                    value={text}
+                    value={pending ? "" : text}
                     onChangeText={setText}
                     accessibilityLabel="街のチャットに入力"
                     style={styles.input}
@@ -360,7 +392,11 @@ export function StreetChat({ mapError = "" }: { mapError?: string }) {
                       !!chatRestrictedUntil ||
                       !text.trim()
                     }
-                    onPress={() => void send()}
+                    onPress={() => {
+                      followLatest();
+                      setAwayFromLatest(false);
+                      void send();
+                    }}
                     style={[styles.send, { opacity: !text.trim() ? 0.4 : 1 }]}
                   >
                     {busy || restoring ? (
