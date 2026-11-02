@@ -155,7 +155,7 @@ export default function Street() {
             top: 0,
             left: 0,
             right: 0,
-            height: 145,
+            height: 190,
           }}
         >
           <ProgressiveBlur edge="top" intensity={30} />

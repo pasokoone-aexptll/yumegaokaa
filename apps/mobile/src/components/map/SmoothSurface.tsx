@@ -11,12 +11,14 @@ export function SmoothSurface({
   color = "#222222",
   radius = 24,
   blurIntensity = 0,
+  backdrop,
 }: {
   children: ReactNode;
   style?: StyleProp<ViewStyle>;
   color?: string;
   radius?: number;
   blurIntensity?: number;
+  backdrop?: ReactNode;
 }) {
   const [size, setSize] = useState({ width: 0, height: 0 });
   return (
@@ -47,6 +49,21 @@ export function SmoothSurface({
             tint="default"
             style={StyleSheet.absoluteFill}
           />
+        </View>
+      )}
+      {backdrop && (
+        <View
+          pointerEvents="none"
+          style={[
+            StyleSheet.absoluteFill,
+            {
+              borderRadius: radius,
+              borderCurve: "continuous",
+              overflow: "hidden",
+            },
+          ]}
+        >
+          {backdrop}
         </View>
       )}
       {size.width > 0 && size.height > 0 && (

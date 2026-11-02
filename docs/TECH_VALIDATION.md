@@ -844,3 +844,10 @@ Mapの最新へ中央化、SmoothSurfaceへblurIntensity追加、チャットに
 - 型チェック・Lint成功。chat-geometry、chat-drag-state、keyboard-overlapの計4件成功。実機のタッチ伝播/最新行維持はこれらのモデル検査だけでは保証しない。
 - 初回Debugビルドは新規SwiftがPodsプロジェクトへ未登録で失敗。pod installで登録後に再実行。関連native変更のため今回ビルド必要。DB/API変更なし、無関係なバックエンドテスト省略。33タスクと固定残4件は変更なし。
 - 再ビルド成功（0 errors/3 warnings、/tmp/yumegaoka-chat146.log）。devicectlでインストール成功（4A3FC55B-A9C0-4C7D-8F60-2872991117BD）、Metro接続URL付き起動成功。地図ピンチ/本文ドラッグ/入力時の末尾の実機動作確認は未実施。インストール成功だけではDEVICE_VERIFIEDへ加算しない。
+
+## チェックポイント147：Figma101と17:04実機画像の比較反映
+- R15/R19/R21。両画像を402×874pt基準で比較。タブの水平配置・高さ、送信面の欠落、入力部の階層、チャット下端の暗さ、名前/本文/アイコンの寸法、入街ログの区別を修正。比較表をfrontend-redesign/MAP_REDESIGNへ記録。
+- SmoothSurfaceのbackdropをSVG塗りより前に挿入し、native blurが白alpha塗りを覆ってしまう順序を修正。StreetBackdropのmaskを描画済みalpha UIImageViewへ変更し、中間alphaを強めた。サイズ/edgeが変わったときのみ画像再生成。
+- 本文・名前からのタッチ判定/固定履歴座標/状態処理を維持。データ0件を架空人数・アイコンで埋めない。方眼復帰、レベル/メンションの未承認詳細実装はしない。
+- 型チェック・Lint成功。chat-geometryの2件成功。Debugビルド成功（0 errors/3 warnings、/tmp/yumegaoka-figma147.log）。iOSコード変更を含むためビルドした。追加のDBテストは表示変更と無関係につき省略。
+- devicectlの転送はCoreDevice4016（端末のpower assertion/trusted connectivityが利用不能）で失敗。ユーザーへロック解除/同一ネットワーク接続を依頼。最新版インストールと修正後スクリーンショット比較は未確認。型/ビルド成功だけでUI_FINALIZEDやDEVICE_VERIFIEDへ加算しない。既存33タスク/残4件は据置き。

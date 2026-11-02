@@ -60,7 +60,7 @@ cp139：縮小時にも先頭へ到達できるよう、固定viewportと縮小�
 ## cp141：Apple Maps・端のぼかし・操作サイズ
 - Map/LocationPicker/街範囲プレビュー/全マーカーを共通PlatformMapの型へ接続。MetroがiOS専用実装を選ぶ。Android/defaultは既存MapLibreを保持。react-native.config.jsでreact-native-mapsのAndroid自動リンクを無効化し、Google Mapsへ意図せず移行しない。
 - iOSの経緯度は[lng,lat]からMapKitのlongitude/latitudeへ変換。カメラのzoomはaltitudeへ変換。初回/詳細地点/現在地の移動を共通flyToへ維持。街範囲Polygonの穴も維持。利用者の現在地レイヤーは自動公開しない。
-- progressive blurはcp143で帯分割を廃止。iOSはStreetBackdropのUIVisualEffectView本体に連続alphaマスクを適用し地図側0→端側1へ合成する（cp145）。ぼかし半径そのものの連続変更ではない。私有APIは使わない。実機の合成結果/性能は確認待ち。
+- progressive blurはcp143で帯分割を廃止。iOSはStreetBackdropのUIVisualEffectView本体に連続alpha画像マスクを適用し地図側0→端側1へ合成する（cp145）。ぼかし半径そのものの連続変更ではない。私有APIは使わない。実機の合成結果/性能は確認待ち。
 - cp146で拡大時のMap全面blurを復帰。チャット/入力/ロゴより背面に置き、地図とヘッダーをぼかす。空白タッチを遮断する透明Viewは除去。方眼なし。履歴末尾padding64→4。先頭の画面高由来paddingと固定viewportは維持。
 - 右の2ボタンは46×46pt。cp144で両SVGの可視path境界に基づく正方形viewBoxを使い、26ptの表示枠内で図形の中心・サイズを揃える。原本素材は保持。
 
@@ -84,7 +84,7 @@ cp139：縮小時にも先頭へ到達できるよう、固定viewportと縮小�
 - 操作とデータ接続は変更しない。実機の光学的バランスは確認待ち。
 
 ## cp145：実機で残ったキーボード・背景・ぼかし不具合
-- 前回の実機報告で未解消を確認。iOSのUIVisualEffectViewは祖先へのmaskが不適合のため、ProgressiveBlur.iosからStreetBackdropを使用。effect.maskへ直接CAGradientLayerを持つUIViewを設定し、寸法変更ごとに再設定。親alphaは1。段階帯/私有フィルターなし。これは連続合成であり、位置ごとのGaussian半径変更ではない。
+- 前回の実機報告で未解消を確認。iOSのUIVisualEffectViewは祖先へのmaskが不適合のため、ProgressiveBlur.iosからStreetBackdropを使用。effect.maskへ直接alpha画像を持つUIImageViewを設定し、寸法変更ごとに再設定（cp147でsub-layer依存を除去）。親alphaは1。段階帯/私有フィルターなし。これは連続合成であり、位置ごとのGaussian半径変更ではない。
 - 黒gradientと背景blurを拡大するhistoryから分離。キーボード上の利用可能高で制限した画面高55%の背景として固定し、スクロール拡大で伸縮・切断しない。
 - 入力欄は同じnative部品のsolidモードを角丸内に置く。投稿マスクや半透明親の内側へぼかしを入れない。ロゴは引き続き前面。
 - キーボードイベント時の非同期measure待ちを除去。事前計測したルート＋初期計測前の画面高/下部safe area/標準タブ高によるfallbackで即座に移動量を決定し、native-driverで入力欄と履歴を同時移動。didShow/didHideでも最終位置を再確認する。
@@ -96,3 +96,19 @@ cp139：縮小時にも先頭へ到達できるよう、固定viewportと縮小�
 - Map背景のsolid blurをチャットの背面に置き、expandedに合わせてUIKit effectを240msで切替。親alphaを変えずに実装。本文・入力・ロゴは手前。これはMap画面領域（地図・ヘッダー）への効果で、別階層のタブバーは対象外。
 - chatGeometryはキーボード高でScrollViewの高さ/paddingを変えない。キーボード高は親の可視範囲の制限と全体移動だけへ反映。ScrollViewの自動content/keyboard insetを無効化し二重回避を避ける。フェード開始位置は可視範囲へ追従。
 - テストはviewport/topPadding/末尾offsetがキーボード前後で不変、向き/入力部高さ変更時の再計算、従来の履歴維持・キーボード移動の計4件。実機での地図ピンチ、本文ドラッグ、最新投稿を表示した入力開始は未確認。
+
+## cp147：17:04実機写真とFigma101の寸法・面構成比較
+比較基準：実機1206×2622を3で、Figma1608×3496を4で割った共通402×874pt。以下は実装変更であり、変更後の実機外観確認とは区別する。
+
+| 差分 | 修正 |
+| --- | --- |
+| タブが端へ広がる（実機の先頭中心約50pt、Figma約78pt） | 横paddingを幅の8.5%、タブ高42＋safe area、素材32ptへ。4画面の遷移は維持 |
+| 入力面が暗く、送信領域の独立した明るい面がない | SmoothSurfaceへbackdropを追加し、native blur→白alpha面→入力の順に修正。送信幅63pt/白alpha面/黒alpha矢印。入力18pt、ヒント14pt |
+| チャット下端が黒すぎる | 黒gradient末尾alpha .78→.46。入力部の背景は白alpha。色つきベタ塗りは追加しない |
+| ヘッダー・履歴背後の地図文字が鮮明に残る | 上部blur領域145→190pt。nativeのmaskはUIImageView＋描画済みalpha画像へ、中間alpha .25→.65。UIKitのmask複製でsub-layer treeに依存しない |
+| 行のアイコン/横位置/書体 | アイコン34→32pt、gap10→8pt、author14/line18、本文16/line22＋上2pt、行padding7pt |
+| 入街ログが通常投稿と同じ本人画像で表示される | 白い接続アイコン＋日時、本文内に本人名。名前や事実は省略しない。「DreamCloudAPI」のデバッグ表現は持ち込まない |
+| 公開設定と参加スイッチの寸法 | 公開設定52×32pt、参加面82×46pt、人数icon18×20pt |
+| 縮小時の履歴開始位置 | 画面高36%→35%。keyboardで内部viewport/paddingを変えない原則を維持 |
+
+人数0/退出状態と見本20人/参加状態、画像列・募集・イベント・気配の有無、地図の地域、投稿内容はデータ差。架空データを入れて見た目を埋めない。「最新へ」は実際に過去位置を見ている場合だけ表示する既存条件を保持。方眼は削除指示を維持し復帰させない。レベル・メンションは引き続き後工程。

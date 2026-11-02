@@ -1,3 +1,4 @@
+import { ArrivalIcon } from "./map/ArrivalIcon";
 import { ChatTouchRegion } from "./map/ChatTouchRegion";
 import { chatGeometry } from "../lib/chatGeometry";
 import { useKeyboardOverlap } from "../hooks/useKeyboardOverlap";
@@ -60,7 +61,7 @@ export function StreetChat({ mapError = "" }: { mapError?: string }) {
   const { height } = useWindowDimensions();
   const insets = useSafeAreaInsets();
   const { root, overlap, measure, translation } = useKeyboardOverlap(
-    insets.bottom + 49,
+    insets.bottom + 42,
   );
   const [availableHeight, setAvailableHeight] = useState(height);
   const [footerHeight, setFooterHeight] = useState(66);
@@ -198,7 +199,7 @@ export function StreetChat({ mapError = "" }: { mapError?: string }) {
               <Defs>
                 <LinearGradient id="chatShade" x1="0" y1="0" x2="0" y2="100%">
                   <Stop offset="0" stopColor="black" stopOpacity={0} />
-                  <Stop offset="1" stopColor="black" stopOpacity={0.78} />
+                  <Stop offset="1" stopColor="black" stopOpacity={0.46} />
                 </LinearGradient>
               </Defs>
               <Rect width="100%" height="100%" fill="url(#chatShade)" />
@@ -295,12 +296,16 @@ export function StreetChat({ mapError = "" }: { mapError?: string }) {
                         onLongPress={() => menu(m)}
                         style={styles.message}
                       >
-                        <Avatar
-                          path={m.avatar_path}
-                          version={m.avatar_updated_at}
-                          name={m.display_name}
-                          size={34}
-                        />
+                        {m.kind === "arrival" ? (
+                          <ArrivalIcon />
+                        ) : (
+                          <Avatar
+                            path={m.avatar_path}
+                            version={m.avatar_updated_at}
+                            name={m.display_name}
+                            size={32}
+                          />
+                        )}
                         <View style={{ flex: 1, minWidth: 0 }}>
                           <ChatTouchRegion
                             style={{
@@ -309,15 +314,26 @@ export function StreetChat({ mapError = "" }: { mapError?: string }) {
                             }}
                           >
                             <Text style={styles.author}>
-                              {m.display_name}{" "}
-                              {new Date(m.created_at).toLocaleTimeString()}
+                              {m.kind !== "arrival" && `${m.display_name} `}
+                              {new Date(m.created_at).toLocaleTimeString([], {
+                                hour: "2-digit",
+                                minute: "2-digit",
+                                second: "2-digit",
+                              })}
                             </Text>
                             <Text style={styles.body}>
-                              {m.deleted
-                                ? "削除されたメッセージ"
-                                : m.kind === "arrival"
-                                  ? "街に参加しました"
-                                  : m.body}
+                              {m.deleted ? (
+                                "削除されたメッセージ"
+                              ) : m.kind === "arrival" ? (
+                                <>
+                                  <Text style={{ color: "#ffffffe6" }}>
+                                    {m.display_name}
+                                  </Text>{" "}
+                                  が街に参加しました
+                                </>
+                              ) : (
+                                m.body
+                              )}
                             </Text>
                           </ChatTouchRegion>
                         </View>
@@ -327,7 +343,7 @@ export function StreetChat({ mapError = "" }: { mapError?: string }) {
                       .filter((e) => !items.some((m) => m.id === e.id))
                       .map((e) => (
                         <View key={`confirmed-${e.id}`} style={styles.message}>
-                          <View style={{ width: 34 }} />
+                          <View style={{ width: 32 }} />
                           <View style={{ flex: 1 }}>
                             <Text style={styles.author}>自分</Text>
                             <ChatTouchRegion
@@ -348,7 +364,7 @@ export function StreetChat({ mapError = "" }: { mapError?: string }) {
                       >
                         <View
                           style={{
-                            width: 34,
+                            width: 32,
                             alignItems: "center",
                             justifyContent: "center",
                           }}
@@ -390,7 +406,7 @@ export function StreetChat({ mapError = "" }: { mapError?: string }) {
                     }}
                   >
                     <SmoothSurface
-                      color="#00000080"
+                      color="#ffffff01"
                       blurIntensity={35}
                       radius={18}
                       style={{
@@ -423,24 +439,12 @@ export function StreetChat({ mapError = "" }: { mapError?: string }) {
               )}
               <View style={styles.composer} onTouchStart={Keyboard.dismiss}>
                 <SmoothSurface
-                  color="#ffffff20"
+                  color="#ffffff30"
                   blurIntensity={0}
+                  backdrop={<ProgressiveBlur edge="solid" intensity={85} />}
                   radius={18}
                   style={styles.inputRow}
                 >
-                  <View
-                    pointerEvents="none"
-                    style={[
-                      StyleSheet.absoluteFill,
-                      {
-                        borderRadius: 18,
-                        borderCurve: "continuous",
-                        overflow: "hidden",
-                      },
-                    ]}
-                  >
-                    <ProgressiveBlur edge="solid" intensity={85} />
-                  </View>
                   <TextInput
                     onTouchStart={(event) => event.stopPropagation()}
                     placeholder="入力…"
@@ -473,7 +477,7 @@ export function StreetChat({ mapError = "" }: { mapError?: string }) {
                       setAwayFromLatest(false);
                       void send();
                     }}
-                    style={[styles.send, { opacity: !text.trim() ? 0.4 : 1 }]}
+                    style={styles.send}
                   >
                     {busy || restoring ? (
                       <ActivityIndicator color="white" />
@@ -492,9 +496,20 @@ export function StreetChat({ mapError = "" }: { mapError?: string }) {
 }
 const styles = StyleSheet.create({
   history: { flex: 1, backgroundColor: "transparent", overflow: "hidden" },
-  message: { paddingVertical: 8, flexDirection: "row", gap: 10 },
-  author: { color: "#ffffff66", fontSize: 13, fontWeight: "600" },
-  body: { color: "#ffffffb3", fontSize: 16, lineHeight: 22, fontWeight: "600" },
+  message: { paddingVertical: 7, flexDirection: "row", gap: 8 },
+  author: {
+    color: "#ffffff66",
+    fontSize: 14,
+    lineHeight: 18,
+    fontWeight: "500",
+  },
+  body: {
+    color: "#ffffffb3",
+    fontSize: 16,
+    lineHeight: 22,
+    fontWeight: "600",
+    marginTop: 2,
+  },
   more: { color: "#ffffff80", fontSize: 12, paddingVertical: 7 },
   watermark: {
     position: "absolute",
@@ -511,32 +526,45 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   composer: {
-    backgroundColor: "transparent",
+    backgroundColor: "#ffffff1c",
     paddingHorizontal: 10,
     paddingVertical: 10,
   },
-  inputRow: { flexDirection: "row", minHeight: 46, alignItems: "center" },
+  inputRow: {
+    flexDirection: "row",
+    minHeight: 46,
+    alignItems: "center",
+    borderRadius: 18,
+    borderCurve: "continuous",
+    overflow: "hidden",
+  },
   input: {
     flex: 1,
     minWidth: 0,
     color: "white",
     paddingLeft: 15,
-    paddingVertical: 12,
-    fontSize: 16,
+    paddingVertical: 11,
+    fontSize: 18,
   },
   inputHint: {
     position: "absolute",
-    right: 58,
+    right: 73,
     flexDirection: "row",
     alignItems: "center",
     gap: 4,
   },
-  hint: { color: "#ffffff66", fontSize: 12 },
+  hint: { color: "#ffffff66", fontSize: 14 },
   send: {
-    width: 56,
+    width: 63,
+    backgroundColor: "#ffffff26",
     alignItems: "center",
     justifyContent: "center",
     alignSelf: "stretch",
   },
-  arrow: { color: "white", fontSize: 32, lineHeight: 36, fontWeight: "800" },
+  arrow: {
+    color: "#00000099",
+    fontSize: 32,
+    lineHeight: 36,
+    fontWeight: "800",
+  },
 });

@@ -5,7 +5,7 @@ export function chatGeometry(
   footer: number,
   keyboard: number,
 ) {
-  const collapsed = Math.max(footer, Math.min(height * 0.36, available));
+  const collapsed = Math.max(footer, Math.min(height * 0.35, available));
   const expanded = Math.max(footer, Math.min(height * 0.74, available));
   return {
     viewport: Math.max(0, expanded - footer),

@@ -14,5 +14,5 @@ export function TabIcon({
     notification: ["notification", "notificationSelect"],
     account: ["account", "accountSelect"],
   } as const;
-  return <MapAsset name={names[kind][focused ? 1 : 0]} size={30} />;
+  return <MapAsset name={names[kind][focused ? 1 : 0]} size={32} />;
 }

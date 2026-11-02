@@ -28,7 +28,7 @@ export function MapHeader({
         <Text style={styles.name}>{name}</Text>
       )}
       <SmoothSurface color="#ff4b57" radius={24} style={styles.count}>
-        <MapAsset name="usericon" width={20} height={22} />
+        <MapAsset name="usericon" width={18} height={20} />
         <Text
           accessibilityLabel={
             count === undefined
@@ -101,7 +101,9 @@ const styles = StyleSheet.create({
   },
   number: { color: "white", fontSize: 22, fontWeight: "500" },
   mode: {
-    height: 36,
+    height: 32,
+    width: 52,
+    justifyContent: "center",
     paddingHorizontal: 9,
     flexDirection: "row",
     alignItems: "center",
@@ -109,5 +111,10 @@ const styles = StyleSheet.create({
   },
   dot: { width: 14, height: 14, borderRadius: 7 },
   chevron: { color: "#cbd2db", fontSize: 24, lineHeight: 27 },
-  toggle: { padding: 7 },
+  toggle: {
+    width: 82,
+    height: 46,
+    alignItems: "center",
+    justifyContent: "center",
+  },
 });
