@@ -54,7 +54,7 @@ export default function StreetEntry() {
   }, [phase]);
   if (!value || !phase) return null;
   return (
-    <View style={{ flex: 1, backgroundColor: "#ffffffed" }}>
+    <View style={{ flex: 1, backgroundColor: "#ffffff66" }}>
       <BlurView
         pointerEvents="none"
         intensity={45}

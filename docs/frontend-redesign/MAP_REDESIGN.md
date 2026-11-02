@@ -142,7 +142,7 @@ cp139：縮小時にも先頭へ到達できるよう、固定viewportと縮小�
 - 型/Lint・Debugビルド・iPhone転送成功。最終外観、標準シートのスワイプ操作、Core NFCの実読取は未確認。
 
 ## cp152：初期高さ・ロゴ・最低3秒の演出
-- cp151のonShow後のdetent変更が上昇後縮小の原因。専用street-entryルートを追加し、既存native-stackの標準formSheetを表示前から60%・一段のdetent/OS標準角丸/標準grabber（cp156で内容の収まりに合わせ拡大）で設定。prepareEntrySheetは呼ばない。旧native関数は互換用に未使用で残す。
+- cp151のonShow後のdetent変更が上昇後縮小の原因。専用street-entryルートを追加し、既存native-stackの標準formSheetを表示前から57%・一段のdetent/OS標準角丸/標準grabber（cp157で調整）で設定。prepareEntrySheetは呼ばない。旧native関数は互換用に未使用で残す。
 - 標準formSheetに白背景とlight BlurViewを組み合わせる。元Mapの背景blurは固定し25/defaultへ弱める。OS別の最終質感は未確認。
 - entrySheetStateはMapが所有する状態と既存scan/exitを渡すメモリ接続。戻るtransitionEndで既存close、元状態nullでrouteを閉じる。DB状態は演出側で変更しない。
 - 上部ロゴは黒24%の表示用SVGへ。円は全状態共通300pt上限。開発ボタンは重ねて配置し、円の上下移動を避ける。処理中の青い雲はlegacyのdream.png、待機は提供monoLogo、文字はmonoText。二重opacityを除去。
@@ -170,3 +170,8 @@ cp139：縮小時にも先頭へ到達できるよう、固定viewportと縮小�
 
 ## cp156：入街シートの高さを拡大
 - ユーザー承認により初期detentを53.5%から60%へ拡大。拡大済みの円と1.12倍の説明文字のため縦余白を増やす。表示後の高さ変更はせず、標準角丸・スワイプ・タイマーは維持。実機の最終的な収まりは未確認。
+
+## cp157：57%と透ける白背景
+- 初期detent57%。シート下地の白は#FFFFFFEDから#FFFFFF66へ、light blurは維持。円背景は#FFFFFFAA、青い円周/チェックは#00ADF2を維持。
+- 処理中ロゴは今回提供のDownloads/assets/DreamCloud.pngへ差替え。原本をそのままコピーし、既存素材は削除しない。待機モノクロと文字素材は維持。
+- JS/素材のみ。実機の透け具合は未確認。

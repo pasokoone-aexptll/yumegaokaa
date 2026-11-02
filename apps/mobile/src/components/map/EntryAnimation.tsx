@@ -111,7 +111,7 @@ export function EntryAnimation({
   return (
     <View style={{ width: size, height: size, alignSelf: "center" }}>
       <Svg width={size} height={size} viewBox="0 0 320 320">
-        <Circle cx={160} cy={160} r={156} fill="#f1f1f1" />
+        <Circle cx={160} cy={160} r={156} fill="#ffffffaa" />
         <Circle
           cx={160}
           cy={160}
@@ -179,7 +179,7 @@ export function EntryAnimation({
             <Image
               source={
                 active
-                  ? require("../../../assets/figma-map/entry-active-logo.png")
+                  ? require("../../../assets/figma-map/DreamCloud.png")
                   : require("../../../assets/figma-map/entry-logo.png")
               }
               style={{ width: 116, height: 80 }}
