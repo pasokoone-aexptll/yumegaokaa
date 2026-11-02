@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Animated, Pressable, Text, View } from "react-native";
+import { Animated, Image, Pressable, Text, View } from "react-native";
 import { SmoothSurface } from "./SmoothSurface";
 
 /** Dismissing this notice never changes the underlying visit or observation state. */
@@ -64,12 +64,24 @@ export function MapStatusBanner({
       >
         <View
           style={{
-            padding: 14,
+            paddingVertical: 10,
+            paddingRight: 12,
             flexDirection: "row",
             alignItems: "center",
-            gap: 12,
+            gap: 10,
           }}
         >
+          <Image
+            accessible={false}
+            source={require("../../../assets/figma-map/girl-viewing.png")}
+            resizeMode="contain"
+            style={{
+              width: 54,
+              height: 64,
+              alignSelf: "flex-end",
+              marginBottom: -10,
+            }}
+          />
           <View style={{ flex: 1 }}>
             <Text
               accessibilityLiveRegion="polite"

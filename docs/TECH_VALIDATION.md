@@ -862,4 +862,4 @@ Mapの最新へ中央化、SmoothSurfaceへblurIntensity追加、チャットに
 - R15/R19/R21。独自スイッチを撤回し標準Switchへ復帰。人数SF Rounded/bold、入力角丸14pt。指定dialog背景画像を取り込み、Mapエラーの表示のみを閉じるModal、観測状態の時間付き通知を接続。
 - 共通ActionのPromise待機中spinner/連打抑止を追加し、既存再読み込み呼び出しがPromiseを返すよう接続。チャットreloadだけloadingを開始し、自動ポーリングで繰り返しspinnerを出さない。
 - 型チェック・Lint成功（初回のPromise<boolean>型不整合とEffect/Ref規則エラーは修正後に再確認）。chat-drag-state/chat-window計4件成功。DB/API/native変更なしのためネイティブビルド・DB再試験省略。
-- スイッチ中央位置、OS標準外観、通知タイミング、ダイアログ画像の見え方はiPhone未確認。通知用キャラクター素材は未提供。33タスク/固定残4件は変更なし。
+- スイッチ中央位置、OS標準外観、通知タイミング、ダイアログ画像の見え方はiPhone未確認。追加提供されたgirl viewing.pngを目視確認して通知左端へ配置。実機外観は未確認。33タスク/固定残4件は変更なし。
