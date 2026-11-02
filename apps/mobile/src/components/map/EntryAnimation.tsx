@@ -174,17 +174,6 @@ export function EntryAnimation({
             justifyContent: "center",
           }}
         >
-          <Animated.View style={logoStyle}>
-            <Image
-              source={
-                active
-                  ? require("../../../assets/figma-map/DreamCloud.png")
-                  : require("../../../assets/figma-map/entry-logo.png")
-              }
-              style={{ width: 116, height: 80 }}
-              resizeMode="contain"
-            />
-          </Animated.View>
           {active && (
             <View
               style={{
@@ -199,6 +188,17 @@ export function EntryAnimation({
               ))}
             </View>
           )}
+          <Animated.View style={logoStyle}>
+            <Image
+              source={
+                active
+                  ? require("../../../assets/figma-map/DreamCloud.png")
+                  : require("../../../assets/figma-map/entry-logo.png")
+              }
+              style={{ width: 116, height: 80 }}
+              resizeMode="contain"
+            />
+          </Animated.View>
           <Animated.View style={textStyle}>
             <Image
               source={require("../../../assets/figma-map/entry-text.png")}
