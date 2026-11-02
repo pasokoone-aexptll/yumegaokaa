@@ -142,7 +142,7 @@ cp139：縮小時にも先頭へ到達できるよう、固定viewportと縮小�
 - 型/Lint・Debugビルド・iPhone転送成功。最終外観、標準シートのスワイプ操作、Core NFCの実読取は未確認。
 
 ## cp152：初期高さ・ロゴ・最低3秒の演出
-- cp151のonShow後のdetent変更が上昇後縮小の原因。専用street-entryルートを追加し、既存native-stackの標準formSheetを表示前から53.5%・一段のdetent/OS標準角丸/標準grabber（cp153で比率修正）で設定。prepareEntrySheetは呼ばない。旧native関数は互換用に未使用で残す。
+- cp151のonShow後のdetent変更が上昇後縮小の原因。専用street-entryルートを追加し、既存native-stackの標準formSheetを表示前から60%・一段のdetent/OS標準角丸/標準grabber（cp156で内容の収まりに合わせ拡大）で設定。prepareEntrySheetは呼ばない。旧native関数は互換用に未使用で残す。
 - 標準formSheetに白背景とlight BlurViewを組み合わせる。元Mapの背景blurは固定し25/defaultへ弱める。OS別の最終質感は未確認。
 - entrySheetStateはMapが所有する状態と既存scan/exitを渡すメモリ接続。戻るtransitionEndで既存close、元状態nullでrouteを閉じる。DB状態は演出側で変更しない。
 - 上部ロゴは黒24%の表示用SVGへ。円は全状態共通300pt上限。開発ボタンは重ねて配置し、円の上下移動を避ける。処理中の青い雲はlegacyのdream.png、待機は提供monoLogo、文字はmonoText。二重opacityを除去。
@@ -167,3 +167,6 @@ cp139：縮小時にも先頭へ到達できるよう、固定viewportと縮小�
 - legacy/rain-cloudの列位相0.08/0.62/0.31、周期1390/1810/1570ms、行位相差0.18を再利用。progress[0,.16,.52,1]→opacity[.15,1,.15,.15]で短い明滅に戻し、sin波の長い明るさによる縦列の同時点灯感を解消する。位置は固定。
 - 円背景幅82%、状態見出し17.92pt/補足と開発操作13.44pt（1.12倍）。リング・チェック・ドット・操作/処理中文字の青は#00ADF2。提供されたPNGロゴの色は維持。
 - 型/Lintで確認。3秒/触覚/DB/通信の変更なし。JSのみで再ビルドなし。実機の明滅感と拡大後の収まりは未確認。
+
+## cp156：入街シートの高さを拡大
+- ユーザー承認により初期detentを53.5%から60%へ拡大。拡大済みの円と1.12倍の説明文字のため縦余白を増やす。表示後の高さ変更はせず、標準角丸・スワイプ・タイマーは維持。実機の最終的な収まりは未確認。
