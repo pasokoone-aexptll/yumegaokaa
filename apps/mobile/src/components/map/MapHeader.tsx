@@ -1,5 +1,4 @@
 import { Image, Pressable, StyleSheet, Switch, Text, View } from "react-native";
-import Svg, { Circle, Path } from "react-native-svg";
 import { MapAsset } from "./MapAsset";
 import { SmoothSurface } from "./SmoothSurface";
 
@@ -21,7 +20,7 @@ export function MapHeader({
       {name.startsWith("池袋") ? (
         <Image
           accessibilityLabel={name}
-          source={require("../../../assets/figma-map/ikebukuroLogo.png")}
+          source={require("../../../assets/figma-map/ikebukuro.png")}
           style={styles.logo}
           resizeMode="contain"
         />
@@ -29,10 +28,7 @@ export function MapHeader({
         <Text style={styles.name}>{name}</Text>
       )}
       <SmoothSurface color="#ff4b57" radius={24} style={styles.count}>
-        <Svg width={20} height={22} viewBox="0 0 20 22" accessible={false}>
-          <Circle cx={10} cy={5} r={4} fill="white" />
-          <Path d="M1 21v-4c0-9 18-9 18 0v4Z" fill="white" />
-        </Svg>
+        <MapAsset name="usericon" width={20} height={22} />
         <Text
           accessibilityLabel={
             count === undefined

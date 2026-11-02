@@ -21,7 +21,7 @@
 
 通常画面は添付101、通信エラーダイアログは添付102として解釈（依頼文の画像番号と逆だが内容で対応）。エラーの英語本文はサンプルでありコピーしない。地図はMapLibreを維持。2026-11-02の追加指示でOpenFreeMap Dark＋Libertyの3D建物定義を採用（dark-3d.json）。建物色を青灰色へ変更し、初期zoom16/pitch55。建物の高さ・形状は提供データに依存する。DB/APIは変更しない。
 
-素材はDownloads/assetsの15ファイルをapps/mobile/assets/figma-mapへ複製。SVGはMapAssetから表示。ダイアログの人物素材は未提供。池袋ロゴは80×51pxで、高解像度表示の品質は素材に依存。人物画像を別素材で捏造しない。
+素材はDownloads/assetsの15ファイルをapps/mobile/assets/figma-mapへ複製。SVGはMapAssetから表示。ダイアログの人物素材は未提供。池袋ロゴは追加提供のikebukuro.png（279×177px）へ差替え。人数マークはusericon.svg。人物画像を別素材で捏造しない。
 
 ## 後で要件を詰める追加機能（今回実装しない）
 
@@ -45,3 +45,6 @@
 - 地図・ヘッダー・チャット履歴・入力欄周辺・タブ操作でキーボードを閉じる。入力欄自体のタッチは除外する。
 - 最新から48pt超離れた場合、または未読新着がある場合に「最新へ」を履歴下部に重ねる。smoothing60%の角丸で、押すとスクロールして最新追従へ戻る。
 - 地図元URL：https://tiles.openfreemap.org/styles/dark 、https://tiles.openfreemap.org/styles/liberty 。スタイルの出典/ライセンスはassets/mapsへ保持。元の地図帰属表示は消さない。
+
+## cp138：ドラッグ中の位置維持
+拡大時のScrollView自身のリサイズをやめ、最大高さのviewportを下端固定し、親のクリップ領域だけ240msで広げる。同じcontentOffsetなら投稿の画面座標は拡大率に依存しない。scrollToによるドラッグ補正は加えず、ネイティブの指追従を維持。入力部/状態表示の実測高さを除外してviewportを算出。短い履歴は下寄せ。実機の追従感は確認待ち。

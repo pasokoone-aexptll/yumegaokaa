@@ -794,3 +794,6 @@ R11/R18。sticker-flowに同一点3登録の退化拒否と競合公開拒否を
 - MapLibre維持、OpenFreeMap DarkスタイルへLibertyのbuilding-3dを追加。高さrender_height/baseは元データ使用、色は青灰色、初期pitch55/zoom16。@maplibre/maplibre-gl-style-specによるスタイル検証エラー0。提供元の実JSONを確認し出典/ライセンスを同梱。
 - StreetChatはAnimatedの240ms拡大縮小＋blur、履歴下部の角丸「最新へ」（新着または48pt超の距離）。chevron.right素材を入力ヒント/公開設定/状態表示へ接続。入力欄以外のMap操作とタブ移動でKeyboard.dismiss、入力タッチは伝播抑止。
 - 型チェック成功、Lintは初回Animatedのrender時refアクセスで失敗→安定したstate初期化へ修正して成功。Metro稼働・差分bundle生成確認。ネイティブ変更なしにつき再ビルド/転送なし。実機の3D描画・ドラッグ追従・キーボード解除はユーザー確認待ち。既存33タスクの達成段階/固定残4件は変更なし。pushなし。
+
+## チェックポイント138：チャットの指追従修正・素材差替え
+ユーザー報告の拡大時の投稿飛びを修正。StreetChatのScrollViewを最大高さ・下端固定にし、親のクリップ領域のみ拡大縮小。拡大率でscroll viewport/投稿座標を動かさない。usericon.svgと279×177のikebukuro.pngを提供assetsからコピーしMapHeaderへ接続。型チェック・Lint・diff whitespace確認成功。実機の追従・クリップ/タッチ判定は未確認、ネイティブ再ビルドなし、既存33タスク進捗据置き。

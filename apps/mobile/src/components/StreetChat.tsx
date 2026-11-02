@@ -55,6 +55,11 @@ export function StreetChat({ mapError = "" }: { mapError?: string }) {
   const { height } = useWindowDimensions();
   const insets = useSafeAreaInsets();
   const [availableHeight, setAvailableHeight] = useState(height);
+  const [footerHeight, setFooterHeight] = useState(66);
+  const historyViewportHeight = Math.max(
+    0,
+    Math.min(height * 0.74, availableHeight) - footerHeight,
+  );
   const [awayFromLatest, setAwayFromLatest] = useState(false);
   const [expansion] = useState(() => new Animated.Value(0));
   useEffect(() => {
@@ -185,6 +190,15 @@ export function StreetChat({ mapError = "" }: { mapError?: string }) {
               <GridBackground color="#ffffff18" />
               <ScrollView
                 ref={scroll}
+                // Keep the native scroll viewport fixed while the parent reveals it.
+                // Resizing its top edge during a drag moves the touched row away from the finger.
+                style={{
+                  position: "absolute",
+                  left: 0,
+                  right: 0,
+                  bottom: 0,
+                  height: historyViewportHeight,
+                }}
                 maintainVisibleContentPosition={{ minIndexForVisible: 1 }}
                 onContentSizeChange={() => {
                   if (!readingHistory.current)
@@ -211,6 +225,8 @@ export function StreetChat({ mapError = "" }: { mapError?: string }) {
                 keyboardShouldPersistTaps="handled"
                 keyboardDismissMode="interactive"
                 contentContainerStyle={{
+                  minHeight: historyViewportHeight,
+                  justifyContent: "flex-end",
                   paddingHorizontal: 12,
                   paddingBottom: 64,
                 }}
@@ -283,55 +299,61 @@ export function StreetChat({ mapError = "" }: { mapError?: string }) {
                 </Pressable>
               )}
             </View>
-            {notice && (
-              <MapFeedback
-                key={notice.title + notice.message}
-                notice={notice}
-              />
-            )}
-            <View style={styles.composer} onTouchStart={Keyboard.dismiss}>
-              <SmoothSurface
-                color="#686868a8"
-                radius={18}
-                style={styles.inputRow}
-              >
-                <TextInput
-                  onTouchStart={(event) => event.stopPropagation()}
-                  placeholder="入力…"
-                  placeholderTextColor="#a1a1a1"
-                  maxLength={500}
-                  value={text}
-                  onChangeText={setText}
-                  accessibilityLabel="街のチャットに入力"
-                  style={styles.input}
-                  editable={!pending && !restoring && !restoreFailed && !busy}
+            <View
+              onLayout={({ nativeEvent }) =>
+                setFooterHeight(nativeEvent.layout.height)
+              }
+            >
+              {notice && (
+                <MapFeedback
+                  key={notice.title + notice.message}
+                  notice={notice}
                 />
-                {!text && (
-                  <View pointerEvents="none" style={styles.inputHint}>
-                    <Text style={styles.hint}>街ローカルチャット</Text>
-                    <MapAsset name="chevron.right" size={12} />
-                  </View>
-                )}
-                <Pressable
-                  accessibilityRole="button"
-                  accessibilityLabel={pending ? "送信結果を確認" : "送信"}
-                  disabled={
-                    busy ||
-                    restoring ||
-                    restoreFailed ||
-                    !!chatRestrictedUntil ||
-                    !text.trim()
-                  }
-                  onPress={() => void send()}
-                  style={[styles.send, { opacity: !text.trim() ? 0.4 : 1 }]}
+              )}
+              <View style={styles.composer} onTouchStart={Keyboard.dismiss}>
+                <SmoothSurface
+                  color="#686868a8"
+                  radius={18}
+                  style={styles.inputRow}
                 >
-                  {busy || restoring ? (
-                    <ActivityIndicator color="white" />
-                  ) : (
-                    <Text style={styles.arrow}>↑</Text>
+                  <TextInput
+                    onTouchStart={(event) => event.stopPropagation()}
+                    placeholder="入力…"
+                    placeholderTextColor="#a1a1a1"
+                    maxLength={500}
+                    value={text}
+                    onChangeText={setText}
+                    accessibilityLabel="街のチャットに入力"
+                    style={styles.input}
+                    editable={!pending && !restoring && !restoreFailed && !busy}
+                  />
+                  {!text && (
+                    <View pointerEvents="none" style={styles.inputHint}>
+                      <Text style={styles.hint}>街ローカルチャット</Text>
+                      <MapAsset name="chevron.right" size={12} />
+                    </View>
                   )}
-                </Pressable>
-              </SmoothSurface>
+                  <Pressable
+                    accessibilityRole="button"
+                    accessibilityLabel={pending ? "送信結果を確認" : "送信"}
+                    disabled={
+                      busy ||
+                      restoring ||
+                      restoreFailed ||
+                      !!chatRestrictedUntil ||
+                      !text.trim()
+                    }
+                    onPress={() => void send()}
+                    style={[styles.send, { opacity: !text.trim() ? 0.4 : 1 }]}
+                  >
+                    {busy || restoring ? (
+                      <ActivityIndicator color="white" />
+                    ) : (
+                      <Text style={styles.arrow}>↑</Text>
+                    )}
+                  </Pressable>
+                </SmoothSurface>
+              </View>
             </View>
           </Animated.View>
         </SafeAreaView>
