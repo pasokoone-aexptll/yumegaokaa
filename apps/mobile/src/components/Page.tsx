@@ -1,7 +1,14 @@
 import { GridBackground } from "./GridBackground";
 import { router, usePathname } from "expo-router";
-import { ReactNode } from "react";
-import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import { ReactNode, useState } from "react";
+import {
+  ActivityIndicator,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 export function Page({
   title,
@@ -57,18 +64,30 @@ export function Action({
   disabled = false,
 }: {
   title: string;
-  onPress: () => void;
+  onPress: () => void | Promise<unknown>;
   disabled?: boolean;
 }) {
+  const [running, setRunning] = useState(false);
   return (
     <Pressable
       accessibilityRole="button"
-      disabled={disabled}
-      accessibilityState={{ disabled }}
-      onPress={onPress}
+      disabled={disabled || running}
+      accessibilityState={{ disabled: disabled || running, busy: running }}
+      onPress={async () => {
+        setRunning(true);
+        try {
+          await onPress();
+        } finally {
+          setRunning(false);
+        }
+      }}
       style={[ui.button, disabled && { opacity: 0.45 }]}
     >
-      <Text style={ui.buttonText}>{title}</Text>
+      {running ? (
+        <ActivityIndicator color="white" />
+      ) : (
+        <Text style={ui.buttonText}>{title}</Text>
+      )}
     </Pressable>
   );
 }

@@ -1,3 +1,5 @@
+import { MapStatusBanner } from "../../components/map/MapStatusBanner";
+import { MapErrorDialog } from "../../components/map/MapErrorDialog";
 import { ProgressiveBlur } from "../../components/map/ProgressiveBlur";
 import { BlurView } from "expo-blur";
 import { MapHeader } from "../../components/map/MapHeader";
@@ -171,8 +173,7 @@ export default function Street() {
           <PresenceHeader icons={presenceIcons} />
         </View>
         {!["未参加", "気配を観測中"].includes(state.status) && (
-          <View style={styles.status}>
-            <Text>{state.status}</Text>
+          <MapStatusBanner key={state.status} message={state.status}>
             {state.visit.can_update === false &&
               state.visit.state === "active" && (
                 <Pressable
@@ -184,7 +185,7 @@ export default function Street() {
                   </Text>
                 </Pressable>
               )}
-          </View>
+          </MapStatusBanner>
         )}
         <View style={{ alignSelf: "flex-end", gap: 10, marginTop: 14 }}>
           <Pressable
@@ -233,7 +234,8 @@ export default function Street() {
           </Pressable>
         </View>
       </SafeAreaView>
-      <StreetChat mapError={error} />
+      <StreetChat />
+      {!!error && <MapErrorDialog key={error} message={error} />}
       <StreetEntrySheet
         sheet={sheet}
         setSheet={setSheet}

@@ -99,7 +99,7 @@ export default function Home() {
       ) : (
         !error && <Empty>募集中のピンはありません。</Empty>
       )}
-      <Action title="再読み込み" onPress={() => void load()} />
+      <Action title="再読み込み" onPress={() => load()} />
     </Page>
   );
 }

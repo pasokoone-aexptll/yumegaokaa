@@ -74,7 +74,7 @@ export default function Invitations() {
         <Action
           title="再読み込み"
           disabled={busy || loading}
-          onPress={() => void refresh()}
+          onPress={() => refresh()}
         />
       )}
       {loading && <Empty>読み込み中…</Empty>}

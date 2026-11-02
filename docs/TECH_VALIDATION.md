@@ -857,3 +857,9 @@ Mapの最新へ中央化、SmoothSurfaceへblurIntensity追加、チャットに
 - R15/R19/R21。plug.svg原本を取り込み、背景白10%、時刻/名前にiOS ui-rounded、名前/時刻/本文の白alphaを分離。RNのRCTFontUtils.mmでui-rounded→UIFontDescriptorSystemDesignRoundedの対応を確認。
 - composer外側の帯を透明化、欄の角丸10pt、ヒントとchevronのalphaを統一。DreamCloudロゴを本文より背面へ移動。参加スイッチは明示したtrack/thumb寸法で中央揃え、既存入退出コールバックを保持。
 - npm run typecheck、mobileのexpo lint成功。ネイティブ/API/DB変更なしのため再ビルドとバックエンド再試験は省略。iPhone外観・タップ結果は未確認。33タスク/固定残4件は変更せず、実機確認済みへ加算しない。
+
+## チェックポイント149：標準スイッチと非同期操作の表示
+- R15/R19/R21。独自スイッチを撤回し標準Switchへ復帰。人数SF Rounded/bold、入力角丸14pt。指定dialog背景画像を取り込み、Mapエラーの表示のみを閉じるModal、観測状態の時間付き通知を接続。
+- 共通ActionのPromise待機中spinner/連打抑止を追加し、既存再読み込み呼び出しがPromiseを返すよう接続。チャットreloadだけloadingを開始し、自動ポーリングで繰り返しspinnerを出さない。
+- 型チェック・Lint成功（初回のPromise<boolean>型不整合とEffect/Ref規則エラーは修正後に再確認）。chat-drag-state/chat-window計4件成功。DB/API/native変更なしのためネイティブビルド・DB再試験省略。
+- スイッチ中央位置、OS標準外観、通知タイミング、ダイアログ画像の見え方はiPhone未確認。通知用キャラクター素材は未提供。33タスク/固定残4件は変更なし。

@@ -1,5 +1,12 @@
 import { ParticipationSwitch } from "./ParticipationSwitch";
-import { Image, Pressable, StyleSheet, Text, View } from "react-native";
+import {
+  Image,
+  Platform,
+  Pressable,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
 import { MapAsset } from "./MapAsset";
 import { SmoothSurface } from "./SmoothSurface";
 
@@ -87,7 +94,12 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     height: 39,
   },
-  number: { color: "white", fontSize: 22, fontWeight: "500" },
+  number: {
+    color: "white",
+    fontSize: 22,
+    fontWeight: "700",
+    fontFamily: Platform.OS === "ios" ? "ui-rounded" : undefined,
+  },
   mode: {
     height: 32,
     width: 52,

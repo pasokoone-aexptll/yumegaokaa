@@ -453,7 +453,7 @@ export function StreetChat({ mapError = "" }: { mapError?: string }) {
                   color="#ffffff26"
                   blurIntensity={0}
                   backdrop={<ProgressiveBlur edge="solid" intensity={85} />}
-                  radius={10}
+                  radius={14}
                   style={styles.inputRow}
                 >
                   <TextInput
@@ -552,7 +552,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     minHeight: 46,
     alignItems: "center",
-    borderRadius: 10,
+    borderRadius: 14,
     borderCurve: "continuous",
     overflow: "hidden",
   },

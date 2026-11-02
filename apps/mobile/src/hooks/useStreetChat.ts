@@ -175,8 +175,13 @@ export function useStreetChat() {
     older.current = true;
     void loadRef.current(true);
   }
-  function reload() {
-    void loadRef.current();
+  async function reload() {
+    setLoading(true);
+    try {
+      await loadRef.current();
+    } finally {
+      setLoading(false);
+    }
   }
   function followLatest() {
     older.current = false;

@@ -48,7 +48,7 @@ export default function Blocks() {
         ブロックすると相手のチャット・入街ログ・募集を表示しません。街の人数や匿名の気配は変わりません。
       </Text>
       {!!error && <Text style={ui.error}>{error}</Text>}
-      <Action title="再読み込み" onPress={() => void refresh()} />
+      <Action title="再読み込み" onPress={() => refresh()} />
       {loading ? (
         <Empty>読み込み中…</Empty>
       ) : !error && !items.length ? (

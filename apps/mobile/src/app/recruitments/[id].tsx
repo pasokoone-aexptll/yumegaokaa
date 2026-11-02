@@ -60,11 +60,7 @@ export default function Detail() {
         </Empty>
       )}
       {!ended && (
-        <Action
-          title="再読み込み"
-          disabled={busy}
-          onPress={() => void load()}
-        />
+        <Action title="再読み込み" disabled={busy} onPress={() => load()} />
       )}
       {pin?.mine && (
         <Action

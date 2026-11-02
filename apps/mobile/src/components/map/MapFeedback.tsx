@@ -1,3 +1,4 @@
+import { useState } from "react";
 import {
   ActivityIndicator,
   Pressable,
@@ -9,10 +10,11 @@ export type MapNotice = {
   title: string;
   message: string;
   busy?: boolean;
-  actions?: { title: string; onPress: () => void }[];
+  actions?: { title: string; onPress: () => void | Promise<void> }[];
 };
 /** Passive status lives next to its controls; never steals focus or dismisses input. */
 export function MapFeedback({ notice }: { notice: MapNotice }) {
+  const [running, setRunning] = useState<string | null>(null);
   return (
     <View style={styles.container} accessibilityLiveRegion="polite">
       <View style={styles.row}>
@@ -25,10 +27,26 @@ export function MapFeedback({ notice }: { notice: MapNotice }) {
             <Pressable
               key={action.title}
               accessibilityRole="button"
-              onPress={action.onPress}
+              disabled={running !== null}
+              accessibilityState={{
+                busy: running === action.title,
+                disabled: running !== null,
+              }}
+              onPress={async () => {
+                setRunning(action.title);
+                try {
+                  await action.onPress();
+                } finally {
+                  setRunning(null);
+                }
+              }}
               style={styles.action}
             >
-              <Text style={styles.label}>{action.title}</Text>
+              {running === action.title ? (
+                <ActivityIndicator color="white" />
+              ) : (
+                <Text style={styles.label}>{action.title}</Text>
+              )}
             </Pressable>
           ))}
         </View>

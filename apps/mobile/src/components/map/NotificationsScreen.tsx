@@ -66,7 +66,7 @@ export function NotificationsScreen() {
           />
         </View>
       ))}
-      <Action title="再読み込み" onPress={() => void load()} />
+      <Action title="再読み込み" onPress={() => load()} />
     </Page>
   );
 }

@@ -8,11 +8,7 @@ export default function Account() {
     <Page title="アカウント管理">
       {a.loading && <Text style={ui.muted}>読み込み中…</Text>}
       {!a.loading && !a.ready && (
-        <Action
-          title="再読み込み"
-          disabled={a.busy}
-          onPress={() => void a.load()}
-        />
+        <Action title="再読み込み" disabled={a.busy} onPress={() => a.load()} />
       )}
       <Text>{a.email}</Text>
       <View style={ui.card}>
