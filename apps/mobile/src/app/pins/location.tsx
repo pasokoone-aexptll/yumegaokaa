@@ -5,6 +5,7 @@ export default function Location() {
   const draft = usePinDraft();
   return (
     <LocationPicker
+      pinCreation
       initial={draft.location}
       onCancel={() => router.back()}
       onConfirm={(point) => {

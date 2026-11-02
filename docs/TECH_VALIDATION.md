@@ -909,3 +909,10 @@ Mapの最新へ中央化、SmoothSurfaceへblurIntensity追加、チャットに
 ## チェックポイント160：ドット重なり
 - R19/R21。EntryAnimationの描画順のみ変更。ドット→雲→文字の順。差分確認、実機外観未確認。表示順のみにつきテスト/ビルド再実行なし。
 - 入街ログはcore.sqlのcheckin成功処理でarrival_logsへ挿入していることを確認。10分抑制は未実装。
+
+## cp161 — ピン作成UI接続（2026-11-03）
+- R12/R13/R14。CreatePinを白いformSheet/タブ/固定下部操作へ変更。LocationPickerのpinCreation表示を追加。元のDB/API/認可/作成コマンドを再利用。
+- usePinCreation.discardは受付取消の結果を確認後に下書きを破棄。作成済みは詳細へ、通信失敗は保持。
+- `npm run typecheck`成功。`npm --prefix apps/mobile run lint`は初回重複import警告2件→importを統合。
+- `node --test tests/pin-recovery.test.mjs` 4/4成功。初回は古いテストrequireスタブがeventInputを提供せず失敗し、実モジュールを読み込むよう修正。再送同一body、未送信破棄、作成済み結果、通信失敗時の保持を検証。
+- 新UIの実機操作・ネイティブ表示は未確認。ビルド・転送・pushなし。

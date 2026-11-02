@@ -71,11 +71,17 @@ export default function Layout() {
           />
           <Stack.Screen
             name="pins/create"
-            options={{ presentation: "modal" }}
+            options={{
+              presentation: "formSheet",
+              sheetAllowedDetents: [0.57, 0.85],
+              sheetInitialDetentIndex: 0,
+              sheetGrabberVisible: true,
+              contentStyle: { backgroundColor: "white" },
+            }}
           />
           <Stack.Screen
             name="pins/location"
-            options={{ presentation: "modal" }}
+            options={{ presentation: "fullScreenModal" }}
           />
         </Stack>
       </SafeAreaProvider>

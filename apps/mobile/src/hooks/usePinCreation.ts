@@ -85,6 +85,29 @@ export function usePinCreation() {
       setBusy(false);
     }
   }
+  async function discard() {
+    if (busy || restoring) return;
+    setBusy(true);
+    setError("");
+    try {
+      const result = await cancelPendingCommand<{ id: string }>(
+        kind === "event" ? "event_create" : "recruitment_create",
+      );
+      clearDraft();
+      if (result) {
+        router.replace({
+          pathname: kind === "event" ? "/events/[id]" : "/recruitments/[id]",
+          params: { id: result.id },
+        });
+      } else router.back();
+    } catch {
+      setError(
+        "送信結果を確認できません。下書きを保持しています。通信復旧後に再試行してください。",
+      );
+    } finally {
+      setBusy(false);
+    }
+  }
   async function locate() {
     setBusy(true);
     try {
@@ -181,6 +204,7 @@ export function usePinCreation() {
     recruitBody,
     publish,
     revise,
+    discard,
     locate,
     locked: !!eventBody || !!recruitBody,
     restoring,

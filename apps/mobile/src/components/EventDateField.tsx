@@ -1,3 +1,4 @@
+import { MapAsset } from "./map/MapAsset";
 import { useCallback, useState } from "react";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import {
@@ -16,6 +17,7 @@ type Props = {
   onChange: (value: string) => void;
   disabled?: boolean;
   suggested?: string;
+  compact?: boolean;
 };
 
 export function EventDateField({
@@ -24,6 +26,7 @@ export function EventDateField({
   onChange,
   disabled,
   suggested,
+  compact = false,
 }: Props) {
   const [editing, setEditing] = useState<Date | null>(null);
   const parsed = new Date(value);
@@ -45,14 +48,35 @@ export function EventDateField({
       <Pressable
         accessibilityRole="button"
         accessibilityLabel={`${label}日時を選択`}
-        accessibilityValue={{ text: valid ? parsed.toLocaleString() : "未設定" }}
+        accessibilityValue={{
+          text: valid ? parsed.toLocaleString() : "未設定",
+        }}
         accessibilityState={{ disabled }}
         disabled={disabled}
         onPress={handleOpen}
-        style={[styles.row, disabled && styles.disabled]}
+        style={[
+          styles.row,
+          compact && styles.compact,
+          disabled && styles.disabled,
+        ]}
       >
-        <Text style={styles.label}>{label}</Text>
-        <Text style={styles.value}>
+        {compact && (
+          <MapAsset name={label === "開始" ? "clock" : "close"} size={13} />
+        )}
+        <Text
+          style={[
+            styles.label,
+            compact && { color: "#00000055", fontSize: 12 },
+          ]}
+        >
+          {label}
+        </Text>
+        <Text
+          style={[
+            styles.value,
+            compact && { color: "#00000066", fontSize: 12 },
+          ]}
+        >
           {valid
             ? parsed.toLocaleString(undefined, {
                 year: "numeric",
@@ -114,6 +138,12 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
     gap: 12,
+  },
+  compact: {
+    padding: 8,
+    borderRadius: 8,
+    backgroundColor: "#00000008",
+    gap: 5,
   },
   disabled: { opacity: 0.45 },
   label: { color: "#34434b", fontWeight: "600", fontSize: 16 },
