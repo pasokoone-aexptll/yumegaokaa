@@ -60,9 +60,9 @@ cp139：縮小時にも先頭へ到達できるよう、固定viewportと縮小�
 ## cp141：Apple Maps・端のぼかし・操作サイズ
 - Map/LocationPicker/街範囲プレビュー/全マーカーを共通PlatformMapの型へ接続。MetroがiOS専用実装を選ぶ。Android/defaultは既存MapLibreを保持。react-native.config.jsでreact-native-mapsのAndroid自動リンクを無効化し、Google Mapsへ意図せず移行しない。
 - iOSの経緯度は[lng,lat]からMapKitのlongitude/latitudeへ変換。カメラのzoomはaltitudeへ変換。初回/詳細地点/現在地の移動を共通flyToへ維持。街範囲Polygonの穴も維持。利用者の現在地レイヤーは自動公開しない。
-- progressive blurは20の細い帯で強度を二次的に増加する近似。地図側0→端側強。私有APIは使わない。滑らかな連続可変半径の保証ではなく、実機の帯境界/性能は確認待ち。
+- progressive blurはcp143で帯分割を廃止。iOSはStreetBackdropのUIVisualEffectView本体に連続alphaマスクを適用し地図側0→端側1へ合成する（cp145）。ぼかし半径そのものの連続変更ではない。私有APIは使わない。実機の合成結果/性能は確認待ち。
 - 拡大時の全画面blurを除去し、透明な背面操作遮断だけ維持。方眼なし。履歴末尾padding64→4。先頭の画面高由来paddingと固定viewportは維持。
-- 右の2ボタンは46×46ptへ統一。SVGに含まれる透明余白を考慮し、pin素材48、現在地素材46で実際の図形を約20ptへ揃える。
+- 右の2ボタンは46×46pt。cp144で両SVGの可視path境界に基づく正方形viewBoxを使い、26ptの表示枠内で図形の中心・サイズを揃える。原本素材は保持。
 
 ## cp142：投稿のフェードと非モーダル状態表示
 - ChatFadeでチャット上端40ptの透明度を0→1へ変える。背景色を被せるのでなく、投稿/画像そのものにalpha maskを適用する。固定viewport・先頭余白・ドラッグの座標は維持。
@@ -70,3 +70,22 @@ cp139：縮小時にも先頭へ到達できるよう、固定viewportと縮小�
 - 確認前の仮表示は「自分・送信中/結果未確認」と区別。通信断で通常濃度へ昇格しない。取消が既に完了していた場合もサーバーIDを扱う。未確定処理の永続化/再送/取消契約は既存commandsを維持。
 - 不明な結果の仮表示と、別経路で先に届いた投稿はID確定まで同一と推測しない。確認後はIDで重複を除く。モーダルで受信内容を隠さず、入力欄上で結果確認/取消/再取得を提供。
 - 通常の送信・状態通知はAlertを出さない。長押しの削除/ブロック/通報などユーザーが起こした選択メニューは維持する。アプリ全体の全Alertを一律に廃止したものではない。
+
+## cp143：キーボード追従・拡大時のマスク・連続ぼかし
+- R13/R14/R21関連。キーボード回避はuseKeyboardOverlapで画面ルートの実測下端とkeyboard screenYの重なりを求める。cp145で事前計測を保持し、非同期再計測を待たず入力欄と履歴をnative-driverのtranslateYでまとめて移動する。タブバー分を二重加算しない。閉じたら重なりを0に戻す。
+- ルートの高さは固定したまま計測し、移動後の子ビューを再計測して縮め続けない。キーボードが高い場合は履歴表示高を利用可能領域に収める。
+- ChatFadeは拡大中も固定高さ。上端のグラデーションだけをクリップ境界に沿って動かす。下側の白マスク領域を保ち、入力欄・最新へ・透かしは投稿のマスク外へ分離。履歴の先頭余白とスクロール位置は拡大率で変更しない。
+- ProgressiveBlurは20帯を単一ぼかし＋連続alphaへ変更。入力面はcp145でiOSのStreetBackdrop（マスクなしsystemMaterialDark）へ変更。背後のcomposerベタ塗りは除去する。
+- 型/Lintとキーボード重なり・履歴保持テスト成功。実機のキーボードアニメーション、拡大時の下端、ぼかしの滑らかさは確認待ち。API・DB変更なし。
+
+## cp144：操作アイコンの中央揃え・ロゴの重なり
+- Downloads/assetsのCreatePIN.svgとNavi.svgは取り込み済み原本と一致。正方形キャンバス内に非対称な余白があるため、MapAssetのcentered指定時だけpathの境界＋均等余白のviewBoxへ置換。円46pt、SVG枠26pt、図形の最大寸法約20.8ptで共通化。
+- DreamCloudロゴは黒gradient/blur/投稿より前面のzIndex=1、最新へ操作は2。ロゴ原本のfill-opacity=0.24を維持し、親opacity=0.35の二重減衰を除去。
+- 操作とデータ接続は変更しない。実機の光学的バランスは確認待ち。
+
+## cp145：実機で残ったキーボード・背景・ぼかし不具合
+- 前回の実機報告で未解消を確認。iOSのUIVisualEffectViewは祖先へのmaskが不適合のため、ProgressiveBlur.iosからStreetBackdropを使用。effect.maskへ直接CAGradientLayerを持つUIViewを設定し、寸法変更ごとに再設定。親alphaは1。段階帯/私有フィルターなし。これは連続合成であり、位置ごとのGaussian半径変更ではない。
+- 黒gradientと背景blurを拡大するhistoryから分離。キーボード上の利用可能高で制限した画面高55%の背景として固定し、スクロール拡大で伸縮・切断しない。
+- 入力欄は同じnative部品のsolidモードを角丸内に置く。投稿マスクや半透明親の内側へぼかしを入れない。ロゴは引き続き前面。
+- キーボードイベント時の非同期measure待ちを除去。事前計測したルート＋初期計測前の画面高/下部safe area/標準タブ高によるfallbackで即座に移動量を決定し、native-driverで入力欄と履歴を同時移動。didShow/didHideでも最終位置を再確認する。
+- 根拠：https://developer.apple.com/documentation/uikit/uivisualeffectview/ （祖先maskとalpha制約）。実機での最終的な操作感・ぼかし外観の確認は別途必要。

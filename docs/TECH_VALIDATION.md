@@ -816,3 +816,22 @@ Mapの最新へ中央化、SmoothSurfaceへblurIntensity追加、チャットに
 - ChatFadeのMaskedViewで上端40ptをalpha0→1。既にPodfile.lockとcp141 nativeに存在するRNCMaskedView0.3.2を直接依存へ明記。RN0.88のNativeMethods型との不整合は公開propsに限定したwrapperで扱う。ネイティブ再ビルドなし。
 - useChatComposerでpendingTextと確認済みechoを管理。id付きサーバー応答で通常表示へ、一覧取得の同一IDでecho除去。失敗ではpending維持、取消結果が完了なら確認済みecho。UIに直接DB処理を追加せず、commands永続/再送処理は未変更。MapFeedbackはModal/自動Alertを廃止しインライン化。送信中は行内表示のみ。
 - chat-composer5件＋chat-drag-state1件、計6件成功。復元/取消/保存読取失敗、送信中→ID確認→一覧照合、応答紛失→確認の状態を検証。型チェック・Lint成功。Metro差分bundle生成確認。実機のフェード合成/即時表示/スクロール位置は未確認。実DB送信処理は変更していないため全件再試験なし。33タスクの達成率据置き、pushなし。
+
+## チェックポイント143：チャットのキーボード追従と描画修正
+- useKeyboardOverlapでルートの実測座標からキーボード重なりを算出。StreetChatの下端を移動し、利用可能高で履歴を制限。縮む子ビューを測る循環を避ける。ChatFadeのnative枠は固定、フェードの開始位置だけを拡大率で移動。
+- ProgressiveBlurの帯分割を廃止し単一BlurView＋連続alphaへ。これは可変半径フィルターではなく合成。入力背景ぼかし70と黒面透過へ調整。
+- npm run typecheck、mobile lint成功。tests/keyboard-overlap.test.mjs、chat-drag-state.test.mjsの計2件成功（画面座標/タブ領域除外/キーボード高さ変化/閉じる/後続layout/購読解除、拡大終了で履歴をリセットしない）。初回型検査のRN88 View ref型エラーをComponentRefへ修正後に再実行。
+- native依存変更なし。ビルド・転送・DBテストは再実行していない。実機のキーボード追従、下端欠け、ぼかし合成は未確認。既存33タスクと固定残4件は据置き。ユーザー指定のUI修正として記録、最終UI完成とはしない。
+
+## チェックポイント144：アイコン中央揃えとロゴ前面化
+- R19/R21のMap表示。Downloads/assetsのCreatePIN/Naviは既存原本とバイト一致。両SVGのpathの三次曲線極値から可視境界を算出し、MapAssetのcentered表示で均等余白の正方形viewBoxを指定。両26pt・円46pt。元SVGと他の表示は変更しない。
+- StreetChatのロゴは背景より前面のzIndex=1、最新へ=2。素材の24%透明度に掛けていた親35%を除去。実データ・操作処理変更なし。
+- 型チェック・Lint成功。原本一致/パス寸法/描画順をコードで確認。実機の見え方は未確認。JS表示修正のみにつきnative再ビルド・実機転送・DBテスト省略。既存33タスク/固定残4件は据置き。
+
+## チェックポイント145：実機報告後のキーボード・背景ぼかし再修正
+- R15/R19/R21。cp143/144後もユーザー実機でキーボード追従・背景の切断・入力面ぼかし不成立を報告。前回の型/Lint成功は外観の成功ではなかった。
+- Apple UIVisualEffectView文書とRNCMaskedView/expo-blurのnative実装を照合。祖先maskがeffectを壊す構造を修正するためStreetBackdrop.swiftを追加。UIVisualEffectView本体へgradient maskを直接適用しlayoutごとに再設定。solidはmaskなし。公開UIKit APIのみ。Gaussian半径の位置依存変更ではなく連続alpha合成。
+- 黒gradient/blurを拡大historyから分離。入力面はsolid native blur、composerの黒ベタを除去。キーボード処理は事前計測したフレームと即時計算＋native-driver移動へ変更、didイベントも購読。
+- 型チェック・Lint・keyboard-overlap/chat-drag-state計2件成功。最初のbottom-tabs型import不可は追加依存せず除去。Swiftを含むDebugビルド成功（0 errors/3 warnings、/tmp/yumegaoka-backdrop145.log）。ネイティブ変更のため今回はビルド必要。DB/API/認証変更なし、関連しないバックエンドテストは省略。
+- 最終的な実機のぼかし・キーボード追従・スクロール操作感は未確認。固定33タスクと残4件を変更しない。
+- devicectlで開発版インストール成功（installation 8E900299-E652-43D8-89A2-562238C9CD51）、10.0.20.108:8081のdevelopment-client URLで起動成功。インストール・起動を外観検証済みとは扱わない。

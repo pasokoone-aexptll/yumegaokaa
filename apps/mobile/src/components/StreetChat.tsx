@@ -1,3 +1,4 @@
+import { useKeyboardOverlap } from "../hooks/useKeyboardOverlap";
 import { ChatFade } from "./map/ChatFade";
 import { useEffect, useRef, useState, type ComponentRef } from "react";
 import Svg, { Defs, LinearGradient, Stop, Rect } from "react-native-svg";
@@ -17,7 +18,6 @@ import {
   Keyboard,
   Alert,
   ActivityIndicator,
-  KeyboardAvoidingView,
   StyleSheet,
   useWindowDimensions,
   Pressable,
@@ -57,10 +57,19 @@ export function StreetChat({ mapError = "" }: { mapError?: string }) {
   } = useStreetChat();
   const { height } = useWindowDimensions();
   const insets = useSafeAreaInsets();
+  const { root, overlap, measure, translation } = useKeyboardOverlap(
+    insets.bottom + 49,
+  );
   const [availableHeight, setAvailableHeight] = useState(height);
   const [footerHeight, setFooterHeight] = useState(66);
-  const collapsedHeight = Math.min(height * 0.36, availableHeight);
-  const expandedHeight = Math.min(height * 0.74, availableHeight);
+  const collapsedHeight = Math.max(
+    footerHeight,
+    Math.min(height * 0.36, availableHeight - overlap),
+  );
+  const expandedHeight = Math.max(
+    footerHeight,
+    Math.min(height * 0.74, availableHeight - overlap),
+  );
   const historyViewportHeight = Math.max(0, expandedHeight - footerHeight);
   const collapsedHistoryHeight = Math.max(0, collapsedHeight - footerHeight);
   // Reserve the clipped region even while expanded. Changing this during a drag
@@ -153,27 +162,59 @@ export function StreetChat({ mapError = "" }: { mapError?: string }) {
     ]);
   }
   return (
-    <View style={StyleSheet.absoluteFill} pointerEvents="box-none">
+    <View
+      ref={root}
+      collapsable={false}
+      style={StyleSheet.absoluteFill}
+      pointerEvents="box-none"
+      onLayout={({ nativeEvent }) => {
+        setAvailableHeight(Math.max(0, nativeEvent.layout.height - insets.top));
+        measure();
+      }}
+    >
       <View
         pointerEvents={expanded ? "auto" : "none"}
         onTouchStart={Keyboard.dismiss}
         style={StyleSheet.absoluteFill}
       />
-      <KeyboardAvoidingView
-        behavior="height"
-        style={{ flex: 1 }}
+      <Animated.View
+        style={[
+          StyleSheet.absoluteFill,
+          { transform: [{ translateY: translation }] },
+        ]}
         pointerEvents="box-none"
       >
         <SafeAreaView
           edges={["top"]}
           pointerEvents="box-none"
           style={{ flex: 1, justifyContent: "flex-end" }}
-          onLayout={({ nativeEvent }) =>
-            setAvailableHeight(
-              Math.max(0, nativeEvent.layout.height - insets.top),
-            )
-          }
         >
+          <View
+            pointerEvents="none"
+            style={{
+              position: "absolute",
+              left: 0,
+              right: 0,
+              bottom: 0,
+              height: Math.min(height * 0.55, availableHeight - overlap),
+            }}
+          >
+            <ProgressiveBlur edge="bottom" intensity={24} />
+            <Svg
+              pointerEvents="none"
+              style={StyleSheet.absoluteFill}
+              width="100%"
+              height="100%"
+            >
+              <Defs>
+                <LinearGradient id="chatShade" x1="0" y1="0" x2="0" y2="100%">
+                  <Stop offset="0" stopColor="black" stopOpacity={0} />
+                  <Stop offset="1" stopColor="black" stopOpacity={0.78} />
+                </LinearGradient>
+              </Defs>
+              <Rect width="100%" height="100%" fill="url(#chatShade)" />
+            </Svg>
+          </View>
           <Animated.View
             style={{
               height: expansion.interpolate({
@@ -184,26 +225,12 @@ export function StreetChat({ mapError = "" }: { mapError?: string }) {
               flexShrink: 1,
             }}
           >
-            <ChatFade style={styles.history} onTouchStart={Keyboard.dismiss}>
-              <ProgressiveBlur edge="bottom" intensity={24} />
-              <Svg
-                pointerEvents="none"
-                style={StyleSheet.absoluteFill}
-                width="100%"
-                height="100%"
-              >
-                <Defs>
-                  <LinearGradient id="chatShade" x1="0" y1="0" x2="0" y2="1">
-                    <Stop offset="0" stopColor="black" stopOpacity={0} />
-                    <Stop offset="1" stopColor="black" stopOpacity={0.78} />
-                  </LinearGradient>
-                </Defs>
-                <Rect width="100%" height="100%" fill="url(#chatShade)" />
-              </Svg>
-              <ScrollView
-                ref={scroll}
-                // Keep the native scroll viewport fixed while the parent reveals it.
-                // Resizing its top edge during a drag moves the touched row away from the finger.
+            <View style={styles.history} onTouchStart={Keyboard.dismiss}>
+              <ChatFade
+                fadeTop={expansion.interpolate({
+                  inputRange: [0, 1],
+                  outputRange: [historyTopPadding, 0],
+                })}
                 style={{
                   position: "absolute",
                   left: 0,
@@ -211,107 +238,116 @@ export function StreetChat({ mapError = "" }: { mapError?: string }) {
                   bottom: 0,
                   height: historyViewportHeight,
                 }}
-                maintainVisibleContentPosition={{ minIndexForVisible: 1 }}
-                onContentSizeChange={() => {
-                  if (!readingHistory.current)
-                    scroll.current?.scrollToEnd({ animated: false });
-                }}
-                scrollEventThrottle={32}
-                onScroll={({
-                  nativeEvent: {
-                    contentOffset,
-                    contentSize,
-                    layoutMeasurement,
-                  },
-                }) => {
-                  setAwayFromLatest(
-                    contentSize.height -
-                      layoutMeasurement.height -
-                      contentOffset.y >
-                      48,
-                  );
-                }}
-                onScrollBeginDrag={beginHistory}
-                onScrollEndDrag={endHistoryDrag}
-                onTouchCancel={endHistoryDrag}
-                keyboardShouldPersistTaps="handled"
-                keyboardDismissMode="interactive"
-                contentContainerStyle={{
-                  minHeight: historyViewportHeight,
-                  justifyContent: "flex-end",
-                  paddingHorizontal: 12,
-                  paddingTop: historyTopPadding,
-                  paddingBottom: 4,
-                }}
               >
-                <Pressable onPress={loadMore} accessibilityRole="button">
-                  <Text style={styles.more}>過去の会話を読む</Text>
-                </Pressable>
-                {loading && <ActivityIndicator color="#ffffff80" />}
-                {!loading && !error && !items.length && (
-                  <Text style={styles.more}>まだ会話はありません</Text>
-                )}
-                {[...items].reverse().map((m) => (
-                  <Pressable
-                    key={m.id}
-                    onLongPress={() => menu(m)}
-                    style={styles.message}
-                  >
-                    <Avatar
-                      path={m.avatar_path}
-                      version={m.avatar_updated_at}
-                      name={m.display_name}
-                      size={34}
-                    />
-                    <View style={{ flex: 1, minWidth: 0 }}>
-                      <Text style={styles.author}>
-                        {m.display_name}{" "}
-                        {new Date(m.created_at).toLocaleTimeString()}
-                      </Text>
-                      <Text style={styles.body}>
-                        {m.deleted
-                          ? "削除されたメッセージ"
-                          : m.kind === "arrival"
-                            ? "街に参加しました"
-                            : m.body}
-                      </Text>
-                    </View>
+                <ScrollView
+                  ref={scroll}
+                  // Keep the native scroll viewport fixed while the parent reveals it.
+                  // Resizing its top edge during a drag moves the touched row away from the finger.
+                  style={{ flex: 1 }}
+                  maintainVisibleContentPosition={{ minIndexForVisible: 1 }}
+                  onContentSizeChange={() => {
+                    if (!readingHistory.current)
+                      scroll.current?.scrollToEnd({ animated: false });
+                  }}
+                  scrollEventThrottle={32}
+                  onScroll={({
+                    nativeEvent: {
+                      contentOffset,
+                      contentSize,
+                      layoutMeasurement,
+                    },
+                  }) => {
+                    setAwayFromLatest(
+                      contentSize.height -
+                        layoutMeasurement.height -
+                        contentOffset.y >
+                        48,
+                    );
+                  }}
+                  onScrollBeginDrag={beginHistory}
+                  onScrollEndDrag={endHistoryDrag}
+                  onTouchCancel={endHistoryDrag}
+                  keyboardShouldPersistTaps="handled"
+                  keyboardDismissMode="interactive"
+                  contentContainerStyle={{
+                    minHeight: historyViewportHeight,
+                    justifyContent: "flex-end",
+                    paddingHorizontal: 12,
+                    paddingTop: historyTopPadding,
+                    paddingBottom: 4,
+                  }}
+                >
+                  <Pressable onPress={loadMore} accessibilityRole="button">
+                    <Text style={styles.more}>過去の会話を読む</Text>
                   </Pressable>
-                ))}
-                {confirmedEchoes
-                  .filter((e) => !items.some((m) => m.id === e.id))
-                  .map((e) => (
-                    <View key={`confirmed-${e.id}`} style={styles.message}>
-                      <View style={{ width: 34 }} />
+                  {loading && <ActivityIndicator color="#ffffff80" />}
+                  {!loading && !error && !items.length && (
+                    <Text style={styles.more}>まだ会話はありません</Text>
+                  )}
+                  {[...items].reverse().map((m) => (
+                    <Pressable
+                      key={m.id}
+                      onLongPress={() => menu(m)}
+                      style={styles.message}
+                    >
+                      <Avatar
+                        path={m.avatar_path}
+                        version={m.avatar_updated_at}
+                        name={m.display_name}
+                        size={34}
+                      />
+                      <View style={{ flex: 1, minWidth: 0 }}>
+                        <Text style={styles.author}>
+                          {m.display_name}{" "}
+                          {new Date(m.created_at).toLocaleTimeString()}
+                        </Text>
+                        <Text style={styles.body}>
+                          {m.deleted
+                            ? "削除されたメッセージ"
+                            : m.kind === "arrival"
+                              ? "街に参加しました"
+                              : m.body}
+                        </Text>
+                      </View>
+                    </Pressable>
+                  ))}
+                  {confirmedEchoes
+                    .filter((e) => !items.some((m) => m.id === e.id))
+                    .map((e) => (
+                      <View key={`confirmed-${e.id}`} style={styles.message}>
+                        <View style={{ width: 34 }} />
+                        <View style={{ flex: 1 }}>
+                          <Text style={styles.author}>自分</Text>
+                          <Text style={styles.body}>{e.body}</Text>
+                        </View>
+                      </View>
+                    ))}
+                  {pendingText !== null && (
+                    <View
+                      style={[styles.message, { opacity: 0.45 }]}
+                      accessibilityLabel={`${busy ? "送信中" : "結果未確認"}：${pendingText}`}
+                    >
+                      <View
+                        style={{
+                          width: 34,
+                          alignItems: "center",
+                          justifyContent: "center",
+                        }}
+                      >
+                        {busy && (
+                          <ActivityIndicator size="small" color="white" />
+                        )}
+                      </View>
                       <View style={{ flex: 1 }}>
-                        <Text style={styles.author}>自分</Text>
-                        <Text style={styles.body}>{e.body}</Text>
+                        <Text style={styles.author}>
+                          自分 · {busy ? "送信中" : "結果未確認"}
+                        </Text>
+                        <Text style={styles.body}>{pendingText}</Text>
                       </View>
                     </View>
-                  ))}
-                {pendingText !== null && (
-                  <View
-                    style={[styles.message, { opacity: 0.45 }]}
-                    accessibilityLabel={`${busy ? "送信中" : "結果未確認"}：${pendingText}`}
-                  >
-                    <View
-                      style={{
-                        width: 34,
-                        alignItems: "center",
-                        justifyContent: "center",
-                      }}
-                    >
-                      {busy && <ActivityIndicator size="small" color="white" />}
-                    </View>
-                    <View style={{ flex: 1 }}>
-                      <Text style={styles.author}>
-                        自分 · {busy ? "送信中" : "結果未確認"}
-                      </Text>
-                      <Text style={styles.body}>{pendingText}</Text>
-                    </View>
-                  </View>
-                )}
-              </ScrollView>
+                  )}
+                </ScrollView>
+              </ChatFade>
               <View pointerEvents="none" style={styles.watermark}>
                 <MapAsset name="DreamCloud Logo" width={147} height={22} />
               </View>
@@ -346,7 +382,7 @@ export function StreetChat({ mapError = "" }: { mapError?: string }) {
                   </Pressable>
                 </View>
               )}
-            </ChatFade>
+            </View>
             <View
               onLayout={({ nativeEvent }) =>
                 setFooterHeight(nativeEvent.layout.height)
@@ -361,10 +397,23 @@ export function StreetChat({ mapError = "" }: { mapError?: string }) {
               <View style={styles.composer} onTouchStart={Keyboard.dismiss}>
                 <SmoothSurface
                   color="#ffffff20"
-                  blurIntensity={25}
+                  blurIntensity={0}
                   radius={18}
                   style={styles.inputRow}
                 >
+                  <View
+                    pointerEvents="none"
+                    style={[
+                      StyleSheet.absoluteFill,
+                      {
+                        borderRadius: 18,
+                        borderCurve: "continuous",
+                        overflow: "hidden",
+                      },
+                    ]}
+                  >
+                    <ProgressiveBlur edge="solid" intensity={85} />
+                  </View>
                   <TextInput
                     onTouchStart={(event) => event.stopPropagation()}
                     placeholder="入力…"
@@ -410,7 +459,7 @@ export function StreetChat({ mapError = "" }: { mapError?: string }) {
             </View>
           </Animated.View>
         </SafeAreaView>
-      </KeyboardAvoidingView>
+      </Animated.View>
     </View>
   );
 }
@@ -420,8 +469,14 @@ const styles = StyleSheet.create({
   author: { color: "#ffffff66", fontSize: 13, fontWeight: "600" },
   body: { color: "#ffffffb3", fontSize: 16, lineHeight: 22, fontWeight: "600" },
   more: { color: "#ffffff80", fontSize: 12, paddingVertical: 7 },
-  watermark: { position: "absolute", right: 12, bottom: 10, opacity: 0.35 },
+  watermark: {
+    position: "absolute",
+    right: 12,
+    bottom: 10,
+    zIndex: 1,
+  },
   new: {
+    zIndex: 2,
     position: "absolute",
     left: 0,
     right: 0,
@@ -429,7 +484,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   composer: {
-    backgroundColor: "#000000b3",
+    backgroundColor: "transparent",
     paddingHorizontal: 10,
     paddingVertical: 10,
   },

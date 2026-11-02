@@ -5,6 +5,9 @@ public class PresenceNativeModule: Module {
  public func definition() -> ModuleDefinition {
   Name("PresenceNative")
   Events("onChange")
+  View(StreetBackdrop.self) {
+   Prop("edge") { (view: StreetBackdrop, value: String) in view.edge = value }
+  }
   Function("monotonicTime") { PresenceEngine.mono()*1000 }
   AsyncFunction("configure") { [weak self] (url:String,key:String) in
    PrivateHTTPCache.prepareOnce()
