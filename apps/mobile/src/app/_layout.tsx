@@ -52,6 +52,17 @@ export default function Layout() {
         >
           <Stack.Screen name="(tabs)" />
           <Stack.Screen
+            name="street-entry"
+            options={{
+              presentation: "formSheet",
+              sheetAllowedDetents: [0.55],
+              sheetInitialDetentIndex: 0,
+              sheetGrabberVisible: true,
+              sheetCornerRadius: 36,
+              contentStyle: { backgroundColor: "transparent" },
+            }}
+          />
+          <Stack.Screen
             name="events/[id]"
             options={{ presentation: "modal" }}
           />

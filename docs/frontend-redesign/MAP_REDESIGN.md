@@ -138,7 +138,13 @@ cp139：縮小時にも先頭へ到達できるよう、固定viewportと縮小�
 ## cp151：標準入街シートと3×3ドット
 - 最新の訂正によりドットは9×9ではなく3×3（9個）。Downloads/assetsのDreamCloud monoLogo/monoText/check.svgを取り込む。legacy/yumegaoka/app/src/components/rain-cloud.tsx、features/profile-card.tsxの列別周期とstrokeDashoffsetの演出を参考に、新しいEntryAnimationを分離実装。
 - explainは破線円とロゴ、scanning/checkingはロゴと文字が上下へ分かれ、ドットが列別周期・行別遅延で下へ流れる。外周は1200ms周期で回転。successは650msで円周を描き、続く300msでcheck.svgと同じpathを描く。演出から成功や滞在状態を変更しない。成功は既存checkin応答に従う。
-- StreetEntrySheetは透明Modal内の背景付きスライドを廃止。元のMapに固定BlurViewを置き、iOSのpageSheetだけをスライド。prepareEntrySheetが標準UISheetPresentationControllerへ65%/large detent、grabber、角丸36を設定。シート表示後に高さ設定が適用されるため、表示遷移の実機確認が必要。
-- iOS26は公開UIGlassEffect(.regular)＋白tintをシート背面へ配置しlight外観。以前のOSはsystemMaterialLight。Androidは既存機能を利用するfullScreenの代替で、同一外観の検証対象外。
 - 開発用入街、共有説明、キャンセル、成功後の地図へを保持。スワイプによる閉じ操作も既存closeへ接続。読み取り後に不要な「離さないで」の表示はしない。
 - 型/Lint・Debugビルド・iPhone転送成功。最終外観、標準シートのスワイプ操作、Core NFCの実読取は未確認。
+
+## cp152：初期高さ・ロゴ・最低3秒の演出
+- cp151のonShow後のdetent変更が上昇後縮小の原因。専用street-entryルートを追加し、既存native-stackの標準formSheetを表示前から55%・一段のdetent/角丸36/標準grabberで設定。prepareEntrySheetは呼ばない。旧native関数は互換用に未使用で残す。
+- 標準formSheetに白背景とlight BlurViewを組み合わせる。元Mapの背景blurは固定し25/defaultへ弱める。OS別の最終質感は未確認。
+- entrySheetStateはMapが所有する状態と既存scan/exitを渡すメモリ接続。戻るtransitionEndで既存close、元状態nullでrouteを閉じる。DB状態は演出側で変更しない。
+- 上部ロゴは黒24%の表示用SVGへ。円は全状態共通300pt上限。開発ボタンは重ねて配置し、円の上下移動を避ける。処理中の青い雲はlegacyのdream.png、待機は提供monoLogo、文字はmonoText。二重opacityを除去。
+- useEntryPresentationで処理開始から最低3秒のchecking表示を保持。通信・入街処理は遅らせない。失敗/取消/nullは即時反映しタイマー破棄。成功表示には実成功が必要。処理が3秒を超えた場合に追加3秒は待たない。
+- 地図へボタンを外し標準シートの下スワイプで閉じる。背景共有の説明は保持。型/Lint・表示タイミング3テスト成功。JS変更なので再ビルドなし。初期高さ・スワイプ・外観は実機未確認。

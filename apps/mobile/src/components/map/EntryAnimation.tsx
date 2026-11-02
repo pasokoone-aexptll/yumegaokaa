@@ -101,7 +101,7 @@ export function EntryAnimation({
   }));
   const logoStyle = useAnimatedStyle(() => ({
     transform: [{ translateY: -reveal.value * 30 }],
-    opacity: 0.35 + reveal.value * 0.65,
+    opacity: 1,
   }));
   const textStyle = useAnimatedStyle(() => ({
     transform: [{ translateY: reveal.value * 36 }],
@@ -175,7 +175,11 @@ export function EntryAnimation({
         >
           <Animated.View style={logoStyle}>
             <Image
-              source={require("../../../assets/figma-map/entry-logo.png")}
+              source={
+                active
+                  ? require("../../../assets/figma-map/entry-active-logo.png")
+                  : require("../../../assets/figma-map/entry-logo.png")
+              }
               style={{ width: 116, height: 80 }}
               resizeMode="contain"
             />

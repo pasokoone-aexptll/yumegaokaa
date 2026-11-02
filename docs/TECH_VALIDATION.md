@@ -874,3 +874,8 @@ Mapの最新へ中央化、SmoothSurfaceへblurIntensity追加、チャットに
 - legacyのRainCloud/profile-cardを参照。新EntryAnimationは3×3ドット、分離ロゴ、回転ring、成功ring→check。ユーザーの9×9訂正を反映。素材原本を保存。
 - 型チェック・Lint成功。Debugビルド成功（0 errors/3 warnings、/tmp/yumegaoka-entry151.log）。ネイティブ変更があるためこの1回のビルドを実施。JS調整後の再ネイティブビルドは省略。
 - devicectl転送成功（installation 3FED2D8D-AE31-4A8D-BA5E-0F8B35CE167E）。実機のglass外観、シート高さ遷移、ドット・円周・チェックの見え方、スワイプ閉じは未確認。実NFCはADP依存のまま。33タスク/固定残4件は変更なし。
+
+## チェックポイント152：表示後リサイズを廃止
+- R15/R19/R21。実機報告に基づきonShow後の高さ変更を廃止。標準formSheetルートに初期detentを設定。元Mapと表示routeはメモリストアで既存状態/callbackを共有し、checkinを複製しない。
+- 黒24%のヘッダーロゴ、固定した円の位置、処理中の青い雲、控えめな背景blurを実装。最低3秒の演出は表示hookに限定。
+- 型チェック/Lint成功。entry-presentationの3件（高速成功を3秒まで表示、取消でタイマー破棄、遅い応答へ余計な3秒を追加しない）成功。ネイティブ変更なしで再ビルド省略。初期位置・標準スワイプの取消・Figma比較は実機未確認。既存33タスク/残4件は変更しない。
