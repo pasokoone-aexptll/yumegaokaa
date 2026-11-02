@@ -31,8 +31,8 @@ export default function StreetEntry() {
       NativeStackNavigationProp<Record<string, object | undefined>>
     >();
   const { width } = useWindowDimensions();
-  // Figma: circle background spans 79% of screen width (SVG has 2.5% inset).
-  const diameter = width * (0.79 / 0.975);
+  // Figma: circle background spans 82% of screen width (SVG has 2.5% inset).
+  const diameter = width * (0.82 / 0.975);
   useEffect(
     () =>
       navigation.addListener("transitionEnd", (event) => {
@@ -86,7 +86,7 @@ export default function StreetEntry() {
                 paddingVertical: 8,
               }}
             >
-              <Text style={{ color: "#0088ff", fontSize: 12 }}>
+              <Text style={{ color: "#00ADF2", fontSize: 13.44 }}>
                 {localEntry ? "開発用タグで入街（NFC代用）" : "NFCを読み取る"}
               </Text>
             </Pressable>
@@ -96,9 +96,9 @@ export default function StreetEntry() {
           <Text
             accessibilityLiveRegion="polite"
             style={{
-              color: phase === "checking" ? "#2875e5" : "#555",
+              color: phase === "checking" ? "#00ADF2" : "#555",
               fontWeight: "600",
-              fontSize: 16,
+              fontSize: 17.92,
               textAlign: "center",
             }}
           >
@@ -111,7 +111,7 @@ export default function StreetEntry() {
                   : "街への参加を記録しています"}
           </Text>
           {phase === "explain" && (
-            <Text style={{ color: "#aaa", textAlign: "center", fontSize: 12 }}>
+            <Text style={{ color: "#aaa", textAlign: "center", fontSize: 13.44 }}>
               名前や正確な現在地は地図には出ません
             </Text>
           )}
@@ -121,7 +121,7 @@ export default function StreetEntry() {
             </Text>
           )}
           {phase === "checking" && (
-            <Text style={{ color: "#aaa", textAlign: "center", fontSize: 12 }}>
+            <Text style={{ color: "#aaa", textAlign: "center", fontSize: 13.44 }}>
               {localEntry
                 ? "開発用タグで接続中"
                 : "読み取り後はステッカーから離して大丈夫です"}

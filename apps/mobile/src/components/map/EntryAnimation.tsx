@@ -3,6 +3,7 @@ import { Image, View } from "react-native";
 import Animated, {
   cancelAnimation,
   Easing,
+  interpolate,
   useAnimatedProps,
   useAnimatedStyle,
   useSharedValue,
@@ -17,23 +18,25 @@ const circumference = 2 * Math.PI * 146;
 function Dot({ index }: { index: number }) {
   const phase = useSharedValue(0);
   useEffect(() => {
-    const row = Math.floor(index / 3),
-      column = index % 3;
-    phase.value = withDelay(
-      row * 85 + ((column * 137) % 410),
-      withRepeat(
-        withTiming(1, {
-          duration: 1100 + ((column * 173) % 600),
-          easing: Easing.linear,
-        }),
-        -1,
-      ),
+    // Match legacy: independent column phases plus a sharper, short brightness pulse.
+    const column = index % 3;
+    const start = [0.08, 0.62, 0.31][column];
+    phase.value = start;
+    phase.value = withRepeat(
+      withTiming(start + 1, {
+        duration: [1390, 1810, 1570][column],
+        easing: Easing.linear,
+      }),
+      -1,
     );
     return () => cancelAnimation(phase);
   }, [index, phase]);
-  const style = useAnimatedStyle(() => ({
-    opacity: 0.2 + Math.sin(phase.value * Math.PI) * 0.8,
-  }));
+  const style = useAnimatedStyle(() => {
+    const progress = (phase.value - Math.floor(index / 3) * 0.18 + 1) % 1;
+    return {
+      opacity: interpolate(progress, [0, 0.16, 0.52, 1], [0.15, 1, 0.15, 0.15]),
+    };
+  });
   return (
     <Animated.View
       style={[
@@ -42,7 +45,7 @@ function Dot({ index }: { index: number }) {
           width: 10,
           height: 10,
           borderRadius: 3,
-          backgroundColor: "#4387ff",
+          backgroundColor: "#00ADF2",
           left: (index % 3) * 18,
           top: Math.floor(index / 3) * 18,
         },
@@ -127,7 +130,7 @@ export function EntryAnimation({
             rotation={-90}
             origin="160,160"
             fill="none"
-            stroke="#007aff"
+            stroke="#00ADF2"
             strokeWidth={4}
             strokeDasharray={`${circumference * 0.73} ${circumference * 0.27}`}
             strokeLinecap="round"
@@ -143,7 +146,7 @@ export function EntryAnimation({
               rotation={-90}
               origin="160,160"
               fill="none"
-              stroke="#007aff"
+              stroke="#00ADF2"
               strokeWidth={4}
               strokeDasharray={`${circumference} ${circumference}`}
               animatedProps={complete}
@@ -152,7 +155,7 @@ export function EntryAnimation({
               d="M3.4165 23.917L20.4998 41.0003L58.0832 3.41699"
               transform="translate(129 138)"
               fill="none"
-              stroke="#007aff"
+              stroke="#00ADF2"
               strokeWidth={6.83333}
               strokeLinecap="round"
               strokeLinejoin="round"
