@@ -851,3 +851,4 @@ Mapの最新へ中央化、SmoothSurfaceへblurIntensity追加、チャットに
 - 本文・名前からのタッチ判定/固定履歴座標/状態処理を維持。データ0件を架空人数・アイコンで埋めない。方眼復帰、レベル/メンションの未承認詳細実装はしない。
 - 型チェック・Lint成功。chat-geometryの2件成功。Debugビルド成功（0 errors/3 warnings、/tmp/yumegaoka-figma147.log）。iOSコード変更を含むためビルドした。追加のDBテストは表示変更と無関係につき省略。
 - devicectlの転送はCoreDevice4016（端末のpower assertion/trusted connectivityが利用不能）で失敗。ユーザーへロック解除/同一ネットワーク接続を依頼。最新版インストールと修正後スクリーンショット比較は未確認。型/ビルド成功だけでUI_FINALIZEDやDEVICE_VERIFIEDへ加算しない。既存33タスク/残4件は据置き。
+- cp147転送再開：ルーター再起動後のen7=10.0.20.101へローカルenv/Metro接続先を更新。Metro応答・LAN Auth HTTP200を確認。既存Debug成果物を再ビルドせずdevicectlで転送成功（5DAEC578-89F1-4D1A-8B2B-91017E17D8FF）、新URLで起動成功。修正後外観の実機検証は未確認。
