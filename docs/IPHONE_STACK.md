@@ -1,6 +1,6 @@
 # iPhone開発構成の推奨案 v0.1
 
-2026-10-29。FIRST_SLICE_CONTRACTのB02。構成K01は承認済み・依存導入済み。本体の中核部分を実装し、シミュレータとPersonal Team用ビルドの既存成功記録がある。全体フェーズと残作業はMVP_TASKS、証拠はMVP_IMPLEMENTATION_AUDIT。React Native方向、MapLibre、Supabase、メールOTPは既に採用済み。
+2026-10-29。FIRST_SLICE_CONTRACTのB02。構成K01は承認済み・依存導入済み。本体の中核部分を実装し、シミュレータとPersonal Team用ビルドの既存成功記録がある。全体フェーズと残作業はMVP_TASKS、証拠はMVP_IMPLEMENTATION_AUDIT。React Native方向、Supabase、メールOTPは採用済み。地図は2026-11-02の変更でiOS=Apple Maps、Android=MapLibre。
 
 ## 採用する構成K01
 
@@ -8,7 +8,7 @@
 | --- | --- | --- |
 | アプリ基盤 | React Native＋TypeScript、Expo development build、New Architecture | iPhoneのネイティブ機能を組み込め、将来Androidへ画面とAPI処理を共有できる |
 | ビルド | MacのXcodeでローカルビルド。Expo prebuild＋設定プラグイン | クラウドビルド契約を前提にしない。生成物への手修正を正本にしない |
-| 地図 | @maplibre/maplibre-react-native | 採用済み。Figmaのアイコン・ラベルを描画。背景タイル提供者は別選定 |
+| 地図 | iOS: react-native-maps 1.29.11（Apple Maps）、Android: @maplibre/maplibre-react-native | 2026-11-02変更。PlatformMapのplatform別adapterでアイコン/ラベル/地点/境界を共用。Androidビルドは将来 |
 | NFC | react-native-nfc-managerのNew Architecture対応版 | 利用者のNDEF読取と運営の書込・再読取を同じアダプターで扱う |
 | 気配の背景観測 | 小さなローカルExpo Module（Swift＋Core Location） | 単調時計と測位timestamp、停止意思、直列処理を同じネイティブ側で扱う。既存試作の知見を使うが、そのまま製品扱いにしない |
 | 認証・通常API | @supabase/supabase-js | 採用基盤の公式クライアント。画面から内部テーブルを直接更新しない |

@@ -19,7 +19,7 @@
 | 4タブ | Home／Map＋街チャット／お知らせ／Settings。旧/notificationsリンクは/inboxへ移す | (tabs)/_layout、inbox、NotificationsScreen |
 | 角丸 | 新規パネルはfigma-squircle 1.1.0でcornerSmoothing=0.6。円形アイコン・OS標準Switch/AlertはOS描画 | SmoothSurface |
 
-通常画面は添付101、通信エラーダイアログは添付102として解釈（依頼文の画像番号と逆だが内容で対応）。エラーの英語本文はサンプルでありコピーしない。地図はMapLibreを維持。2026-11-02の追加指示でOpenFreeMap Dark＋Libertyの3D建物定義を採用（dark-3d.json）。建物色を青灰色へ変更し、初期zoom16/pitch55。建物の高さ・形状は提供データに依存する。DB/APIは変更しない。
+通常画面は添付101、通信エラーダイアログは添付102として解釈（依頼文の画像番号と逆だが内容で対応）。エラーの英語本文はサンプルでありコピーしない。地図は最新指示でiOS=Apple Maps、Android=MapLibreへ分離。MapLibreのOpenFreeMap Dark＋Libertyの3D建物定義（dark-3d.json）はAndroid向けに保持。iOSはreact-native-mapsの標準MapKit provider・dark・showsBuildings・pitch55を使用。詳細な建物/施設の描画はApple提供データに依存。DB/APIは変更しない。
 
 素材はDownloads/assetsの15ファイルをapps/mobile/assets/figma-mapへ複製。SVGはMapAssetから表示。ダイアログの人物素材は未提供。池袋ロゴは追加提供のikebukuro.png（279×177px）へ差替え。人数マークはusericon.svg。人物画像を別素材で捏造しない。
 
@@ -31,7 +31,7 @@
 | MR02 滞在時間レベル | 現在の街での滞在時間をチャットで示す | 時間→レベルの尺度、更新、過去発言の表示、退出/ゴースト時、公開範囲を後日決定。経験値や投稿数のレベルではない |
 | MR03 メンション | 名前を指定して投稿、青い表示、相手のお知らせ＋Push | 本人IDの解決、名前変更・ブロック・通報・頻度制限・通知payloadの詳細。既存APNsの仕組みと接続するが今回未実装 |
 | MR04 募集画像 | 募集者の当日の街pool画像 | 現行募集レスポンスには割当画像なし。API・失効/取り下げ時の扱いを接続するまで本人画像や無関係なpool画像で代用しない |
-| MR05 背景地図 | 追加指示でMapLibreのダーク3Dを採用 | OpenFreeMap Darkを同梱し3D建物レイヤー追加。Apple Mapsへは変更しない。本番提供元の運用条件はQ10に残す |
+| MR05 背景地図 | 最新指示でiOS=Apple Maps、Android=MapLibre | PlatformMap.ios.tsxとPlatformMap.tsxを分離。Androidの実ビルドは将来。提供元の本番運用条件はQ10に残す |
 
 追加機能は既存33タスクの固定完了条件へ黙って加えない。MR01〜04の実装工数は詳細未確定につき不明。MR05の表示実装は追加指示で着手済み。現在のUI作業はロジックのDONEや実機確認数を増やさない。
 
@@ -56,3 +56,10 @@ cp139：縮小時にも先頭へ到達できるよう、固定viewportと縮小�
 - SmoothSurfaceのSVG輪郭はsmoothing60%。背景BlurViewはiOS continuous角丸でクリップするためFigmaの60%と完全な数値同一ではない。実画面で境界を確認する必要がある。
 - 気配0件でも48ptの列領域を確保（架空画像は置かない）。地図は初期zoom17へ近づける。MapLibreの建物/道路/施設情報はFigma背景と別データであり同一描画を保証しない。
 - 指追従の固定viewportと先頭padding、API/実データは変更しない。実機スクショの人数0/退出状態/投稿とFigmaサンプル20人/入街状態/仮投稿の差はデザイン欠落として捏造しない。
+
+## cp141：Apple Maps・端のぼかし・操作サイズ
+- Map/LocationPicker/街範囲プレビュー/全マーカーを共通PlatformMapの型へ接続。MetroがiOS専用実装を選ぶ。Android/defaultは既存MapLibreを保持。react-native.config.jsでreact-native-mapsのAndroid自動リンクを無効化し、Google Mapsへ意図せず移行しない。
+- iOSの経緯度は[lng,lat]からMapKitのlongitude/latitudeへ変換。カメラのzoomはaltitudeへ変換。初回/詳細地点/現在地の移動を共通flyToへ維持。街範囲Polygonの穴も維持。利用者の現在地レイヤーは自動公開しない。
+- progressive blurは20の細い帯で強度を二次的に増加する近似。地図側0→端側強。私有APIは使わない。滑らかな連続可変半径の保証ではなく、実機の帯境界/性能は確認待ち。
+- 拡大時の全画面blurを除去し、透明な背面操作遮断だけ維持。方眼なし。履歴末尾padding64→4。先頭の画面高由来paddingと固定viewportは維持。
+- 右の2ボタンは46×46ptへ統一。SVGに含まれる透明余白を考慮し、pin素材48、現在地素材46で実際の図形を約20ptへ揃える。

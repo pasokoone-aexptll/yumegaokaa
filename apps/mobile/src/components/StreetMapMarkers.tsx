@@ -1,7 +1,7 @@
 import { SmoothSurface } from "./map/SmoothSurface";
 import { EventCloudPin } from "./EventCloudPin";
 import { Avatar } from "./Avatar";
-import { Marker } from "@maplibre/maplibre-react-native";
+import { Marker } from "./map/PlatformMap";
 import { router } from "expo-router";
 import { Pressable, Text, View } from "react-native";
 import { StreetEvent, countdown } from "../lib/events";

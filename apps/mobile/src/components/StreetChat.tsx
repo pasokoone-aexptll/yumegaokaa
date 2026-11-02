@@ -1,12 +1,11 @@
 import { useEffect, useRef, useState, type ComponentRef } from "react";
 import Svg, { Defs, LinearGradient, Stop, Rect } from "react-native-svg";
-import { BlurView } from "expo-blur";
 import {
   SafeAreaView,
   useSafeAreaInsets,
 } from "react-native-safe-area-context";
 import { Avatar } from "./Avatar";
-import { GridBackground } from "./GridBackground";
+import { ProgressiveBlur } from "./map/ProgressiveBlur";
 import { MapAsset } from "./map/MapAsset";
 import { MapFeedback, type MapNotice } from "./map/MapFeedback";
 import { SmoothSurface } from "./map/SmoothSurface";
@@ -156,13 +155,11 @@ export function StreetChat({ mapError = "" }: { mapError?: string }) {
   }
   return (
     <View style={StyleSheet.absoluteFill} pointerEvents="box-none">
-      <Animated.View
+      <View
         pointerEvents={expanded ? "auto" : "none"}
         onTouchStart={Keyboard.dismiss}
-        style={[StyleSheet.absoluteFill, { opacity: expansion }]}
-      >
-        <BlurView intensity={35} tint="dark" style={StyleSheet.absoluteFill} />
-      </Animated.View>
+        style={StyleSheet.absoluteFill}
+      />
       <KeyboardAvoidingView
         behavior="height"
         style={{ flex: 1 }}
@@ -189,12 +186,7 @@ export function StreetChat({ mapError = "" }: { mapError?: string }) {
             }}
           >
             <View style={styles.history} onTouchStart={Keyboard.dismiss}>
-              <BlurView
-                pointerEvents="none"
-                intensity={18}
-                tint="default"
-                style={StyleSheet.absoluteFill}
-              />
+              <ProgressiveBlur edge="bottom" intensity={24} />
               <Svg
                 pointerEvents="none"
                 style={StyleSheet.absoluteFill}
@@ -203,13 +195,12 @@ export function StreetChat({ mapError = "" }: { mapError?: string }) {
               >
                 <Defs>
                   <LinearGradient id="chatShade" x1="0" y1="0" x2="0" y2="1">
-                    <Stop offset="0" stopColor="black" stopOpacity={0.12} />
+                    <Stop offset="0" stopColor="black" stopOpacity={0} />
                     <Stop offset="1" stopColor="black" stopOpacity={0.78} />
                   </LinearGradient>
                 </Defs>
                 <Rect width="100%" height="100%" fill="url(#chatShade)" />
               </Svg>
-              <GridBackground color="#ffffff18" spacing={29} />
               <ScrollView
                 ref={scroll}
                 // Keep the native scroll viewport fixed while the parent reveals it.
@@ -251,7 +242,7 @@ export function StreetChat({ mapError = "" }: { mapError?: string }) {
                   justifyContent: "flex-end",
                   paddingHorizontal: 12,
                   paddingTop: historyTopPadding,
-                  paddingBottom: 64,
+                  paddingBottom: 4,
                 }}
               >
                 <Pressable onPress={loadMore} accessibilityRole="button">

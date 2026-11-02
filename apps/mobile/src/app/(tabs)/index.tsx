@@ -1,3 +1,4 @@
+import { ProgressiveBlur } from "../../components/map/ProgressiveBlur";
 import { BlurView } from "expo-blur";
 import { MapHeader } from "../../components/map/MapHeader";
 import { MapAsset } from "../../components/map/MapAsset";
@@ -21,7 +22,7 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Camera, CameraRef, Map } from "@maplibre/maplibre-react-native";
+import { Camera, CameraRef, Map } from "../../components/map/PlatformMap";
 import { native, url } from "../../lib/native";
 import { liveCells } from "../../lib/presence";
 import { localEntry, nfcDisabled } from "../../lib/development";
@@ -157,11 +158,7 @@ export default function Street() {
             height: 145,
           }}
         >
-          <BlurView
-            intensity={20}
-            tint="default"
-            style={StyleSheet.absoluteFill}
-          />
+          <ProgressiveBlur edge="top" intensity={30} />
         </View>
         <MapHeader
           name={name}
@@ -197,8 +194,11 @@ export default function Street() {
             style={{
               backgroundColor: "#00000033",
               overflow: "hidden",
-              borderRadius: 26,
-              padding: 10,
+              borderRadius: 23,
+              width: 46,
+              height: 46,
+              alignItems: "center",
+              justifyContent: "center",
             }}
           >
             <BlurView
@@ -207,7 +207,7 @@ export default function Street() {
               tint="default"
               style={StyleSheet.absoluteFill}
             />
-            <MapAsset name="CreatePIN" size={30} />
+            <MapAsset name="CreatePIN" size={48} />
           </Pressable>
           <Pressable
             accessibilityRole="button"
@@ -216,8 +216,11 @@ export default function Street() {
             style={{
               backgroundColor: "#00000033",
               overflow: "hidden",
-              borderRadius: 26,
-              padding: 10,
+              borderRadius: 23,
+              width: 46,
+              height: 46,
+              alignItems: "center",
+              justifyContent: "center",
             }}
           >
             <BlurView
@@ -226,7 +229,7 @@ export default function Street() {
               tint="default"
               style={StyleSheet.absoluteFill}
             />
-            <MapAsset name="Navi" size={30} />
+            <MapAsset name="Navi" size={46} />
           </Pressable>
         </View>
       </SafeAreaView>

@@ -53,4 +53,4 @@ SupabaseのDatabase Broadcastは送信内容をrealtime.messagesに保存する�
 
 ## iPhone構成の採用
 
-K01は承認済み。[IPHONE_STACK](IPHONE_STACK.md)を参照。RN＋TypeScript＋Expo開発ビルド、MapLibre、react-native-nfc-manager、背景観測Swiftモジュール、ローカルビルドを採用。具体バージョン・混在ビルド・実機での成立性は未確認。
+K01は承認済み。[IPHONE_STACK](IPHONE_STACK.md)を参照。RN＋TypeScript＋Expo開発ビルド、Apple Maps(iOS)/MapLibre(Android、2026-11-02変更)、react-native-nfc-manager、背景観測Swiftモジュール、ローカルビルドを採用。具体バージョン・混在ビルド・実機での成立性は未確認。

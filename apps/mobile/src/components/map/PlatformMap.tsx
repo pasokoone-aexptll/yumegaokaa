@@ -1,0 +1,53 @@
+import { useRef, useImperativeHandle } from "react";
+import type { CameraRef as LibreCameraRef } from "@maplibre/maplibre-react-native";
+// Android/default implementation. Preserve MapLibre for the future Android build.
+import {
+  Map as LibreMap,
+  Camera as LibreCamera,
+  Marker as LibreMarker,
+  GeoJSONSource,
+  Layer,
+} from "@maplibre/maplibre-react-native";
+import { mapStyle as defaultStyle } from "../../lib/mapStyle";
+import type {
+  MapProps,
+  CameraProps,
+  MarkerProps,
+  BoundaryProps,
+} from "./PlatformMap.types";
+export type { CameraRef } from "./PlatformMap.types";
+export function Map({ mapStyle = defaultStyle, ...props }: MapProps) {
+  return <LibreMap mapStyle={mapStyle} {...props} />;
+}
+export function Camera({ ref, ...props }: CameraProps) {
+  const camera = useRef<LibreCameraRef>(null);
+  useImperativeHandle(
+    ref,
+    () => ({
+      flyTo: (view) => {
+        void camera.current?.flyTo(view);
+      },
+    }),
+    [],
+  );
+  return <LibreCamera ref={camera} {...props} />;
+}
+export function Marker(props: MarkerProps) {
+  return <LibreMarker {...props} />;
+}
+export function Boundary({ data }: BoundaryProps) {
+  return (
+    <GeoJSONSource id="area-preview" data={data}>
+      <Layer
+        id="area-fill"
+        type="fill"
+        paint={{ "fill-color": "#008cff", "fill-opacity": 0.2 }}
+      />
+      <Layer
+        id="area-border"
+        type="line"
+        paint={{ "line-color": "#008cff", "line-width": 3 }}
+      />
+    </GeoJSONSource>
+  );
+}

@@ -195,3 +195,6 @@ ADP加入まで、Personal Teamの開発ビルドではタグ読取を開発用�
 ## Push配信方式（2026-11-01承認）
 
 重要変更のPushはAPNsへ直接送信する。端末の通知許可を尊重し、拒否時もアプリ内通知を利用できる。実装/未確認条件は[PUSH_DELIVERY](PUSH_DELIVERY.md)。実配信はADPと署名・鍵・端末が必要。
+
+## 地図エンジンの最新指定（2026-11-02）
+iOSはApple Maps、AndroidはMapLibre。既存の気配/ピン/場所選択/範囲表示ロジックを共用し、描画adapterを分離する。Androidの実機検証は将来。[MAP_REDESIGN](frontend-redesign/MAP_REDESIGN.md)参照。

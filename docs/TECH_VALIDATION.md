@@ -804,3 +804,9 @@ R11/R18。sticker-flowに同一点3登録の退化拒否と競合公開拒否を
 
 ## チェックポイント140：白黒透過とFigma比較修正
 Mapの最新へ中央化、SmoothSurfaceへblurIntensity追加、チャットにBlurView＋黒gradient、白alphaの文字、入力面/公開設定/参加トグル周辺/右側操作面を白黒alphaに変更。気配なしでも列領域確保、初期zoom17。添付実機写真とFigmaの差分をMAP_REDESIGNへ記録。型チェック・Lint・diff確認成功。ネイティブ依存追加・再ビルドなし。実機描画/ぼかし合成の再確認は未実施、UI_FINALIZEDや既存DONE数へ加算しない。スクロールの固定viewport/上padding維持。
+
+## チェックポイント141：iOS Apple Mapsへの分離
+- ユーザー指定によりiOSはreact-native-maps 1.29.11（MapKit標準provider）へ変更。PlatformMap.ios/PlatformMap(default MapLibre)でMap・Camera・Marker・Boundaryを分離。Map画面、場所選択、街範囲プレビューを共用adapterへ接続。Android用MapLibreとstyleを保持し、react-native-mapsのAndroid autolinkは無効化。Android実ビルド未実施。
+- 末尾padding64→4、方眼・拡大時全画面blur除去。20帯の強度差による端方向progressive blur、2操作ボタン46×46と素材内余白補正。既存先頭padding/固定viewport維持。
+- 型チェック/Lint成功（初回MapLibre ref/children型差をadapterで修正）。Debugビルド成功0 errors/2 warnings、/tmp/yumegaoka-applemap141.log。devicectl install成功（bundle jp.yumegaoka.development、installation 24FABDB7-6BA4-4C6D-BCFC-C38F11CC1622）。Release配布なし。
+- 更新前の旧nativeへFast Refreshした際にRNMapsAirModule不足を検知。新native導入後の起動で再確認。Apple Maps上の各ピン押下/境界/位置選択、blurの帯境界/性能、実表示の確認はユーザー未確認。ビルド成功を全機能DEVICE_VERIFIEDへ加算しない。API/DB/公開方式の変更なし。

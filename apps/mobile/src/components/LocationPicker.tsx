@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Camera, Map, Marker } from "@maplibre/maplibre-react-native";
+import { Camera, Map, Marker } from "./map/PlatformMap";
 import { mapStyle } from "../lib/mapStyle";
 import { Action } from "./Page";
 export function LocationPicker({

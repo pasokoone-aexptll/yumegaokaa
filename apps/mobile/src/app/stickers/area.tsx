@@ -1,12 +1,7 @@
 import { useCallback, useState } from "react";
 import { router, useFocusEffect } from "expo-router";
 import { Alert, Modal, Text, View } from "react-native";
-import {
-  Camera,
-  GeoJSONSource,
-  Layer,
-  Map,
-} from "@maplibre/maplibre-react-native";
+import { Camera, Boundary, Map } from "../../components/map/PlatformMap";
 import { Action, Empty, Page, ui } from "../../components/Page";
 import { LocationPicker } from "../../components/LocationPicker";
 import { native, streetID } from "../../lib/native";
@@ -153,18 +148,7 @@ export default function Area() {
                 zoom: 14,
               }}
             />
-            <GeoJSONSource id="area-preview" data={preview.boundary}>
-              <Layer
-                id="area-fill"
-                type="fill"
-                paint={{ "fill-color": "#008cff", "fill-opacity": 0.2 }}
-              />
-              <Layer
-                id="area-border"
-                type="line"
-                paint={{ "line-color": "#008cff", "line-width": 3 }}
-              />
-            </GeoJSONSource>
+            <Boundary data={preview.boundary} />
           </Map>
         </View>
       )}
