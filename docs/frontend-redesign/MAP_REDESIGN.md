@@ -142,9 +142,15 @@ cp139：縮小時にも先頭へ到達できるよう、固定viewportと縮小�
 - 型/Lint・Debugビルド・iPhone転送成功。最終外観、標準シートのスワイプ操作、Core NFCの実読取は未確認。
 
 ## cp152：初期高さ・ロゴ・最低3秒の演出
-- cp151のonShow後のdetent変更が上昇後縮小の原因。専用street-entryルートを追加し、既存native-stackの標準formSheetを表示前から55%・一段のdetent/角丸36/標準grabberで設定。prepareEntrySheetは呼ばない。旧native関数は互換用に未使用で残す。
+- cp151のonShow後のdetent変更が上昇後縮小の原因。専用street-entryルートを追加し、既存native-stackの標準formSheetを表示前から53.5%・一段のdetent/OS標準角丸/標準grabber（cp153で比率修正）で設定。prepareEntrySheetは呼ばない。旧native関数は互換用に未使用で残す。
 - 標準formSheetに白背景とlight BlurViewを組み合わせる。元Mapの背景blurは固定し25/defaultへ弱める。OS別の最終質感は未確認。
 - entrySheetStateはMapが所有する状態と既存scan/exitを渡すメモリ接続。戻るtransitionEndで既存close、元状態nullでrouteを閉じる。DB状態は演出側で変更しない。
 - 上部ロゴは黒24%の表示用SVGへ。円は全状態共通300pt上限。開発ボタンは重ねて配置し、円の上下移動を避ける。処理中の青い雲はlegacyのdream.png、待機は提供monoLogo、文字はmonoText。二重opacityを除去。
 - useEntryPresentationで処理開始から最低3秒のchecking表示を保持。通信・入街処理は遅らせない。失敗/取消/nullは即時反映しタイマー破棄。成功表示には実成功が必要。処理が3秒を超えた場合に追加3秒は待たない。
 - 地図へボタンを外し標準シートの下スワイプで閉じる。背景共有の説明は保持。型/Lint・表示タイミング3テスト成功。JS変更なので再ビルドなし。初期高さ・スワイプ・外観は実機未確認。
+
+## cp153：Figma106と22:20実機の比率
+- 実機1206×2622、Figma1004×2180を幅比で比較。Figmaの円背景は約76%幅、実機は約70%。EntryAnimationのSVG背景半径156/viewBox320の余白を考慮し、外枠をwidth×0.76/0.975へ。画面高による制限と300pt上限を廃止。
+- シートの一律36pt角丸指定を削除。react-native-screensの未指定時のUISheetPresentationControllerAutomaticDimensionを使用し、iPhoneのシステム角丸に任せる。独自の下端クリップや表示後の高さ変更は加えない。
+- 初期detent55%→53.5%、下padding18→12pt。円拡大と合わせて下側の空きを減らし、上部ロゴと円・説明の位置を原本へ寄せる。3秒の演出・入街ロジックは維持。
+- 作業開始時に既に削除されていた追加の背景共有説明行は変更せず保持。型/Lint確認、実機の最終角丸・高さは未確認。

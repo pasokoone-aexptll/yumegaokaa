@@ -28,8 +28,9 @@ export default function StreetEntry() {
     useNavigation<
       NativeStackNavigationProp<Record<string, object | undefined>>
     >();
-  const { width, height } = useWindowDimensions();
-  const diameter = Math.min(300, width * 0.76, height * 0.35);
+  const { width } = useWindowDimensions();
+  // Figma: circle background spans 76% of screen width (SVG has 2.5% inset).
+  const diameter = width * (0.76 / 0.975);
   useEffect(
     () =>
       navigation.addListener("transitionEnd", (event) => {
@@ -55,7 +56,7 @@ export default function StreetEntry() {
         contentContainerStyle={{
           paddingTop: 24,
           paddingHorizontal: 20,
-          paddingBottom: 18,
+          paddingBottom: 12,
           alignItems: "center",
           gap: 12,
         }}

@@ -55,10 +55,9 @@ export default function Layout() {
             name="street-entry"
             options={{
               presentation: "formSheet",
-              sheetAllowedDetents: [0.55],
+              sheetAllowedDetents: [0.535],
               sheetInitialDetentIndex: 0,
               sheetGrabberVisible: true,
-              sheetCornerRadius: 36,
               contentStyle: { backgroundColor: "transparent" },
             }}
           />
