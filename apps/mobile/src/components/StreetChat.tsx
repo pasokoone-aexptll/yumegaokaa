@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState, type ComponentRef } from "react";
+import Svg, { Defs, LinearGradient, Stop, Rect } from "react-native-svg";
 import { BlurView } from "expo-blur";
 import {
   SafeAreaView,
@@ -56,10 +57,14 @@ export function StreetChat({ mapError = "" }: { mapError?: string }) {
   const insets = useSafeAreaInsets();
   const [availableHeight, setAvailableHeight] = useState(height);
   const [footerHeight, setFooterHeight] = useState(66);
-  const historyViewportHeight = Math.max(
-    0,
-    Math.min(height * 0.74, availableHeight) - footerHeight,
-  );
+  const collapsedHeight = Math.min(height * 0.36, availableHeight);
+  const expandedHeight = Math.min(height * 0.74, availableHeight);
+  const historyViewportHeight = Math.max(0, expandedHeight - footerHeight);
+  const collapsedHistoryHeight = Math.max(0, collapsedHeight - footerHeight);
+  // Reserve the clipped region even while expanded. Changing this during a drag
+  // would move the touched message again. At offset zero, the first row is visible
+  // just below the collapsed window's top edge on every screen size.
+  const historyTopPadding = historyViewportHeight - collapsedHistoryHeight;
   const [awayFromLatest, setAwayFromLatest] = useState(false);
   const [expansion] = useState(() => new Animated.Value(0));
   useEffect(() => {
@@ -177,17 +182,34 @@ export function StreetChat({ mapError = "" }: { mapError?: string }) {
             style={{
               height: expansion.interpolate({
                 inputRange: [0, 1],
-                outputRange: [
-                  Math.min(height * 0.36, availableHeight),
-                  Math.min(height * 0.74, availableHeight),
-                ],
+                outputRange: [collapsedHeight, expandedHeight],
               }),
               maxHeight: "100%",
               flexShrink: 1,
             }}
           >
             <View style={styles.history} onTouchStart={Keyboard.dismiss}>
-              <GridBackground color="#ffffff18" />
+              <BlurView
+                pointerEvents="none"
+                intensity={18}
+                tint="default"
+                style={StyleSheet.absoluteFill}
+              />
+              <Svg
+                pointerEvents="none"
+                style={StyleSheet.absoluteFill}
+                width="100%"
+                height="100%"
+              >
+                <Defs>
+                  <LinearGradient id="chatShade" x1="0" y1="0" x2="0" y2="1">
+                    <Stop offset="0" stopColor="black" stopOpacity={0.12} />
+                    <Stop offset="1" stopColor="black" stopOpacity={0.78} />
+                  </LinearGradient>
+                </Defs>
+                <Rect width="100%" height="100%" fill="url(#chatShade)" />
+              </Svg>
+              <GridBackground color="#ffffff18" spacing={29} />
               <ScrollView
                 ref={scroll}
                 // Keep the native scroll viewport fixed while the parent reveals it.
@@ -228,13 +250,14 @@ export function StreetChat({ mapError = "" }: { mapError?: string }) {
                   minHeight: historyViewportHeight,
                   justifyContent: "flex-end",
                   paddingHorizontal: 12,
+                  paddingTop: historyTopPadding,
                   paddingBottom: 64,
                 }}
               >
                 <Pressable onPress={loadMore} accessibilityRole="button">
                   <Text style={styles.more}>過去の会話を読む</Text>
                 </Pressable>
-                {loading && <ActivityIndicator color="#b0b7c2" />}
+                {loading && <ActivityIndicator color="#ffffff80" />}
                 {!loading && !error && !items.length && (
                   <Text style={styles.more}>まだ会話はありません</Text>
                 )}
@@ -270,33 +293,35 @@ export function StreetChat({ mapError = "" }: { mapError?: string }) {
                 <MapAsset name="DreamCloud Logo" width={147} height={22} />
               </View>
               {(hasNew || awayFromLatest) && (
-                <Pressable
-                  accessibilityRole="button"
-                  onPress={() => {
-                    Keyboard.dismiss();
-                    followLatest();
-                    setAwayFromLatest(false);
-                    scroll.current?.scrollToEnd({ animated: true });
-                  }}
-                  style={styles.new}
-                >
-                  <SmoothSurface
-                    color="#303d50f0"
-                    radius={18}
-                    style={{
-                      paddingHorizontal: 14,
-                      paddingVertical: 10,
-                      flexDirection: "row",
-                      alignItems: "center",
-                      gap: 8,
+                <View pointerEvents="box-none" style={styles.new}>
+                  <Pressable
+                    accessibilityRole="button"
+                    onPress={() => {
+                      Keyboard.dismiss();
+                      followLatest();
+                      setAwayFromLatest(false);
+                      scroll.current?.scrollToEnd({ animated: true });
                     }}
                   >
-                    <Text style={{ color: "#e4edff" }}>最新へ</Text>
-                    <View style={{ transform: [{ rotate: "90deg" }] }}>
-                      <MapAsset name="chevron.right" size={12} />
-                    </View>
-                  </SmoothSurface>
-                </Pressable>
+                    <SmoothSurface
+                      color="#00000080"
+                      blurIntensity={35}
+                      radius={18}
+                      style={{
+                        paddingHorizontal: 14,
+                        paddingVertical: 10,
+                        flexDirection: "row",
+                        alignItems: "center",
+                        gap: 8,
+                      }}
+                    >
+                      <Text style={{ color: "#ffffffde" }}>最新へ</Text>
+                      <View style={{ transform: [{ rotate: "90deg" }] }}>
+                        <MapAsset name="chevron.right" size={12} />
+                      </View>
+                    </SmoothSurface>
+                  </Pressable>
+                </View>
               )}
             </View>
             <View
@@ -312,14 +337,15 @@ export function StreetChat({ mapError = "" }: { mapError?: string }) {
               )}
               <View style={styles.composer} onTouchStart={Keyboard.dismiss}>
                 <SmoothSurface
-                  color="#686868a8"
+                  color="#ffffff20"
+                  blurIntensity={25}
                   radius={18}
                   style={styles.inputRow}
                 >
                   <TextInput
                     onTouchStart={(event) => event.stopPropagation()}
                     placeholder="入力…"
-                    placeholderTextColor="#a1a1a1"
+                    placeholderTextColor="#ffffff66"
                     maxLength={500}
                     value={text}
                     onChangeText={setText}
@@ -362,14 +388,24 @@ export function StreetChat({ mapError = "" }: { mapError?: string }) {
   );
 }
 const styles = StyleSheet.create({
-  history: { flex: 1, backgroundColor: "#171c2475", overflow: "hidden" },
-  message: { paddingVertical: 7, flexDirection: "row", gap: 10 },
-  author: { color: "#9da4b1", fontSize: 12, fontWeight: "600" },
-  body: { color: "#e1e1e5", fontSize: 15, lineHeight: 21, fontWeight: "500" },
-  more: { color: "#a9b2c1", fontSize: 12, paddingVertical: 7 },
+  history: { flex: 1, backgroundColor: "transparent", overflow: "hidden" },
+  message: { paddingVertical: 8, flexDirection: "row", gap: 10 },
+  author: { color: "#ffffff66", fontSize: 13, fontWeight: "600" },
+  body: { color: "#ffffffb3", fontSize: 16, lineHeight: 22, fontWeight: "600" },
+  more: { color: "#ffffff80", fontSize: 12, paddingVertical: 7 },
   watermark: { position: "absolute", right: 12, bottom: 10, opacity: 0.35 },
-  new: { position: "absolute", right: 12, bottom: 10 },
-  composer: { backgroundColor: "#343434ed", padding: 10 },
+  new: {
+    position: "absolute",
+    left: 0,
+    right: 0,
+    bottom: 10,
+    alignItems: "center",
+  },
+  composer: {
+    backgroundColor: "#000000b3",
+    paddingHorizontal: 10,
+    paddingVertical: 10,
+  },
   inputRow: { flexDirection: "row", minHeight: 46, alignItems: "center" },
   input: {
     flex: 1,
@@ -386,7 +422,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     gap: 4,
   },
-  hint: { color: "#b7b7b7", fontSize: 12 },
+  hint: { color: "#ffffff66", fontSize: 12 },
   send: {
     width: 56,
     alignItems: "center",

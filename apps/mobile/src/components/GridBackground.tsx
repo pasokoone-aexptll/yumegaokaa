@@ -1,8 +1,12 @@
 import { StyleSheet, View, useWindowDimensions } from "react-native";
 
-const spacing = 26;
-
-export function GridBackground({ color }: { color?: string }) {
+export function GridBackground({
+  color,
+  spacing = 26,
+}: {
+  color?: string;
+  spacing?: number;
+}) {
   const { width, height } = useWindowDimensions();
   return (
     <View

@@ -797,3 +797,10 @@ R11/R18。sticker-flowに同一点3登録の退化拒否と競合公開拒否を
 
 ## チェックポイント138：チャットの指追従修正・素材差替え
 ユーザー報告の拡大時の投稿飛びを修正。StreetChatのScrollViewを最大高さ・下端固定にし、親のクリップ領域のみ拡大縮小。拡大率でscroll viewport/投稿座標を動かさない。usericon.svgと279×177のikebukuro.pngを提供assetsからコピーしMapHeaderへ接続。型チェック・Lint・diff whitespace確認成功。実機の追従・クリップ/タッチ判定は未確認、ネイティブ再ビルドなし、既存33タスク進捗据置き。
+
+## チェックポイント139：縮小時の先頭履歴
+- cp138の固定viewportは縮小時に上部をクリップするため、先頭行が隠れるという実機報告あり。表示可能高を画面高/利用可能高/入力部実測から算出し、拡大履歴高−縮小履歴高をcontentContainerのpaddingTopへ追加。
+- paddingは拡大率に連動させず固定し、ドラッグ中の投稿座標維持を継続。画面/キーボード寸法が変わる場合のみ再計算。型チェック・Lint成功。実機での先頭到達は再確認待ち。ネイティブビルドなし、固定タスク進捗変更なし。
+
+## チェックポイント140：白黒透過とFigma比較修正
+Mapの最新へ中央化、SmoothSurfaceへblurIntensity追加、チャットにBlurView＋黒gradient、白alphaの文字、入力面/公開設定/参加トグル周辺/右側操作面を白黒alphaに変更。気配なしでも列領域確保、初期zoom17。添付実機写真とFigmaの差分をMAP_REDESIGNへ記録。型チェック・Lint・diff確認成功。ネイティブ依存追加・再ビルドなし。実機描画/ぼかし合成の再確認は未実施、UI_FINALIZEDや既存DONE数へ加算しない。スクロールの固定viewport/上padding維持。

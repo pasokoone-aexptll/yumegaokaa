@@ -1,3 +1,4 @@
+import { BlurView } from "expo-blur";
 import { MapHeader } from "../../components/map/MapHeader";
 import { MapAsset } from "../../components/map/MapAsset";
 import { StatusBar } from "expo-status-bar";
@@ -130,7 +131,7 @@ export default function Street() {
           ref={camera}
           initialViewState={{
             center: [139.7109, 35.7295],
-            zoom: 16,
+            zoom: 17,
             pitch: 55,
           }}
         />
@@ -146,6 +147,22 @@ export default function Street() {
         pointerEvents="box-none"
         onTouchStart={Keyboard.dismiss}
       >
+        <View
+          pointerEvents="none"
+          style={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            right: 0,
+            height: 145,
+          }}
+        >
+          <BlurView
+            intensity={20}
+            tint="default"
+            style={StyleSheet.absoluteFill}
+          />
+        </View>
         <MapHeader
           name={name}
           count={snapshot?.checked_in_count}
@@ -153,7 +170,9 @@ export default function Street() {
           active={active}
           onToggle={(value) => (value ? setSheet("explain") : void exit())}
         />
-        <PresenceHeader icons={presenceIcons} />
+        <View style={{ minHeight: 48 }}>
+          <PresenceHeader icons={presenceIcons} />
+        </View>
         {!["未参加", "気配を観測中"].includes(state.status) && (
           <View style={styles.status}>
             <Text>{state.status}</Text>
@@ -176,11 +195,18 @@ export default function Street() {
             accessibilityLabel="ピンを追加"
             onPress={() => router.push("/pins/create")}
             style={{
-              backgroundColor: "#34465bba",
+              backgroundColor: "#00000033",
+              overflow: "hidden",
               borderRadius: 26,
               padding: 10,
             }}
           >
+            <BlurView
+              pointerEvents="none"
+              intensity={25}
+              tint="default"
+              style={StyleSheet.absoluteFill}
+            />
             <MapAsset name="CreatePIN" size={30} />
           </Pressable>
           <Pressable
@@ -188,11 +214,18 @@ export default function Street() {
             accessibilityLabel="現在地へ戻る"
             onPress={() => void recenter()}
             style={{
-              backgroundColor: "#34465bba",
+              backgroundColor: "#00000033",
+              overflow: "hidden",
               borderRadius: 26,
               padding: 10,
             }}
           >
+            <BlurView
+              pointerEvents="none"
+              intensity={25}
+              tint="default"
+              style={StyleSheet.absoluteFill}
+            />
             <MapAsset name="Navi" size={30} />
           </Pressable>
         </View>

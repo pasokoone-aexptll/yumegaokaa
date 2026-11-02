@@ -48,11 +48,16 @@ export function MapHeader({
         accessibilityLabel="気配の公開設定（準備中）"
         accessibilityState={{ disabled: true }}
       >
-        <SmoothSurface color="#536172cc" radius={12} style={styles.mode}>
+        <SmoothSurface
+          color="#ffffff26"
+          blurIntensity={25}
+          radius={12}
+          style={styles.mode}
+        >
           <View
             style={[
               styles.dot,
-              { backgroundColor: active ? "#00bc83" : "#98a1ac" },
+              { backgroundColor: active ? "#00bc83" : "#ffffff66" },
             ]}
           />
           <View style={{ transform: [{ rotate: "90deg" }] }}>
@@ -60,12 +65,17 @@ export function MapHeader({
           </View>
         </SmoothSurface>
       </Pressable>
-      <SmoothSurface color="#637183cc" radius={26} style={styles.toggle}>
+      <SmoothSurface
+        color="#ffffff26"
+        blurIntensity={25}
+        radius={26}
+        style={styles.toggle}
+      >
         <Switch
           accessibilityLabel="街への参加"
           value={active}
           onValueChange={onToggle}
-          trackColor={{ true: "#2ecb54", false: "#67717b" }}
+          trackColor={{ true: "#2ecb54", false: "#ffffff30" }}
           thumbColor="white"
         />
       </SmoothSurface>

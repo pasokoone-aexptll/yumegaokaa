@@ -1,3 +1,4 @@
+import { BlurView } from "expo-blur";
 import { useState, type ReactNode } from "react";
 import { StyleSheet, View, type StyleProp, type ViewStyle } from "react-native";
 import Svg, { Path } from "react-native-svg";
@@ -9,11 +10,13 @@ export function SmoothSurface({
   style,
   color = "#222222",
   radius = 24,
+  blurIntensity = 0,
 }: {
   children: ReactNode;
   style?: StyleProp<ViewStyle>;
   color?: string;
   radius?: number;
+  blurIntensity?: number;
 }) {
   const [size, setSize] = useState({ width: 0, height: 0 });
   return (
@@ -27,6 +30,25 @@ export function SmoothSurface({
         );
       }}
     >
+      {blurIntensity > 0 && (
+        <View
+          pointerEvents="none"
+          style={[
+            StyleSheet.absoluteFill,
+            {
+              borderRadius: radius,
+              borderCurve: "continuous",
+              overflow: "hidden",
+            },
+          ]}
+        >
+          <BlurView
+            intensity={blurIntensity}
+            tint="default"
+            style={StyleSheet.absoluteFill}
+          />
+        </View>
+      )}
       {size.width > 0 && size.height > 0 && (
         <Svg
           pointerEvents="none"

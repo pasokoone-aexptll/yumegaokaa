@@ -12,7 +12,8 @@ export function PresenceHeader({ icons }: { icons: (string | null)[] }) {
   const shown = visiblePresenceIcons(icons.length, width, badgeWidth, 38, 4);
   return (
     <SmoothSurface
-      color="#202020dc"
+      color="#00000099"
+      blurIntensity={20}
       radius={28}
       style={{ padding: 5, marginTop: 2 }}
     >
@@ -49,7 +50,7 @@ export function PresenceHeader({ icons }: { icons: (string | null)[] }) {
           <Text
             style={[
               styles.peopleText,
-              { flexShrink: 1, color: "#c8c8c8", fontSize: 20 },
+              { flexShrink: 1, color: "#ffffffb3", fontSize: 20 },
             ]}
           >
             +{icons.length - shown}

@@ -10,7 +10,7 @@ export default function StreetTabs() {
         tabBarShowLabel: false,
         tabBarIconStyle: { width: 60, height: 40 },
         tabBarActiveTintColor: "#fff",
-        tabBarStyle: { backgroundColor: "#080808", borderTopWidth: 0 },
+        tabBarStyle: { backgroundColor: "#000000e6", borderTopWidth: 0 },
       }}
     >
       <Tabs.Screen
