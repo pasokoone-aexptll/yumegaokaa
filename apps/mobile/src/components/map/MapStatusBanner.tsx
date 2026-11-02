@@ -69,7 +69,7 @@ export function MapStatusBanner({
           {
             translateY: appearance.interpolate({
               inputRange: [0, 1],
-              outputRange: [-8, 0],
+              outputRange: [18, 0],
             }),
           },
         ],
@@ -121,7 +121,15 @@ export function MapStatusBanner({
             accessibilityState={{ busy, disabled: busy }}
             onPress={async () => {
               if (!onAction) {
-                setVisible(false);
+                appearance.stopAnimation();
+                progress.stopAnimation();
+                Animated.timing(appearance, {
+                  toValue: 0,
+                  duration: 220,
+                  useNativeDriver: false,
+                }).start(({ finished }) => {
+                  if (finished) setVisible(false);
+                });
                 return;
               }
               setBusy(true);

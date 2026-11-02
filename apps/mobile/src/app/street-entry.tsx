@@ -1,3 +1,5 @@
+import { scheduleEntrySuccessDismissal } from "../lib/entrySuccessDismissal";
+import { requireNativeModule } from "expo-modules-core";
 import type { NativeStackNavigationProp } from "expo-router";
 import { useEffect, useSyncExternalStore } from "react";
 import { router, useNavigation } from "expo-router";
@@ -29,8 +31,8 @@ export default function StreetEntry() {
       NativeStackNavigationProp<Record<string, object | undefined>>
     >();
   const { width } = useWindowDimensions();
-  // Figma: circle background spans 76% of screen width (SVG has 2.5% inset).
-  const diameter = width * (0.76 / 0.975);
+  // Figma: circle background spans 79% of screen width (SVG has 2.5% inset).
+  const diameter = width * (0.79 / 0.975);
   useEffect(
     () =>
       navigation.addListener("transitionEnd", (event) => {
@@ -41,6 +43,15 @@ export default function StreetEntry() {
   useEffect(() => {
     if (!value?.sheet && router.canGoBack()) router.back();
   }, [value?.sheet]);
+  useEffect(() => {
+    if (phase !== "success") return;
+    const bridge = requireNativeModule("PresenceNative");
+    void bridge.entrySuccessHaptic?.();
+    return scheduleEntrySuccessDismissal(
+      () => entrySheetState.get()?.sheet === "success",
+      () => entrySheetState.close(),
+    );
+  }, [phase]);
   if (!value || !phase) return null;
   return (
     <View style={{ flex: 1, backgroundColor: "#ffffffed" }}>
@@ -85,8 +96,8 @@ export default function StreetEntry() {
           <Text
             accessibilityLiveRegion="polite"
             style={{
-              color: phase === "checking" ? "#4387ff" : "#777",
-              fontWeight: "500",
+              color: phase === "checking" ? "#2875e5" : "#555",
+              fontWeight: "600",
               fontSize: 16,
               textAlign: "center",
             }}

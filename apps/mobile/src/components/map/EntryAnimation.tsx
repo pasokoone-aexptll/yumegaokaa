@@ -32,8 +32,7 @@ function Dot({ index }: { index: number }) {
     return () => cancelAnimation(phase);
   }, [index, phase]);
   const style = useAnimatedStyle(() => ({
-    opacity: Math.sin(phase.value * Math.PI) * 0.75,
-    transform: [{ translateY: phase.value * 9 - 4 }],
+    opacity: 0.2 + Math.sin(phase.value * Math.PI) * 0.8,
   }));
   return (
     <Animated.View
@@ -109,13 +108,13 @@ export function EntryAnimation({
   return (
     <View style={{ width: size, height: size, alignSelf: "center" }}>
       <Svg width={size} height={size} viewBox="0 0 320 320">
-        <Circle cx={160} cy={160} r={156} fill="#f7f7f7" />
+        <Circle cx={160} cy={160} r={156} fill="#f1f1f1" />
         <Circle
           cx={160}
           cy={160}
           r={146}
           fill="none"
-          stroke="#eaeaea"
+          stroke="#dedede"
           strokeWidth={4}
           strokeDasharray={phase === "explain" ? "16 16" : undefined}
           strokeLinecap="round"
@@ -128,7 +127,7 @@ export function EntryAnimation({
             rotation={-90}
             origin="160,160"
             fill="none"
-            stroke="#0088ff"
+            stroke="#007aff"
             strokeWidth={4}
             strokeDasharray={`${circumference * 0.73} ${circumference * 0.27}`}
             strokeLinecap="round"
@@ -144,16 +143,16 @@ export function EntryAnimation({
               rotation={-90}
               origin="160,160"
               fill="none"
-              stroke="#0088ff"
+              stroke="#007aff"
               strokeWidth={4}
               strokeDasharray={`${circumference} ${circumference}`}
               animatedProps={complete}
             />
             <Check
-              d="M58.0832 3.41699L20.4998 41.0003L3.4165 23.917"
+              d="M3.4165 23.917L20.4998 41.0003L58.0832 3.41699"
               transform="translate(129 138)"
               fill="none"
-              stroke="#0088ff"
+              stroke="#007aff"
               strokeWidth={6.83333}
               strokeLinecap="round"
               strokeLinejoin="round"

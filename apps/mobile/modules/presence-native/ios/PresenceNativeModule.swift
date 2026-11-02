@@ -14,6 +14,11 @@ public class PresenceNativeModule: Module {
    ViewName("ChatTouchRegion")
    Prop("surface", false) { (view: ChatTouchRegion, value: Bool) in view.surface = value }
   }
+  AsyncFunction("entrySuccessHaptic") { await MainActor.run {
+   let feedback = UINotificationFeedbackGenerator()
+   feedback.prepare()
+   feedback.notificationOccurred(.success)
+  } }
   AsyncFunction("prepareEntrySheet") { await MainActor.run {
    guard let scene = UIApplication.shared.connectedScenes.compactMap({ $0 as? UIWindowScene }).first(where: { $0.activationState == .foregroundActive }),
          var controller = scene.windows.first(where: { $0.isKeyWindow })?.rootViewController else { return }
