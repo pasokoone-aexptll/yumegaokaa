@@ -80,13 +80,13 @@ cp139：縮小時にも先頭へ到達できるよう、固定viewportと縮小�
 
 ## cp144：操作アイコンの中央揃え・ロゴの重なり
 - Downloads/assetsのCreatePIN.svgとNavi.svgは取り込み済み原本と一致。正方形キャンバス内に非対称な余白があるため、MapAssetのcentered指定時だけpathの境界＋均等余白のviewBoxへ置換。円46pt、SVG枠26pt、図形の最大寸法約20.8ptで共通化。
-- DreamCloudロゴは黒gradient/blur/投稿より前面のzIndex=1、最新へ操作は2。ロゴ原本のfill-opacity=0.24を維持し、親opacity=0.35の二重減衰を除去。
+- DreamCloudロゴはcp148の指示により黒gradient/blurより前、投稿より背面。最新へ操作はzIndex=2。ロゴ原本のfill-opacity=0.24を維持し、親opacity=0.35の二重減衰を除去。
 - 操作とデータ接続は変更しない。実機の光学的バランスは確認待ち。
 
 ## cp145：実機で残ったキーボード・背景・ぼかし不具合
 - 前回の実機報告で未解消を確認。iOSのUIVisualEffectViewは祖先へのmaskが不適合のため、ProgressiveBlur.iosからStreetBackdropを使用。effect.maskへ直接alpha画像を持つUIImageViewを設定し、寸法変更ごとに再設定（cp147でsub-layer依存を除去）。親alphaは1。段階帯/私有フィルターなし。これは連続合成であり、位置ごとのGaussian半径変更ではない。
 - 黒gradientと背景blurを拡大するhistoryから分離。キーボード上の利用可能高で制限した画面高55%の背景として固定し、スクロール拡大で伸縮・切断しない。
-- 入力欄は同じnative部品のsolidモードを角丸内に置く。投稿マスクや半透明親の内側へぼかしを入れない。ロゴは引き続き前面。
+- 入力欄は同じnative部品のsolidモードを角丸内に置く。投稿マスクや半透明親の内側へぼかしを入れない。ロゴはcp148で背景より前・投稿より背面へ変更。
 - キーボードイベント時の非同期measure待ちを除去。事前計測したルート＋初期計測前の画面高/下部safe area/標準タブ高によるfallbackで即座に移動量を決定し、native-driverで入力欄と履歴を同時移動。didShow/didHideでも最終位置を再確認する。
 - 根拠：https://developer.apple.com/documentation/uikit/uivisualeffectview/ （祖先maskとalpha制約）。実機での最終的な操作感・ぼかし外観の確認は別途必要。
 
@@ -104,7 +104,7 @@ cp139：縮小時にも先頭へ到達できるよう、固定viewportと縮小�
 | --- | --- |
 | タブが端へ広がる（実機の先頭中心約50pt、Figma約78pt） | 横paddingを幅の8.5%、タブ高42＋safe area、素材32ptへ。4画面の遷移は維持 |
 | 入力面が暗く、送信領域の独立した明るい面がない | SmoothSurfaceへbackdropを追加し、native blur→白alpha面→入力の順に修正。送信幅63pt/白alpha面/黒alpha矢印。入力18pt、ヒント14pt |
-| チャット下端が黒すぎる | 黒gradient末尾alpha .78→.46。入力部の背景は白alpha。色つきベタ塗りは追加しない |
+| チャット下端が黒すぎる | 黒gradient末尾alpha .78→.46。入力欄自体は白alpha、外側composerはcp148で透明。色つきベタ塗りは追加しない |
 | ヘッダー・履歴背後の地図文字が鮮明に残る | 上部blur領域145→190pt。nativeのmaskはUIImageView＋描画済みalpha画像へ、中間alpha .25→.65。UIKitのmask複製でsub-layer treeに依存しない |
 | 行のアイコン/横位置/書体 | アイコン34→32pt、gap10→8pt、author14/line18、本文16/line22＋上2pt、行padding7pt |
 | 入街ログが通常投稿と同じ本人画像で表示される | 白い接続アイコン＋日時、本文内に本人名。名前や事実は省略しない。「DreamCloudAPI」のデバッグ表現は持ち込まない |
@@ -112,3 +112,11 @@ cp139：縮小時にも先頭へ到達できるよう、固定viewportと縮小�
 | 縮小時の履歴開始位置 | 画面高36%→35%。keyboardで内部viewport/paddingを変えない原則を維持 |
 
 人数0/退出状態と見本20人/参加状態、画像列・募集・イベント・気配の有無、地図の地域、投稿内容はデータ差。架空データを入れて見た目を埋めない。「最新へ」は実際に過去位置を見ている場合だけ表示する既存条件を保持。方眼は削除指示を維持し復帰させない。レベル・メンションは引き続き後工程。
+
+## cp148：入街素材・文字透明度・入力面・参加スイッチ
+- ユーザー17:37/17:39画像に対応。ArrivalIconはDownloads/assets/plug.svgをそのまま取り込み、32pt円の背景を白10%（8桁HEXでは丸めて#FFFFFF1A）とする。
+- iOSの名前と時刻はSF Rounded（RNのui-rounded）。時刻は白38%、横の名前は白30%・bold、本文は白60%。入街本文中の本人名は白70%で区別する。日本語字形はシステムのフォールバックに従う。
+- 入力欄の外側composerの帯は透明。欄自体はnative blur＋白15%の面、角丸10pt/smoothing60%、右の送信面を維持。説明のchevronは素材alphaと親alphaを合わせ約40%とし、説明文字に揃える。
+- ロゴは背景より前、チャット本文より背面。投稿・送信状態・スクロール・キーボードのロジックは変更しない。
+- ParticipationSwitchは参加面82×46pt内に64×32ptトラックと28ptつまみを中央配置。既存のactive/onToggleを接続し、タップ・アクセシビリティswitchのcheckedを維持。OSのUISwitch固有寸法に表示位置を依存させない。
+- 型/Lint成功。JS/素材のみの変更につきネイティブ再ビルドなし。実機での外観確認は未実施。

@@ -18,6 +18,7 @@ import { router } from "expo-router";
 import {
   Animated,
   Easing,
+  Platform,
   Keyboard,
   Alert,
   ActivityIndicator,
@@ -221,6 +222,9 @@ export function StreetChat({ mapError = "" }: { mapError?: string }) {
               style={styles.history}
               onTouchStart={Keyboard.dismiss}
             >
+              <View pointerEvents="none" style={styles.watermark}>
+                <MapAsset name="DreamCloud Logo" width={147} height={22} />
+              </View>
               <ChatTouchRegion surface style={StyleSheet.absoluteFill}>
                 <ChatFade
                   fadeTop={expansion.interpolate({
@@ -314,7 +318,11 @@ export function StreetChat({ mapError = "" }: { mapError?: string }) {
                             }}
                           >
                             <Text style={styles.author}>
-                              {m.kind !== "arrival" && `${m.display_name} `}
+                              {m.kind !== "arrival" && (
+                                <Text style={styles.authorName}>
+                                  {m.display_name}{" "}
+                                </Text>
+                              )}
                               {new Date(m.created_at).toLocaleTimeString([], {
                                 hour: "2-digit",
                                 minute: "2-digit",
@@ -326,7 +334,12 @@ export function StreetChat({ mapError = "" }: { mapError?: string }) {
                                 "削除されたメッセージ"
                               ) : m.kind === "arrival" ? (
                                 <>
-                                  <Text style={{ color: "#ffffffe6" }}>
+                                  <Text
+                                    style={[
+                                      styles.authorName,
+                                      { color: "#ffffffb3" },
+                                    ]}
+                                  >
                                     {m.display_name}
                                   </Text>{" "}
                                   が街に参加しました
@@ -391,9 +404,7 @@ export function StreetChat({ mapError = "" }: { mapError?: string }) {
                   </ScrollView>
                 </ChatFade>
               </ChatTouchRegion>
-              <View pointerEvents="none" style={styles.watermark}>
-                <MapAsset name="DreamCloud Logo" width={147} height={22} />
-              </View>
+
               {(hasNew || awayFromLatest) && (
                 <View pointerEvents="box-none" style={styles.new}>
                   <Pressable
@@ -439,10 +450,10 @@ export function StreetChat({ mapError = "" }: { mapError?: string }) {
               )}
               <View style={styles.composer} onTouchStart={Keyboard.dismiss}>
                 <SmoothSurface
-                  color="#ffffff30"
+                  color="#ffffff26"
                   blurIntensity={0}
                   backdrop={<ProgressiveBlur edge="solid" intensity={85} />}
-                  radius={18}
+                  radius={10}
                   style={styles.inputRow}
                 >
                   <TextInput
@@ -459,7 +470,9 @@ export function StreetChat({ mapError = "" }: { mapError?: string }) {
                   {!text && (
                     <View pointerEvents="none" style={styles.inputHint}>
                       <Text style={styles.hint}>街ローカルチャット</Text>
-                      <MapAsset name="chevron.right" size={12} />
+                      <View style={{ opacity: 0.47 }}>
+                        <MapAsset name="chevron.right" size={12} />
+                      </View>
                     </View>
                   )}
                   <Pressable
@@ -498,13 +511,19 @@ const styles = StyleSheet.create({
   history: { flex: 1, backgroundColor: "transparent", overflow: "hidden" },
   message: { paddingVertical: 7, flexDirection: "row", gap: 8 },
   author: {
-    color: "#ffffff66",
+    color: "#ffffff61",
+    fontFamily: Platform.OS === "ios" ? "ui-rounded" : undefined,
     fontSize: 14,
     lineHeight: 18,
     fontWeight: "500",
   },
+  authorName: {
+    fontFamily: Platform.OS === "ios" ? "ui-rounded" : undefined,
+    color: "#ffffff4d",
+    fontWeight: "700",
+  },
   body: {
-    color: "#ffffffb3",
+    color: "#ffffff99",
     fontSize: 16,
     lineHeight: 22,
     fontWeight: "600",
@@ -515,7 +534,6 @@ const styles = StyleSheet.create({
     position: "absolute",
     right: 12,
     bottom: 10,
-    zIndex: 1,
   },
   new: {
     zIndex: 2,
@@ -526,7 +544,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   composer: {
-    backgroundColor: "#ffffff1c",
+    backgroundColor: "transparent",
     paddingHorizontal: 10,
     paddingVertical: 10,
   },
@@ -534,14 +552,14 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     minHeight: 46,
     alignItems: "center",
-    borderRadius: 18,
+    borderRadius: 10,
     borderCurve: "continuous",
     overflow: "hidden",
   },
   input: {
     flex: 1,
     minWidth: 0,
-    color: "white",
+    color: "#ffffff99",
     paddingLeft: 15,
     paddingVertical: 11,
     fontSize: 18,

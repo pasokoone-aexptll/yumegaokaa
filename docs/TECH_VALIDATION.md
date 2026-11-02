@@ -852,3 +852,8 @@ Mapの最新へ中央化、SmoothSurfaceへblurIntensity追加、チャットに
 - 型チェック・Lint成功。chat-geometryの2件成功。Debugビルド成功（0 errors/3 warnings、/tmp/yumegaoka-figma147.log）。iOSコード変更を含むためビルドした。追加のDBテストは表示変更と無関係につき省略。
 - devicectlの転送はCoreDevice4016（端末のpower assertion/trusted connectivityが利用不能）で失敗。ユーザーへロック解除/同一ネットワーク接続を依頼。最新版インストールと修正後スクリーンショット比較は未確認。型/ビルド成功だけでUI_FINALIZEDやDEVICE_VERIFIEDへ加算しない。既存33タスク/残4件は据置き。
 - cp147転送再開：ルーター再起動後のen7=10.0.20.101へローカルenv/Metro接続先を更新。Metro応答・LAN Auth HTTP200を確認。既存Debug成果物を再ビルドせずdevicectlで転送成功（5DAEC578-89F1-4D1A-8B2B-91017E17D8FF）、新URLで起動成功。修正後外観の実機検証は未確認。
+
+## チェックポイント148：ユーザー指定の入街ログ・文字・入力面
+- R15/R19/R21。plug.svg原本を取り込み、背景白10%、時刻/名前にiOS ui-rounded、名前/時刻/本文の白alphaを分離。RNのRCTFontUtils.mmでui-rounded→UIFontDescriptorSystemDesignRoundedの対応を確認。
+- composer外側の帯を透明化、欄の角丸10pt、ヒントとchevronのalphaを統一。DreamCloudロゴを本文より背面へ移動。参加スイッチは明示したtrack/thumb寸法で中央揃え、既存入退出コールバックを保持。
+- npm run typecheck、mobileのexpo lint成功。ネイティブ/API/DB変更なしのため再ビルドとバックエンド再試験は省略。iPhone外観・タップ結果は未確認。33タスク/固定残4件は変更せず、実機確認済みへ加算しない。

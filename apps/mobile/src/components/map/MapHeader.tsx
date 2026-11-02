@@ -1,4 +1,5 @@
-import { Image, Pressable, StyleSheet, Switch, Text, View } from "react-native";
+import { ParticipationSwitch } from "./ParticipationSwitch";
+import { Image, Pressable, StyleSheet, Text, View } from "react-native";
 import { MapAsset } from "./MapAsset";
 import { SmoothSurface } from "./SmoothSurface";
 
@@ -65,20 +66,7 @@ export function MapHeader({
           </View>
         </SmoothSurface>
       </Pressable>
-      <SmoothSurface
-        color="#ffffff26"
-        blurIntensity={25}
-        radius={26}
-        style={styles.toggle}
-      >
-        <Switch
-          accessibilityLabel="街への参加"
-          value={active}
-          onValueChange={onToggle}
-          trackColor={{ true: "#2ecb54", false: "#ffffff30" }}
-          thumbColor="white"
-        />
-      </SmoothSurface>
+      <ParticipationSwitch value={active} onChange={onToggle} />
     </View>
   );
 }
@@ -111,10 +99,4 @@ const styles = StyleSheet.create({
   },
   dot: { width: 14, height: 14, borderRadius: 7 },
   chevron: { color: "#cbd2db", fontSize: 24, lineHeight: 27 },
-  toggle: {
-    width: 82,
-    height: 46,
-    alignItems: "center",
-    justifyContent: "center",
-  },
 });
