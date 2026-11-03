@@ -1,7 +1,5 @@
-import { useState, useId } from "react";
-import { View, Text, Pressable, StyleSheet } from "react-native";
+import { View, Text, Pressable, StyleSheet, Image } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import Svg, { Defs, LinearGradient, Stop, Rect } from "react-native-svg";
 import { MapAsset } from "../map/MapAsset";
 export function PlacementFooter({
   disabled,
@@ -11,8 +9,6 @@ export function PlacementFooter({
   onDone: () => void;
 }) {
   const insets = useSafeAreaInsets();
-  const [size, setSize] = useState({ width: 0, height: 0 });
-  const gradientId = useId().replace(/:/g, "");
   return (
     <View
       pointerEvents="box-none"
@@ -25,33 +21,12 @@ export function PlacementFooter({
         justifyContent: "flex-end",
       }}
     >
-      <View
+      <Image
         pointerEvents="none"
-        style={StyleSheet.absoluteFill}
-        onLayout={({ nativeEvent }) => setSize(nativeEvent.layout)}
-      >
-        <Svg width={size.width} height={size.height}>
-          <Defs>
-            <LinearGradient
-              id={gradientId}
-              gradientUnits="userSpaceOnUse"
-              x1={0}
-              y1={0}
-              x2={0}
-              y2={size.height}
-            >
-              <Stop offset="0" stopColor="black" stopOpacity={0} />
-              <Stop offset=".65" stopColor="black" stopOpacity={0.7} />
-              <Stop offset="1" stopColor="black" stopOpacity={0.85} />
-            </LinearGradient>
-          </Defs>
-          <Rect
-            width={size.width}
-            height={size.height}
-            fill={`url(#${gradientId})`}
-          />
-        </Svg>
-      </View>
+        source={require("../../../assets/figma-map/placement-shade.png")}
+        resizeMode="stretch"
+        style={[StyleSheet.absoluteFill, { width: "100%", height: "100%" }]}
+      />
       <View
         pointerEvents="none"
         style={{

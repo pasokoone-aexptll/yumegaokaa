@@ -106,7 +106,7 @@ export function PlacementRing({
             cy={32}
             r={22}
             stroke="#ffffff99"
-            strokeWidth={3}
+            strokeWidth={4.5}
             fill="#ffffff22"
           />
         </Svg>
@@ -132,8 +132,8 @@ export function PlacementRing({
               cx={40}
               cy={40}
               r={35}
-              stroke="#ffffff55"
-              strokeWidth={4.5}
+              stroke="#ffffff38"
+              strokeWidth={5.5}
               strokeDasharray="34 20.978"
               strokeLinecap="round"
               fill="none"
