@@ -83,10 +83,22 @@ export function Camera({ initialViewState, ref }: CameraProps) {
   }, [context?.ready, context?.map, pending]);
   return null;
 }
-export function Marker({ lngLat, children }: MarkerProps) {
+export function Marker({
+  lngLat,
+  children,
+  draggable,
+  onDragEnd,
+}: MarkerProps) {
   return (
     <AppleMarker
       coordinate={{ longitude: lngLat[0], latitude: lngLat[1] }}
+      draggable={draggable}
+      onDragEnd={(e) =>
+        onDragEnd?.([
+          e.nativeEvent.coordinate.longitude,
+          e.nativeEvent.coordinate.latitude,
+        ])
+      }
       tracksViewChanges
     >
       {children}

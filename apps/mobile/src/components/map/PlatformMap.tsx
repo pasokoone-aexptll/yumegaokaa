@@ -32,8 +32,9 @@ export function Camera({ ref, ...props }: CameraProps) {
   );
   return <LibreCamera ref={camera} {...props} />;
 }
-export function Marker(props: MarkerProps) {
-  return <LibreMarker {...props} />;
+export function Marker({ lngLat, children }: MarkerProps) {
+  // MapLibre Marker does not expose native dragging; retain tap placement on Android.
+  return <LibreMarker lngLat={lngLat}>{children}</LibreMarker>;
 }
 export function Boundary({ data }: BoundaryProps) {
   return (

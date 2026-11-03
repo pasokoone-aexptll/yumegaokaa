@@ -14,5 +14,10 @@ export type MapProps = {
   mapStyle?: string;
   onPress?: (event: { nativeEvent: { lngLat: [number, number] } }) => void;
 };
-export type MarkerProps = { lngLat: [number, number]; children: ReactElement };
+export type MarkerProps = {
+  lngLat: [number, number];
+  children: ReactElement;
+  draggable?: boolean;
+  onDragEnd?: (point: [number, number]) => void;
+};
 export type BoundaryProps = { data: GeoJSON.Polygon };

@@ -1,9 +1,11 @@
+import { usePinPlacement } from "../../lib/pinPlacement";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Keyboard, useWindowDimensions, View, StyleSheet } from "react-native";
 import { BlurView } from "expo-blur";
 import { Tabs, usePathname } from "expo-router";
 import { TabIcon } from "../../components/TabIcon";
 export default function StreetTabs() {
+  const placement = usePinPlacement();
   const pathname = usePathname();
   const insets = useSafeAreaInsets();
   const { width } = useWindowDimensions();
@@ -17,6 +19,7 @@ export default function StreetTabs() {
           tabBarIconStyle: { width: 60, height: 40 },
           tabBarActiveTintColor: "#fff",
           tabBarStyle: {
+            display: placement.active ? "none" : "flex",
             backgroundColor: "#000000e6",
             borderTopWidth: 0,
             height: 42 + insets.bottom,

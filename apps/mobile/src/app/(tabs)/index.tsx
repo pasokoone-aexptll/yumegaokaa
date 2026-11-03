@@ -1,3 +1,10 @@
+import {
+  usePinPlacement,
+  placePin,
+  finishPinPlacement,
+} from "../../lib/pinPlacement";
+import { PlacementRing } from "../../components/pins/PlacementRing";
+import { PinButton } from "../../components/pins/PinButton";
 import { MapStatusBanner } from "../../components/map/MapStatusBanner";
 import { MapErrorDialog } from "../../components/map/MapErrorDialog";
 import { ProgressiveBlur } from "../../components/map/ProgressiveBlur";
@@ -24,12 +31,18 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Camera, CameraRef, Map } from "../../components/map/PlatformMap";
+import {
+  Camera,
+  CameraRef,
+  Map,
+  Marker,
+} from "../../components/map/PlatformMap";
 import { native, url } from "../../lib/native";
 import { liveCells } from "../../lib/presence";
 import { localEntry, nfcDisabled } from "../../lib/development";
 import { useStreetMap } from "../../hooks/useStreetMap";
 export default function Street() {
+  const placement = usePinPlacement();
   const [chatRead, setChatRead] = useState<{
     error: string;
     reload: () => Promise<void>;
@@ -132,7 +145,10 @@ export default function Street() {
       <Map
         style={StyleSheet.absoluteFill}
         mapStyle={mapStyle}
-        onPress={Keyboard.dismiss}
+        onPress={(event) => {
+          Keyboard.dismiss();
+          if (placement.active) placePin(event.nativeEvent.lngLat);
+        }}
       >
         <Camera
           ref={camera}
@@ -142,6 +158,11 @@ export default function Street() {
             pitch: 55,
           }}
         />
+        {placement.active && placement.point && (
+          <Marker lngLat={placement.point} draggable onDragEnd={placePin}>
+            <PlacementRing revision={placement.revision} />
+          </Marker>
+        )}
         <StreetMapMarkers
           cells={cells}
           events={events}
@@ -246,7 +267,51 @@ export default function Street() {
           </Pressable>
         </View>
       </SafeAreaView>
-      <StreetChat onReadStatus={setChatRead} />
+      {!placement.active && <StreetChat onReadStatus={setChatRead} />}
+      {placement.active && (
+        <View
+          style={{
+            position: "absolute",
+            bottom: 0,
+            left: 8,
+            right: 8,
+            padding: 22,
+            gap: 14,
+            backgroundColor: "white",
+            borderRadius: 30,
+            borderCurve: "continuous",
+          }}
+        >
+          <View
+            style={{
+              width: 56,
+              height: 4,
+              backgroundColor: "#00000033",
+              borderRadius: 3,
+              alignSelf: "center",
+            }}
+          />
+          <Text
+            style={{
+              fontSize: 18,
+              fontWeight: "600",
+              color: "#00000099",
+              textAlign: "center",
+            }}
+          >
+            ピンの場所を選択中...
+          </Text>
+          <PinButton
+            textOnly
+            title="完了"
+            disabled={!placement.point}
+            onPress={() => {
+              finishPinPlacement();
+              router.push("/pins/create");
+            }}
+          />
+        </View>
+      )}
       {!!error && <MapErrorDialog key={error} message={error} />}
       <StreetEntrySheet
         sheet={sheet}

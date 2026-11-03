@@ -1,8 +1,10 @@
+import { beginPinPlacement } from "../../lib/pinPlacement";
 import { EventDateField } from "../../components/EventDateField";
 import { updateDraft } from "../../lib/pinDraft";
 import { usePinCreation } from "../../hooks/usePinCreation";
 import { useProfile } from "../../hooks/useProfile";
 import {
+  LayoutAnimation,
   ActivityIndicator,
   Alert,
   KeyboardAvoidingView,
@@ -17,7 +19,6 @@ import {
 import { router } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { PinButton } from "../../components/pins/PinButton";
-import { MapAsset } from "../../components/map/MapAsset";
 export default function CreatePin() {
   const {
     draft,
@@ -59,14 +60,6 @@ export default function CreatePin() {
     >
       <View collapsable={false} style={s.header}>
         <Text style={s.heading}>ピンを追加します</Text>
-        <Pressable
-          accessibilityLabel="下書きを破棄"
-          disabled={busy}
-          onPress={confirmDiscard}
-          style={s.trash}
-        >
-          <MapAsset name="trash" size={22} />
-        </Pressable>
       </View>
       <View collapsable={false} style={s.tabs}>
         {(
@@ -80,7 +73,12 @@ export default function CreatePin() {
             accessibilityRole="tab"
             accessibilityState={{ selected: kind === value, disabled }}
             disabled={disabled}
-            onPress={() => updateDraft({ kind: value })}
+            onPress={() => {
+              LayoutAnimation.configureNext(
+                LayoutAnimation.Presets.easeInEaseOut,
+              );
+              updateDraft({ kind: value });
+            }}
             style={[s.tab, kind === value && s.selected]}
           >
             <Text style={[s.tabText, kind === value && { color: "#008cff" }]}>
@@ -124,25 +122,35 @@ export default function CreatePin() {
                 />
                 {kind === "event" ? (
                   <>
-                    <EventDateField
-                      compact
-                      label="開始"
-                      value={starts}
-                      disabled={disabled}
-                      onChange={(starts) => updateDraft({ starts })}
-                    />
-                    <EventDateField
-                      compact
-                      label="終了"
-                      value={ends}
-                      disabled={disabled}
-                      suggested={
-                        Number.isFinite(Date.parse(starts))
-                          ? new Date(Date.parse(starts) + 3600000).toISOString()
-                          : undefined
-                      }
-                      onChange={(ends) => updateDraft({ ends })}
-                    />
+                    <View
+                      style={{
+                        backgroundColor: "#00000008",
+                        borderRadius: 10,
+                        overflow: "hidden",
+                      }}
+                    >
+                      <EventDateField
+                        compact
+                        label="開始"
+                        value={starts}
+                        disabled={disabled}
+                        onChange={(starts) => updateDraft({ starts })}
+                      />
+                      <EventDateField
+                        compact
+                        label="終了"
+                        value={ends}
+                        disabled={disabled}
+                        suggested={
+                          Number.isFinite(Date.parse(starts))
+                            ? new Date(
+                                Date.parse(starts) + 3600000,
+                              ).toISOString()
+                            : undefined
+                        }
+                        onChange={(ends) => updateDraft({ ends })}
+                      />
+                    </View>
                     <TextInput
                       accessibilityLabel="説明"
                       editable={!disabled}
@@ -226,13 +234,17 @@ export default function CreatePin() {
             secondary
             title="場所を選択"
             disabled={disabled}
-            onPress={() => router.push("/pins/location")}
+            onPress={() => {
+              beginPinPlacement(location);
+              router.dismissTo("/(tabs)");
+            }}
           />
         )}
         <View style={s.actions}>
           <View style={{ flex: 1.2 }}>
             <PinButton
-              title="ピンを作成"
+              title="作成"
+              textOnly
               loading={busy}
               disabled={busy || !title.trim()}
               onPress={publish}

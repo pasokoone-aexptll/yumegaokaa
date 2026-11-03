@@ -922,3 +922,6 @@ R11/R12/R13の表示変更。PinLabel（SVGグラデーション、文字マス�
 
 ## cp163 — ピンUIの実機報告への修正（2026-11-03）
 R12/R13。作成formSheetのScrollViewを非flattenコンテナへ隔離（native screensのframe補正との干渉対策）。SVG背景を実測サイズ化、gradient ID一意化、吹き出し二重余白を除去。`npm run typecheck`、`npm --prefix apps/mobile run lint`成功。実機での修正後スクリーンショット確認は未実施。JS変更につき再ビルド・DB再試験なし。
+
+## cp164 — 既存Map地点選択の接続
+R12/R13。pinPlacement共有状態でMapを再生成せず地点を選択し、draftへ最終地点を反映。`node --test tests/pin-placement.test.mjs`成功（未選択では完了しない、ドラッグ最終地点、既存入力保持、再選択初期地点）。型チェック成功、LintのAnimated ref指摘をuseState保持へ修正しLint成功。iPhone実機ジェスチャー/触覚は未検証。ネイティブビルド不要。

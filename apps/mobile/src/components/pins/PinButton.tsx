@@ -7,6 +7,7 @@ export function PinButton({
   loading,
   destructive,
   secondary,
+  textOnly,
 }: {
   title: string;
   onPress: () => void | Promise<unknown>;
@@ -14,6 +15,7 @@ export function PinButton({
   loading?: boolean;
   destructive?: boolean;
   secondary?: boolean;
+  textOnly?: boolean;
 }) {
   const color = destructive ? "#ff354b" : secondary ? "#008cff" : "white";
   return (
@@ -38,7 +40,8 @@ export function PinButton({
       {loading ? (
         <ActivityIndicator color={color} />
       ) : (
-        !secondary && (
+        !secondary &&
+        !textOnly && (
           <MapAsset name={destructive ? "trash" : "checkcreate"} size={24} />
         )
       )}

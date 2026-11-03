@@ -66,7 +66,7 @@ export function EventDateField({
         <Text
           style={[
             styles.label,
-            compact && { color: "#00000055", fontSize: 12 },
+            compact && { color: "#00000055", fontSize: 12, fontWeight: "400" },
           ]}
         >
           {label}
@@ -74,7 +74,7 @@ export function EventDateField({
         <Text
           style={[
             styles.value,
-            compact && { color: "#00000066", fontSize: 12 },
+            compact && { color: "#00000066", fontSize: 12, fontWeight: "400" },
           ]}
         >
           {valid
@@ -142,8 +142,9 @@ const styles = StyleSheet.create({
   compact: {
     padding: 8,
     borderRadius: 8,
-    backgroundColor: "#00000008",
+    backgroundColor: "transparent",
     gap: 5,
+    justifyContent: "flex-start",
   },
   disabled: { opacity: 0.45 },
   label: { color: "#34434b", fontWeight: "600", fontSize: 16 },

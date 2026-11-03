@@ -206,3 +206,9 @@ R12/R13/R14: 既存の定員1〜100（初期20）、公開現在地の確認、2
 9:24のユーザー画像では、作成フォームが見出し/タブに重なり、カウントダウン背景が切れている。react-native-screensのRNSScreenContentWrapper.mmはformSheet直下のScrollViewのframeを補正し、兄弟2個までの配置を想定している。作成画面のスクロール領域をcollapsable=falseの独立コンテナへ隔離し、ヘッダー/タブ/フッターとのflex配置を維持する。自動content insetも無効化。
 PinLabelのグラデーションは百分率のSVGサイズ依存をやめ、専用背景ViewのonLayoutによる実測寸法と一意のgradient IDを使用。カウントダウンの縮小を禁止。吹き出し尾に加えて二重に確保していた下余白17を除去し、素材との間隔を縮小。
 型チェック/Lint成功。これらはレイアウト構造の確認であり、実機画像での修正確認はまだ。以前のcp161/cp162の実装を視覚確認済みとは扱わない。
+
+## cp164 — 既存Map上の地点選択（2026-11-03）
+ユーザー9:46指示：募集/オフ会切替をLayoutAnimationで遷移、作成ボタンは「作成」の文字だけ、右上破棄は削除。日時の2行を同じ背景にまとめ、アイコン/ラベル/日時を左から配置。
+場所選択は別Mapへのpushを廃止。pinPlacementの共有状態を開始し、既存Mapへ作成sheetを閉じて戻る。チャットとタブバーを隠し、小さい下部パネル＋完了を表示。既存Mapのカメラ/イベント/気配はそのまま。完了で地点だけdraftへ反映し作成sheetを再表示する。単一native sheetのdetent変形ではなく、native sheetのdismissとMap内パネルの切替で実装。
+リングは大きく薄い状態から240msで着地、既存native成功hapticを発火、減衰する揺れを再生。iOS AppleMarkerの長押しドラッグ終了で地点更新と演出を再実行。Android MapLibreの既存MarkerはドラッグAPIを持たないため今回タップ選択を維持し、ドラッグ移植は未実装。ユーザーの現在対象はiPhone。
+型チェック、Lint、pin-placementテスト成功。実機のジェスチャー、sheet往復、触覚/見た目は未確認。MVPタスク基準は変更なし。
