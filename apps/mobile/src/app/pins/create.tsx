@@ -53,10 +53,11 @@ export default function CreatePin() {
   }
   return (
     <KeyboardAvoidingView
+      collapsable={false}
       style={s.root}
       behavior={Platform.OS === "ios" ? "padding" : undefined}
     >
-      <View style={s.header}>
+      <View collapsable={false} style={s.header}>
         <Text style={s.heading}>ピンを追加します</Text>
         <Pressable
           accessibilityLabel="下書きを破棄"
@@ -67,7 +68,7 @@ export default function CreatePin() {
           <MapAsset name="trash" size={22} />
         </Pressable>
       </View>
-      <View style={s.tabs}>
+      <View collapsable={false} style={s.tabs}>
         {(
           [
             ["recruitment", "募集ピンを作る"],
@@ -88,129 +89,137 @@ export default function CreatePin() {
           </Pressable>
         ))}
       </View>
-      <ScrollView
-        keyboardShouldPersistTaps="handled"
-        keyboardDismissMode="interactive"
-        contentContainerStyle={s.content}
-      >
-        {restoring ? (
-          <ActivityIndicator />
-        ) : (
-          <View style={s.form}>
-            <View style={s.preview}>
-              <View style={s.bubble}>
-                <Text numberOfLines={1} style={s.name}>
-                  {profile?.display_name ?? "…"}
-                </Text>
+      <View collapsable={false} style={{ flex: 1, minHeight: 0 }}>
+        <ScrollView
+          style={{ flex: 1 }}
+          contentInsetAdjustmentBehavior="never"
+          keyboardShouldPersistTaps="handled"
+          keyboardDismissMode="interactive"
+          contentContainerStyle={s.content}
+        >
+          {restoring ? (
+            <ActivityIndicator />
+          ) : (
+            <View style={s.form}>
+              <View style={s.preview}>
+                <View style={s.bubble}>
+                  <Text numberOfLines={1} style={s.name}>
+                    {profile?.display_name ?? "…"}
+                  </Text>
+                </View>
+                <View style={s.tail} />
               </View>
-              <View style={s.tail} />
-            </View>
-            <View style={s.fields}>
-              <TextInput
-                accessibilityLabel="ピンの題名"
-                editable={!disabled}
-                style={s.input}
-                placeholderTextColor="#00000033"
-                placeholder={
-                  kind === "event" ? "オフ会名を入力" : "募集ピン名を入力"
-                }
-                maxLength={50}
-                value={title}
-                onChangeText={(title) => updateDraft({ title })}
-              />
-              {kind === "event" ? (
-                <>
-                  <EventDateField
-                    compact
-                    label="開始"
-                    value={starts}
-                    disabled={disabled}
-                    onChange={(starts) => updateDraft({ starts })}
-                  />
-                  <EventDateField
-                    compact
-                    label="終了"
-                    value={ends}
-                    disabled={disabled}
-                    suggested={
-                      Number.isFinite(Date.parse(starts))
-                        ? new Date(Date.parse(starts) + 3600000).toISOString()
-                        : undefined
-                    }
-                    onChange={(ends) => updateDraft({ ends })}
-                  />
-                  <TextInput
-                    accessibilityLabel="説明"
-                    editable={!disabled}
-                    style={[s.input, s.description]}
-                    multiline
-                    value={description}
-                    onChangeText={(description) => updateDraft({ description })}
-                    placeholder="説明を追加"
-                    placeholderTextColor="#00000033"
-                    maxLength={1000}
-                  />
-                  <View style={s.capacity}>
-                    <Text style={s.hint}>定員</Text>
-                    <TextInput
-                      accessibilityLabel="定員（1〜100人）"
-                      editable={!disabled}
-                      style={[s.input, { flex: 1 }]}
-                      keyboardType="number-pad"
-                      value={capacity}
-                      onChangeText={(capacity) => updateDraft({ capacity })}
+              <View style={s.fields}>
+                <TextInput
+                  accessibilityLabel="ピンの題名"
+                  editable={!disabled}
+                  style={s.input}
+                  placeholderTextColor="#00000033"
+                  placeholder={
+                    kind === "event" ? "オフ会名を入力" : "募集ピン名を入力"
+                  }
+                  maxLength={50}
+                  value={title}
+                  onChangeText={(title) => updateDraft({ title })}
+                />
+                {kind === "event" ? (
+                  <>
+                    <EventDateField
+                      compact
+                      label="開始"
+                      value={starts}
+                      disabled={disabled}
+                      onChange={(starts) => updateDraft({ starts })}
                     />
-                    <Text style={s.hint}>人</Text>
-                  </View>
-                  <Text style={s.hint}>
-                    {location
-                      ? `開催場所 ${location[1].toFixed(5)}, ${location[0].toFixed(5)}`
-                      : "開催場所を選択してください"}
-                  </Text>
-                </>
-              ) : (
-                <>
-                  <Text style={s.hint}>今のあなたの位置情報</Text>
-                  <Text style={s.hint}>
-                    現在地を公開します。募集は20分または退出で終了します。
-                  </Text>
-                  <Pressable
-                    disabled={busy || !title.trim()}
-                    onPress={() => {
-                      void locate();
-                    }}
-                  >
-                    <Text style={s.link}>
-                      {recruitBody ? "現在地を再確認" : "公開する現在地を確認"}
-                    </Text>
-                  </Pressable>
-                  {recruitBody && (
+                    <EventDateField
+                      compact
+                      label="終了"
+                      value={ends}
+                      disabled={disabled}
+                      suggested={
+                        Number.isFinite(Date.parse(starts))
+                          ? new Date(Date.parse(starts) + 3600000).toISOString()
+                          : undefined
+                      }
+                      onChange={(ends) => updateDraft({ ends })}
+                    />
+                    <TextInput
+                      accessibilityLabel="説明"
+                      editable={!disabled}
+                      style={[s.input, s.description]}
+                      multiline
+                      value={description}
+                      onChangeText={(description) =>
+                        updateDraft({ description })
+                      }
+                      placeholder="説明を追加"
+                      placeholderTextColor="#00000033"
+                      maxLength={1000}
+                    />
+                    <View style={s.capacity}>
+                      <Text style={s.hint}>定員</Text>
+                      <TextInput
+                        accessibilityLabel="定員（1〜100人）"
+                        editable={!disabled}
+                        style={[s.input, { flex: 1 }]}
+                        keyboardType="number-pad"
+                        value={capacity}
+                        onChangeText={(capacity) => updateDraft({ capacity })}
+                      />
+                      <Text style={s.hint}>人</Text>
+                    </View>
                     <Text style={s.hint}>
-                      {Number(recruitBody.latitude).toFixed(5)},{" "}
-                      {Number(recruitBody.longitude).toFixed(5)}
+                      {location
+                        ? `開催場所 ${location[1].toFixed(5)}, ${location[0].toFixed(5)}`
+                        : "開催場所を選択してください"}
                     </Text>
-                  )}
-                </>
-              )}
+                  </>
+                ) : (
+                  <>
+                    <Text style={s.hint}>今のあなたの位置情報</Text>
+                    <Text style={s.hint}>
+                      現在地を公開します。募集は20分または退出で終了します。
+                    </Text>
+                    <Pressable
+                      disabled={busy || !title.trim()}
+                      onPress={() => {
+                        void locate();
+                      }}
+                    >
+                      <Text style={s.link}>
+                        {recruitBody
+                          ? "現在地を再確認"
+                          : "公開する現在地を確認"}
+                      </Text>
+                    </Pressable>
+                    {recruitBody && (
+                      <Text style={s.hint}>
+                        {Number(recruitBody.latitude).toFixed(5)},{" "}
+                        {Number(recruitBody.longitude).toFixed(5)}
+                      </Text>
+                    )}
+                  </>
+                )}
+              </View>
             </View>
-          </View>
-        )}
-        {!!error && (
-          <Text accessibilityRole="alert" style={s.error}>
-            {error}
-          </Text>
-        )}
-        {locked && (
-          <Pressable
-            disabled={busy}
-            onPress={() => {
-              void revise();
-            }}
-          >
-            <Text style={s.link}>前回の送信を確認して入力し直す</Text>
-          </Pressable>
-        )}
-      </ScrollView>
+          )}
+          {!!error && (
+            <Text accessibilityRole="alert" style={s.error}>
+              {error}
+            </Text>
+          )}
+          {locked && (
+            <Pressable
+              disabled={busy}
+              onPress={() => {
+                void revise();
+              }}
+            >
+              <Text style={s.link}>前回の送信を確認して入力し直す</Text>
+            </Pressable>
+          )}
+        </ScrollView>
+      </View>
       <View style={[s.footer, { paddingBottom: Math.max(12, insets.bottom) }]}>
         {kind === "event" && (
           <PinButton

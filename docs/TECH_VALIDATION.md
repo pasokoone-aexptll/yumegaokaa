@@ -919,3 +919,6 @@ Mapの最新へ中央化、SmoothSurfaceへblurIntensity追加、チャットに
 
 ## cp162 — 気配/ピンの文字と背景グラデーション
 R11/R12/R13の表示変更。PinLabel（SVGグラデーション、文字マスク、吹き出し尾）を追加。`npm run typecheck`・`npm --prefix apps/mobile run lint`成功。JS表示のみのためDBテスト/ネイティブビルドは省略。iPhone上の実描画は未確認。
+
+## cp163 — ピンUIの実機報告への修正（2026-11-03）
+R12/R13。作成formSheetのScrollViewを非flattenコンテナへ隔離（native screensのframe補正との干渉対策）。SVG背景を実測サイズ化、gradient ID一意化、吹き出し二重余白を除去。`npm run typecheck`、`npm --prefix apps/mobile run lint`成功。実機での修正後スクリーンショット確認は未実施。JS変更につき再ビルド・DB再試験なし。

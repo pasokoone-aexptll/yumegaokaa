@@ -1,4 +1,5 @@
 import NativeMaskedView from "@react-native-masked-view/masked-view";
+import { useState, useId } from "react";
 import type { ComponentType, ReactElement, ReactNode } from "react";
 import { Platform, StyleSheet, Text, View, type ViewProps } from "react-native";
 import Svg, { Defs, LinearGradient, Path, Rect, Stop } from "react-native-svg";
@@ -12,16 +13,33 @@ const Mask = NativeMaskedView as unknown as ComponentType<
   }
 >;
 function Gradient({ colors }: { colors: readonly [string, string] }) {
+  const [size, setSize] = useState({ width: 0, height: 0 });
+  const id = `pinGradient${useId().replace(/[^a-zA-Z0-9]/g, "")}`;
   return (
-    <Svg width="100%" height="100%" style={StyleSheet.absoluteFill}>
-      <Defs>
-        <LinearGradient id="pinGradient" x1="0" y1="0" x2="0" y2="1">
-          <Stop offset="0" stopColor={colors[0]} />
-          <Stop offset="1" stopColor={colors[1]} />
-        </LinearGradient>
-      </Defs>
-      <Rect width="100%" height="100%" fill="url(#pinGradient)" />
-    </Svg>
+    <View
+      pointerEvents="none"
+      collapsable={false}
+      style={StyleSheet.absoluteFill}
+      onLayout={({ nativeEvent: { layout } }) =>
+        setSize({ width: layout.width, height: layout.height })
+      }
+    >
+      {size.width > 0 && size.height > 0 && (
+        <Svg
+          width={size.width}
+          height={size.height}
+          viewBox={`0 0 ${size.width} ${size.height}`}
+        >
+          <Defs>
+            <LinearGradient id={id} x1="0%" y1="0%" x2="0%" y2="100%">
+              <Stop offset="0%" stopColor={colors[0]} />
+              <Stop offset="100%" stopColor={colors[1]} />
+            </LinearGradient>
+          </Defs>
+          <Rect width={size.width} height={size.height} fill={`url(#${id})`} />
+        </Svg>
+      )}
+    </View>
   );
 }
 export function PinGradientText({
@@ -59,9 +77,11 @@ export function PinBubble({ children }: { children: ReactNode }) {
 }
 export function PinCountdown({ children }: { children: string }) {
   return (
-    <View style={s.countdown}>
+    <View collapsable={false} style={s.countdown}>
       <Gradient colors={pinRed} />
-      <Text style={[s.text, { color: "white" }]}>{children}</Text>
+      <Text numberOfLines={1} style={[s.text, { color: "white" }]}>
+        {children}
+      </Text>
     </View>
   );
 }
@@ -71,7 +91,7 @@ const s = StyleSheet.create({
     fontSize: 16,
     fontWeight: "600",
   },
-  bubbleWrapper: { alignItems: "center", paddingBottom: 17, maxWidth: 240 },
+  bubbleWrapper: { alignItems: "center", maxWidth: 240 },
   bubble: {
     backgroundColor: "white",
     borderRadius: 22,
@@ -82,6 +102,9 @@ const s = StyleSheet.create({
   },
   tail: { marginTop: -1 },
   countdown: {
+    flexShrink: 0,
+    alignSelf: "center",
+    minHeight: 34,
     overflow: "hidden",
     borderRadius: 22,
     borderCurve: "continuous",
