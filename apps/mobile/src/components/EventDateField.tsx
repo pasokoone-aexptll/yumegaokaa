@@ -2,6 +2,7 @@ import { MapAsset } from "./map/MapAsset";
 import { useCallback, useState } from "react";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import {
+  Animated,
   Keyboard,
   Modal,
   Pressable,
@@ -29,6 +30,16 @@ export function EventDateField({
   compact = false,
 }: Props) {
   const [editing, setEditing] = useState<Date | null>(null);
+  const [transition] = useState(() => new Animated.Value(0));
+  const close = () => {
+    Animated.timing(transition, {
+      toValue: 0,
+      duration: 180,
+      useNativeDriver: true,
+    }).start(({ finished }) => {
+      if (finished) setEditing(null);
+    });
+  };
   const parsed = new Date(value);
   const valid = Number.isFinite(parsed.getTime());
   const handleOpen = useCallback(() => {
@@ -66,7 +77,7 @@ export function EventDateField({
         <Text
           style={[
             styles.label,
-            compact && { color: "#00000055", fontSize: 12, fontWeight: "400" },
+            compact && { color: "#00000055", fontSize: 14, fontWeight: "400" },
           ]}
         >
           {label}
@@ -74,7 +85,7 @@ export function EventDateField({
         <Text
           style={[
             styles.value,
-            compact && { color: "#00000066", fontSize: 12, fontWeight: "400" },
+            compact && { color: "#00000066", fontSize: 14, fontWeight: "400" },
           ]}
         >
           {valid
@@ -91,39 +102,64 @@ export function EventDateField({
       <Modal
         visible={!!editing && !disabled}
         transparent
-        animationType="slide"
-        onRequestClose={() => setEditing(null)}
+        animationType="none"
+        onShow={() => {
+          transition.setValue(0);
+          Animated.timing(transition, {
+            toValue: 1,
+            duration: 240,
+            useNativeDriver: true,
+          }).start();
+        }}
+        onRequestClose={close}
       >
         <View style={styles.backdrop}>
-          <SafeAreaView edges={["bottom"]} style={styles.sheet}>
-            <View style={styles.toolbar}>
-              <Pressable
-                accessibilityRole="button"
-                onPress={() => setEditing(null)}
-              >
-                <Text style={styles.link}>キャンセル</Text>
-              </Pressable>
-              <Text style={styles.label}>{label}日時</Text>
-              <Pressable
-                accessibilityRole="button"
-                onPress={() => {
-                  if (editing) onChange(editing.toISOString());
-                  setEditing(null);
-                }}
-              >
-                <Text style={styles.link}>決定</Text>
-              </Pressable>
-            </View>
-            {editing && (
-              <DateTimePicker
-                value={editing}
-                mode="datetime"
-                display="spinner"
-                themeVariant="light"
-                onValueChange={(_, date) => setEditing(date)}
-              />
-            )}
-          </SafeAreaView>
+          <Animated.View
+            pointerEvents="none"
+            style={[
+              StyleSheet.absoluteFill,
+              { backgroundColor: "#0006", opacity: transition },
+            ]}
+          />
+          <Animated.View
+            style={{
+              transform: [
+                {
+                  translateY: transition.interpolate({
+                    inputRange: [0, 1],
+                    outputRange: [360, 0],
+                  }),
+                },
+              ],
+            }}
+          >
+            <SafeAreaView edges={["bottom"]} style={styles.sheet}>
+              <View style={styles.toolbar}>
+                <Pressable accessibilityRole="button" onPress={close}>
+                  <Text style={styles.link}>キャンセル</Text>
+                </Pressable>
+                <Text style={styles.label}>{label}日時</Text>
+                <Pressable
+                  accessibilityRole="button"
+                  onPress={() => {
+                    if (editing) onChange(editing.toISOString());
+                    close();
+                  }}
+                >
+                  <Text style={styles.link}>決定</Text>
+                </Pressable>
+              </View>
+              {editing && (
+                <DateTimePicker
+                  value={editing}
+                  mode="datetime"
+                  display="spinner"
+                  themeVariant="light"
+                  onValueChange={(_, date) => setEditing(date)}
+                />
+              )}
+            </SafeAreaView>
+          </Animated.View>
         </View>
       </Modal>
     </>
@@ -149,7 +185,7 @@ const styles = StyleSheet.create({
   disabled: { opacity: 0.45 },
   label: { color: "#34434b", fontWeight: "600", fontSize: 16 },
   value: { color: "#008cff", fontSize: 16, flexShrink: 1 },
-  backdrop: { flex: 1, justifyContent: "flex-end", backgroundColor: "#0006" },
+  backdrop: { flex: 1, justifyContent: "flex-end" },
   sheet: {
     backgroundColor: "white",
     borderTopLeftRadius: 24,

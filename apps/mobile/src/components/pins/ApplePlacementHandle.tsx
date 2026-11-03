@@ -16,6 +16,7 @@ export function ApplePlacementHandle({
   onDrop: (point: [number, number]) => void;
 }) {
   const [position, setPosition] = useState<{ x: number; y: number }>();
+  const [pitch, setPitch] = useState(45);
   const [dragging, setDragging] = useState(false);
   const latest = useRef({ position, onDrop });
   useEffect(() => {
@@ -35,9 +36,16 @@ export function ApplePlacementHandle({
   }, []);
   useEffect(() => {
     const sequence = ++projectionSequence.current;
-    void map.current
-      ?.pointForCoordinate({ longitude: point[0], latitude: point[1] })
-      .then((p) => {
+    const currentMap = map.current;
+    if (!currentMap) return;
+    void Promise.all([
+      currentMap.pointForCoordinate({
+        longitude: point[0],
+        latitude: point[1],
+      }),
+      currentMap.getCamera(),
+    ])
+      .then(([p, camera]) => {
         if (
           mounted.current &&
           !draggingRef.current &&
@@ -45,6 +53,7 @@ export function ApplePlacementHandle({
         ) {
           appliedSequence.current = sequence;
           setPosition(p);
+          setPitch(camera.pitch);
         }
       })
       .catch(() => {});
@@ -100,7 +109,7 @@ export function ApplePlacementHandle({
         height: 65,
       }}
     >
-      <PlacementRing revision={revision} dragging={dragging} />
+      <PlacementRing revision={revision} dragging={dragging} pitch={pitch} />
     </View>
   );
 }

@@ -931,3 +931,6 @@ R12/R13。pins/createを閉じずdetent変更とundimmed指定で既存地図の
 
 ## cp166 — ピン操作とFigma更新
 型チェック/Lint/`tests/pin-placement.test.mjs`成功。2ページ同時スライド、PanResponder安定化、連続カメラ投影の非同期順序管理、選択footer変更。実機で報告された不具合へのコード修正であり、実機での解消確認はまだ。
+
+## cp167 — ピン表示と日時pickerの修正
+R12/R13。`npm run typecheck`成功（途中の不要なcamera参照を除去して再確認）。Lint成功。`node --test tests/pin-placement.test.mjs tests/pin-recovery.test.mjs`5件成功。場所保持と未確定送信の再送/破棄を確認。新しい視覚演出および実機測位の成功はこれらのテストでは確認できず、未検証。JS変更のためネイティブビルド・転送を省略。認可・DB仕様変更なし。

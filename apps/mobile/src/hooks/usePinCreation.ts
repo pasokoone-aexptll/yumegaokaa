@@ -109,6 +109,12 @@ export function usePinCreation() {
     }
   }
   async function locate() {
+    if (busy || restoring) return;
+    if (!title.trim()) {
+      setError("募集ピン名を入力してください。");
+      return;
+    }
+    setError("");
     setBusy(true);
     try {
       const existing = await pendingCommand("recruitment_create");

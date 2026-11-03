@@ -2,14 +2,30 @@ import { useEffect, useState } from "react";
 import { Animated, Easing, View } from "react-native";
 import { BlurView } from "expo-blur";
 import { requireNativeModule } from "expo-modules-core";
-import Svg, { Circle, Ellipse } from "react-native-svg";
+import Svg, { Circle } from "react-native-svg";
 export function PlacementRing({
   revision,
   dragging = false,
+  pitch = 45,
 }: {
   revision: number;
   dragging?: boolean;
+  pitch?: number;
 }) {
+  const flattening = Math.max(0.2, Math.cos((pitch * Math.PI) / 180));
+  const [fall] = useState(() => new Animated.Value(0));
+  useEffect(() => {
+    fall.setValue(0);
+    if (dragging) return;
+    const animation = Animated.timing(fall, {
+      toValue: 1,
+      duration: 460,
+      easing: Easing.out(Easing.cubic),
+      useNativeDriver: true,
+    });
+    animation.start();
+    return () => animation.stop();
+  }, [revision, dragging, fall]);
   const [scale] = useState(() => new Animated.Value(1.9));
   const [opacity] = useState(() => new Animated.Value(0.15));
   const [rotation] = useState(() => new Animated.Value(0));
@@ -65,34 +81,39 @@ export function PlacementRing({
       }}
     >
       <View
-        style={{
-          position: "absolute",
-          width: 44,
-          height: 26,
-          borderRadius: 22,
-          overflow: "hidden",
-        }}
+        style={{ position: "absolute", transform: [{ scaleY: flattening }] }}
       >
-        <BlurView
-          intensity={40}
-          tint="default"
-          style={{ width: 44, height: 26 }}
-        />
+        <View
+          style={{
+            position: "absolute",
+            left: 10,
+            top: 10,
+            width: 44,
+            height: 44,
+            borderRadius: 22,
+            overflow: "hidden",
+          }}
+        >
+          <BlurView
+            intensity={40}
+            tint="default"
+            style={{ width: 44, height: 44 }}
+          />
+        </View>
+        <Svg width={64} height={64}>
+          <Circle
+            cx={32}
+            cy={32}
+            r={22}
+            stroke="#ffffff99"
+            strokeWidth={3}
+            fill="#ffffff22"
+          />
+        </Svg>
       </View>
-      <Svg width={64} height={46} viewBox="0 0 64 46">
-        <Ellipse
-          cx={32}
-          cy={23}
-          rx={22}
-          ry={13}
-          stroke="#ffffff99"
-          strokeWidth={3}
-          fill="#ffffff22"
-        />
-      </Svg>
       <View
         pointerEvents="none"
-        style={{ position: "absolute", transform: [{ scaleY: 0.7 }] }}
+        style={{ position: "absolute", transform: [{ scaleY: flattening }] }}
       >
         <Animated.View
           style={{
@@ -111,8 +132,8 @@ export function PlacementRing({
               cx={32}
               cy={32}
               r={29}
-              stroke="#ffffff99"
-              strokeWidth={3}
+              stroke="#ffffff77"
+              strokeWidth={4.5}
               strokeDasharray="28 17.553"
               strokeLinecap="round"
               fill="none"
@@ -120,6 +141,29 @@ export function PlacementRing({
           </Svg>
         </Animated.View>
       </View>
+      <Animated.Image
+        pointerEvents="none"
+        source={require("../../../assets/figma-map/pin.png")}
+        resizeMode="contain"
+        style={{
+          position: "absolute",
+          width: 84,
+          height: 84,
+          bottom: 32.5,
+          opacity: fall.interpolate({
+            inputRange: [0, 1],
+            outputRange: [0, 0.75],
+          }),
+          transform: [
+            {
+              translateY: fall.interpolate({
+                inputRange: [0, 1],
+                outputRange: [-64, 0],
+              }),
+            },
+          ],
+        }}
+      />
     </Animated.View>
   );
 }

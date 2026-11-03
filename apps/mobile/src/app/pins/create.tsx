@@ -195,13 +195,17 @@ export default function CreatePin() {
                     現在地を公開します。募集は20分または退出で終了します。
                   </Text>
                   <Pressable
-                    disabled={busy || !title.trim()}
+                    disabled={busy}
                     onPress={() => {
                       void locate();
                     }}
                   >
                     <Text style={s.link}>
-                      {recruitBody ? "現在地を再確認" : "公開する現在地を確認"}
+                      {busy
+                        ? "現在地を確認中…"
+                        : recruitBody
+                          ? "現在地を再確認"
+                          : "公開する現在地を確認"}
                     </Text>
                   </Pressable>
                   {recruitBody && (
@@ -377,7 +381,8 @@ const s = StyleSheet.create({
   bubble: {
     backgroundColor: "white",
     padding: 7,
-    borderRadius: 12,
+    borderRadius: 24,
+    borderCurve: "continuous",
     shadowColor: "#000",
     shadowOpacity: 0.12,
     shadowRadius: 6,

@@ -69,7 +69,7 @@ export function PinBubble({ children }: { children: ReactNode }) {
   return (
     <View style={s.bubbleWrapper}>
       <View style={s.bubble}>{children}</View>
-      <Svg width={26} height={17} viewBox="0 0 26 17" style={s.tail}>
+      <Svg width={20.8} height={13.6} viewBox="0 0 26 17" style={s.tail}>
         <Path d="M0 0H26L5 16Q1 18 1 13V0Z" fill="white" />
       </Svg>
     </View>
