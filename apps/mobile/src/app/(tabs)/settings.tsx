@@ -1,6 +1,6 @@
 import { AccountPage } from "../../components/AccountPage";
 import { router } from "expo-router";
-import { Text, View } from "react-native";
+import { Text } from "react-native";
 import { DetailRow, Section, detail } from "../../components/DetailUI";
 import { useProfile } from "../../hooks/useProfile";
 export default function Settings() {
@@ -12,12 +12,9 @@ export default function Settings() {
       version={profile?.avatar_updated_at}
     >
       <Section>
-        <View style={{ padding: 20, gap: 6 }}>
-          <Text style={{ fontSize: 24, fontWeight: "700" }}>
-            {profile?.display_name ?? "プロフィール"}
-          </Text>
-          {!!status && <Text style={detail.secondary}>{status}</Text>}
-        </View>
+        {!!status && (
+          <Text style={[detail.secondary, { padding: 16 }]}>{status}</Text>
+        )}
         <DetailRow
           icon="person-circle-outline"
           title="プロフィールを編集"

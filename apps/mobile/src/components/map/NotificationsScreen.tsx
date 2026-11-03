@@ -67,7 +67,7 @@ export function NotificationsScreen() {
       >
         <Animated.View
           style={{
-            padding: 28,
+            padding: 20,
             paddingTop: 0,
             opacity: scroll.interpolate({
               inputRange: [0, 190],
@@ -91,15 +91,6 @@ export function NotificationsScreen() {
               fontSize: 30,
               fontWeight: "600",
               color: "#00000099",
-              transform: [
-                {
-                  scale: scroll.interpolate({
-                    inputRange: [0, 190],
-                    outputRange: [1, 0.65],
-                    extrapolate: "clamp",
-                  }),
-                },
-              ],
             }}
           >
             オラクル通知
@@ -122,19 +113,23 @@ export function NotificationsScreen() {
             const notices = items.filter((n) => n.kind === kind);
             if (!notices.length) return null;
             return (
-              <Section
-                key={kind}
-                title={
-                  kind === "changed"
+              <View key={kind} style={{ gap: 12 }}>
+                <Text
+                  style={{
+                    fontSize: 17,
+                    fontWeight: "600",
+                    color: "#00000099",
+                  }}
+                >
+                  {kind === "changed"
                     ? "変更されたイベント"
-                    : "中止されたイベント"
-                }
-              >
+                    : "中止されたイベント"}
+                </Text>
                 {notices.map((n) => (
                   <View
                     key={n.id}
                     style={{
-                      padding: 16,
+                      paddingVertical: 16,
                       gap: 8,
                       borderBottomWidth: 0.5,
                       borderBottomColor: "#00000010",
@@ -143,7 +138,7 @@ export function NotificationsScreen() {
                     <Text
                       style={{
                         fontSize: 18,
-                        fontWeight: n.read ? "500" : "700",
+                        fontWeight: n.read ? "500" : "600",
                       }}
                     >
                       {n.title}
@@ -193,7 +188,7 @@ export function NotificationsScreen() {
                     </Pressable>
                   </View>
                 ))}
-              </Section>
+              </View>
             );
           })}
           <Section>

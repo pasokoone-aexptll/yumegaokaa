@@ -115,7 +115,7 @@ export function Empty({ children }: { children: ReactNode }) {
 export const ui = StyleSheet.create({
   page: { flex: 1, backgroundColor: "#f2f2f7" },
   content: { flexGrow: 1, padding: 20, paddingBottom: 48, gap: 20 },
-  title: { fontSize: 30, fontWeight: "700", color: "#000000e6" },
+  title: { fontSize: 30, fontWeight: "600", color: "#000000e6" },
   button: {
     backgroundColor: "white",
     padding: 16,

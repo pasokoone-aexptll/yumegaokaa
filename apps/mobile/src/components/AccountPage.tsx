@@ -6,7 +6,10 @@ import {
   Text,
   View,
 } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import {
+  SafeAreaView,
+  useSafeAreaInsets,
+} from "react-native-safe-area-context";
 import { Avatar } from "./Avatar";
 
 export function AccountPage({
@@ -20,26 +23,12 @@ export function AccountPage({
   avatar?: string;
   version?: string;
 }) {
+  const insets = useSafeAreaInsets();
   const [scroll] = useState(() => new Animated.Value(0));
   return (
-    <SafeAreaView edges={["top", "left", "right"]} style={s.page}>
-      <View style={s.bar}>
-        <Animated.Text
-          style={[
-            s.compact,
-            {
-              opacity: scroll.interpolate({
-                inputRange: [160, 220],
-                outputRange: [0, 1],
-                extrapolate: "clamp",
-              }),
-            },
-          ]}
-        >
-          アカウント
-        </Animated.Text>
-      </View>
+    <SafeAreaView edges={["left", "right"]} style={s.page}>
       <Animated.ScrollView
+        contentInsetAdjustmentBehavior="never"
         contentContainerStyle={{ flexGrow: 1, paddingBottom: 32 }}
         scrollEventThrottle={16}
         onScroll={Animated.event(
@@ -49,7 +38,10 @@ export function AccountPage({
       >
         <ImageBackground
           source={require("../../assets/figma-map/yuuyake.png")}
-          style={s.hero}
+          style={[
+            s.hero,
+            { minHeight: 300 + insets.top, paddingTop: insets.top + 24 },
+          ]}
         >
           <View
             style={[StyleSheet.absoluteFill, { backgroundColor: "#00000026" }]}
@@ -88,15 +80,40 @@ export function AccountPage({
         </ImageBackground>
         <View style={s.content}>{children}</View>
       </Animated.ScrollView>
+      <Animated.View
+        pointerEvents="none"
+        style={[
+          s.bar,
+          {
+            paddingTop: insets.top,
+            height: insets.top + 44,
+            opacity: scroll.interpolate({
+              inputRange: [160, 220],
+              outputRange: [0, 1],
+              extrapolate: "clamp",
+            }),
+          },
+        ]}
+      >
+        <Text style={s.compact}>アカウント</Text>
+      </Animated.View>
     </SafeAreaView>
   );
 }
 const s = StyleSheet.create({
   page: { flex: 1, backgroundColor: "#f2f2f7" },
-  bar: { height: 44, alignItems: "center", justifyContent: "center" },
+  bar: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    backgroundColor: "#f2f2f7",
+    alignItems: "center",
+    justifyContent: "center",
+  },
   compact: { fontSize: 17, fontWeight: "600", color: "#000000e6" },
   hero: { padding: 24, minHeight: 270, justifyContent: "flex-end" },
   name: { fontSize: 22, fontWeight: "600", color: "white" },
-  title: { fontSize: 32, fontWeight: "700", color: "white" },
+  title: { fontSize: 32, fontWeight: "600", color: "white" },
   content: { padding: 20, gap: 24 },
 });

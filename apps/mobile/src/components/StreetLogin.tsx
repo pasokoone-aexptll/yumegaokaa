@@ -151,7 +151,7 @@ const s = StyleSheet.create({
   brand: { color: "white", fontSize: 24, fontWeight: "600" },
   subtitle: { color: "#ffffffb3", fontSize: 13 },
   body: { flexGrow: 1, padding: 24, paddingBottom: 40, gap: 18 },
-  heading: { fontSize: 28, fontWeight: "700", color: "#000000e6" },
+  heading: { fontSize: 28, fontWeight: "600", color: "#000000e6" },
   note: { color: "#00000080", fontSize: 14, lineHeight: 21 },
   card: {
     backgroundColor: "white",

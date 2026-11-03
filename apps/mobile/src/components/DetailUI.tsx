@@ -218,7 +218,7 @@ export const detail = StyleSheet.create({
   },
   title: {
     fontSize: 30,
-    fontWeight: "700",
+    fontWeight: "600",
     color: "#111",
     letterSpacing: -0.6,
   },

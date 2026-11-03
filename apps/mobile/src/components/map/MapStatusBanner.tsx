@@ -109,7 +109,7 @@ export function MapStatusBanner({
           <View style={{ flex: 1 }}>
             <Text
               accessibilityLiveRegion="polite"
-              style={{ color: "#ffffff99", fontWeight: "700", fontSize: 15 }}
+              style={{ color: "#ffffff99", fontWeight: "600", fontSize: 15 }}
             >
               {message}
             </Text>
@@ -152,7 +152,7 @@ export function MapStatusBanner({
               <Text
                 style={{
                   color: "black",
-                  fontWeight: "700",
+                  fontWeight: "600",
                   fontSize: 14,
                   fontFamily: Platform.OS === "ios" ? "ui-rounded" : undefined,
                 }}

@@ -344,7 +344,7 @@ const s = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
-  heading: { fontSize: 20, fontWeight: "700", color: "#00000099" },
+  heading: { fontSize: 20, fontWeight: "600", color: "#00000099" },
   trash: {
     position: "absolute",
     right: 18,

@@ -533,7 +533,7 @@ const styles = StyleSheet.create({
   authorName: {
     fontFamily: Platform.OS === "ios" ? "ui-rounded" : undefined,
     color: "#ffffff4d",
-    fontWeight: "700",
+    fontWeight: "600",
   },
   body: {
     color: "#ffffff99",
@@ -596,6 +596,6 @@ const styles = StyleSheet.create({
     color: "#00000099",
     fontSize: 32,
     lineHeight: 36,
-    fontWeight: "800",
+    fontWeight: "600",
   },
 });

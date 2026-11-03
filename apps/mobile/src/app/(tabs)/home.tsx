@@ -1,73 +1,134 @@
-import { PinListItem } from "../../components/PinListItem";
 import { useState } from "react";
-import { Pressable, ScrollView, Text } from "react-native";
+import {
+  ActivityIndicator,
+  ImageBackground,
+  RefreshControl,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+  Pressable,
+} from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { router } from "expo-router";
-import { Action, Empty, Page, ui } from "../../components/Page";
+import { PinListItem } from "../../components/PinListItem";
+import { MapAsset } from "../../components/map/MapAsset";
+import { DetailIcon } from "../../components/DetailIcon";
 import { useHomePins } from "../../hooks/useHomePins";
+
 export default function Home() {
-  const [tab, setTab] = useState("参加予定のピン");
   const { items, recruitments, error, loading, load } = useHomePins();
+  const insets = useSafeAreaInsets();
+  const [refreshing, setRefreshing] = useState(false);
+  async function refresh() {
+    if (refreshing) return;
+    setRefreshing(true);
+    try {
+      await load();
+    } finally {
+      setRefreshing(false);
+    }
+  }
+  const events = [...items].sort(
+    (a, b) => Date.parse(a.starts_at) - Date.parse(b.starts_at),
+  );
   return (
-    <Page title="ピン一覧" grid>
-      <ScrollView
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        contentContainerStyle={{ gap: 24 }}
+    <ScrollView
+      style={s.page}
+      contentInsetAdjustmentBehavior="never"
+      contentContainerStyle={{ paddingBottom: 32 }}
+      refreshControl={
+        <RefreshControl
+          refreshing={refreshing}
+          onRefresh={() => void refresh()}
+        />
+      }
+    >
+      <ImageBackground
+        source={require("../../../assets/figma-map/yuuyake.png")}
+        style={[s.hero, { height: insets.top + 150, paddingTop: insets.top }]}
       >
-        {["参加予定のピン", "募集中のピン"].map((x) => (
+        <View style={s.shade} />
+        <MapAsset
+          name="DreamCloud Logo"
+          width={210}
+          height={32}
+          tint="#ffffffcc"
+        />
+      </ImageBackground>
+      <View style={s.content}>
+        <View style={s.headingRow}>
+          <Text style={s.heading}>参加予定</Text>
           <Pressable
-            key={x}
-            accessibilityRole="tab"
-            accessibilityState={{ selected: tab === x }}
-            onPress={() => setTab(x)}
-            style={{
-              paddingVertical: 12,
-              borderBottomWidth: 2,
-              borderBottomColor: tab === x ? "#008cff" : "transparent",
-            }}
+            accessibilityRole="button"
+            accessibilityLabel="ピン一覧を再読み込み"
+            disabled={refreshing || loading}
+            onPress={() => void refresh()}
+            style={s.refresh}
           >
-            <Text
-              style={{
-                color: tab === x ? "#008cff" : "#87929b",
-                fontSize: 18,
-                fontWeight: "700",
-              }}
-            >
-              {x}
-            </Text>
+            {refreshing || loading ? (
+              <ActivityIndicator color="#00000088" />
+            ) : (
+              <DetailIcon name="reload" size={21} color="#00000088" />
+            )}
           </Pressable>
-        ))}
-      </ScrollView>
-      {!!error && <Text style={ui.error}>{error}</Text>}
-      {tab === "参加予定のピン" ? (
-        loading ? (
-          <Empty>読み込み中…</Empty>
-        ) : items.length ? (
-          items.map((e) => (
-            <PinListItem
-              key={e.id}
-              title={e.title}
-              subtitle={new Date(e.starts_at).toLocaleString()}
-              longitude={e.longitude}
-              latitude={e.latitude}
-              onOpen={() =>
-                router.push({ pathname: "/events/[id]", params: { id: e.id } })
-              }
-            />
-          ))
-        ) : (
-          !error && <Empty>参加予定のオフ会はありません。</Empty>
-        )
-      ) : loading ? (
-        <Empty>読み込み中…</Empty>
-      ) : recruitments.length ? (
-        recruitments.map((p) => (
+        </View>
+        {!!error && (
+          <Text accessibilityRole="alert" style={s.error}>
+            {error}
+          </Text>
+        )}
+        {!loading && !error && !events.length && (
+          <Text style={s.empty}>参加予定のオフ会はありません。</Text>
+        )}
+        {events.map((e, index) => {
+          const date = new Date(e.starts_at);
+          const dateLabel = date.toLocaleDateString("ja-JP", {
+            month: "long",
+            day: "numeric",
+            weekday: "short",
+          });
+          const previous = index
+            ? new Date(events[index - 1].starts_at).toLocaleDateString(
+                "ja-JP",
+                { month: "long", day: "numeric", weekday: "short" },
+              )
+            : null;
+          return (
+            <View key={e.id}>
+              {dateLabel !== previous && (
+                <Text style={s.date}>{dateLabel}</Text>
+              )}
+              <PinListItem
+                title={e.title}
+                subtitle={`${date.toLocaleTimeString("ja-JP", { hour: "2-digit", minute: "2-digit" })} — ${new Date(e.ends_at).toLocaleTimeString("ja-JP", { hour: "2-digit", minute: "2-digit" })}`}
+                longitude={e.longitude}
+                latitude={e.latitude}
+                detail={{ kind: "event", id: e.id }}
+                onOpen={() =>
+                  router.push({
+                    pathname: "/events/[id]",
+                    params: { id: e.id },
+                  })
+                }
+              />
+            </View>
+          );
+        })}
+        <Text style={[s.heading, { marginTop: 28, marginBottom: 8 }]}>
+          募集中
+        </Text>
+        {!loading && !error && !recruitments.length && (
+          <Text style={s.empty}>募集中のピンはありません。</Text>
+        )}
+        {recruitments.map((p) => (
           <PinListItem
             key={p.id}
             title={p.title}
             subtitle={`${p.display_name} が募集中`}
             longitude={p.longitude}
             latitude={p.latitude}
+            detail={{ kind: "recruitment", id: p.id }}
             onOpen={() =>
               router.push({
                 pathname: "/recruitments/[id]",
@@ -75,11 +136,44 @@ export default function Home() {
               })
             }
           />
-        ))
-      ) : (
-        !error && <Empty>募集中のピンはありません。</Empty>
-      )}
-      <Action title="再読み込み" onPress={() => load()} />
-    </Page>
+        ))}
+      </View>
+    </ScrollView>
   );
 }
+const s = StyleSheet.create({
+  page: { flex: 1, backgroundColor: "white" },
+  hero: {
+    justifyContent: "flex-end",
+    paddingHorizontal: 20,
+    paddingBottom: 24,
+  },
+  shade: { ...StyleSheet.absoluteFill, backgroundColor: "#00000020" },
+  content: { paddingHorizontal: 20, paddingTop: 24 },
+  headingRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
+  heading: { fontSize: 25, fontWeight: "600", color: "#000000e6" },
+  refresh: {
+    width: 44,
+    height: 44,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  date: {
+    fontSize: 17,
+    fontWeight: "500",
+    color: "#00000088",
+    marginTop: 22,
+    marginBottom: 4,
+  },
+  empty: {
+    fontSize: 16,
+    lineHeight: 24,
+    color: "#00000066",
+    paddingVertical: 20,
+  },
+  error: { fontSize: 15, color: "#c22", paddingVertical: 12 },
+});

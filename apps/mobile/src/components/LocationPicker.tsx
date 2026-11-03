@@ -82,7 +82,7 @@ export function LocationPicker({
               style={{
                 textAlign: "center",
                 fontSize: 19,
-                fontWeight: "700",
+                fontWeight: "600",
                 color: "#00000099",
               }}
             >

@@ -86,7 +86,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   logo: { width: 80, height: 51 },
-  name: { color: "#7196ff", fontSize: 22, fontWeight: "800", maxWidth: 100 },
+  name: { color: "#7196ff", fontSize: 22, fontWeight: "600", maxWidth: 100 },
   count: {
     flexDirection: "row",
     gap: 4,
@@ -97,7 +97,7 @@ const styles = StyleSheet.create({
   number: {
     color: "white",
     fontSize: 22,
-    fontWeight: "700",
+    fontWeight: "600",
     fontFamily: Platform.OS === "ios" ? "ui-rounded" : undefined,
   },
   mode: {

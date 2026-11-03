@@ -55,7 +55,7 @@ export function MapErrorDialog({ message }: { message: string }) {
           />
           <Text
             accessibilityRole="header"
-            style={{ color: "white", fontWeight: "700", fontSize: 23 }}
+            style={{ color: "white", fontWeight: "600", fontSize: 23 }}
           >
             通信エラー
           </Text>
@@ -90,7 +90,7 @@ export function MapErrorDialog({ message }: { message: string }) {
             <Text
               style={{
                 color: "black",
-                fontWeight: "700",
+                fontWeight: "600",
                 fontSize: 16,
                 fontFamily: Platform.OS === "ios" ? "ui-rounded" : undefined,
               }}

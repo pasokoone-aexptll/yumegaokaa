@@ -9,7 +9,7 @@ export const streetMapStyles = StyleSheet.create({
     justifyContent: "center",
     backgroundColor: "#f4fbff",
   },
-  logo: { fontSize: 27, fontWeight: "900", color: "#3265ff", maxWidth: "80%" },
+  logo: { fontSize: 27, fontWeight: "600", color: "#3265ff", maxWidth: "80%" },
   subtitle: { fontSize: 16, lineHeight: 26, color: "#526372" },
   label: { fontSize: 15, color: "#425566" },
   input: {
@@ -25,7 +25,7 @@ export const streetMapStyles = StyleSheet.create({
     alignItems: "center",
     marginVertical: 10,
   },
-  buttonText: { fontSize: 18, fontWeight: "700", color: "white" },
+  buttonText: { fontSize: 18, fontWeight: "600", color: "white" },
   error: { color: "#ac354b", lineHeight: 22 },
   note: { fontSize: 12, color: "#627c8b", lineHeight: 19 },
   overlay: { flex: 1, paddingHorizontal: 14 },
@@ -96,6 +96,6 @@ export const streetMapStyles = StyleSheet.create({
     borderTopRightRadius: 36,
     gap: 18,
   },
-  heading: { fontSize: 24, fontWeight: "700", color: "#526372" },
+  heading: { fontSize: 24, fontWeight: "600", color: "#526372" },
   cloud: { fontSize: 90, color: "#078bff", textAlign: "center" },
 });
