@@ -19,9 +19,10 @@ import { StreetMapMarkers } from "../../components/StreetMapMarkers";
 import { streetMapStyles as styles } from "../../components/streetMapStyles";
 import { mapStyle } from "../../lib/mapStyle";
 import { StreetChat } from "../../components/StreetChat";
-import { router, useLocalSearchParams } from "expo-router";
-import { useEffect, useRef, useState } from "react";
+import { router, useLocalSearchParams, useFocusEffect } from "expo-router";
+import { useCallback, useEffect, useRef, useState } from "react";
 import {
+  useWindowDimensions,
   Platform,
   Keyboard,
   ActivityIndicator,
@@ -44,6 +45,13 @@ import { localEntry, nfcDisabled } from "../../lib/development";
 import { useStreetMap } from "../../hooks/useStreetMap";
 export default function Street() {
   const placement = usePinPlacement();
+  const { height } = useWindowDimensions();
+  const [detailInset, setDetailInset] = useState(0);
+  useFocusEffect(
+    useCallback(() => {
+      setDetailInset(0);
+    }, []),
+  );
   const [chatRead, setChatRead] = useState<{
     error: string;
     reload: () => Promise<void>;
@@ -144,6 +152,7 @@ export default function Street() {
     <View style={styles.root}>
       <StatusBar style="light" />
       <Map
+        bottomInset={detailInset}
         style={StyleSheet.absoluteFill}
         mapStyle={mapStyle}
         placement={
@@ -174,6 +183,14 @@ export default function Street() {
           </Marker>
         )}
         <StreetMapMarkers
+          onSelect={(longitude, latitude) => {
+            setDetailInset(height / 2);
+            camera.current?.flyTo({
+              center: [longitude, latitude],
+              zoom: 17,
+              duration: 600,
+            });
+          }}
           cells={cells}
           events={events}
           recruitments={recruitments}

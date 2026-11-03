@@ -29,7 +29,13 @@ function appleCamera(view: ViewState) {
     altitude: 1200 * Math.pow(2, 16 - (view.zoom ?? 16)),
   };
 }
-export function Map({ children, style, onPress, placement }: MapProps) {
+export function Map({
+  children,
+  style,
+  onPress,
+  placement,
+  bottomInset = 0,
+}: MapProps) {
   const map = useRef<MapView>(null);
   const [ready, setReady] = useState(false);
   const [cameraRevision, setCameraRevision] = useState(0);
@@ -37,6 +43,7 @@ export function Map({ children, style, onPress, placement }: MapProps) {
     <Context.Provider value={{ map, ready }}>
       <View style={style}>
         <MapView
+          mapPadding={{ top: 0, right: 0, bottom: bottomInset, left: 0 }}
           ref={map}
           style={{ flex: 1 }}
           userInterfaceStyle="dark"

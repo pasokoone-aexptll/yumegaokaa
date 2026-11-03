@@ -19,6 +19,7 @@ export type { CameraRef } from "./PlatformMap.types";
 export function Map({
   mapStyle = defaultStyle,
   placement: _placement,
+  bottomInset: _bottomInset,
   ...props
 }: MapProps) {
   return <LibreMap mapStyle={mapStyle} {...props} />;

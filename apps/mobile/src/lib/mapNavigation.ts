@@ -3,7 +3,7 @@ import { router } from "expo-router";
 let request = 0;
 
 export function openMapAt(longitude: number, latitude: number) {
-  router.navigate({
+  router.dismissTo({
     pathname: "/",
     params: {
       longitude,

@@ -63,11 +63,27 @@ export default function Layout() {
           />
           <Stack.Screen
             name="events/[id]"
-            options={{ presentation: "modal" }}
+            options={{
+              presentation: "formSheet",
+              sheetAllowedDetents: [0.5, 1],
+              sheetInitialDetentIndex: 0,
+              sheetGrabberVisible: true,
+              sheetExpandsWhenScrolledToEdge: true,
+              sheetLargestUndimmedDetentIndex: 0,
+              contentStyle: { backgroundColor: "#f2f2f7" },
+            }}
           />
           <Stack.Screen
             name="recruitments/[id]"
-            options={{ presentation: "modal" }}
+            options={{
+              presentation: "formSheet",
+              sheetAllowedDetents: [0.5, 1],
+              sheetInitialDetentIndex: 0,
+              sheetGrabberVisible: true,
+              sheetExpandsWhenScrolledToEdge: true,
+              sheetLargestUndimmedDetentIndex: 0,
+              contentStyle: { backgroundColor: "#f2f2f7" },
+            }}
           />
           <Stack.Screen
             name="pins/create"

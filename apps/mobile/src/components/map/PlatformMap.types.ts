@@ -9,6 +9,7 @@ export type ViewState = {
 export type CameraRef = { flyTo: (view: ViewState) => void };
 export type CameraProps = { initialViewState: ViewState; ref?: Ref<CameraRef> };
 export type MapProps = {
+  bottomInset?: number;
   placement?: {
     point: [number, number];
     revision: number;

@@ -10,7 +10,10 @@ import {
 } from "../../components/DetailUI";
 import { useRecruitmentDetail } from "../../hooks/useRecruitmentDetail";
 export default function Detail() {
-  const { id } = useLocalSearchParams<{ id: string }>();
+  const { id, fromMap } = useLocalSearchParams<{
+    id: string;
+    fromMap?: string;
+  }>();
   const { pin, title, editTitle, error, busy, loading, ended, load, act } =
     useRecruitmentDetail(id);
   return (
@@ -36,10 +39,12 @@ export default function Detail() {
               title={`${new Date(pin.expires_at).toLocaleTimeString("ja-JP", { hour: "2-digit", minute: "2-digit" })}まで`}
             />
           </Section>
-          <PrimaryAction
-            title="地図で場所を見る"
-            onPress={() => openMapAt(pin.longitude, pin.latitude)}
-          />
+          {fromMap !== "1" && (
+            <PrimaryAction
+              title="地図で場所を見る"
+              onPress={() => openMapAt(pin.longitude, pin.latitude)}
+            />
+          )}
           {pin.mine && (
             <>
               <Section title="募集の題名">

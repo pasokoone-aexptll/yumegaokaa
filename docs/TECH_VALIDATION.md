@@ -944,3 +944,6 @@ R12/R13。`npm run typecheck`成功（途中の不要なcamera参照を除去し
 ## cp170 — 詳細・設定の情報構造変更
 R12/R13/R14（募集/イベント）、通報/プロフィール/設定の既存認可を維持。DetailUI・DetailIconを追加し、イベント/募集詳細、イベント編集、通報、Settingsを更新。useEventDetailは主催者/運営に限り参加者を自動取得。
 型チェック・Lint成功。event-detail-state/recruitment-detail-state計8件成功（参加者自動取得の権限分岐、二重操作、古い応答、通信失敗、下書き保持、終了後復活防止）。DB/API変更なし。JS表示変更につきネイティブ再ビルドなし。実機のレイアウト/操作は未確認、DONE・残量の集計変更なし。
+
+## cp171 — 半画面ピン詳細
+R12/R13。formSheetの50%/100%切替、Map由来の場所操作抑制、Mapへ戻る座標導線、AppleMap下部paddingを実装。型チェック成功。初回は直接importした未導入navigationパッケージを検出し、既存expo-routerのuseFocusEffectへ修正。実機でのシート拡大ジェスチャーとピン投影位置は未確認。JSのみにつきネイティブビルド・DBテスト再実行なし。DONE/残量変更なし。

@@ -10,7 +10,10 @@ import {
 } from "../../components/DetailUI";
 import { useEventDetail } from "../../hooks/useEventDetail";
 export default function Event() {
-  const { id } = useLocalSearchParams<{ id: string }>();
+  const { id, fromMap } = useLocalSearchParams<{
+    id: string;
+    fromMap?: string;
+  }>();
   const {
     event,
     error,
@@ -55,12 +58,14 @@ export default function Event() {
               })}
               subtitle={`${new Date(event.starts_at).toLocaleTimeString("ja-JP", { hour: "2-digit", minute: "2-digit" })} 〜 ${new Date(event.ends_at).toLocaleString("ja-JP", { month: "numeric", day: "numeric", hour: "2-digit", minute: "2-digit" })}`}
             />
-            <DetailRow
-              icon="location-outline"
-              title="開催場所"
-              subtitle="地図で見る"
-              onPress={() => openMapAt(event.longitude, event.latitude)}
-            />
+            {fromMap !== "1" && (
+              <DetailRow
+                icon="location-outline"
+                title="開催場所"
+                subtitle="地図で見る"
+                onPress={() => openMapAt(event.longitude, event.latitude)}
+              />
+            )}
             <DetailRow
               icon="people-outline"
               title={`${event.count}人が参加予定`}

@@ -19,11 +19,13 @@ export function StreetMapMarkers({
   events,
   recruitments,
   now,
+  onSelect,
 }: {
   cells: ReturnType<typeof liveCells>;
   events: StreetEvent[];
   recruitments: Recruitment[];
   now: number;
+  onSelect: (longitude: number, latitude: number) => void;
 }) {
   return (
     <>
@@ -91,12 +93,13 @@ export function StreetMapMarkers({
           <Marker key={event.id} lngLat={[event.longitude, event.latitude]}>
             <Pressable
               accessibilityRole="button"
-              onPress={() =>
+              onPress={() => {
+                onSelect(event.longitude, event.latitude);
                 router.push({
                   pathname: "/events/[id]",
-                  params: { id: event.id },
-                })
-              }
+                  params: { id: event.id, fromMap: "1" },
+                });
+              }}
               style={{ alignItems: "center", maxWidth: 180 }}
             >
               <PinCountdown>{countdown(event, now)}</PinCountdown>
@@ -116,12 +119,13 @@ export function StreetMapMarkers({
         .map((pin) => (
           <Marker key={pin.id} lngLat={[pin.longitude, pin.latitude]}>
             <Pressable
-              onPress={() =>
+              onPress={() => {
+                onSelect(pin.longitude, pin.latitude);
                 router.push({
                   pathname: "/recruitments/[id]",
-                  params: { id: pin.id },
-                })
-              }
+                  params: { id: pin.id, fromMap: "1" },
+                });
+              }}
               accessibilityRole="button"
             >
               <PinBubble>

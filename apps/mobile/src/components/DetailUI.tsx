@@ -28,51 +28,51 @@ export function DetailPage({
   const [reloading, setReloading] = useState(false);
   return (
     <SafeAreaView style={detail.page}>
-      <View style={detail.navigation}>
-        {!root ? (
-          <Pressable
-            accessibilityRole="button"
-            accessibilityLabel="戻る"
-            hitSlop={8}
-            onPress={() =>
-              router.canGoBack() ? router.back() : router.replace("/")
-            }
-            style={detail.round}
-          >
-            <Ionicons name="chevron-back" size={22} color="#111" />
-          </Pressable>
-        ) : (
-          <View />
-        )}
-        {onRefresh && (
-          <Pressable
-            accessibilityRole="button"
-            accessibilityLabel="再読み込み"
-            disabled={refreshing || reloading}
-            onPress={async () => {
-              setReloading(true);
-              try {
-                await onRefresh();
-              } finally {
-                setReloading(false);
-              }
-            }}
-            style={detail.round}
-          >
-            {refreshing || reloading ? (
-              <ActivityIndicator color="#111" />
-            ) : (
-              <Ionicons name="reload" size={19} color="#111" />
-            )}
-          </Pressable>
-        )}
-      </View>
       <ScrollView
         contentContainerStyle={detail.content}
         keyboardShouldPersistTaps="handled"
         automaticallyAdjustKeyboardInsets
         keyboardDismissMode="interactive"
       >
+        <View style={detail.navigation}>
+          {!root ? (
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel="戻る"
+              hitSlop={8}
+              onPress={() =>
+                router.canGoBack() ? router.back() : router.replace("/")
+              }
+              style={detail.round}
+            >
+              <Ionicons name="chevron-back" size={22} color="#111" />
+            </Pressable>
+          ) : (
+            <View />
+          )}
+          {onRefresh && (
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel="再読み込み"
+              disabled={refreshing || reloading}
+              onPress={async () => {
+                setReloading(true);
+                try {
+                  await onRefresh();
+                } finally {
+                  setReloading(false);
+                }
+              }}
+              style={detail.round}
+            >
+              {refreshing || reloading ? (
+                <ActivityIndicator color="#111" />
+              ) : (
+                <Ionicons name="reload" size={19} color="#111" />
+              )}
+            </Pressable>
+          )}
+        </View>
         <Text style={detail.title}>{title}</Text>
         {children}
       </ScrollView>
@@ -191,8 +191,9 @@ export function PrimaryAction({
 export const detail = StyleSheet.create({
   page: { flex: 1, backgroundColor: "#f2f2f7" },
   navigation: {
-    paddingHorizontal: 20,
-    paddingVertical: 8,
+    paddingHorizontal: 0,
+    paddingTop: 8,
+    paddingBottom: 12,
     flexDirection: "row",
     justifyContent: "space-between",
   },
