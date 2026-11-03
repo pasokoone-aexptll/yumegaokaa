@@ -20,6 +20,28 @@ export function useEventDetail(id: string) {
   const mutating = useRef(false);
   const rosterRequest = useRef(0);
 
+  const loadRoster = useCallback(async () => {
+    const gen = generation.current;
+    const seq = ++rosterRequest.current;
+    setRosterLoading(true);
+    setRoster(undefined);
+    try {
+      const result = await native.rpc<{ items: Participant[] }>(
+        "event_roster",
+        { id },
+      );
+      if (gen === generation.current && seq === rosterRequest.current)
+        setRoster(result.items);
+    } catch {
+      if (gen === generation.current && seq === rosterRequest.current)
+        setError(
+          "参加者一覧を取得できません。運営の場合は追加認証と通信を確認してください。",
+        );
+    } finally {
+      if (seq === rosterRequest.current) setRosterLoading(false);
+    }
+  }, [id]);
+
   const load = useCallback(async () => {
     const gen = generation.current;
     const seq = ++request.current;
@@ -36,8 +58,11 @@ export function useEventDetail(id: string) {
         : await native
             .rpc<{ operator: boolean }>("operator_status", {})
             .catch(() => ({ operator: false }));
-      if (gen === generation.current && seq === request.current)
+      if (gen === generation.current && seq === request.current) {
         setOperator(access.operator === true);
+        if (result.mine || access.operator) await loadRoster();
+        else setRoster(undefined);
+      }
     } catch {
       if (gen !== generation.current || seq !== request.current) return;
       // Do not leave actionable stale details after an unsuccessful refresh.
@@ -51,7 +76,7 @@ export function useEventDetail(id: string) {
       if (gen === generation.current && seq === request.current)
         setLoading(false);
     }
-  }, [id]);
+  }, [id, loadRoster]);
 
   useFocusEffect(
     useCallback(() => {
@@ -101,27 +126,6 @@ export function useEventDetail(id: string) {
     }
   }
 
-  async function loadRoster() {
-    const gen = generation.current;
-    const seq = ++rosterRequest.current;
-    setRosterLoading(true);
-    setRoster(undefined);
-    try {
-      const result = await native.rpc<{ items: Participant[] }>(
-        "event_roster",
-        { id },
-      );
-      if (gen === generation.current && seq === rosterRequest.current)
-        setRoster(result.items);
-    } catch {
-      if (gen === generation.current && seq === rosterRequest.current)
-        setError(
-          "参加者一覧を取得できません。運営の場合は追加認証と通信を確認してください。",
-        );
-    } finally {
-      if (seq === rosterRequest.current) setRosterLoading(false);
-    }
-  }
   return {
     event,
     error,

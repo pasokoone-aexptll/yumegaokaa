@@ -64,3 +64,17 @@ test('non-host operator gets roster control without host mutation rights', async
   assert.equal(h.state[0].mine, false);
   assert.equal(h.state[7], true);
 });
+
+ test('roster loads automatically for host but not ordinary participants', async () => {
+  for (const mine of [true, false]) {
+    const calls = [];
+    const h = harness(async op => {
+      calls.push(op);
+      if (op === 'operator_status') return { operator: false };
+      if (op === 'event_roster') return [];
+      return { mine };
+    });
+    await h.hook.load();
+    assert.equal(calls.includes('event_roster'), mine);
+  }
+});
