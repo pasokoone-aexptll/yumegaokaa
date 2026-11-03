@@ -127,14 +127,14 @@ export function PlacementRing({
             ],
           }}
         >
-          <Svg width={64} height={64}>
+          <Svg width={80} height={80}>
             <Circle
-              cx={32}
-              cy={32}
-              r={29}
-              stroke="#ffffff77"
+              cx={40}
+              cy={40}
+              r={35}
+              stroke="#ffffff55"
               strokeWidth={4.5}
-              strokeDasharray="28 17.553"
+              strokeDasharray="34 20.978"
               strokeLinecap="round"
               fill="none"
             />

@@ -216,23 +216,23 @@ export default function CreatePin() {
                   )}
                 </>
               )}
+              {!!error && (
+                <Text accessibilityRole="alert" style={s.error}>
+                  {error}
+                </Text>
+              )}
+              {locked && (
+                <Pressable
+                  disabled={busy}
+                  onPress={() => {
+                    void revise();
+                  }}
+                >
+                  <Text style={s.link}>前回の送信を確認して入力し直す</Text>
+                </Pressable>
+              )}
             </View>
           </View>
-        )}
-        {!!error && (
-          <Text accessibilityRole="alert" style={s.error}>
-            {error}
-          </Text>
-        )}
-        {locked && (
-          <Pressable
-            disabled={busy}
-            onPress={() => {
-              void revise();
-            }}
-          >
-            <Text style={s.link}>前回の送信を確認して入力し直す</Text>
-          </Pressable>
         )}
       </ScrollView>
     );
