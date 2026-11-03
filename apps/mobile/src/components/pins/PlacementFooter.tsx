@@ -1,7 +1,7 @@
-import { View, Text, Pressable, StyleSheet, Image } from "react-native";
+import { View, Text, Pressable, StyleSheet } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Svg, { Defs, LinearGradient, Stop, Rect } from "react-native-svg";
-import { ProgressiveBlur } from "../map/ProgressiveBlur";
+import { MapAsset } from "../map/MapAsset";
 export function PlacementFooter({
   disabled,
   onDone,
@@ -23,7 +23,6 @@ export function PlacementFooter({
       }}
     >
       <View pointerEvents="none" style={StyleSheet.absoluteFill}>
-        <ProgressiveBlur edge="bottom" intensity={40} />
         <Svg width="100%" height="100%">
           <Defs>
             <LinearGradient
@@ -41,19 +40,17 @@ export function PlacementFooter({
           <Rect width="100%" height="100%" fill="url(#placementShade)" />
         </Svg>
       </View>
-      <Image
+      <View
         pointerEvents="none"
-        source={require("../../../assets/figma-map/logo for darkmodeMap.png")}
-        resizeMode="contain"
         style={{
-          width: 160,
-          height: 32,
           alignSelf: "flex-end",
           marginRight: 20,
           marginBottom: 22,
           opacity: 0.4,
         }}
-      />
+      >
+        <MapAsset name="DreamCloud Logo" width={147} height={22} />
+      </View>
       <View
         style={{
           paddingHorizontal: 26,
