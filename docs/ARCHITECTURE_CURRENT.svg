@@ -1,0 +1,169 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1680" height="1040" viewBox="0 0 1680 1040" role="img" aria-labelledby="title description">
+  <title id="title">夢ヶ丘 現在のシステム構成</title>
+  <desc id="description">iPhoneアプリ、Supabase、ローカルNode.jsゲートウェイとワーカー、外部サービスの接続。クラウドには未デプロイ。</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#276B68" />
+    </marker>
+    <marker id="arrow-muted" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#A65A40" />
+    </marker>
+    <style>
+      text { font-family: "Hiragino Kaku Gothic ProN", "Yu Gothic", sans-serif; fill: #183238; }
+      .title { font-size: 32px; font-weight: 700; }
+      .subtitle { font-size: 16px; fill: #4B6669; }
+      .section { font-size: 17px; font-weight: 700; letter-spacing: 0.4px; }
+      .card-title { font-size: 19px; font-weight: 700; }
+      .body { font-size: 15px; }
+      .small { font-size: 13px; fill: #4B6669; }
+      .tiny { font-size: 12px; fill: #4B6669; }
+      .white { fill: #FFFFFF; }
+      .muted-white { fill: #D8E5E2; }
+      .panel { fill: #FFFFFF; stroke: #C6D4D1; stroke-width: 1.5; }
+      .subpanel { fill: #F3F7F5; stroke: #D5E0DD; stroke-width: 1; }
+      .line { fill: none; stroke: #276B68; stroke-width: 2.5; marker-start: url(#arrow); marker-end: url(#arrow); }
+      .notify { fill: none; stroke: #276B68; stroke-width: 2.5; marker-end: url(#arrow); }
+      .external-line { fill: none; stroke: #A65A40; stroke-width: 2.5; stroke-dasharray: 8 7; marker-end: url(#arrow-muted); }
+    </style>
+  </defs>
+
+  <rect width="1680" height="1040" fill="#F1F5F2" />
+  <text x="52" y="62" class="title">夢ヶ丘｜現在のシステム構成</text>
+  <text x="54" y="96" class="subtitle">実装・ローカル接続の構成。責務を一つのバックエンドにまとめ、必要な常駐処理だけをNode.jsワーカーに分離。</text>
+
+  <rect x="1190" y="35" width="438" height="72" rx="8" fill="#183238" />
+  <circle cx="1217" cy="61" r="6" fill="#E7B84B" />
+  <text x="1234" y="66" class="body white" font-weight="700">クラウド未配置</text>
+  <text x="1210" y="91" class="small muted-white">ローカルで実装・接続確認済み。常時稼働は未設定。</text>
+
+  <text x="52" y="155" class="section">アプリケーションとバックエンド</text>
+  <text x="1450" y="155" class="section">外部サービス</text>
+
+  <rect x="40" y="178" width="390" height="655" rx="10" class="panel" />
+  <path d="M50 178 H420 Q430 178 430 188 V230 H40 V188 Q40 178 50 178 Z" fill="#276B68" />
+  <text x="64" y="213" class="card-title white">iPhoneアプリ</text>
+  <text x="64" y="260" class="body" font-weight="700">React Native / Expo / TypeScript</text>
+
+  <rect x="64" y="284" width="342" height="114" rx="7" class="subpanel" />
+  <text x="82" y="313" class="body" font-weight="700">認証・データ操作</text>
+  <text x="82" y="340" class="small">Supabase Authで認証</text>
+  <text x="82" y="363" class="small">認可付きRPCで読み書き、Storageで画像</text>
+
+  <rect x="64" y="417" width="342" height="128" rx="7" class="subpanel" />
+  <text x="82" y="447" class="body" font-weight="700">リアルタイム接続</text>
+  <text x="82" y="474" class="small">Bearer付きWebSocketでゲートウェイへ</text>
+  <text x="82" y="497" class="small">ready / changedを受信してAPIを再取得</text>
+  <text x="82" y="522" class="small">本文・位置などのデータは通知に含めない</text>
+
+  <rect x="64" y="564" width="342" height="105" rx="7" class="subpanel" />
+  <text x="82" y="594" class="body" font-weight="700">端末機能</text>
+  <text x="82" y="621" class="small">NFC、位置観測、通知token登録</text>
+  <text x="82" y="646" class="small">Swift / Core Location連携</text>
+
+  <rect x="64" y="693" width="342" height="103" rx="7" fill="#E8F2EF" stroke="#BFD4CE" />
+  <text x="82" y="723" class="body" font-weight="700">チャットの流れ</text>
+  <text x="82" y="750" class="small">DB変更 → 通知 → 認可付き履歴取得</text>
+  <text x="82" y="775" class="small">WebSocketはチャット本文を中継しない</text>
+
+  <rect x="500" y="178" width="520" height="655" rx="10" class="panel" />
+  <path d="M510 178 H1010 Q1020 178 1020 188 V230 H500 V188 Q500 178 510 178 Z" fill="#315C72" />
+  <text x="524" y="213" class="card-title white">Supabase（ローカル環境）</text>
+
+  <rect x="524" y="250" width="472" height="130" rx="7" class="subpanel" />
+  <text x="544" y="280" class="body" font-weight="700">Auth / API / Storage</text>
+  <text x="544" y="309" class="small">Auth：メールOTP・session検証</text>
+  <text x="544" y="334" class="small">API：PostgREST経由のPostgreSQL RPC</text>
+  <text x="544" y="359" class="small">Storage：アバター・街アイコン等</text>
+
+  <rect x="524" y="399" width="472" height="286" rx="7" fill="#EEF4F2" stroke="#C6D7D2" />
+  <text x="544" y="431" class="body" font-weight="700">PostgreSQL</text>
+  <text x="544" y="460" class="small">業務データ、認可境界、トランザクション付きRPC</text>
+  <line x1="544" y1="478" x2="976" y2="478" stroke="#D1DEDA" />
+  <text x="544" y="507" class="small">チャット・街データの変更をpg_notifyで通知</text>
+  <text x="544" y="533" class="small">private payloadは空。中継側は変更を知らせるだけ</text>
+  <line x1="544" y1="551" x2="976" y2="551" stroke="#D1DEDA" />
+  <text x="544" y="580" class="small">Push待ち行列と送信状態をRPCで管理</text>
+  <text x="544" y="606" class="small">期限清掃：pg_cron + Node.js worker</text>
+  <text x="544" y="660" class="tiny">アプリ向け変更通知はSupabase Realtimeへ直接購読せず、</text>
+  <text x="544" y="678" class="tiny">専用ゲートウェイ経由に統一。</text>
+
+  <rect x="524" y="704" width="472" height="105" rx="7" fill="#F8F3E7" stroke="#E4D6B2" />
+  <text x="544" y="735" class="body" font-weight="700">Edge Functions</text>
+  <text x="544" y="763" class="small">現行の中核APIでは未使用。必須構成ではない。</text>
+  <text x="544" y="787" class="tiny">APIの主な実装場所はPostgreSQL RPC。</text>
+
+  <rect x="1070" y="178" width="340" height="655" rx="10" class="panel" />
+  <path d="M1080 178 H1400 Q1410 178 1410 188 V230 H1070 V188 Q1070 178 1080 178 Z" fill="#526A42" />
+  <text x="1094" y="213" class="card-title white">Node.jsプロセス</text>
+  <text x="1094" y="254" class="small">scripts/ 配下。現状はローカル起動用</text>
+
+  <rect x="1094" y="278" width="292" height="224" rx="7" class="subpanel" />
+  <text x="1112" y="309" class="body" font-weight="700">WebSocketゲートウェイ</text>
+  <text x="1112" y="339" class="small">AuthとDBでsession / 会員資格を確認</text>
+  <text x="1112" y="364" class="small">DB LISTEN/NOTIFYを受けてchanged送信</text>
+  <text x="1112" y="389" class="small">5秒ごとに接続資格を再確認</text>
+  <text x="1112" y="426" class="tiny">アカウントごと最大3接続</text>
+  <text x="1112" y="450" class="tiny">複数独立プロセスでの水平拡張は未対応</text>
+  <text x="1112" y="481" class="tiny">scripts/realtime-gateway.mjs</text>
+
+  <rect x="1094" y="520" width="292" height="131" rx="7" class="subpanel" />
+  <text x="1112" y="551" class="body" font-weight="700">Push worker</text>
+  <text x="1112" y="579" class="small">DBから送信対象をclaimしAPNsへ送信</text>
+  <text x="1112" y="603" class="small">HTTP/2 + ES256。鍵は外部secretが必要</text>
+  <text x="1112" y="632" class="tiny">scripts/push-worker.mjs</text>
+
+  <rect x="1094" y="669" width="292" height="138" rx="7" class="subpanel" />
+  <text x="1112" y="700" class="body" font-weight="700">Maintenance worker</text>
+  <text x="1112" y="728" class="small">期限清掃、画像削除、退会後処理</text>
+  <text x="1112" y="752" class="small">定期実行と再試行を担う</text>
+  <text x="1112" y="786" class="tiny">scripts/maintenance-worker.mjs</text>
+
+  <rect x="1450" y="178" width="190" height="655" rx="10" fill="#FBF8F2" stroke="#DCCDBB" stroke-width="1.5" />
+  <text x="1470" y="213" class="body" font-weight="700">外部接続</text>
+  <rect x="1468" y="250" width="154" height="155" rx="7" fill="#FFFFFF" stroke="#E3D8C8" />
+  <text x="1484" y="282" class="body" font-weight="700">Apple APNs</text>
+  <text x="1484" y="311" class="tiny">直接Pushの送信先</text>
+  <text x="1484" y="337" class="tiny">実資格・実配信は</text>
+  <text x="1484" y="357" class="tiny">未設定・未確認</text>
+  <rect x="1468" y="428" width="154" height="139" rx="7" fill="#FFFFFF" stroke="#E3D8C8" />
+  <text x="1484" y="460" class="body" font-weight="700">地図タイル</text>
+  <text x="1484" y="489" class="tiny">開発用provider</text>
+  <text x="1484" y="515" class="tiny">本番の可用性・</text>
+  <text x="1484" y="535" class="tiny">条件は未確定</text>
+  <rect x="1468" y="590" width="154" height="139" rx="7" fill="#FFFFFF" stroke="#E3D8C8" />
+  <text x="1484" y="622" class="body" font-weight="700">メールSMTP</text>
+  <text x="1484" y="651" class="tiny">本番送信サービス</text>
+  <text x="1484" y="677" class="tiny">未選定・未設定</text>
+
+  <path d="M430 332 H500" class="line" />
+  <rect x="430" y="292" width="72" height="25" rx="5" fill="#F1F5F2" />
+  <text x="435" y="310" class="tiny">HTTPS</text>
+
+  <path d="M430 245 H466 V168 H1215 V278" class="line" />
+  <rect x="632" y="149" width="360" height="24" rx="5" fill="#F1F5F2" />
+  <text x="648" y="166" class="tiny">WebSocket：Bearer認証 / ready・changedのみ</text>
+
+  <path d="M1020 500 H1070" class="notify" />
+  <text x="1017" y="486" class="tiny" text-anchor="end">pg_notify</text>
+
+  <path d="M1094 585 H1060 V625 H996" class="line" />
+  <text x="1018" y="610" class="tiny" text-anchor="middle">service RPC</text>
+  <path d="M1094 737 H1052 V754 H996" class="line" />
+  <text x="1038" y="728" class="tiny" text-anchor="middle">cleanup RPC / Storage</text>
+
+  <path d="M1386 560 H1436 V330 H1468" class="external-line" />
+  <text x="1418" y="318" class="tiny" text-anchor="middle">HTTP/2</text>
+
+  <path d="M430 650 H444 V846 H1652 V500 H1622" class="external-line" />
+  <rect x="777" y="833" width="310" height="24" rx="5" fill="#F1F5F2" />
+  <text x="932" y="850" class="tiny" text-anchor="middle">MapLibreから開発用地図タイルを取得</text>
+
+  <rect x="40" y="870" width="1600" height="120" rx="9" fill="#183238" />
+  <text x="66" y="906" class="body white" font-weight="700">配置状況</text>
+  <text x="66" y="937" class="small muted-white">ローカルSupabase・DB RPC・通知ゲートウェイ・ワーカーの実装とローカル検証あり。</text>
+  <text x="66" y="963" class="small muted-white">Supabaseクラウド契約/デプロイ、worker常時稼働、バックアップ、実APNs配信は未完了（T033 / T019）。</text>
+  <line x1="1190" y1="910" x2="1240" y2="910" stroke="#55A69A" stroke-width="3" marker-end="url(#arrow)" />
+  <text x="1254" y="915" class="tiny muted-white">実装済みの通信経路</text>
+  <line x1="1190" y1="948" x2="1240" y2="948" stroke="#D78362" stroke-width="3" stroke-dasharray="7 6" marker-end="url(#arrow-muted)" />
+  <text x="1254" y="953" class="tiny muted-white">外部接続・本番設定待ち</text>
+</svg>

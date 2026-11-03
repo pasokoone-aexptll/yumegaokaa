@@ -966,3 +966,11 @@ R12/R13/R19。参加予定/募集の取得hookを維持し、Homeを日付順一
 - `/ui-preview`：開発時のみ認証リダイレクトから除外。製品27ルート索引、実表示部品による12モック状態。認証を偽装せずDBへの書込みなし。通常ルートへのリンクは実操作と明記。
 - 全ページのモック化は未完。範囲と残課題はfrontend-redesign/UI_REVIEW_STATUS.md。
 - 検証：タブ条件11 assertion成功、mobile typecheck/lint成功。純関数抽出後もtypecheck/lint成功。製品27ルートと索引を機械照合し欠落0。ネイティブ変更なしのためビルド/実機転送なし。実機描画未確認。
+
+## cp176 / 2026-11-04：Mac再起動後のiPhone Release更新
+
+- ユーザー依頼によるT032の転送確認。現在の作業ツリーを既存 `scripts/ios-validation-release.mjs` で検証用Release生成（localEntry/validationRelease）。製品ソース変更なし。実NFCは代用のまま（R04/R11の実機成立とは区別）。
+- Colima/Supabaseを既存データのまま再起動し、LAN接続先を `http://172.30.100.165:54321` へ更新。Auth health HTTP200、配信ゲートウェイ54325起動。Metroは起動せず。
+- `/tmp/yumegaoka-release-20261104.log`：Build Succeeded、0 errors/4 warnings。成果物は `/Users/kitchenopen/Library/Developer/Xcode/DerivedData/app-bmqyqrnfvctbedgwfdjyrgbgeext/Build/Products/Release-iphoneos/app.app`。main.jsbundle存在確認。署名検証はsandbox内で信頼ストアエラー、sandbox外の `codesign --verify --deep --strict` は成功。
+- 初回転送は端末ロックで停止。ユーザーの解除後、同じ成果物をdevicectlでインストールし、`jp.yumegaoka.development` の起動成功。再ビルドなし・アンインストールなし。
+- 画面操作・背景観測等の再検証は実施していない。既存33タスク/DONE/残量を変更しない。ReleaseもローカルAPI利用のためMacと同一LANが必要。GitHubへのpushなし。

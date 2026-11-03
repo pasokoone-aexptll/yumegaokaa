@@ -10,7 +10,7 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { router } from "expo-router";
-import { DetailIcon as Ionicons } from "./DetailIcon";
+import { DetailIcon as SFIcon } from "./DetailIcon";
 
 export function DetailPage({
   title,
@@ -50,7 +50,7 @@ export function DetailPage({
               }
               style={detail.round}
             >
-              <Ionicons name="chevron-back" size={22} color="#111" />
+              <SFIcon name="chevron-back" size={22} color="#111" />
             </Pressable>
           ) : (
             <View />
@@ -73,7 +73,7 @@ export function DetailPage({
               {refreshing || reloading ? (
                 <ActivityIndicator color="#111" />
               ) : (
-                <Ionicons name="reload" size={19} color="#111" />
+                <SFIcon name="reload" size={19} color="#111" />
               )}
             </Pressable>
           )}
@@ -109,7 +109,7 @@ export function DetailRow({
 }: {
   title: string;
   subtitle?: string;
-  icon?: React.ComponentProps<typeof Ionicons>["name"];
+  icon?: React.ComponentProps<typeof SFIcon>["name"];
   onPress?: () => void;
   danger?: boolean;
   disabled?: boolean;
@@ -118,7 +118,7 @@ export function DetailRow({
   const content = (
     <>
       {icon && (
-        <Ionicons
+        <SFIcon
           name={icon}
           size={21}
           color={danger ? "#c52836" : "#00000088"}
@@ -131,15 +131,13 @@ export function DetailRow({
         {subtitle && <Text style={detail.secondary}>{subtitle}</Text>}
       </View>
       {selected !== undefined ? (
-        <Ionicons
+        <SFIcon
           name={selected ? "checkmark-circle" : "ellipse-outline"}
           size={23}
           color={selected ? "#008cff" : "#00000033"}
         />
       ) : (
-        onPress && (
-          <Ionicons name="chevron-forward" size={17} color="#00000055" />
-        )
+        onPress && <SFIcon name="chevron-forward" size={17} color="#00000055" />
       )}
     </>
   );

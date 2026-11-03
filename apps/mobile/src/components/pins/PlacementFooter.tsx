@@ -46,7 +46,7 @@ export function PlacementFooter({
         }}
       >
         <Text style={{ color: "#ffffff88", fontWeight: "600", fontSize: 18 }}>
-          ピンの場所を選択中...
+          ピンの場所を選択してください
         </Text>
         <Pressable
           accessibilityRole="button"

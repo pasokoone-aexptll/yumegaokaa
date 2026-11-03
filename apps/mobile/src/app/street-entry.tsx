@@ -115,11 +115,6 @@ export default function StreetEntry() {
               名前や正確な現在地は地図には出ません
             </Text>
           )}
-          {phase === "explain" && (
-            <Text style={{ color: "#00000080", textAlign: "center", fontSize: 11 }}>
-              参加中は背景でも気配を共有します。OFFで停止できます。
-            </Text>
-          )}
           {phase === "checking" && (
             <Text style={{ color: "#00000080", textAlign: "center", fontSize: 13.44 }}>
               {localEntry
