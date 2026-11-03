@@ -1,17 +1,24 @@
-import { Text, TextInput, View } from "react-native";
+import { Text, TextInput } from "react-native";
 import { router } from "expo-router";
-import { Action, Page, ui } from "../components/Page";
+import { DetailPage, Section, DetailRow } from "../components/DetailUI";
+import { Action, ui } from "../components/Page";
 import { useEmailChange } from "../hooks/useEmailChange";
 export default function Account() {
   const a = useEmailChange();
   return (
-    <Page title="アカウント管理">
+    <DetailPage
+      title="アカウント管理"
+      refreshing={a.loading}
+      onRefresh={a.load}
+    >
       {a.loading && <Text style={ui.muted}>読み込み中…</Text>}
       {!a.loading && !a.ready && (
         <Action title="再読み込み" disabled={a.busy} onPress={() => a.load()} />
       )}
-      <Text>{a.email}</Text>
-      <View style={ui.card}>
+      <Section title="現在のメールアドレス">
+        <DetailRow title={a.email || "未取得"} icon="person-circle-outline" />
+      </Section>
+      <Section title="メールアドレスの変更">
         <TextInput
           editable={!a.busy && !a.loading && a.ready}
           style={ui.input}
@@ -58,12 +65,18 @@ export default function Account() {
             />
           </>
         )}
-      </View>
+      </Section>
       {!!a.status && <Text>{a.status}</Text>}
       <Text style={ui.muted}>
         メールを失った場合の自動復旧には対応していません。
       </Text>
-      <Action title="退会" onPress={() => router.push("/withdraw")} />
-    </Page>
+      <Section>
+        <DetailRow
+          title="アカウントを削除"
+          danger
+          onPress={() => router.push("/withdraw")}
+        />
+      </Section>
+    </DetailPage>
   );
 }

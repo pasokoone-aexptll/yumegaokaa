@@ -1,7 +1,7 @@
 import { native } from "../lib/native";
 import { useContext, useState } from "react";
 import { AccountAccessContext } from "../hooks/useAccountAccess";
-import { Text, TextInput } from "react-native";
+import { Image, ImageBackground, Text, TextInput, View } from "react-native";
 import { Action, Page, ui } from "../components/Page";
 import { Avatar } from "../components/Avatar";
 import { useProfile } from "../hooks/useProfile";
@@ -13,12 +13,35 @@ export default function Profile() {
     useProfile();
   return (
     <Page title="プロフィール">
-      <Avatar
-        path={profile?.avatar_path}
-        version={profile?.avatar_updated_at}
-        name={name}
-        size={88}
-      />
+      {onboarding && (
+        <ImageBackground
+          source={require("../../assets/figma-map/yuuyake.png")}
+          style={{
+            height: 180,
+            borderRadius: 24,
+            overflow: "hidden",
+            padding: 24,
+            justifyContent: "flex-end",
+          }}
+        >
+          <Image
+            source={require("../../assets/figma-map/DreamCloud.png")}
+            style={{ width: 110, height: 88 }}
+            resizeMode="contain"
+          />
+          <Text style={{ color: "white", fontSize: 22, fontWeight: "600" }}>
+            アカウントを作成
+          </Text>
+        </ImageBackground>
+      )}
+      <View style={[ui.card, { alignItems: "center" }]}>
+        <Avatar
+          path={profile?.avatar_path}
+          version={profile?.avatar_updated_at}
+          name={name}
+          size={88}
+        />
+      </View>
       <Action
         title="写真を選ぶ"
         disabled={busy || !profile?.display_name}

@@ -368,7 +368,13 @@ const s = StyleSheet.create({
   },
   selected: { borderColor: "#008cff" },
   tabText: { fontSize: 18, fontWeight: "600", color: "#00000033" },
-  content: { padding: 18, gap: 14, paddingTop: 26 },
+  content: {
+    flexGrow: 1,
+    padding: 18,
+    paddingBottom: 28,
+    gap: 14,
+    paddingTop: 26,
+  },
   form: { flexDirection: "row", gap: 16 },
   preview: {
     width: 78,

@@ -31,7 +31,11 @@ export function MapAsset({
     : mapSvgAssets[name];
   return (
     <SvgXml
-      xml={tint ? xml.replace(/fill="(?!none)[^"]*"/g, `fill="${tint}"`) : xml}
+      xml={
+        tint
+          ? xml.replace(/(fill|stroke)="(?!none)[^"]*"/g, `$1="${tint}"`)
+          : xml
+      }
       width={width}
       height={height}
       accessible={false}

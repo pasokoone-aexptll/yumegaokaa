@@ -81,7 +81,7 @@ export function NotificationsScreen() {
             style={{
               width: 180,
               height: 150,
-              alignSelf: "center",
+              alignSelf: "flex-start",
               marginBottom: 24,
             }}
             resizeMode="contain"

@@ -29,7 +29,8 @@ export default function StreetTabs() {
           tabBarStyle: {
             display: placement.active ? "none" : "flex",
             backgroundColor: dark ? "#000000e6" : "#fafafa",
-            borderTopWidth: 0,
+            borderTopWidth: StyleSheet.hairlineWidth,
+            borderTopColor: dark ? "#ffffff26" : "#0000001a",
             height: 42 + insets.bottom,
             paddingHorizontal: width * 0.085,
             paddingTop: 4,

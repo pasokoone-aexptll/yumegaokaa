@@ -1,16 +1,16 @@
+import { AccountPage } from "../../components/AccountPage";
 import { router } from "expo-router";
 import { Text, View } from "react-native";
-import {
-  DetailPage,
-  DetailRow,
-  Section,
-  detail,
-} from "../../components/DetailUI";
+import { DetailRow, Section, detail } from "../../components/DetailUI";
 import { useProfile } from "../../hooks/useProfile";
 export default function Settings() {
   const { profile, status } = useProfile();
   return (
-    <DetailPage title="アカウント" root>
+    <AccountPage
+      name={profile?.display_name ?? "アカウント"}
+      avatar={profile?.avatar_path}
+      version={profile?.avatar_updated_at}
+    >
       <Section>
         <View style={{ padding: 20, gap: 6 }}>
           <Text style={{ fontSize: 24, fontWeight: "700" }}>
@@ -67,6 +67,6 @@ export default function Settings() {
           onPress={() => router.push("/admin")}
         />
       </Section>
-    </DetailPage>
+    </AccountPage>
   );
 }

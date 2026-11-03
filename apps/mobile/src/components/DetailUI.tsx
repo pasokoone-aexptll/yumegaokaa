@@ -27,7 +27,12 @@ export function DetailPage({
 }) {
   const [reloading, setReloading] = useState(false);
   return (
-    <SafeAreaView style={detail.page}>
+    <SafeAreaView
+      edges={
+        root ? ["top", "left", "right"] : ["top", "bottom", "left", "right"]
+      }
+      style={detail.page}
+    >
       <ScrollView
         contentContainerStyle={detail.content}
         keyboardShouldPersistTaps="handled"
@@ -205,7 +210,12 @@ export const detail = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
-  content: { padding: 20, paddingBottom: 36, gap: 24 },
+  content: {
+    flexGrow: 1,
+    padding: 20,
+    paddingBottom: 36,
+    gap: 24,
+  },
   title: {
     fontSize: 30,
     fontWeight: "700",

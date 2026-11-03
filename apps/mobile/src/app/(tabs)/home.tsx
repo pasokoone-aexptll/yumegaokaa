@@ -8,27 +8,7 @@ export default function Home() {
   const [tab, setTab] = useState("参加予定のピン");
   const { items, recruitments, error, loading, load } = useHomePins();
   return (
-    <Page
-      title="ピン一覧"
-      grid
-      headerAction={
-        <Pressable
-          accessibilityRole="button"
-          accessibilityLabel="ピンを作成"
-          onPress={() => router.push("/pins/create")}
-          style={{
-            backgroundColor: "#ff4e60",
-            paddingHorizontal: 18,
-            paddingVertical: 10,
-            borderRadius: 24,
-          }}
-        >
-          <Text style={{ color: "white", fontSize: 17, fontWeight: "700" }}>
-            ＋ 作成
-          </Text>
-        </Pressable>
-      }
-    >
+    <Page title="ピン一覧" grid>
       <ScrollView
         horizontal
         showsHorizontalScrollIndicator={false}

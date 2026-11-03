@@ -1,8 +1,9 @@
 import { localBlocks } from "../lib/localBlocks";
 import { useFocusEffect } from "expo-router";
 import { useCallback, useRef, useState } from "react";
-import { Text, View } from "react-native";
-import { Action, Empty, Page, ui } from "../components/Page";
+import { Text } from "react-native";
+import { DetailPage, DetailRow, Section } from "../components/DetailUI";
+import { Empty, ui } from "../components/Page";
 import { native } from "../lib/native";
 type Block = { account_id: string; display_name: string };
 export default function Blocks() {
@@ -43,27 +44,26 @@ export default function Blocks() {
     }
   }
   return (
-    <Page title="ブロック設定">
+    <DetailPage title="ブロック設定" refreshing={loading} onRefresh={refresh}>
       <Text style={ui.muted}>
         ブロックすると相手のチャット・入街ログ・募集を表示しません。街の人数や匿名の気配は変わりません。
       </Text>
       {!!error && <Text style={ui.error}>{error}</Text>}
-      <Action title="再読み込み" onPress={() => refresh()} />
       {loading ? (
         <Empty>読み込み中…</Empty>
       ) : !error && !items.length ? (
         <Empty>ブロックしている人はいません。</Empty>
       ) : null}
-      {items.map((i) => (
-        <View key={i.account_id} style={ui.card}>
-          <Text>{i.display_name}</Text>
-          <Action
-            title="解除"
-            disabled={busy}
-            onPress={() => void unblock(i.account_id)}
+      <Section>
+        {items.map((i) => (
+          <DetailRow
+            key={i.account_id}
+            title={i.display_name}
+            subtitle={busy ? "更新中…" : "タップしてブロックを解除"}
+            onPress={busy ? undefined : () => void unblock(i.account_id)}
           />
-        </View>
-      ))}
-    </Page>
+        ))}
+      </Section>
+    </DetailPage>
   );
 }
