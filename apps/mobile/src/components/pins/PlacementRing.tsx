@@ -85,7 +85,7 @@ export function PlacementRing({
           cy={23}
           rx={22}
           ry={13}
-          stroke="#ffffffaa"
+          stroke="#ffffff99"
           strokeWidth={3}
           fill="#ffffff22"
         />
@@ -111,9 +111,9 @@ export function PlacementRing({
               cx={32}
               cy={32}
               r={29}
-              stroke="#ffffffaa"
+              stroke="#ffffff99"
               strokeWidth={3}
-              strokeDasharray="16 14"
+              strokeDasharray="28 17.553"
               strokeLinecap="round"
               fill="none"
             />

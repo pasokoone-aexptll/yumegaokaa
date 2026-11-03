@@ -50,6 +50,7 @@ export function Map({ children, style, onPress, placement }: MapProps) {
             zoom: 17,
             pitch: 55,
           })}
+          onRegionChange={() => setCameraRevision((r) => r + 1)}
           onRegionChangeComplete={() => setCameraRevision((r) => r + 1)}
           onMapReady={() => setReady(true)}
           onPress={(event) =>

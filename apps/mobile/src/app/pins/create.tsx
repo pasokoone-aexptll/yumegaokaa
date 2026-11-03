@@ -1,9 +1,4 @@
-import {
-  beginPinPlacement,
-  usePinPlacement,
-  finishPinPlacement,
-  cancelPinPlacement,
-} from "../../lib/pinPlacement";
+import { beginPinPlacement } from "../../lib/pinPlacement";
 import { EventDateField } from "../../components/EventDateField";
 import { updateDraft } from "../../lib/pinDraft";
 import { usePinCreation } from "../../hooks/usePinCreation";
@@ -23,8 +18,12 @@ import {
   TextInput,
   View,
 } from "react-native";
-import { useNavigation, type NativeStackNavigationProp } from "expo-router";
-import { useEffect, useLayoutEffect, useState } from "react";
+import {
+  router,
+  useNavigation,
+  type NativeStackNavigationProp,
+} from "expo-router";
+import { useLayoutEffect, useState } from "react";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { PinButton } from "../../components/pins/PinButton";
 export default function CreatePin() {
@@ -40,14 +39,17 @@ export default function CreatePin() {
     locked,
     restoring,
   } = usePinCreation();
-  const placement = usePinPlacement();
   const navigation =
     useNavigation<
       NativeStackNavigationProp<Record<string, object | undefined>>
     >();
   const { width } = useWindowDimensions();
-  const [slide] = useState(() => new Animated.Value(0));
-  const [bar] = useState(() => new Animated.Value(draft.kind === "event" ? 1 : 0));
+  const [slide] = useState(
+    () => new Animated.Value(draft.kind === "event" ? -width : 0),
+  );
+  const [bar] = useState(
+    () => new Animated.Value(draft.kind === "event" ? 1 : 0),
+  );
   const [switching, setSwitching] = useState(false);
   const { profile } = useProfile();
   const insets = useSafeAreaInsets();
@@ -55,63 +57,29 @@ export default function CreatePin() {
   const disabled = busy || locked || switching;
   useLayoutEffect(() => {
     navigation.setOptions({
-      sheetAllowedDetents: [
-        placement.active ? 0.2 : kind === "event" ? 0.75 : 0.57,
-      ],
-      sheetLargestUndimmedDetentIndex: placement.active ? 0 : "none",
+      sheetAllowedDetents: [kind === "event" ? 0.75 : 0.57],
+      sheetLargestUndimmedDetentIndex: "none",
     });
-  }, [placement.active, kind, navigation]);
-  useEffect(() => () => cancelPinPlacement(), []);
+  }, [kind, navigation]);
 
   function switchKind(value: "event" | "recruitment") {
     if (disabled || value === kind) return;
     Keyboard.dismiss();
     setSwitching(true);
-    const direction = value === "event" ? 1 : -1;
-    Animated.timing(bar, {
-      toValue: value === "event" ? 1 : 0,
-      duration: 300,
-      useNativeDriver: true,
-    }).start();
-    Animated.timing(slide, {
-      toValue: -direction * width,
-      duration: 150,
-      useNativeDriver: true,
-    }).start(({ finished }) => {
-      if (!finished) {
-        setSwitching(false);
-        return;
-      }
-      slide.setValue(direction * width);
-      updateDraft({ kind: value });
-      Animated.timing(slide, {
-        toValue: 0,
-        duration: 180,
+    updateDraft({ kind: value });
+    Animated.parallel([
+      Animated.timing(bar, {
+        toValue: value === "event" ? 1 : 0,
+        duration: 220,
         useNativeDriver: true,
-      }).start(() => setSwitching(false));
-    });
+      }),
+      Animated.timing(slide, {
+        toValue: value === "event" ? -width : 0,
+        duration: 220,
+        useNativeDriver: true,
+      }),
+    ]).start(() => setSwitching(false));
   }
-  if (placement.active)
-    return (
-      <View
-        collapsable={false}
-        style={{
-          flex: 1,
-          padding: 24,
-          paddingTop: 28,
-          gap: 18,
-          backgroundColor: "white",
-        }}
-      >
-        <Text style={s.heading}>ピンの場所を選択中...</Text>
-        <PinButton
-          textOnly
-          title="完了"
-          disabled={!placement.point}
-          onPress={finishPinPlacement}
-        />
-      </View>
-    );
   function confirmDiscard() {
     Alert.alert(
       "下書きを破棄しますか？",
@@ -126,6 +94,143 @@ export default function CreatePin() {
           },
         },
       ],
+    );
+  }
+  function renderForm(kind: "event" | "recruitment") {
+    return (
+      <ScrollView
+        style={{ flex: 1 }}
+        contentInsetAdjustmentBehavior="never"
+        keyboardShouldPersistTaps="handled"
+        keyboardDismissMode="interactive"
+        contentContainerStyle={s.content}
+      >
+        {restoring ? (
+          <ActivityIndicator />
+        ) : (
+          <View style={s.form}>
+            <View style={s.preview}>
+              <View style={s.bubble}>
+                <Text numberOfLines={1} style={s.name}>
+                  {profile?.display_name ?? "…"}
+                </Text>
+              </View>
+              <View style={s.tail} />
+            </View>
+            <View style={s.fields}>
+              <TextInput
+                accessibilityLabel="ピンの題名"
+                editable={!disabled}
+                style={s.input}
+                placeholderTextColor="#00000033"
+                placeholder={
+                  kind === "event" ? "オフ会名を入力" : "募集ピン名を入力"
+                }
+                maxLength={50}
+                value={title}
+                onChangeText={(title) => updateDraft({ title })}
+              />
+              {kind === "event" ? (
+                <>
+                  <View
+                    style={{
+                      backgroundColor: "#00000008",
+                      borderRadius: 10,
+                      overflow: "hidden",
+                    }}
+                  >
+                    <EventDateField
+                      compact
+                      label="開始"
+                      value={starts}
+                      disabled={disabled}
+                      onChange={(starts) => updateDraft({ starts })}
+                    />
+                    <EventDateField
+                      compact
+                      label="終了"
+                      value={ends}
+                      disabled={disabled}
+                      suggested={
+                        Number.isFinite(Date.parse(starts))
+                          ? new Date(Date.parse(starts) + 3600000).toISOString()
+                          : undefined
+                      }
+                      onChange={(ends) => updateDraft({ ends })}
+                    />
+                  </View>
+                  <TextInput
+                    accessibilityLabel="説明"
+                    editable={!disabled}
+                    style={[s.input, s.description]}
+                    multiline
+                    value={description}
+                    onChangeText={(description) => updateDraft({ description })}
+                    placeholder="説明を追加"
+                    placeholderTextColor="#00000033"
+                    maxLength={1000}
+                  />
+                  <View style={s.capacity}>
+                    <Text style={s.hint}>定員</Text>
+                    <TextInput
+                      accessibilityLabel="定員（1〜100人）"
+                      editable={!disabled}
+                      style={[s.input, { flex: 1 }]}
+                      keyboardType="number-pad"
+                      value={capacity}
+                      onChangeText={(capacity) => updateDraft({ capacity })}
+                    />
+                    <Text style={s.hint}>人</Text>
+                  </View>
+                  <Text style={s.hint}>
+                    {location
+                      ? `開催場所 ${location[1].toFixed(5)}, ${location[0].toFixed(5)}`
+                      : "開催場所を選択してください"}
+                  </Text>
+                </>
+              ) : (
+                <>
+                  <Text style={s.hint}>今のあなたの位置情報</Text>
+                  <Text style={s.hint}>
+                    現在地を公開します。募集は20分または退出で終了します。
+                  </Text>
+                  <Pressable
+                    disabled={busy || !title.trim()}
+                    onPress={() => {
+                      void locate();
+                    }}
+                  >
+                    <Text style={s.link}>
+                      {recruitBody ? "現在地を再確認" : "公開する現在地を確認"}
+                    </Text>
+                  </Pressable>
+                  {recruitBody && (
+                    <Text style={s.hint}>
+                      {Number(recruitBody.latitude).toFixed(5)},{" "}
+                      {Number(recruitBody.longitude).toFixed(5)}
+                    </Text>
+                  )}
+                </>
+              )}
+            </View>
+          </View>
+        )}
+        {!!error && (
+          <Text accessibilityRole="alert" style={s.error}>
+            {error}
+          </Text>
+        )}
+        {locked && (
+          <Pressable
+            disabled={busy}
+            onPress={() => {
+              void revise();
+            }}
+          >
+            <Text style={s.link}>前回の送信を確認して入力し直す</Text>
+          </Pressable>
+        )}
+      </ScrollView>
     );
   }
   return (
@@ -176,155 +281,22 @@ export default function CreatePin() {
           </Pressable>
         ))}
       </View>
-      <Animated.View
+      <View
         collapsable={false}
-        style={{
-          flex: 1,
-          minHeight: 0,
-          overflow: "hidden",
-          transform: [{ translateX: slide }],
-        }}
+        style={{ flex: 1, minHeight: 0, overflow: "hidden" }}
       >
-        <ScrollView
-          style={{ flex: 1 }}
-          contentInsetAdjustmentBehavior="never"
-          keyboardShouldPersistTaps="handled"
-          keyboardDismissMode="interactive"
-          contentContainerStyle={s.content}
+        <Animated.View
+          style={{
+            flex: 1,
+            width: width * 2,
+            flexDirection: "row",
+            transform: [{ translateX: slide }],
+          }}
         >
-          {restoring ? (
-            <ActivityIndicator />
-          ) : (
-            <View style={s.form}>
-              <View style={s.preview}>
-                <View style={s.bubble}>
-                  <Text numberOfLines={1} style={s.name}>
-                    {profile?.display_name ?? "…"}
-                  </Text>
-                </View>
-                <View style={s.tail} />
-              </View>
-              <View style={s.fields}>
-                <TextInput
-                  accessibilityLabel="ピンの題名"
-                  editable={!disabled}
-                  style={s.input}
-                  placeholderTextColor="#00000033"
-                  placeholder={
-                    kind === "event" ? "オフ会名を入力" : "募集ピン名を入力"
-                  }
-                  maxLength={50}
-                  value={title}
-                  onChangeText={(title) => updateDraft({ title })}
-                />
-                {kind === "event" ? (
-                  <>
-                    <View
-                      style={{
-                        backgroundColor: "#00000008",
-                        borderRadius: 10,
-                        overflow: "hidden",
-                      }}
-                    >
-                      <EventDateField
-                        compact
-                        label="開始"
-                        value={starts}
-                        disabled={disabled}
-                        onChange={(starts) => updateDraft({ starts })}
-                      />
-                      <EventDateField
-                        compact
-                        label="終了"
-                        value={ends}
-                        disabled={disabled}
-                        suggested={
-                          Number.isFinite(Date.parse(starts))
-                            ? new Date(
-                                Date.parse(starts) + 3600000,
-                              ).toISOString()
-                            : undefined
-                        }
-                        onChange={(ends) => updateDraft({ ends })}
-                      />
-                    </View>
-                    <TextInput
-                      accessibilityLabel="説明"
-                      editable={!disabled}
-                      style={[s.input, s.description]}
-                      multiline
-                      value={description}
-                      onChangeText={(description) =>
-                        updateDraft({ description })
-                      }
-                      placeholder="説明を追加"
-                      placeholderTextColor="#00000033"
-                      maxLength={1000}
-                    />
-                    <View style={s.capacity}>
-                      <Text style={s.hint}>定員</Text>
-                      <TextInput
-                        accessibilityLabel="定員（1〜100人）"
-                        editable={!disabled}
-                        style={[s.input, { flex: 1 }]}
-                        keyboardType="number-pad"
-                        value={capacity}
-                        onChangeText={(capacity) => updateDraft({ capacity })}
-                      />
-                      <Text style={s.hint}>人</Text>
-                    </View>
-                    <Text style={s.hint}>
-                      {location
-                        ? `開催場所 ${location[1].toFixed(5)}, ${location[0].toFixed(5)}`
-                        : "開催場所を選択してください"}
-                    </Text>
-                  </>
-                ) : (
-                  <>
-                    <Text style={s.hint}>今のあなたの位置情報</Text>
-                    <Text style={s.hint}>
-                      現在地を公開します。募集は20分または退出で終了します。
-                    </Text>
-                    <Pressable
-                      disabled={busy || !title.trim()}
-                      onPress={() => {
-                        void locate();
-                      }}
-                    >
-                      <Text style={s.link}>
-                        {recruitBody
-                          ? "現在地を再確認"
-                          : "公開する現在地を確認"}
-                      </Text>
-                    </Pressable>
-                    {recruitBody && (
-                      <Text style={s.hint}>
-                        {Number(recruitBody.latitude).toFixed(5)},{" "}
-                        {Number(recruitBody.longitude).toFixed(5)}
-                      </Text>
-                    )}
-                  </>
-                )}
-              </View>
-            </View>
-          )}
-          {!!error && (
-            <Text accessibilityRole="alert" style={s.error}>
-              {error}
-            </Text>
-          )}
-          {locked && (
-            <Pressable
-              disabled={busy}
-              onPress={() => {
-                void revise();
-              }}
-            >
-              <Text style={s.link}>前回の送信を確認して入力し直す</Text>
-            </Pressable>
-          )}
-        </ScrollView>
-      </Animated.View>
+          <View style={{ width }}>{renderForm("recruitment")}</View>
+          <View style={{ width }}>{renderForm("event")}</View>
+        </Animated.View>
+      </View>
       <View style={[s.footer, { paddingBottom: Math.max(12, insets.bottom) }]}>
         {kind === "event" && (
           <PinButton
@@ -333,6 +305,7 @@ export default function CreatePin() {
             disabled={disabled}
             onPress={() => {
               beginPinPlacement(location);
+              router.dismissTo("/(tabs)");
               Keyboard.dismiss();
             }}
           />
@@ -390,7 +363,7 @@ const s = StyleSheet.create({
     borderColor: "transparent",
   },
   selected: { borderColor: "#008cff" },
-  tabText: { fontSize: 17, fontWeight: "600", color: "#00000033" },
+  tabText: { fontSize: 18, fontWeight: "600", color: "#00000033" },
   content: { padding: 18, gap: 14, paddingTop: 26 },
   form: { flexDirection: "row", gap: 16 },
   preview: {
@@ -418,7 +391,7 @@ const s = StyleSheet.create({
     transform: [{ rotate: "45deg" }],
     marginTop: -5,
   },
-  name: { color: "#609aff", fontSize: 12 },
+  name: { color: "#609aff", fontSize: 14 },
   fields: { flex: 1, gap: 7 },
   input: {
     backgroundColor: "#00000008",
@@ -427,11 +400,11 @@ const s = StyleSheet.create({
     paddingHorizontal: 10,
     paddingVertical: 8,
     color: "#000000aa",
-    fontSize: 16,
+    fontSize: 18,
   },
   description: { minHeight: 48, textAlignVertical: "top" },
   capacity: { flexDirection: "row", gap: 8, alignItems: "center" },
-  hint: { color: "#00000066", fontSize: 12 },
+  hint: { color: "#00000066", fontSize: 14 },
   link: { color: "#008cff", fontSize: 14, paddingVertical: 6 },
   error: { color: "#cf3044", fontSize: 14 },
   footer: { paddingHorizontal: 24, paddingTop: 8, gap: 10 },

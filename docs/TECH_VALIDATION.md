@@ -928,3 +928,6 @@ R12/R13。pinPlacement共有状態でMapを再生成せず地点を選択し、d
 
 ## cp165 — 単一native sheetの縮小とピンドラッグ
 R12/R13。pins/createを閉じずdetent変更とundimmed指定で既存地図の地点選択。AppleMapの投影/逆投影を用いる直接ドラッグoverlayを追加。丸端破線回転、BlurView、保持中のscale/opacity。タブ下線/フォームAnimated化と等幅作成ボタン。typecheck/Lint/地点保持テスト成功。実機描画/ジェスチャーは未検証、ネイティブ再ビルドなし。
+
+## cp166 — ピン操作とFigma更新
+型チェック/Lint/`tests/pin-placement.test.mjs`成功。2ページ同時スライド、PanResponder安定化、連続カメラ投影の非同期順序管理、選択footer変更。実機で報告された不具合へのコード修正であり、実機での解消確認はまだ。

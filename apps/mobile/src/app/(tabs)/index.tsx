@@ -1,4 +1,9 @@
-import { usePinPlacement, placePin } from "../../lib/pinPlacement";
+import { PlacementFooter } from "../../components/pins/PlacementFooter";
+import {
+  usePinPlacement,
+  placePin,
+  finishPinPlacement,
+} from "../../lib/pinPlacement";
 import { PlacementRing } from "../../components/pins/PlacementRing";
 import { MapStatusBanner } from "../../components/map/MapStatusBanner";
 import { MapErrorDialog } from "../../components/map/MapErrorDialog";
@@ -273,6 +278,15 @@ export default function Street() {
         </View>
       </SafeAreaView>
       {!placement.active && <StreetChat onReadStatus={setChatRead} />}
+      {placement.active && (
+        <PlacementFooter
+          disabled={!placement.point}
+          onDone={() => {
+            finishPinPlacement();
+            router.push("/pins/create");
+          }}
+        />
+      )}
       {!!error && <MapErrorDialog key={error} message={error} />}
       <StreetEntrySheet
         sheet={sheet}
