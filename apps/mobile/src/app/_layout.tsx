@@ -62,7 +62,7 @@ export default function Layout() {
             }}
           />
           <Stack.Screen
-            name="events/[id]"
+            name="map-event"
             options={{
               presentation: "formSheet",
               sheetAllowedDetents: [0.5, 1],
@@ -74,7 +74,7 @@ export default function Layout() {
             }}
           />
           <Stack.Screen
-            name="recruitments/[id]"
+            name="map-recruitment"
             options={{
               presentation: "formSheet",
               sheetAllowedDetents: [0.5, 1],

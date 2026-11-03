@@ -63,7 +63,12 @@ export default function Event() {
                 icon="location-outline"
                 title="開催場所"
                 subtitle="地図で見る"
-                onPress={() => openMapAt(event.longitude, event.latitude)}
+                onPress={() =>
+                  openMapAt(event.longitude, event.latitude, {
+                    kind: "event",
+                    id,
+                  })
+                }
               />
             )}
             <DetailRow

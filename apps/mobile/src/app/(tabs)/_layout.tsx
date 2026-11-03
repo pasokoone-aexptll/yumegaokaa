@@ -7,6 +7,13 @@ import { TabIcon } from "../../components/TabIcon";
 export default function StreetTabs() {
   const placement = usePinPlacement();
   const pathname = usePathname();
+  const dark = [
+    "/",
+    "/map-event",
+    "/map-recruitment",
+    "/pins/create",
+    "/street-entry",
+  ].includes(pathname);
   const insets = useSafeAreaInsets();
   const { width } = useWindowDimensions();
   return (
@@ -17,10 +24,11 @@ export default function StreetTabs() {
           headerShown: false,
           tabBarShowLabel: false,
           tabBarIconStyle: { width: 60, height: 40 },
-          tabBarActiveTintColor: "#fff",
+          tabBarActiveTintColor: dark ? "#fff" : "#000",
+          tabBarInactiveTintColor: dark ? "#ffffff99" : "#00000099",
           tabBarStyle: {
             display: placement.active ? "none" : "flex",
-            backgroundColor: "#000000e6",
+            backgroundColor: dark ? "#000000e6" : "#fafafa",
             borderTopWidth: 0,
             height: 42 + insets.bottom,
             paddingHorizontal: width * 0.085,

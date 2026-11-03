@@ -42,7 +42,12 @@ export default function Detail() {
           {fromMap !== "1" && (
             <PrimaryAction
               title="地図で場所を見る"
-              onPress={() => openMapAt(pin.longitude, pin.latitude)}
+              onPress={() =>
+                openMapAt(pin.longitude, pin.latitude, {
+                  kind: "recruitment",
+                  id,
+                })
+              }
             />
           )}
           {pin.mine && (

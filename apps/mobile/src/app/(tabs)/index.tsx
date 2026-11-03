@@ -62,6 +62,8 @@ export default function Street() {
     latitude?: string;
     panel?: string;
     mapRequest?: string;
+    detailKind?: string;
+    detailId?: string;
   }>();
   const {
     ready,
@@ -96,6 +98,7 @@ export default function Street() {
     setSettings(false);
     if (params.panel === "account") router.setParams({ panel: "" });
   }
+  const openedRequest = useRef<string | undefined>(undefined);
   useEffect(() => {
     const lon = Number(params.longitude),
       lat = Number(params.latitude);
@@ -106,9 +109,34 @@ export default function Street() {
       params.latitude &&
       Number.isFinite(lon) &&
       Number.isFinite(lat)
-    )
-      camera.current?.flyTo({ center: [lon, lat], zoom: 16, duration: 600 });
-  }, [params.longitude, params.latitude, params.mapRequest, ready, signed]);
+    ) {
+      const showDetail =
+        !!params.detailId &&
+        (params.detailKind === "event" || params.detailKind === "recruitment");
+      const frame = requestAnimationFrame(() => {
+        setDetailInset(showDetail ? height * 0.38 : 0);
+        camera.current?.flyTo({ center: [lon, lat], zoom: 17, duration: 600 });
+        if (showDetail && openedRequest.current !== params.mapRequest) {
+          openedRequest.current = params.mapRequest;
+          router.push({
+            pathname:
+              params.detailKind === "event" ? "/map-event" : "/map-recruitment",
+            params: { id: params.detailId!, fromMap: "1" },
+          });
+        }
+      });
+      return () => cancelAnimationFrame(frame);
+    }
+  }, [
+    params.longitude,
+    params.latitude,
+    params.mapRequest,
+    params.detailId,
+    params.detailKind,
+    height,
+    ready,
+    signed,
+  ]);
   async function recenter() {
     try {
       const p = await native.currentLocation();
@@ -184,7 +212,7 @@ export default function Street() {
         )}
         <StreetMapMarkers
           onSelect={(longitude, latitude) => {
-            setDetailInset(height / 2);
+            setDetailInset(height * 0.38);
             camera.current?.flyTo({
               center: [longitude, latitude],
               zoom: 17,

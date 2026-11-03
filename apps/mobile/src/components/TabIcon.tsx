@@ -3,6 +3,7 @@ import type { ColorValue } from "react-native";
 export function TabIcon({
   kind,
   focused,
+  color,
 }: {
   kind: "home" | "map" | "notification" | "account";
   color: ColorValue | null;
@@ -14,5 +15,11 @@ export function TabIcon({
     notification: ["notification", "notificationSelect"],
     account: ["account", "accountSelect"],
   } as const;
-  return <MapAsset name={names[kind][focused ? 1 : 0]} size={32} />;
+  return (
+    <MapAsset
+      name={names[kind][focused ? 1 : 0]}
+      size={32}
+      tint={typeof color === "string" ? color : undefined}
+    />
+  );
 }

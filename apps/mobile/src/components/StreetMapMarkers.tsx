@@ -96,7 +96,7 @@ export function StreetMapMarkers({
               onPress={() => {
                 onSelect(event.longitude, event.latitude);
                 router.push({
-                  pathname: "/events/[id]",
+                  pathname: "/map-event",
                   params: { id: event.id, fromMap: "1" },
                 });
               }}
@@ -122,7 +122,7 @@ export function StreetMapMarkers({
               onPress={() => {
                 onSelect(pin.longitude, pin.latitude);
                 router.push({
-                  pathname: "/recruitments/[id]",
+                  pathname: "/map-recruitment",
                   params: { id: pin.id, fromMap: "1" },
                 });
               }}

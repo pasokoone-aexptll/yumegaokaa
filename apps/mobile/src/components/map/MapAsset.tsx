@@ -7,12 +7,14 @@ export function MapAsset({
   width = size,
   height = size,
   centered = false,
+  tint,
 }: {
   name: keyof typeof mapSvgAssets;
   size?: number;
   width?: number;
   height?: number;
   centered?: boolean;
+  tint?: string;
 }) {
   // Figma exports include asymmetric shadow margins. Use the visible path bounds
   // plus equal padding for circular controls; retain the original SVG elsewhere.
@@ -27,5 +29,12 @@ export function MapAsset({
   const xml = viewBox
     ? mapSvgAssets[name].replace(/viewBox="[^"]*"/, `viewBox="${viewBox}"`)
     : mapSvgAssets[name];
-  return <SvgXml xml={xml} width={width} height={height} accessible={false} />;
+  return (
+    <SvgXml
+      xml={tint ? xml.replace(/fill="(?!none)[^"]*"/g, `fill="${tint}"`) : xml}
+      width={width}
+      height={height}
+      accessible={false}
+    />
+  );
 }
