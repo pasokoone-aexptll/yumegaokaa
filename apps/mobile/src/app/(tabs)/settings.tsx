@@ -57,6 +57,15 @@ export default function Settings() {
           }
         />
       </Section>
+      {__DEV__ && (
+        <Section title="開発用">
+          <DetailRow
+            title="UIプレビュー"
+            icon="construct-outline"
+            onPress={() => router.push("/ui-preview")}
+          />
+        </Section>
+      )}
       <Section>
         <DetailRow
           icon="construct-outline"

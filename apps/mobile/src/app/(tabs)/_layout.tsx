@@ -1,3 +1,7 @@
+import { shouldShowTabs } from "../../lib/tabVisibility";
+import { useContext, useSyncExternalStore } from "react";
+import { sessionState } from "../../lib/sessionState";
+import { AccountAccessContext } from "../../hooks/useAccountAccess";
 import { usePinPlacement } from "../../lib/pinPlacement";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Keyboard, useWindowDimensions, View, StyleSheet } from "react-native";
@@ -5,6 +9,11 @@ import { BlurView } from "expo-blur";
 import { Tabs, usePathname } from "expo-router";
 import { TabIcon } from "../../components/TabIcon";
 export default function StreetTabs() {
+  const session = useSyncExternalStore(
+    sessionState.subscribe,
+    sessionState.get,
+  );
+  const access = useContext(AccountAccessContext);
   const placement = usePinPlacement();
   const pathname = usePathname();
   const dark = [
@@ -27,7 +36,14 @@ export default function StreetTabs() {
           tabBarActiveTintColor: dark ? "#fff" : "#000",
           tabBarInactiveTintColor: dark ? "#ffffff99" : "#00000099",
           tabBarStyle: {
-            display: placement.active ? "none" : "flex",
+            display: shouldShowTabs(
+              session.ready,
+              session.signed_in,
+              access.status,
+              placement.active,
+            )
+              ? "flex"
+              : "none",
             backgroundColor: dark ? "#000000e6" : "#fafafa",
             borderTopWidth: StyleSheet.hairlineWidth,
             borderTopColor: dark ? "#ffffff26" : "#0000001a",

@@ -1,3 +1,4 @@
+import { router } from "expo-router";
 import {
   ActivityIndicator,
   Image,
@@ -136,6 +137,14 @@ export function StreetLogin({
               style={{ padding: 12, alignItems: "center" }}
             >
               <Text style={s.note}>メールアドレスを確認・コードを再送</Text>
+            </Pressable>
+          )}
+          {__DEV__ && (
+            <Pressable
+              accessibilityRole="button"
+              onPress={() => router.push("/ui-preview")}
+            >
+              <Text style={s.note}>開発用 UIプレビュー</Text>
             </Pressable>
           )}
           {localEntry && (

@@ -17,6 +17,7 @@ export default function Layout() {
   usePushLifecycle(access.status === "active", session.revision);
   const previousAccess = useRef(access.status);
   useEffect(() => {
+    if (__DEV__ && path === "/ui-preview") return;
     const wasSetup = ["profile_required", "pool_required"].includes(
       previousAccess.current,
     );
