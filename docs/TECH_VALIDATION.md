@@ -925,3 +925,6 @@ R12/R13。作成formSheetのScrollViewを非flattenコンテナへ隔離（nativ
 
 ## cp164 — 既存Map地点選択の接続
 R12/R13。pinPlacement共有状態でMapを再生成せず地点を選択し、draftへ最終地点を反映。`node --test tests/pin-placement.test.mjs`成功（未選択では完了しない、ドラッグ最終地点、既存入力保持、再選択初期地点）。型チェック成功、LintのAnimated ref指摘をuseState保持へ修正しLint成功。iPhone実機ジェスチャー/触覚は未検証。ネイティブビルド不要。
+
+## cp165 — 単一native sheetの縮小とピンドラッグ
+R12/R13。pins/createを閉じずdetent変更とundimmed指定で既存地図の地点選択。AppleMapの投影/逆投影を用いる直接ドラッグoverlayを追加。丸端破線回転、BlurView、保持中のscale/opacity。タブ下線/フォームAnimated化と等幅作成ボタン。typecheck/Lint/地点保持テスト成功。実機描画/ジェスチャーは未検証、ネイティブ再ビルドなし。

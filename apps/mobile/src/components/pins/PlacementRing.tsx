@@ -1,47 +1,58 @@
 import { useEffect, useState } from "react";
-import { Animated } from "react-native";
+import { Animated, Easing, View } from "react-native";
+import { BlurView } from "expo-blur";
 import { requireNativeModule } from "expo-modules-core";
-import Svg, { Ellipse } from "react-native-svg";
-export function PlacementRing({ revision }: { revision: number }) {
+import Svg, { Circle, Ellipse } from "react-native-svg";
+export function PlacementRing({
+  revision,
+  dragging = false,
+}: {
+  revision: number;
+  dragging?: boolean;
+}) {
   const [scale] = useState(() => new Animated.Value(1.9));
   const [opacity] = useState(() => new Animated.Value(0.15));
-  const [wobble] = useState(() => new Animated.Value(0));
+  const [rotation] = useState(() => new Animated.Value(0));
   useEffect(() => {
-    scale.setValue(1.9);
-    opacity.setValue(0.15);
-    wobble.setValue(0);
-    const animation = Animated.sequence([
-      Animated.parallel([
-        Animated.timing(scale, {
-          toValue: 1,
-          duration: 240,
-          useNativeDriver: true,
-        }),
-        Animated.timing(opacity, {
-          toValue: 1,
-          duration: 240,
-          useNativeDriver: true,
-        }),
-      ]),
-      Animated.sequence(
-        [6, -5, 3, -1, 0].map((toValue) =>
-          Animated.timing(wobble, {
-            toValue,
-            duration: 65,
-            useNativeDriver: true,
-          }),
-        ),
-      ),
+    const loop = Animated.loop(
+      Animated.timing(rotation, {
+        toValue: 1,
+        duration: 2400,
+        easing: Easing.linear,
+        useNativeDriver: true,
+      }),
+    );
+    loop.start();
+    return () => loop.stop();
+  }, [rotation]);
+  useEffect(() => {
+    if (!dragging) {
+      scale.setValue(1.8);
+      opacity.setValue(0.2);
+    }
+    const a = Animated.parallel([
+      Animated.timing(scale, {
+        toValue: dragging ? 1.5 : 1,
+        duration: 220,
+        useNativeDriver: true,
+      }),
+      Animated.timing(opacity, {
+        toValue: dragging ? 0.55 : 1,
+        duration: 220,
+        useNativeDriver: true,
+      }),
     ]);
-    const feedback = setTimeout(() => {
-      void requireNativeModule("PresenceNative").entrySuccessHaptic?.();
-    }, 240);
-    animation.start();
+    a.start();
+    const timer = dragging
+      ? undefined
+      : setTimeout(() => {
+          void requireNativeModule("PresenceNative").entrySuccessHaptic?.();
+        }, 220);
     return () => {
-      clearTimeout(feedback);
-      animation.stop();
+      a.stop();
+      clearTimeout(timer);
     };
-  }, [revision, scale, opacity, wobble]);
+  }, [revision, dragging, scale, opacity]);
   return (
     <Animated.View
       style={{
@@ -50,17 +61,24 @@ export function PlacementRing({ revision }: { revision: number }) {
         alignItems: "center",
         justifyContent: "center",
         opacity,
-        transform: [
-          { scale },
-          {
-            rotate: wobble.interpolate({
-              inputRange: [-6, 6],
-              outputRange: ["-6deg", "6deg"],
-            }),
-          },
-        ],
+        transform: [{ scale }],
       }}
     >
+      <View
+        style={{
+          position: "absolute",
+          width: 44,
+          height: 26,
+          borderRadius: 22,
+          overflow: "hidden",
+        }}
+      >
+        <BlurView
+          intensity={40}
+          tint="default"
+          style={{ width: 44, height: 26 }}
+        />
+      </View>
       <Svg width={64} height={46} viewBox="0 0 64 46">
         <Ellipse
           cx={32}
@@ -69,19 +87,39 @@ export function PlacementRing({ revision }: { revision: number }) {
           ry={13}
           stroke="#ffffffaa"
           strokeWidth={3}
-          fill="#ffffff33"
-        />
-        <Ellipse
-          cx={32}
-          cy={23}
-          rx={30}
-          ry={21}
-          stroke="#ffffff99"
-          strokeWidth={3}
-          strokeDasharray="15 10"
-          fill="none"
+          fill="#ffffff22"
         />
       </Svg>
+      <View
+        pointerEvents="none"
+        style={{ position: "absolute", transform: [{ scaleY: 0.7 }] }}
+      >
+        <Animated.View
+          style={{
+            transform: [
+              {
+                rotate: rotation.interpolate({
+                  inputRange: [0, 1],
+                  outputRange: ["0deg", "360deg"],
+                }),
+              },
+            ],
+          }}
+        >
+          <Svg width={64} height={64}>
+            <Circle
+              cx={32}
+              cy={32}
+              r={29}
+              stroke="#ffffffaa"
+              strokeWidth={3}
+              strokeDasharray="16 14"
+              strokeLinecap="round"
+              fill="none"
+            />
+          </Svg>
+        </Animated.View>
+      </View>
     </Animated.View>
   );
 }

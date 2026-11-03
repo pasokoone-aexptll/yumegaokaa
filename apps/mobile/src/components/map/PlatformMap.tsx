@@ -16,7 +16,11 @@ import type {
   BoundaryProps,
 } from "./PlatformMap.types";
 export type { CameraRef } from "./PlatformMap.types";
-export function Map({ mapStyle = defaultStyle, ...props }: MapProps) {
+export function Map({
+  mapStyle = defaultStyle,
+  placement: _placement,
+  ...props
+}: MapProps) {
   return <LibreMap mapStyle={mapStyle} {...props} />;
 }
 export function Camera({ ref, ...props }: CameraProps) {

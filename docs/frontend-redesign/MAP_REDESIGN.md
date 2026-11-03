@@ -212,3 +212,8 @@ PinLabelのグラデーションは百分率のSVGサイズ依存をやめ、専
 場所選択は別Mapへのpushを廃止。pinPlacementの共有状態を開始し、既存Mapへ作成sheetを閉じて戻る。チャットとタブバーを隠し、小さい下部パネル＋完了を表示。既存Mapのカメラ/イベント/気配はそのまま。完了で地点だけdraftへ反映し作成sheetを再表示する。単一native sheetのdetent変形ではなく、native sheetのdismissとMap内パネルの切替で実装。
 リングは大きく薄い状態から240msで着地、既存native成功hapticを発火、減衰する揺れを再生。iOS AppleMarkerの長押しドラッグ終了で地点更新と演出を再実行。Android MapLibreの既存MarkerはドラッグAPIを持たないため今回タップ選択を維持し、ドラッグ移植は未実装。ユーザーの現在対象はiPhone。
 型チェック、Lint、pin-placementテスト成功。実機のジェスチャー、sheet往復、触覚/見た目は未確認。MVPタスク基準は変更なし。
+
+## cp165 — シート変形と直接ドラッグへの訂正
+ユーザー指示によりcp164の別パネル方式を撤回。pins/createルートを開いたまま単一native formSheetのdetentを募集57%/イベント75%/地点選択20%へ変更。地点選択時はundimmed detentで背面の既存Mapを操作可能にし、同じsheetの中身を見出しと完了へ置換する。完了時は入力を維持したフォームへ戻る。dismiss時は地点選択状態を解除。
+タブ下線は横移動、フォームは選択方向に応じて退出/入場するAnimatedスライド。作成のcheckcreateアイコンを復元し、破棄と等幅。リングの揺れは撤去し、丸端の破線が回転する。中心はBlurView。iOSはApplePlacementHandleで画面座標をmapのcoordinateForPointへ変換し、長押し不要の直接ドラッグへ変更。掴むと1.5倍/opacity55%、離すと着地演出と触覚。Androidの直接ドラッグは将来対応のまま。
+型チェック/Lint、既存pin-placementテスト成功。実機でnative detent変更の補間、背面Map操作、キーボード/指追従/ぼかしの確認は未完了。視覚完成済みとは記録しない。

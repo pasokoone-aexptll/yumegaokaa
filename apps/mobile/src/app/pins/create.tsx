@@ -1,10 +1,17 @@
-import { beginPinPlacement } from "../../lib/pinPlacement";
+import {
+  beginPinPlacement,
+  usePinPlacement,
+  finishPinPlacement,
+  cancelPinPlacement,
+} from "../../lib/pinPlacement";
 import { EventDateField } from "../../components/EventDateField";
 import { updateDraft } from "../../lib/pinDraft";
 import { usePinCreation } from "../../hooks/usePinCreation";
 import { useProfile } from "../../hooks/useProfile";
 import {
-  LayoutAnimation,
+  Animated,
+  Keyboard,
+  useWindowDimensions,
   ActivityIndicator,
   Alert,
   KeyboardAvoidingView,
@@ -16,7 +23,8 @@ import {
   TextInput,
   View,
 } from "react-native";
-import { router } from "expo-router";
+import { useNavigation, type NativeStackNavigationProp } from "expo-router";
+import { useEffect, useLayoutEffect, useState } from "react";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { PinButton } from "../../components/pins/PinButton";
 export default function CreatePin() {
@@ -32,10 +40,78 @@ export default function CreatePin() {
     locked,
     restoring,
   } = usePinCreation();
+  const placement = usePinPlacement();
+  const navigation =
+    useNavigation<
+      NativeStackNavigationProp<Record<string, object | undefined>>
+    >();
+  const { width } = useWindowDimensions();
+  const [slide] = useState(() => new Animated.Value(0));
+  const [bar] = useState(() => new Animated.Value(draft.kind === "event" ? 1 : 0));
+  const [switching, setSwitching] = useState(false);
   const { profile } = useProfile();
   const insets = useSafeAreaInsets();
   const { kind, title, description, starts, ends, location, capacity } = draft;
-  const disabled = busy || locked;
+  const disabled = busy || locked || switching;
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      sheetAllowedDetents: [
+        placement.active ? 0.2 : kind === "event" ? 0.75 : 0.57,
+      ],
+      sheetLargestUndimmedDetentIndex: placement.active ? 0 : "none",
+    });
+  }, [placement.active, kind, navigation]);
+  useEffect(() => () => cancelPinPlacement(), []);
+
+  function switchKind(value: "event" | "recruitment") {
+    if (disabled || value === kind) return;
+    Keyboard.dismiss();
+    setSwitching(true);
+    const direction = value === "event" ? 1 : -1;
+    Animated.timing(bar, {
+      toValue: value === "event" ? 1 : 0,
+      duration: 300,
+      useNativeDriver: true,
+    }).start();
+    Animated.timing(slide, {
+      toValue: -direction * width,
+      duration: 150,
+      useNativeDriver: true,
+    }).start(({ finished }) => {
+      if (!finished) {
+        setSwitching(false);
+        return;
+      }
+      slide.setValue(direction * width);
+      updateDraft({ kind: value });
+      Animated.timing(slide, {
+        toValue: 0,
+        duration: 180,
+        useNativeDriver: true,
+      }).start(() => setSwitching(false));
+    });
+  }
+  if (placement.active)
+    return (
+      <View
+        collapsable={false}
+        style={{
+          flex: 1,
+          padding: 24,
+          paddingTop: 28,
+          gap: 18,
+          backgroundColor: "white",
+        }}
+      >
+        <Text style={s.heading}>ピンの場所を選択中...</Text>
+        <PinButton
+          textOnly
+          title="完了"
+          disabled={!placement.point}
+          onPress={finishPinPlacement}
+        />
+      </View>
+    );
   function confirmDiscard() {
     Alert.alert(
       "下書きを破棄しますか？",
@@ -62,6 +138,24 @@ export default function CreatePin() {
         <Text style={s.heading}>ピンを追加します</Text>
       </View>
       <View collapsable={false} style={s.tabs}>
+        <Animated.View
+          style={{
+            position: "absolute",
+            bottom: 0,
+            left: 20,
+            width: (width - 40) / 2,
+            height: 2,
+            backgroundColor: "#008cff",
+            transform: [
+              {
+                translateX: bar.interpolate({
+                  inputRange: [0, 1],
+                  outputRange: [0, (width - 40) / 2],
+                }),
+              },
+            ],
+          }}
+        />
         {(
           [
             ["recruitment", "募集ピンを作る"],
@@ -73,13 +167,8 @@ export default function CreatePin() {
             accessibilityRole="tab"
             accessibilityState={{ selected: kind === value, disabled }}
             disabled={disabled}
-            onPress={() => {
-              LayoutAnimation.configureNext(
-                LayoutAnimation.Presets.easeInEaseOut,
-              );
-              updateDraft({ kind: value });
-            }}
-            style={[s.tab, kind === value && s.selected]}
+            onPress={() => switchKind(value)}
+            style={s.tab}
           >
             <Text style={[s.tabText, kind === value && { color: "#008cff" }]}>
               {label}
@@ -87,7 +176,15 @@ export default function CreatePin() {
           </Pressable>
         ))}
       </View>
-      <View collapsable={false} style={{ flex: 1, minHeight: 0 }}>
+      <Animated.View
+        collapsable={false}
+        style={{
+          flex: 1,
+          minHeight: 0,
+          overflow: "hidden",
+          transform: [{ translateX: slide }],
+        }}
+      >
         <ScrollView
           style={{ flex: 1 }}
           contentInsetAdjustmentBehavior="never"
@@ -227,7 +324,7 @@ export default function CreatePin() {
             </Pressable>
           )}
         </ScrollView>
-      </View>
+      </Animated.View>
       <View style={[s.footer, { paddingBottom: Math.max(12, insets.bottom) }]}>
         {kind === "event" && (
           <PinButton
@@ -236,15 +333,14 @@ export default function CreatePin() {
             disabled={disabled}
             onPress={() => {
               beginPinPlacement(location);
-              router.dismissTo("/(tabs)");
+              Keyboard.dismiss();
             }}
           />
         )}
         <View style={s.actions}>
-          <View style={{ flex: 1.2 }}>
+          <View style={{ flex: 1 }}>
             <PinButton
               title="作成"
-              textOnly
               loading={busy}
               disabled={busy || !title.trim()}
               onPress={publish}

@@ -15,6 +15,9 @@ export function beginPinPlacement(point?: [number, number]) {
 export function placePin(point: [number, number]) {
   set({ ...state, point, revision: state.revision + 1 });
 }
+export function cancelPinPlacement() {
+  set({ ...state, active: false });
+}
 export function finishPinPlacement() {
   if (!state.point) return;
   updateDraft({ location: state.point });

@@ -69,7 +69,7 @@ export default function StreetTabs() {
           }}
         />
       </Tabs>
-      {pathname === "/pins/create" && (
+      {pathname === "/pins/create" && !placement.active && (
         <BlurView
           pointerEvents="none"
           intensity={25}

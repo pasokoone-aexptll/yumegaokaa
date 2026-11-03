@@ -9,6 +9,11 @@ export type ViewState = {
 export type CameraRef = { flyTo: (view: ViewState) => void };
 export type CameraProps = { initialViewState: ViewState; ref?: Ref<CameraRef> };
 export type MapProps = {
+  placement?: {
+    point: [number, number];
+    revision: number;
+    onDrop: (point: [number, number]) => void;
+  };
   children?: ReactNode;
   style?: StyleProp<ViewStyle>;
   mapStyle?: string;

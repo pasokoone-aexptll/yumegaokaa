@@ -1,10 +1,5 @@
-import {
-  usePinPlacement,
-  placePin,
-  finishPinPlacement,
-} from "../../lib/pinPlacement";
+import { usePinPlacement, placePin } from "../../lib/pinPlacement";
 import { PlacementRing } from "../../components/pins/PlacementRing";
-import { PinButton } from "../../components/pins/PinButton";
 import { MapStatusBanner } from "../../components/map/MapStatusBanner";
 import { MapErrorDialog } from "../../components/map/MapErrorDialog";
 import { ProgressiveBlur } from "../../components/map/ProgressiveBlur";
@@ -22,6 +17,7 @@ import { StreetChat } from "../../components/StreetChat";
 import { router, useLocalSearchParams } from "expo-router";
 import { useEffect, useRef, useState } from "react";
 import {
+  Platform,
   Keyboard,
   ActivityIndicator,
   Modal,
@@ -145,6 +141,15 @@ export default function Street() {
       <Map
         style={StyleSheet.absoluteFill}
         mapStyle={mapStyle}
+        placement={
+          placement.active && placement.point
+            ? {
+                point: placement.point,
+                revision: placement.revision,
+                onDrop: placePin,
+              }
+            : undefined
+        }
         onPress={(event) => {
           Keyboard.dismiss();
           if (placement.active) placePin(event.nativeEvent.lngLat);
@@ -158,7 +163,7 @@ export default function Street() {
             pitch: 55,
           }}
         />
-        {placement.active && placement.point && (
+        {Platform.OS !== "ios" && placement.active && placement.point && (
           <Marker lngLat={placement.point} draggable onDragEnd={placePin}>
             <PlacementRing revision={placement.revision} />
           </Marker>
@@ -268,50 +273,6 @@ export default function Street() {
         </View>
       </SafeAreaView>
       {!placement.active && <StreetChat onReadStatus={setChatRead} />}
-      {placement.active && (
-        <View
-          style={{
-            position: "absolute",
-            bottom: 0,
-            left: 8,
-            right: 8,
-            padding: 22,
-            gap: 14,
-            backgroundColor: "white",
-            borderRadius: 30,
-            borderCurve: "continuous",
-          }}
-        >
-          <View
-            style={{
-              width: 56,
-              height: 4,
-              backgroundColor: "#00000033",
-              borderRadius: 3,
-              alignSelf: "center",
-            }}
-          />
-          <Text
-            style={{
-              fontSize: 18,
-              fontWeight: "600",
-              color: "#00000099",
-              textAlign: "center",
-            }}
-          >
-            ピンの場所を選択中...
-          </Text>
-          <PinButton
-            textOnly
-            title="完了"
-            disabled={!placement.point}
-            onPress={() => {
-              finishPinPlacement();
-              router.push("/pins/create");
-            }}
-          />
-        </View>
-      )}
       {!!error && <MapErrorDialog key={error} message={error} />}
       <StreetEntrySheet
         sheet={sheet}

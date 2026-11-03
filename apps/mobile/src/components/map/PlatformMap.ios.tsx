@@ -1,3 +1,5 @@
+import { View } from "react-native";
+import { ApplePlacementHandle } from "../pins/ApplePlacementHandle";
 import {
   createContext,
   useContext,
@@ -27,39 +29,52 @@ function appleCamera(view: ViewState) {
     altitude: 1200 * Math.pow(2, 16 - (view.zoom ?? 16)),
   };
 }
-export function Map({ children, style, onPress }: MapProps) {
+export function Map({ children, style, onPress, placement }: MapProps) {
   const map = useRef<MapView>(null);
   const [ready, setReady] = useState(false);
+  const [cameraRevision, setCameraRevision] = useState(0);
   return (
     <Context.Provider value={{ map, ready }}>
-      <MapView
-        ref={map}
-        style={style}
-        userInterfaceStyle="dark"
-        mapType="standard"
-        showsBuildings
-        pitchEnabled
-        rotateEnabled
-        showsUserLocation={false}
-        initialCamera={appleCamera({
-          center: [139.7109, 35.7295],
-          zoom: 17,
-          pitch: 55,
-        })}
-        onMapReady={() => setReady(true)}
-        onPress={(event) =>
-          onPress?.({
-            nativeEvent: {
-              lngLat: [
-                event.nativeEvent.coordinate.longitude,
-                event.nativeEvent.coordinate.latitude,
-              ],
-            },
-          })
-        }
-      >
-        {children}
-      </MapView>
+      <View style={style}>
+        <MapView
+          ref={map}
+          style={{ flex: 1 }}
+          userInterfaceStyle="dark"
+          mapType="standard"
+          showsBuildings
+          pitchEnabled
+          rotateEnabled
+          showsUserLocation={false}
+          initialCamera={appleCamera({
+            center: [139.7109, 35.7295],
+            zoom: 17,
+            pitch: 55,
+          })}
+          onRegionChangeComplete={() => setCameraRevision((r) => r + 1)}
+          onMapReady={() => setReady(true)}
+          onPress={(event) =>
+            onPress?.({
+              nativeEvent: {
+                lngLat: [
+                  event.nativeEvent.coordinate.longitude,
+                  event.nativeEvent.coordinate.latitude,
+                ],
+              },
+            })
+          }
+        >
+          {children}
+        </MapView>
+        {ready && placement && (
+          <ApplePlacementHandle
+            map={map}
+            point={placement.point}
+            revision={placement.revision}
+            onDrop={placement.onDrop}
+            cameraRevision={cameraRevision}
+          />
+        )}
+      </View>
     </Context.Provider>
   );
 }
