@@ -974,3 +974,11 @@ R12/R13/R19。参加予定/募集の取得hookを維持し、Homeを日付順一
 - `/tmp/yumegaoka-release-20261104.log`：Build Succeeded、0 errors/4 warnings。成果物は `/Users/kitchenopen/Library/Developer/Xcode/DerivedData/app-bmqyqrnfvctbedgwfdjyrgbgeext/Build/Products/Release-iphoneos/app.app`。main.jsbundle存在確認。署名検証はsandbox内で信頼ストアエラー、sandbox外の `codesign --verify --deep --strict` は成功。
 - 初回転送は端末ロックで停止。ユーザーの解除後、同じ成果物をdevicectlでインストールし、`jp.yumegaoka.development` の起動成功。再ビルドなし・アンインストールなし。
 - 画面操作・背景観測等の再検証は実施していない。既存33タスク/DONE/残量を変更しない。ReleaseもローカルAPI利用のためMacと同一LANが必要。GitHubへのpushなし。
+
+## 2026-11-05 セッション引き継ぎ監査
+
+コード基準2ab1d9b。Router/Map分岐/入街hook/native接続/gateway・Push script/入街ログSQLと進捗資料を照合しSESSION_HANDOFFを作成。製品コード・DB・サーバー変更なし。入街ログ10分抑制は相談中・未実装、全ページモック未完。旧DONEは最新UIの実機合格ではない。
+
+前セッションの承認済みチャットリセット実行記録：ローカルmessages24件・arrival_logs71件をtransactionで削除、両方0件を確認してcommit。他データは対象外。今回再削除・現件数確認なし。
+
+read-onlyのlisten確認では54321/54322/54324にssh転送あり、54325/8081なし。health/workerは未確認。製品変更がないため型チェック・DBテスト・ビルド・実機転送は再実行しない。33タスクと残量は変更なし。

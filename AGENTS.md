@@ -6,7 +6,7 @@ MVP全体の進捗基準は `docs/MVP_TASKS.md`。コード監査は `docs/MVP_I
 
 ## 必ず参照する正本
 
-最初に `docs/README.md` を読む。目的は `docs/PROJECT_CONTEXT.md`、現在の機能仕様は `docs/MVP_REQUIREMENTS.md`、決定根拠は `docs/DECISIONS.md`、未決定事項は `docs/OPEN_QUESTIONS.md`。実装・検証事実は `docs/TECH_VALIDATION.md`。
+最初に `docs/README.md` と `docs/SESSION_HANDOFF.md` を読む。目的は `docs/PROJECT_CONTEXT.md`、現在の機能仕様は `docs/MVP_REQUIREMENTS.md`、決定根拠は `docs/DECISIONS.md`、未決定事項は `docs/OPEN_QUESTIONS.md`。実装・検証事実は `docs/TECH_VALIDATION.md`。
 
 `docs/ACCEPTANCE.md` の該当R番号を作業とレビューへ対応付け、`docs/DOC_MAINTENANCE.md` の更新手順を守る。`docs/ARCHITECTURE_PROPOSAL.md` の単一バックエンド・端末区画化は採用済み。他の未承認方式まで採用済みとして実装しない。history/referenceは現行仕様ではない。
 
@@ -21,7 +21,7 @@ MVP全体の進捗基準は `docs/MVP_TASKS.md`。コード監査は `docs/MVP_I
 
 ## 現在の範囲（2026-10-29）
 
-当面はiPhoneのみ。Androidは将来移植が必要だが、現在の実装・検証・公開条件にしない。React Native方向は維持。Supabase＋PostgreSQLを採用済み。メールOTPを採用済み。RN＋TypeScript＋Expo開発ビルド、MapLibre、react-native-nfc-manager、Swift/Core Locationの背景観測モジュール、ローカルXcodeビルドを採用済み。具体バージョンはlockfileへ固定済み。認証の本番設定・配信基盤・プランは未確定。最初の一本の実装場所・既知の限界はdocs/IMPLEMENTATION_PROGRESS.mdを参照する。
+当面はiPhoneのみ。Androidは将来移植が必要だが、現在の実装・検証・公開条件にしない。React Native方向は維持。Supabase＋PostgreSQLを採用済み。メールOTPを採用済み。RN＋TypeScript＋Expo開発ビルド、iOS Apple Maps/将来Android用MapLibre、react-native-nfc-manager、Swift/Core Locationの背景観測モジュール、ローカルXcodeビルドを採用済み。具体バージョンはlockfileへ固定済み。APNs直接送信と配信ゲートウェイは採用・ローカル実装済み。本番設定・クラウド配備・プランと実APNsは未完。最初の一本の実装場所・既知の限界はdocs/IMPLEMENTATION_PROGRESS.mdを参照する。
 
 許可済み：文書整備・基本設計案・experiments内の隔離した技術試作・そのテストと実機確認。2026-10-29のユーザー依頼により、本体の雛形・DB/API・NFC→気配→Map→退出の実装とローカル確認まで承認済み。段階ごとの再承認は不要。クラウド設定が必要になれば利用者へ伝える。契約・購入・公開は別途判断。既存試作は保持する。
 
@@ -58,3 +58,6 @@ cp102のMVP_TASKS完了条件を固定。MVP_REMAINING（docs内）で残項目�
 
 ## ロジック優先・UI後工程（2026-10-31）
 最終UIはユーザーがFigmaで設計する。現行UIは仮UI。装飾・色/余白/フォント/アイコンサイズ・演出の磨き込み・ピクセル照合は後工程。操作不能/入力欠落/遷移不能/重要情報欠落だけ必要修正。DB/API/保存/認可/再送/状態遷移はhooks/services/native/DBへ置き、UIは状態と操作の伝達を担う。既存の実害がある結合だけ最小限整理。33タスクとDONE履歴は保持し、LOGIC_PROGRESSでロジックとUI達成段階を別管理。最終UI未完成だけをロジック未完成理由にしない。外部・実機未検証は明示する。
+
+## セッション移行とUI工程（2026-11-05）
+11月2〜3日の明示依頼によりFigmaに基づくUI改修を進めている。上記UI後工程ルールは承認済み改修を禁止しない。最新UIはdocs/frontend-redesign/UI_REVIEW_STATUS.mdとMAP_REDESIGN.mdを参照。旧33タスクのDONEと最新UIの実機合格を混同しない。全ページモックは未完、通常ルート索引は実操作。再開時にチャットリセットを繰り返さない。
