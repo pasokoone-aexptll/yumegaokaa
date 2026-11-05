@@ -1,11 +1,6 @@
+import { StretchySunset } from "./StretchySunset";
 import { useState, type ReactNode } from "react";
-import {
-  Animated,
-  ImageBackground,
-  StyleSheet,
-  Text,
-  View,
-} from "react-native";
+import { Animated, StyleSheet, Text, View } from "react-native";
 import {
   SafeAreaView,
   useSafeAreaInsets,
@@ -29,6 +24,7 @@ export function AccountPage({
     <SafeAreaView edges={["left", "right"]} style={s.page}>
       <Animated.ScrollView
         contentInsetAdjustmentBehavior="never"
+        removeClippedSubviews={false}
         contentContainerStyle={{ flexGrow: 1, paddingBottom: 32 }}
         scrollEventThrottle={16}
         onScroll={Animated.event(
@@ -36,8 +32,9 @@ export function AccountPage({
           { useNativeDriver: true },
         )}
       >
-        <ImageBackground
-          source={require("../../assets/figma-map/yuuyake.png")}
+        <StretchySunset
+          scroll={scroll}
+          height={300 + insets.top}
           style={[
             s.hero,
             { minHeight: 300 + insets.top, paddingTop: insets.top + 24 },
@@ -77,7 +74,7 @@ export function AccountPage({
               アカウント
             </Animated.Text>
           </Animated.View>
-        </ImageBackground>
+        </StretchySunset>
         <View style={s.content}>{children}</View>
       </Animated.ScrollView>
       <Animated.View

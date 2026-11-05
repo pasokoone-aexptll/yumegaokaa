@@ -190,8 +190,8 @@ export function EntryAnimation({
             <Image
               source={
                 active
-                  ? require("../../../assets/figma-map/DreamCloud.png")
-                  : require("../../../assets/figma-map/entry-logo.png")
+                  ? require("../../../assets/brand/DreamCloud.png")
+                  : require("../../../assets/illustrations/entry-logo.png")
               }
               style={{ width: 116, height: 80 }}
               resizeMode="contain"
@@ -199,7 +199,7 @@ export function EntryAnimation({
           </Animated.View>
           <Animated.View style={textStyle}>
             <Image
-              source={require("../../../assets/figma-map/entry-text.png")}
+              source={require("../../../assets/illustrations/entry-text.png")}
               style={{ width: 113, height: 33 }}
               resizeMode="contain"
             />

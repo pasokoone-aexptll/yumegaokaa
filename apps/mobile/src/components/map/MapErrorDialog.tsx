@@ -43,7 +43,7 @@ export function MapErrorDialog({ message }: { message: string }) {
           }}
         >
           <Image
-            source={require("../../../assets/figma-map/dialog-background.png")}
+            source={require("../../../assets/illustrations/dialog-background.png")}
             resizeMode="contain"
             style={{
               position: "absolute",

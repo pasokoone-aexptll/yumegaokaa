@@ -1043,3 +1043,13 @@ UIIconの描画枠を1.35倍（40pt上限、元から大きな図柄は縮小/�
 ユーザー訂正でタブを36→32ptへ戻し、汎用アイコンは1.35倍/40pt上限→1.55倍/44pt上限。型/Lint、pin-placement作成/編集の2試験、session-state試験成功。初回型検査で復元値undefinedの型不足を検出し、型明示後成功。全件試験/DB試験は反復せず。実機の編集往復・表示サイズ合格は未確認。既定33タスク・固定残量は変更なし。
 
 Releaseビルド（/tmp/yumegaoka-event-location-build.log）、署名検証、iPhone上書き成功。起動要求は端末ロック（Locked）で拒否されたため、今回の版の起動/実機往復は未確認。DBリセット・チャット削除・pushなし。
+
+## 2026-11-05 badge/伸縮ヘッダー/素材整理（R19）
+
+指定色の背景/枠線縦グラデーションをSmoothSurfaceへ追加。Home/AccountPageの夕焼けを共通StretchySunsetで負のcontentOffsetに応じて拡大し、上端をviewportへ合わせ下端をheaderへ保持。通常高さは不変。汎用アイコンは1.55→1.75倍、上限44→48pt、タブ32pt維持。
+
+figma-mapの現役素材をbrand/tabs/backgrounds/illustrationsに移動し全実行時参照を更新。旧素材はreference/figma-map-legacyへ退避。既存変更のあったmapAssets.tsも開始時の内容をそのまま同所mapAssets.ts.txtに保存して現役から外し、ロゴとタブ9SVGをbrandAndTabAssets.tsで生成。開始時から削除されていたcheck.svg/pin.svgは復元/再編集せず。
+
+型/Lint、参照画像15件の存在、ui-interactions4試験（badgeとpull幅50/200pt・通常scrollを含む）、diff検査成功。実機外観/スクロール感は未確認。DB・保持期限・認可の変更なし。既定33タスク/固定残量は不変。
+
+最終Releaseビルド（/tmp/yumegaoka-header-assets-final.log）、codesign検証、iPhone上書きインストール成功。起動要求は端末ロック（Locked）で拒否され、最新版の起動と実機外観は未確認。DBリセット・チャット削除・pushなし。

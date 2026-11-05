@@ -24,7 +24,7 @@ export function MapHeader({
       {!offline && name.startsWith("池袋") ? (
         <Image
           accessibilityLabel={name}
-          source={require("../../../assets/figma-map/ikebukuro.png")}
+          source={require("../../../assets/brand/ikebukuro.png")}
           style={styles.logo}
           resizeMode="contain"
         />
@@ -39,7 +39,13 @@ export function MapHeader({
         </View>
       )}
       {!offline && (
-        <SmoothSurface color="#ff4b57" radius={24} style={styles.count}>
+        <SmoothSurface
+          color="#FF5151"
+          gradient={["#FF9E9E", "#FF5151"]}
+          borderGradient={["#FFD9D9", "#FFB8B8"]}
+          radius={24}
+          style={styles.count}
+        >
           <MapAsset name="usericon" width={18} height={20} />
           <Text
             accessibilityLabel={
@@ -105,8 +111,8 @@ const styles = StyleSheet.create({
     fontFamily: Platform.OS === "ios" ? "ui-rounded" : undefined,
   },
   mode: {
-    height: 32,
-    width: 52,
+    height: 38,
+    width: 64,
     justifyContent: "center",
     paddingHorizontal: 9,
     flexDirection: "row",

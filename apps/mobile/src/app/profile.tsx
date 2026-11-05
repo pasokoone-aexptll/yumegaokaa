@@ -15,7 +15,7 @@ export default function Profile() {
     <Page title="プロフィール">
       {onboarding && (
         <ImageBackground
-          source={require("../../assets/figma-map/yuuyake.png")}
+          source={require("../../assets/backgrounds/yuuyake.png")}
           style={{
             height: 180,
             borderRadius: 24,
@@ -25,7 +25,7 @@ export default function Profile() {
           }}
         >
           <Image
-            source={require("../../assets/figma-map/DreamCloud.png")}
+            source={require("../../assets/brand/DreamCloud.png")}
             style={{ width: 110, height: 88 }}
             resizeMode="contain"
           />

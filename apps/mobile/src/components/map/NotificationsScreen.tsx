@@ -77,7 +77,7 @@ export function NotificationsScreen() {
           }}
         >
           <Image
-            source={require("../../../assets/figma-map/DreamCloud.png")}
+            source={require("../../../assets/brand/DreamCloud.png")}
             style={{
               width: 180,
               height: 150,

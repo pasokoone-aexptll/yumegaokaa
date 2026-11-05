@@ -48,7 +48,7 @@ export function StreetLogin({
         keyboardDismissMode="interactive"
       >
         <ImageBackground
-          source={require("../../assets/figma-map/yuuyake.png")}
+          source={require("../../assets/backgrounds/yuuyake.png")}
           style={s.hero}
         >
           <View
@@ -56,7 +56,7 @@ export function StreetLogin({
           />
           <SafeAreaView edges={["top"]} style={{ gap: 12 }}>
             <Image
-              source={require("../../assets/figma-map/DreamCloud.png")}
+              source={require("../../assets/brand/DreamCloud.png")}
               style={{ width: 120, height: 96 }}
               resizeMode="contain"
             />

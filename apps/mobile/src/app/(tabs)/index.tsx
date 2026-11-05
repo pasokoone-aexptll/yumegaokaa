@@ -300,7 +300,7 @@ export default function Street() {
               tint="default"
               style={StyleSheet.absoluteFill}
             />
-            <MapAsset name="CreatePIN" size={26} centered />
+            <MapAsset name="CreatePIN" size={26} />
           </Pressable>
           <Pressable
             accessibilityRole="button"
@@ -322,7 +322,7 @@ export default function Street() {
               tint="default"
               style={StyleSheet.absoluteFill}
             />
-            <MapAsset name="Navi" size={26} centered />
+            <MapAsset name="Navi" size={26} />
           </Pressable>
         </View>
       </SafeAreaView>

@@ -97,7 +97,7 @@ export function MapStatusBanner({
         >
           <Image
             accessible={false}
-            source={require("../../../assets/figma-map/girl-viewing.png")}
+            source={require("../../../assets/illustrations/girl-viewing.png")}
             resizeMode="contain"
             style={{
               width: 54,

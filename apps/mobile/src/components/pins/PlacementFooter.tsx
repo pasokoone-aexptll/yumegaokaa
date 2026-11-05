@@ -24,7 +24,7 @@ export function PlacementFooter({
     >
       <Image
         pointerEvents="none"
-        source={require("../../../assets/figma-map/placement-shade.png")}
+        source={require("../../../assets/illustrations/placement-shade.png")}
         resizeMode="stretch"
         style={[StyleSheet.absoluteFill, { width: "100%", height: "100%" }]}
       />

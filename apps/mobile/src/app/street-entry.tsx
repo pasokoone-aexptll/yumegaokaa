@@ -12,12 +12,12 @@ import {
 } from "react-native";
 import { BlurView } from "expo-blur";
 import { SvgXml } from "react-native-svg";
-import { mapSvgAssets } from "../components/map/mapAssets";
+import { brandAndTabSvgAssets } from "../components/map/brandAndTabAssets";
 import { EntryAnimation } from "../components/map/EntryAnimation";
 import { entrySheetState } from "../lib/entrySheetState";
 import { useEntryPresentation } from "../hooks/useEntryPresentation";
 import { localEntry } from "../lib/development";
-const header = mapSvgAssets["DreamCloud Logo"]
+const header = brandAndTabSvgAssets["DreamCloud Logo"]
   .replaceAll('fill="white"', 'fill="black"')
   .replaceAll('fill="#FFFFFF"', 'fill="#000000"');
 export default function StreetEntry() {

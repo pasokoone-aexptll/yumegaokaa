@@ -1,13 +1,7 @@
+import { StretchySunset } from "../../components/StretchySunset";
 import { homeEvents } from "../../lib/homeEvents";
 import { useState } from "react";
-import {
-  ImageBackground,
-  RefreshControl,
-  ScrollView,
-  StyleSheet,
-  Text,
-  View,
-} from "react-native";
+import { Animated, RefreshControl, StyleSheet, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { router } from "expo-router";
 import { PinListItem } from "../../components/PinListItem";
@@ -17,6 +11,7 @@ import { useHomePins } from "../../hooks/useHomePins";
 export default function Home() {
   const { items, recruitments, error, loading, load } = useHomePins();
   const insets = useSafeAreaInsets();
+  const [scroll] = useState(() => new Animated.Value(0));
   const [refreshing, setRefreshing] = useState(false);
   async function refresh() {
     if (refreshing) return;
@@ -29,9 +24,15 @@ export default function Home() {
   }
   const events = homeEvents(items);
   return (
-    <ScrollView
+    <Animated.ScrollView
       style={s.page}
       alwaysBounceVertical
+      removeClippedSubviews={false}
+      scrollEventThrottle={16}
+      onScroll={Animated.event(
+        [{ nativeEvent: { contentOffset: { y: scroll } } }],
+        { useNativeDriver: true },
+      )}
       contentInsetAdjustmentBehavior="never"
       contentContainerStyle={{ paddingBottom: 32 }}
       refreshControl={
@@ -43,8 +44,9 @@ export default function Home() {
         />
       }
     >
-      <ImageBackground
-        source={require("../../../assets/figma-map/yuuyake.png")}
+      <StretchySunset
+        scroll={scroll}
+        height={insets.top + 150}
         style={[s.hero, { height: insets.top + 150, paddingTop: insets.top }]}
       >
         <View style={s.shade} />
@@ -54,7 +56,7 @@ export default function Home() {
           height={32}
           tint="#ffffffcc"
         />
-      </ImageBackground>
+      </StretchySunset>
       <View style={s.content}>
         <View style={s.headingRow}>
           <Text style={s.heading}>参加予定</Text>
@@ -148,7 +150,7 @@ export default function Home() {
           />
         ))}
       </View>
-    </ScrollView>
+    </Animated.ScrollView>
   );
 }
 const s = StyleSheet.create({

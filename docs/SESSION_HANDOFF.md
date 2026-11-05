@@ -26,11 +26,15 @@
 
 ## 最新のサイズ調整
 
-11月5日のユーザー指摘で汎用アイコンを元サイズの約55%拡大（44pt上限、元から大きい図柄は据置き）へ更新。タブは最新指示で32ptへ戻した。型/Lint/Releaseビルド・署名検証・iPhone上書き/起動成功。外観のユーザー確認は未完。SVGフィルターのクラッシュ修正は維持。
+11月5日のユーザー指摘で汎用アイコンを元サイズの約75%拡大（48pt上限、元から大きい図柄は据置き）へ更新。タブは最新指示で32ptへ戻した。型/Lint/Releaseビルド・署名検証・iPhone上書き成功。最新版の起動確認は端末ロックで未完。外観のユーザー確認は未完。SVGフィルターのクラッシュ修正は維持。
 
 ## イベント編集のMap配置（11月5日・最新）
 
 旧LocationPicker Modalを撤去し、開催場所変更から共通Map配置へ遷移、完了後は編集画面へ戻る。eventEditDraftが入力/旧revisionを1往復だけ保持し、pinPlacementが作成/編集の戻り先を区別する。保存までDBは変更しない。セッション変更で両方を破棄。型/Lint/配置とセッション分離試験成功。Releaseビルド・署名検証・iPhone上書き成功。端末ロックで今回の版の起動確認は未完、実機往復も未確認。
+
+## 最新のbadge・夕焼け・素材整理
+
+人数badgeを指定された2組の縦グラデーションへ。Home/アカウントの夕焼けはpull量に応じて伸縮し、通常高さは維持。汎用アイコンは1.75倍/48pt上限、タブ32pt維持。mapAssets.tsは退役し、現役ロゴ/タブはbrandAndTabAssets.ts、汎用アイコンはcomponents/icons/frames.json。素材はassetsのbrand/tabs/backgrounds/illustrationsに整理、旧素材と開始時mapAssetsはdocs/reference/figma-map-legacyに保持。型/Lint/参照と伸縮境界試験成功、実機の見た目は未確認。
 
 ## 現在のフェーズ
 

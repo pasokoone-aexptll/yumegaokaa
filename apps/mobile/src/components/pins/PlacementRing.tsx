@@ -143,7 +143,7 @@ export function PlacementRing({
       </View>
       <Animated.Image
         pointerEvents="none"
-        source={require("../../../assets/figma-map/pin.png")}
+        source={require("../../../assets/illustrations/pin.png")}
         resizeMode="contain"
         style={{
           position: "absolute",

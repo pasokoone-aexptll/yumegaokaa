@@ -1,49 +1,39 @@
 import { UIIcon, type UIIconName } from "../icons/UIIcon";
 import { SvgXml } from "react-native-svg";
-import { mapSvgAssets } from "./mapAssets";
+import { brandAndTabSvgAssets } from "./brandAndTabAssets";
+
+const iconAliases = {
+  "chevron.right": "chevron-right",
+  usericon: "users",
+  clock: "clock",
+  close: "x",
+  trash: "trash",
+  checkcreate: "check",
+  CreatePIN: "create-pin",
+  Navi: "navi",
+  plug: "arrival-plug",
+} as const satisfies Record<string, UIIconName>;
 
 export function MapAsset({
   name,
   size = 28,
   width = size,
   height = size,
-  centered = false,
   tint,
 }: {
-  name: keyof typeof mapSvgAssets;
+  name: keyof typeof brandAndTabSvgAssets | keyof typeof iconAliases;
   size?: number;
   width?: number;
   height?: number;
-  centered?: boolean;
   tint?: string;
 }) {
-  const icons: Partial<Record<keyof typeof mapSvgAssets, UIIconName>> = {
-    "chevron.right": "chevron-right",
-    usericon: "users",
-    clock: "clock",
-    close: "x",
-    trash: "trash",
-    checkcreate: "check",
-    CreatePIN: "create-pin",
-    Navi: "navi",
-    plug: "arrival-plug",
-  };
-  const icon = icons[name];
+  const icon =
+    name in iconAliases
+      ? iconAliases[name as keyof typeof iconAliases]
+      : undefined;
   if (icon)
     return <UIIcon name={icon} size={size} width={width} height={height} />;
-  // Figma exports include asymmetric shadow margins. Use the visible path bounds
-  // plus equal padding for circular controls; retain the original SVG elsewhere.
-  const controlViewBox = {
-    CreatePIN: "12.188 6.8243 22.6144 22.6144",
-    Navi: "8.2729 6.2309 22.7687 22.7687",
-  };
-  const viewBox =
-    centered && name in controlViewBox
-      ? controlViewBox[name as keyof typeof controlViewBox]
-      : null;
-  const xml = viewBox
-    ? mapSvgAssets[name].replace(/viewBox="[^"]*"/, `viewBox="${viewBox}"`)
-    : mapSvgAssets[name];
+  const xml = brandAndTabSvgAssets[name as keyof typeof brandAndTabSvgAssets];
   return (
     <SvgXml
       xml={

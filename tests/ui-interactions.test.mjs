@@ -42,7 +42,29 @@ test('Offline header removes the count badge and gives the logo more space',()=>
  const visit=(node)=>Array.isArray(node)?node.flatMap(visit):node&&typeof node==='object'?[node,...visit(node.props?.children)]:[];
  const props={name:'夢ヶ丘',count:99,stale:false,active:false,onToggle:()=>{}};
  const online=visit(MapHeader(props)),offline=visit(MapHeader({...props,offline:true}));
- assert.ok(online.some(x=>x.props?.color==='#ff4b57'));
- assert.ok(!offline.some(x=>x.props?.color==='#ff4b57'));
+ assert.ok(online.some(x=>x.props?.gradient?.[0]==='#FF9E9E'));
+ assert.ok(!offline.some(x=>x.props?.gradient?.[0]==='#FF9E9E'));
  assert.ok(offline.find(x=>x.type==='Logo').props.width>online.find(x=>x.type==='Logo').props.width);
+});
+
+test('sunset stretch covers pull-down gap and stays unchanged on normal upward scroll',()=>{
+ const numericAnimated={Image:'Image',multiply:(a,b)=>a*b,divide:(a,b)=>a/b,add:(a,b)=>a+b};
+ const {StretchySunset}=moduleAt('apps/mobile/src/components/StretchySunset.tsx',{
+  'react-native':{Animated:numericAnimated,StyleSheet:{absoluteFill:{}},View:'View'},
+  '../../assets/backgrounds/yuuyake.png':0,
+ });
+ for(const offset of [-200,-50,0,100]) {
+  const scroll={interpolate:({inputRange:r,outputRange:o,extrapolateRight})=>{
+   const i=offset<r[1]?0:1;
+   if(offset>r[2]&&extrapolateRight==='clamp')return o[2];
+   return o[i]+(offset-r[i])/(r[i+1]-r[i])*(o[i+1]-o[i]);
+  }};
+  const h=300,tree=StretchySunset({scroll,height:h});
+  const transform=tree.props.children[0].props.style[1].transform;
+  const translate=transform[0].translateY,scale=transform[1].scale;
+  if(offset<0) {
+   assert.ok(Math.abs(h/2+translate-h*scale/2-offset)<0.001,'top covers the viewport edge');
+   assert.ok(Math.abs(h/2+translate+h*scale/2-h)<0.001,'bottom stays attached to header');
+  } else {assert.equal(scale,1);assert.equal(Math.abs(translate),0);}
+ }
 });
