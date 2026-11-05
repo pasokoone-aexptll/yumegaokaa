@@ -1,7 +1,8 @@
 import NativeMaskedView from "@react-native-masked-view/masked-view";
-import { useState, useId } from "react";
+import { RefreshMarker } from "./markerScale";
+import { useContext, useState, useId } from "react";
 import type { ComponentType, ReactElement, ReactNode } from "react";
-import { Platform, StyleSheet, Text, View, type ViewProps } from "react-native";
+import { Image, Platform, StyleSheet, Text, View, type ViewProps } from "react-native";
 import Svg, { Defs, LinearGradient, Path, Rect, Stop } from "react-native-svg";
 
 export const pinRed = ["#FE2E31", "#FFABED"] as const;
@@ -66,31 +67,46 @@ export function PinGradientText({
     </Mask>
   );
 }
-export function PinBubble({ children }: { children: ReactNode }) {
+// Map annotations are snapshotted on both platforms. Keep the shadow pixels
+// inside the snapshot, outside the clipped pill and its text.
+function LabelShadow({ bubble = false, children }: { bubble?: boolean; children: ReactNode }) {
+  const refresh = useContext(RefreshMarker);
   return (
-    <View style={s.bubbleWrapper}>
-      <View style={s.bubble}>{children}</View>
-      <Svg width={20.8} height={13.6} viewBox="0 0 26 17" style={s.tail}>
-        <Path d="M0 0H26L5 16Q1 18 1 13V0Z" fill="white" />
-      </Svg>
+    <View collapsable={false} style={s.shadowFrame}>
+      <View pointerEvents="none" style={StyleSheet.absoluteFill}>
+        <Image accessible={false} resizeMode="stretch" fadeDuration={0}
+          onLoadEnd={refresh}
+          source={bubble ? require("../../../assets/map-markers/bubble-shadow.png") : require("../../../assets/map-markers/countdown-shadow.png")}
+          style={{ width: "100%", height: "100%" }} />
+      </View>
+      {children}
     </View>
   );
 }
-export function PinCountdown({ children }: { children: string }) {
-  if (Platform.OS === "android") return (
-    <View style={[s.countdown, {
-      experimental_backgroundImage: "linear-gradient(180deg, #FE2E31, #FFABED)",
-    }]}>
-      <Text numberOfLines={1} style={[s.text, { color: "white", includeFontPadding: false }]}>{children}</Text>
-    </View>
-  );
+
+export function PinBubble({ children }: { children: ReactNode }) {
   return (
-    <View collapsable={false} style={s.countdown}>
-      <Gradient colors={pinRed} />
-      <Text numberOfLines={1} style={[s.text, { color: "white" }]}>
-        {children}
-      </Text>
-    </View>
+    <LabelShadow bubble>
+      <View style={s.bubbleWrapper}>
+        <View style={s.bubble}>{children}</View>
+        <Svg width={20.8} height={13.6} viewBox="0 0 26 17" style={s.tail}>
+          <Path d="M0 0H26L5 16Q1 18 1 13V0Z" fill="white" />
+        </Svg>
+      </View>
+    </LabelShadow>
+  );
+}
+
+export function PinCountdown({ children }: { children: string }) {
+  return (
+    <LabelShadow>
+      <View collapsable={false} style={[s.countdown, Platform.OS === "android" && {
+        experimental_backgroundImage: "linear-gradient(180deg, #FE2E31, #FFABED)",
+      }]}>
+        {Platform.OS !== "android" && <Gradient colors={pinRed} />}
+        <Text numberOfLines={1} style={[s.text, { color: "white", includeFontPadding: false }]}>{children}</Text>
+      </View>
+    </LabelShadow>
   );
 }
 const s = StyleSheet.create({
@@ -99,6 +115,7 @@ const s = StyleSheet.create({
     fontSize: 14.4,
     fontWeight: "600",
   },
+  shadowFrame: { paddingHorizontal: 8, paddingVertical: 7, alignSelf: "center", maxWidth: "100%" },
   bubbleWrapper: { alignItems: "center", maxWidth: 240 },
   bubble: {
     backgroundColor: "white",
@@ -118,6 +135,6 @@ const s = StyleSheet.create({
     borderCurve: "continuous",
     paddingHorizontal: 12,
     paddingVertical: 7,
-    marginBottom: 8,
+
   },
 });
