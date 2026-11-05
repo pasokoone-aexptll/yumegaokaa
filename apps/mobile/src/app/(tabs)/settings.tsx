@@ -74,10 +74,10 @@ export default function Settings() {
           onPress={() => router.push("/admin")}
         />
       </Section>
-      <Section title="アイコンのライセンス">
+      <Section title="アプリについて">
         <DetailRow
-          title="Kubai Icons"
-          subtitle={"Copyright (c) 2026 Kubai087\nKubai Icons License"}
+          title="ライセンス"
+          onPress={() => router.push("/licenses")}
         />
       </Section>
     </AccountPage>
