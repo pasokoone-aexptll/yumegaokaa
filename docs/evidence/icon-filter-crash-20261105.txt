@@ -1,0 +1,13 @@
+2026-11-05: iPhone launch of jp.yumegaoka.development, icon build 3deb629.
+Exception: EXC_CRASH / SIGABRT
+Triggered thread: com.facebook.react.runtime.JavaScript
+Relevant crash frames:
+__pthread_kill
+pthread_kill
+abort
+facebook::react::fromRawValue(facebook::react::PropsParserContext const&, facebook::react::RawValue const&, facebook::react::RNSVGFeBlendMode&)
+facebook::react::RNSVGFeBlendMode facebook::react::convertRawProp<facebook::react::RNSVGFeBlendMode, facebook::react::RNSVGFeBlendMode>(facebook::react::PropsParserContext const&, facebook::react::RawProps const&, char const*, facebook::react::RNSVGFeBlendMode const&, facebook::react::RNSVGFeBlendMode const&)
+facebook::react::RNSVGFeBlendProps::RNSVGFeBlendProps(facebook::react::PropsParserContext const&, facebook::react::RNSVGFeBlendProps const&, facebook::react::RawProps const&)
+Cause: all 338 generated SVG frames contained feBlend mode="overlay".
+Installed react-native-svg 15.16.0 Fabric BlendMode accepts normal/multiply/screen/darken/lighten (and unknown), not overlay.
+Fix: convert highlight blending to screen in the mobile export only; preserve source artwork and motion.

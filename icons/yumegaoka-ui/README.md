@@ -74,3 +74,5 @@ LICENSEとコピー元の著作権表記を保持。この納品はYumegaoka用�
 `node scripts/build-mobile-icons.mjs`（リポジトリroot）で元engine/exportを変更せず13段階×26用途のSVGを生成。`apps/mobile/src/components/icons/frames.json` とLICENSEを同梱し、UIIconが元の部品の変形を再生する。アイコンの親IconPressableがonPressInを伝達するため、隣のテキスト/項目全体も同じ反応を起こす。解析結果をキャッシュし、非操作中はタイマーを回さない。Reduce Motion有効時は静止表示。DetailIconの旧SF SymbolsとMapAssetの汎用SVGをこの表示へ接続済み。タブ・ブランドロゴ・街固有イラスト・装飾は保持。
 
 生成SVGのXML/内部参照/使用要素がreact-native-svgで対応すること、型/Lintを確認。端末の見た目・動きのユーザー確認は未完。ブラウザレビュー時の成功と区別する。
+
+モバイル互換性：react-native-svg 15.16.0 FabricはfeBlendのoverlayを受け取るとabortするため、モバイル生成物のみscreenへ置換。光沢はブラウザ版と完全同一ではない。原本は変更せず形/動きを維持し、tests/mobile-icon-filters.test.mjsで全フレームのmodeをnative対応値と照合する。

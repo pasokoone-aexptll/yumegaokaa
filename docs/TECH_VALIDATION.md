@@ -1021,3 +1021,11 @@ RN/Expo組込み・iOS/Android実機・最終UI承認は未確認。アニメー
 - 既存33タスク/DONE増分0。固定残ローカル4→4・外部3→3。追加UIの総工数は未計測。新しいUI実機合格は未記録。
 
 - アイコン移植をまとめたiPhone Releaseビルド成功（/tmp/yumegaoka-icons-20261105-build.log）、codesign検証成功、devicectl上書きインストール成功。初回起動はiPhoneロックで拒否され、解除を依頼中。新しいアイコンの実機外観/操作感は未確認。DBリセット/チャット削除/pushなし。
+
+## 2026-11-05 起動クラッシュ修正（R19/T032）
+
+ユーザーの起動直後クラッシュを実機consoleで再現（signal6）。systemCrashLogsのapp-2026-11-05-101833.ipsから、JavaScript thread→Fabric RNSVGFeBlendModeのfromRawValue→abortを特定。匿名化した関連スタックはevidence/icon-filter-crash-20261105.txt。26種×13フレームの光沢にあるfeBlend mode=overlayが、react-native-svg 15.16.0のnative enum非対応だった。前回のXML/タグ検査では属性値の不適合を検出できなかった。
+
+モバイル生成時だけoverlay→screenへ変換し、原本の形・動きは維持。光沢の合成結果は元overlayと完全同一ではない。全フレームのmodeがinstalled native型の対応値であることを検査するmobile-icon-filters.testを追加。修正前失敗→修正後成功、型/Lint、生成script構文、diff検査成功。
+
+Releaseビルド（/tmp/yumegaoka-icon-crash-fix-build.log）・署名検証・iPhoneへの上書きインストール成功。修正版の最初の起動確認は端末ロックで拒否され、ユーザーへ解除を依頼中。クラッシュ解消の実機確認完了とはまだ扱わない。33タスク/DONEと固定残量は不変。

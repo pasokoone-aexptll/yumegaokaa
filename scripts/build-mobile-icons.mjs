@@ -16,7 +16,8 @@ try {
  source=source.replace('return { name, svg: svg.outerHTML };','return { name: name + "--" + frame, svg: svg.outerHTML };');
  const exporter=path.join(temporary,'export.mjs');fs.writeFileSync(exporter,source);
  execFileSync(process.execPath,[exporter,'--only',manifest.map(x=>x.name).join(','),'--out',path.join(temporary,'frames'),'--size','28'],{stdio:'inherit'});
- const frames=Object.fromEntries(manifest.map(item=>[item.name,Array.from({length:13},(_,i)=>fs.readFileSync(path.join(temporary,'frames',`${item.name}--${i}.svg`),'utf8'))]));
+ // Fabric supports screen but not overlay; preserve the white edge highlight without an unsupported enum.
+ const frames=Object.fromEntries(manifest.map(item=>[item.name,Array.from({length:13},(_,i)=>fs.readFileSync(path.join(temporary,'frames',`${item.name}--${i}.svg`),'utf8').replace(/(<feBlend\b[^>]*\bmode=")overlay(")/g, '$1screen$2'))]));
  const out='apps/mobile/src/components/icons';fs.mkdirSync(out,{recursive:true});
  fs.writeFileSync(path.join(out,'frames.json'),JSON.stringify(frames));
  fs.copyFileSync(path.join(root,'LICENSE'),path.join(out,'LICENSE'));

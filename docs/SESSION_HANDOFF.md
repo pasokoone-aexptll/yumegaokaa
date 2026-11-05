@@ -20,6 +20,10 @@
 
 ユーザーが指定したローカルiphone-validation@example.testに運営資格を付与済み。MFA要件は維持。型/Lint・Home/接触/オフライン表示の対象試験成功。Releaseビルド・署名検証・上書きインストール成功（/tmp/yumegaoka-icons-20261105-build.log）。iPhoneロックで起動確認は保留、解除を依頼中。新しいUIの操作感/実機描画合格とはまだ扱わない。既定MVP進捗・固定残量は変更なし。
 
+## 直近の起動クラッシュ修正
+
+アイコン移植版3deb629で起動直後SIGABRTを実機再現。SVGのfeBlend mode=overlayがRN native非対応。モバイル生成をscreenへ変換し、全フレームのnative mode検査を追加、修正前失敗/修正後成功。修正版ReleaseをiPhoneへ上書き済み（/tmp/yumegaoka-icon-crash-fix-build.log）。端末ロックで起動確認が止まったため解除を依頼中。実機で起動が維持されることを確認してから解消とする。詳細はTECH_VALIDATION。
+
 ## 現在のフェーズ
 
 **MVPロジック・ローカル統合の主要部分を実装済み。Figmaを基にしたUI改修と実機での仕上げ、外部サービス接続を残す段階。公開済みでも全機能完成でもない。**
