@@ -1093,3 +1093,13 @@ StreetLoginのScrollViewをAnimatedへ変更、既存StretchySunsetにscroll off
 ## 2026-11-05 一回限りのUI版実機更新
 
 ユーザー「おけ、一回更新して」により今回の更新だけ許可。e0bb1e1の製品コードに17b6f4aのStreetLogin伸縮修正を含む版をReleaseビルド、署名検証・iPhone上書き成功。039未適用の利用中DBと互換性を保つため79234d6のモバイル変更8ファイルをビルド時だけe0bb1e1に戻し、finallyで開発HEADへ全復元した。git diffで既存の素材削除2件以外に復元漏れがないことを確認。ビルドログは/tmp/yumegaoka-login-stretch-update.log。ゴースト・DB変更は今回の実機に含まない。ログイン背景の外観合格は未確認。今後のiPhone更新停止方針は継続。
+
+## 2026-11-05 C01 開発初期化・運営再作成・ゴーストDB適用
+
+最新ユーザー許可でyumegaokaローカルのみsupabase stop --project-id yumegaoka --no-backupを実行し、アカウント/チャット/Storageを初期化。再構築で旧migration003がrealtime.topicへ依存する問題を確認。履歴改変は自動承認レビューで拒否され未実行。安全な代替としてbootstrap-local.mjsで初回のみRealtime有効として標準スキーマを導入し、finallyで設定復元/Realtime停止。全039まで適用成功、過去migrationは変更なし。
+
+bootstrap-local-operator.mjsでiphone-validation@example.testをAuth Admin APIから作成し、会員/運営資格と開発運営プロフィールを設定。招待不要、街pool初回提供とTOTP/MFAは維持。秘密キーの出力/クライアント保存なし。ghost-databaseの1トランザクション確認（人数維持/区画拒否/入街ログ抑止/再送/古い版拒否/募集拒否）成功、試験データrollback。開発ソース/素材/履歴は保持。iPhone更新は後続変更とまとめる。
+
+## 2026-11-05 C02 日本語変換中の下線
+
+RN FabricのCJK marked text問題（https://github.com/react/react-native/issues/56463）と、導入済みRCTTextInputComponentViewの属性更新経路を確認。iOSチャット入力のみ、ExpoView内のUIKit UITextFieldへ分離。markedTextRange中はJSのtext更新を反映せず、eventCountで古いJS応答を無視し、markedTextStyleに下線を指定。未確定中は送信不可、確定後に解除。Androidは従来TextInputを維持。全入力欄やnode_modulesの改変なし。型/Lint成功、nativeビルド/実機日本語入力は後続変更とまとめて確認。これは実機で下線が直った証拠ではない。

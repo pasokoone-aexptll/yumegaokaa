@@ -14,6 +14,15 @@ public class PresenceNativeModule: Module {
    ViewName("ChatTouchRegion")
    Prop("surface", false) { (view: ChatTouchRegion, value: Bool) in view.surface = value }
   }
+  View(ChatIMEInput.self) {
+   ViewName("ChatIMEInput")
+   Events("onTextChange")
+   Prop("textState") { (view:ChatIMEInput, value:[String:Any]) in view.setTextState(value) }
+   Prop("placeholder") { (view:ChatIMEInput, value:String) in view.setPlaceholder(value) }
+   Prop("editable", true) { (view:ChatIMEInput, value:Bool) in view.setEditable(value) }
+   Prop("maxLength", 500) { (view:ChatIMEInput, value:Int) in view.maxLength=value }
+   Prop("inputLabel") { (view:ChatIMEInput, value:String) in view.setLabel(value) }
+  }
   AsyncFunction("selectionHaptic") { await MainActor.run {
    let feedback = UIImpactFeedbackGenerator(style: .light)
    feedback.prepare()

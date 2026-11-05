@@ -1,3 +1,4 @@
+import { ChatInput } from "./ChatInput";
 import { IconPressable as Pressable } from "./icons/IconMotion";
 import { ArrivalIcon } from "./map/ArrivalIcon";
 import { ChatTouchRegion } from "./map/ChatTouchRegion";
@@ -27,7 +28,6 @@ import {
   useWindowDimensions,
   ScrollView,
   Text,
-  TextInput,
   View,
 } from "react-native";
 import { useStreetChat, type Message } from "../hooks/useStreetChat";
@@ -86,6 +86,7 @@ export function StreetChat({
   const expandedHeight = geometry.expanded;
   const historyViewportHeight = geometry.viewport;
   const historyTopPadding = geometry.topPadding;
+  const [composing, setComposing] = useState(false);
   const [awayFromLatest, setAwayFromLatest] = useState(false);
   const [expansion] = useState(() => new Animated.Value(0));
   useEffect(() => {
@@ -489,7 +490,8 @@ export function StreetChat({
                   radius={16}
                   style={styles.inputRow}
                 >
-                  <TextInput
+                  <ChatInput
+                    onCompositionChange={setComposing}
                     onTouchStart={(event) => event.stopPropagation()}
                     placeholder="入力…"
                     placeholderTextColor="#ffffff66"
@@ -512,6 +514,7 @@ export function StreetChat({
                     accessibilityRole="button"
                     accessibilityLabel={pending ? "送信結果を確認" : "送信"}
                     disabled={
+                      composing ||
                       busy ||
                       restoring ||
                       restoreFailed ||
