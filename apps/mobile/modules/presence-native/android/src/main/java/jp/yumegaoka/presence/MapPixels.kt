@@ -6,7 +6,10 @@ import android.graphics.Color
 import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.Rect
-import android.view.TextureView
+import android.view.SurfaceView
+import android.view.PixelCopy
+import android.os.Handler
+import android.os.Looper
 import android.view.View
 import android.view.ViewGroup
 import expo.modules.kotlin.AppContext
@@ -33,6 +36,7 @@ class MapPixels(context: Context, appContext: AppContext) : ExpoView(context, ap
   private var history = false
   private var busy = false
   private var pending = false
+  private val main = Handler(Looper.getMainLooper())
   private var attempts = 0
   private val paint = Paint(Paint.FILTER_BITMAP_FLAG)
   private val dest = Rect()
@@ -67,25 +71,40 @@ class MapPixels(context: Context, appContext: AppContext) : ExpoView(context, ap
   fun refreshSoon() {
     attempts = 0
     removeCallbacks(refresh)
-    postDelayed(refresh, 100)
+    postDelayed(refresh, 180)
   }
 
   private fun capture() {
     if (!isAttachedToWindow) return
     if (busy) { pending = true; return }
-    val surface = texture(this)
-    val image = surface?.takeIf { it.width > 0 && it.height > 0 }?.let {
-      it.getBitmap(max(1, it.width / 4), max(1, it.height / 4))
-    }
-    if (image == null) {
+    val surface = mapSurface(this)
+    if (surface == null || !surface.holder.surface.isValid || surface.width == 0 || surface.height == 0) {
       if (++attempts <= 4) postDelayed(refresh, 180)
       return
     }
+    val image = Bitmap.createBitmap(max(1, surface.width / 6), max(1, surface.height / 6), Bitmap.Config.ARGB_8888)
     busy = true
-    val radius = max(1, (16 * resources.displayMetrics.density / 4).roundToInt())
+    try {
+      PixelCopy.request(surface, image, { status ->
+        if (status == PixelCopy.SUCCESS && source === this && isAttachedToWindow) filter(image)
+        else retryCopy()
+      }, main)
+    } catch (_: IllegalArgumentException) {
+      // The surface can disappear between the validity check and the copy.
+      retryCopy()
+    }
+  }
+
+  private fun retryCopy() {
+    busy = false
+    if (isAttachedToWindow && ++attempts <= 4) postDelayed(refresh, 180)
+  }
+
+  private fun filter(image: Bitmap) {
+    val radius = max(1, (16 * resources.displayMetrics.density / 6).roundToInt())
     worker.execute {
       val filtered = blurMap(image, radius)
-      android.os.Handler(android.os.Looper.getMainLooper()).post {
+      main.post {
         busy = false
         if (source === this && isAttachedToWindow) {
           snapshot = filtered
@@ -99,10 +118,10 @@ class MapPixels(context: Context, appContext: AppContext) : ExpoView(context, ap
 
   override fun onLayout(changed: Boolean, l: Int, t: Int, r: Int, b: Int) = Unit
 
-  private fun texture(view: View): TextureView? {
-    if (view is TextureView && view.isAvailable) return view
+  private fun mapSurface(view: View): SurfaceView? {
+    if (view is SurfaceView) return view
     if (view is ViewGroup) for (i in 0 until view.childCount) {
-      texture(view.getChildAt(i))?.let { return it }
+      mapSurface(view.getChildAt(i))?.let { return it }
     }
     return null
   }

@@ -49,7 +49,8 @@ export default function Street() {
   const [historyOpen, setHistoryOpen] = useState(false);
   const [mapMoving, setMapMoving] = useState(false);
   const { height } = useWindowDimensions();
-  const detailSheetHeight = height * (Platform.OS === "android" ? 0.5 : 0.38);
+  // Move the pin down 24pt so the title and countdown share the visible center.
+  const detailSheetHeight = Math.max(0, height * (Platform.OS === "android" ? 0.5 : 0.38) - 48);
   const [detailInset, setDetailInset] = useState(0);
   useFocusEffect(
     useCallback(() => {
@@ -134,7 +135,7 @@ export default function Street() {
         (params.detailKind === "event" || params.detailKind === "recruitment");
       const frame = requestAnimationFrame(() => {
         setDetailInset(showDetail ? detailSheetHeight : 0);
-        camera.current?.flyTo({ center: [lon, lat], zoom: 17, duration: 600 });
+        camera.current?.flyTo({ center: [lon, lat], zoom: 17, duration: 600, detailPadding: showDetail ? detailSheetHeight : 0 });
         if (showDetail && openedRequest.current !== params.mapRequest) {
           openedRequest.current = params.mapRequest;
           router.push({
@@ -232,6 +233,7 @@ export default function Street() {
             setDetailInset(detailSheetHeight);
             camera.current?.flyTo({
               center: [longitude, latitude],
+              detailPadding: detailSheetHeight,
               zoom: 17,
               duration: 600,
             });

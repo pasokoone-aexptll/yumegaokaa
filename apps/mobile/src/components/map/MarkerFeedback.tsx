@@ -14,13 +14,13 @@ export function MarkerFeedback({
 }: PressableProps) {
   const { scale, pulse } = useTapPulse(false);
   return (
-    <Animated.View style={{ paddingBottom: 4, transform: [{ scale }] }}>
-      <Svg pointerEvents="none" width={52} height={12} style={{ position: "absolute", alignSelf: "center", bottom: 0 }}>
+    <Animated.View style={{ paddingBottom: 8, transform: [{ scale }] }}>
+      <Svg pointerEvents="none" width={68} height={18} style={{ position: "absolute", alignSelf: "center", bottom: 0 }}>
         <Defs><RadialGradient id="groundShadow" cx="50%" cy="50%" rx="50%" ry="50%">
-          <Stop offset="0" stopColor="#101522" stopOpacity={0.38} />
+          <Stop offset="0" stopColor="#101522" stopOpacity={0.60} />
           <Stop offset="1" stopColor="#101522" stopOpacity={0} />
         </RadialGradient></Defs>
-        <Ellipse cx={26} cy={6} rx={26} ry={6} fill="url(#groundShadow)" />
+        <Ellipse cx={34} cy={9} rx={34} ry={9} fill="url(#groundShadow)" />
       </Svg>
       <Pressable
         {...props}

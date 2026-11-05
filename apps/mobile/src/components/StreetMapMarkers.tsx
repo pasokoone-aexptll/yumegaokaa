@@ -11,7 +11,8 @@ import { MarkerFeedback } from "./map/MarkerFeedback";
 import { Avatar } from "./Avatar";
 import { Marker } from "./map/PlatformMap";
 import { useRouter } from "expo-router";
-import { View } from "react-native";
+import { requireNativeModule } from "expo-modules-core";
+import { Platform, View } from "react-native";
 import { StreetEvent, countdown } from "../lib/events";
 import { Recruitment } from "../lib/recruitments";
 import { liveCells } from "../lib/presence";
@@ -31,6 +32,11 @@ export function StreetMapMarkers({
   onSelect: (longitude: number, latitude: number) => void;
 }) {
   const router = useRouter();
+  function openDetail(kind: "event" | "recruitment", id: string, longitude: number, latitude: number) {
+    if (Platform.OS === "android") void requireNativeModule("PresenceNative").selectionHaptic().catch(() => {});
+    onSelect(longitude, latitude);
+    router.push({ pathname: kind === "event" ? "/map-event" : "/map-recruitment", params: { id, fromMap: "1" } });
+  }
   return (
     <>
       {cells.map((cell) => (
@@ -93,16 +99,12 @@ export function StreetMapMarkers({
       {events
         .filter((e) => Date.parse(e.ends_at) > now)
         .map((event) => (
-          <Marker key={event.id} lngLat={[event.longitude, event.latitude]}>
+          <Marker key={event.id} lngLat={[event.longitude, event.latitude]}
+            onPress={Platform.OS === "android" ? () => openDetail("event", event.id, event.longitude, event.latitude) : undefined}>
             <MarkerFeedback
+              pointerEvents={Platform.OS === "android" ? "none" : "auto"}
               accessibilityRole="button"
-              onPress={() => {
-                onSelect(event.longitude, event.latitude);
-                router.push({
-                  pathname: "/map-event",
-                  params: { id: event.id, fromMap: "1" },
-                });
-              }}
+              onPress={Platform.OS === "android" ? undefined : () => openDetail("event", event.id, event.longitude, event.latitude)}
               style={{ alignItems: "center", maxWidth: 180 }}
             >
               <PinCountdown>{countdown(event, now)}</PinCountdown>
@@ -120,15 +122,11 @@ export function StreetMapMarkers({
       {recruitments
         .filter((p) => Date.parse(p.expires_at) > now)
         .map((pin) => (
-          <Marker key={pin.id} lngLat={[pin.longitude, pin.latitude]}>
+          <Marker key={pin.id} lngLat={[pin.longitude, pin.latitude]}
+            onPress={Platform.OS === "android" ? () => openDetail("recruitment", pin.id, pin.longitude, pin.latitude) : undefined}>
             <MarkerFeedback
-              onPress={() => {
-                onSelect(pin.longitude, pin.latitude);
-                router.push({
-                  pathname: "/map-recruitment",
-                  params: { id: pin.id, fromMap: "1" },
-                });
-              }}
+              pointerEvents={Platform.OS === "android" ? "none" : "auto"}
+              onPress={Platform.OS === "android" ? undefined : () => openDetail("recruitment", pin.id, pin.longitude, pin.latitude)}
               accessibilityRole="button"
             >
               <PinBubble>

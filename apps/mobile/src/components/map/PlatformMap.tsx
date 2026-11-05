@@ -35,6 +35,8 @@ export function Map({
 }: MapProps) {
   const mapRef = useRef<MapRef>(null);
   const [backdropRevision, refreshBackdrop] = useState(0);
+  const lastProjectionAt = useRef(0);
+  const [mapReady, setMapReady] = useState(false);
   const [cameraRevision, setCameraRevision] = useState(0);
   const projection = useMemo(() => ({ current: {
     async pointForCoordinate({ longitude, latitude }) {
@@ -53,6 +55,7 @@ export function Map({
   const reveal = useCallback(() => {
     if (revealed.current) return;
     revealed.current = true;
+    setMapReady(true);
     refreshBackdrop(n => n + 1);
     Animated.timing(cover, { toValue: 0, duration: 220, useNativeDriver: true }).start();
   }, [cover]);
@@ -63,13 +66,19 @@ export function Map({
   const map = (
     <LibreMap
       ref={mapRef}
-      onRegionIsChanging={placement ? () => setCameraRevision(r => r + 1) : undefined}
-      onDidFinishRenderingFrameFully={reveal}
+      onRegionIsChanging={placement ? () => {
+        const now = Date.now();
+        if (now - lastProjectionAt.current >= 80) {
+          lastProjectionAt.current = now;
+          setCameraRevision(r => r + 1);
+        }
+      } : undefined}
+      onDidFinishRenderingFrameFully={mapReady ? undefined : reveal}
       onDidFailLoadingMap={reveal}
-      contentInset={{ top: 0, left: 0, right: 0, bottom: bottomInset }}
+      contentInset={bottomInset ? undefined : { top: 0, left: 0, right: 0, bottom: 0 }}
       preferredFramesPerSecond={30}
       compass={false}
-      androidView="texture"
+      androidView="surface"
       mapStyle={mapStyle}
       {...props}
       onRegionWillChange={() => onMovingChange?.(true)}
@@ -89,20 +98,25 @@ export function Map({
 }
 export function Camera({ ref, ...props }: CameraProps) {
   const camera = useRef<LibreCameraRef>(null);
-  const [destination, setDestination] = useState<ViewState>();
-  useImperativeHandle(ref, () => ({ flyTo: setDestination }), []);
-  useEffect(() => {
-    if (destination) void camera.current?.flyTo(destination);
-  }, [destination]);
+  useImperativeHandle(ref, () => ({
+    flyTo({ detailPadding, ...view }: ViewState) {
+      if (detailPadding) {
+        // Apply the padded target before the sheet can pause the underlying map.
+        camera.current?.jumpTo({ ...view, padding: { top: 0, left: 0, right: 0, bottom: detailPadding } });
+      } else {
+        camera.current?.flyTo(view);
+      }
+    },
+  }), []);
   return <LibreCamera maxZoom={18} ref={camera} {...props} />;
 }
-export function Marker({ lngLat, children, draggable, onDragEnd }: MarkerProps) {
+export function Marker({ lngLat, children, draggable, onDragEnd, onPress }: MarkerProps) {
   if (draggable) return (
     <ViewAnnotation lngLat={lngLat} draggable onDragEnd={event => onDragEnd?.(event.nativeEvent.lngLat)}>
       {children}
     </ViewAnnotation>
   );
-  return <LibreMarker lngLat={lngLat}>{children}</LibreMarker>;
+  return <LibreMarker lngLat={lngLat} onPress={onPress}>{children}</LibreMarker>;
 }
 export function Boundary({ data }: BoundaryProps) {
   return (

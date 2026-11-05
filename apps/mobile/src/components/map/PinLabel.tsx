@@ -49,6 +49,7 @@ export function PinGradientText({
   children: string;
   colors?: readonly [string, string];
 }) {
+  if (Platform.OS === "android") return <Text numberOfLines={1} style={[s.text, { color: colors[0] }]}>{children}</Text>;
   return (
     <Mask
       androidRenderingMode="software"

@@ -1,5 +1,5 @@
-import { MapBlurView } from "./map/MapBlurView";
-import { glassMapSheet } from "./map/mapBlur";
+import { SheetChrome } from "./SheetChrome";
+
 import { IconPressable as Pressable } from "./icons/IconMotion";
 import type { ReactNode } from "react";
 import { useState } from "react";
@@ -34,17 +34,18 @@ export function DetailPage({
   const [reloading, setReloading] = useState(false);
   const insets = useSafeAreaInsets();
   const edgeToEdge = Platform.OS === "ios" && !root;
-  const glass = mapSheet && glassMapSheet;
+  const materialSheet = mapSheet && Platform.OS === "android";
   return (
     <SafeAreaView
       edges={
-        root || edgeToEdge ? ["top", "left", "right"] : ["top", "bottom", "left", "right"]
+        materialSheet ? ["left", "right", "bottom"]
+          : root || edgeToEdge ? ["top", "left", "right"] : ["top", "bottom", "left", "right"]
       }
-      style={[detail.page, glass && { backgroundColor: "#f2f2f799" }]}
+      style={[detail.page, materialSheet && { backgroundColor: "white" }]}
     >
-      {glass && <MapBlurView pointerEvents="none" tint="light" intensity={55} style={StyleSheet.absoluteFill} />}
+      {materialSheet && <SheetChrome />}
       <ScrollView
-        nestedScrollEnabled={glass}
+        nestedScrollEnabled={materialSheet}
         contentContainerStyle={[detail.content, edgeToEdge && { paddingBottom: detail.content.paddingBottom + insets.bottom }]}
         keyboardShouldPersistTaps="handled"
         automaticallyAdjustKeyboardInsets

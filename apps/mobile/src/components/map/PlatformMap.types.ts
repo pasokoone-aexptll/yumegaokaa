@@ -5,6 +5,7 @@ export type ViewState = {
   zoom?: number;
   pitch?: number;
   duration?: number;
+  detailPadding?: number;
 };
 export type CameraRef = { flyTo: (view: ViewState) => void };
 export type CameraProps = { initialViewState: ViewState; ref?: Ref<CameraRef> };
@@ -25,6 +26,7 @@ export type MapProps = {
 export type MarkerProps = {
   lngLat: [number, number];
   children: ReactElement;
+  onPress?: () => void;
   draggable?: boolean;
   onDragEnd?: (point: [number, number]) => void;
 };
