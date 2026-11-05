@@ -351,6 +351,7 @@ export function StreetChat({
                                 {m.kind !== "arrival" && (
                                   <Text style={styles.authorName}>
                                     {m.display_name}{" "}
+                                    {m.stay_level ? `Lv${m.stay_level} ` : ""}
                                   </Text>
                                 )}
                                 {new Date(m.created_at).toLocaleTimeString([], {
