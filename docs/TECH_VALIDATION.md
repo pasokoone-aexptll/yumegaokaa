@@ -1028,4 +1028,4 @@ RN/Expo組込み・iOS/Android実機・最終UI承認は未確認。アニメー
 
 モバイル生成時だけoverlay→screenへ変換し、原本の形・動きは維持。光沢の合成結果は元overlayと完全同一ではない。全フレームのmodeがinstalled native型の対応値であることを検査するmobile-icon-filters.testを追加。修正前失敗→修正後成功、型/Lint、生成script構文、diff検査成功。
 
-Releaseビルド（/tmp/yumegaoka-icon-crash-fix-build.log）・署名検証・iPhoneへの上書きインストール成功。修正版の最初の起動確認は端末ロックで拒否され、ユーザーへ解除を依頼中。クラッシュ解消の実機確認完了とはまだ扱わない。33タスク/DONEと固定残量は不変。
+Releaseビルド（/tmp/yumegaoka-icon-crash-fix-build.log）・署名検証・iPhoneへの上書きインストール成功。修正版の最初の起動確認は端末ロックで拒否されたが、ユーザー解除後にdevicectl consoleで30秒の起動維持を確認（/tmp/yumegaoka-crash-fix-confirm.log）。コマンドのexit2は指定した30秒監視期限による終了で、アプリのsignal終了なし。その後のdevice info processesでapp PID3451の生存を確認。今回の起動直後クラッシュは解消、全画面の外観/操作感は別途未確認。33タスク/DONEと固定残量は不変。

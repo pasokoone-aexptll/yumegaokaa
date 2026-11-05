@@ -22,7 +22,7 @@
 
 ## 直近の起動クラッシュ修正
 
-アイコン移植版3deb629で起動直後SIGABRTを実機再現。SVGのfeBlend mode=overlayがRN native非対応。モバイル生成をscreenへ変換し、全フレームのnative mode検査を追加、修正前失敗/修正後成功。修正版ReleaseをiPhoneへ上書き済み（/tmp/yumegaoka-icon-crash-fix-build.log）。端末ロックで起動確認が止まったため解除を依頼中。実機で起動が維持されることを確認してから解消とする。詳細はTECH_VALIDATION。
+アイコン移植版3deb629で起動直後SIGABRTを実機再現。SVGのfeBlend mode=overlayがRN native非対応。モバイル生成をscreenへ変換し、全フレームのnative mode検査を追加、修正前失敗/修正後成功。修正版ReleaseをiPhoneへ上書き済み（/tmp/yumegaoka-icon-crash-fix-build.log）。ユーザーのロック解除後、実機consoleで30秒間終了しないことと監視終了後のprocess生存（PID3451）を確認。起動直後クラッシュの解消を確認済み。各画面の外観/操作感は別途未確認。詳細はTECH_VALIDATION。
 
 ## 現在のフェーズ
 
