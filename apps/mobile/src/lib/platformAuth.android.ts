@@ -1,4 +1,5 @@
 import { PermissionsAndroid, Platform } from "react-native";
+import { observationTime } from "./observationTime";
 import { deliverMode } from "./modeDelivery";
 import { insideCell, projectStreetPoint } from "./streetGrid";
 import { uuid, requireNativeModule } from "expo-modules-core";
@@ -106,7 +107,7 @@ export const platformAuth = {
       throw new Error("location_permission_required");
     }
     return requireNativeModule<{
-      currentLocation(): Promise<{ longitude: number; latitude: number; accuracy: number; observed_at: number }>;
+      currentLocation(): Promise<{ longitude: number; latitude: number; accuracy: number; observed_at: number; elapsed_ms: number }>;
     }>("PresenceNative").currentLocation();
   },
   async sendOTP(email: string) {
@@ -282,20 +283,19 @@ export const platformAuth = {
       if (visit) payload.visit_id = visit.visit_id;
       if (visit && !ghost) {
         const fix = await platformAuth.currentLocation();
-        const before = performance.now();
+        const clock = requireNativeModule<{ monotonicTime(): number }>("PresenceNative");
+        const before = clock.monotonicTime();
         const config = await platformAuth.rpc<{
           polygon: { type: string; coordinates: number[][][] }; area_version: string; grid_version: string; server_time: string;
         }>("get_street_config", { street_id: visit.street_id });
-        const rtt = performance.now()-before;
-        const age = Date.now()-fix.observed_at;
-        if (rtt > 2000 || age < 0 || age+rtt/2 > 120000) throw new Error("stale_observation");
+        const observedAt = observationTime(fix.elapsed_ms, before, clock.monotonicTime(), config.server_time);
         const cell = config.polygon?.type === "Polygon" &&
           insideCell(projectStreetPoint(fix.longitude, fix.latitude), config.polygon.coordinates, fix.accuracy);
         if (!cell) throw new Error("inside_fix_required");
         Object.assign(payload, {
           seq: (BigInt(visit.last_seq ?? "0")+1n).toString(), area_version: config.area_version,
           grid_version: config.grid_version, cell_id: cell, verdict: "inside",
-          horizontal_accuracy_m: fix.accuracy, observed_at: new Date(Date.parse(config.server_time)+rtt/2-age).toISOString(),
+          horizontal_accuracy_m: fix.accuracy, observed_at: observedAt,
         });
       }
       await SecureStore.setItemAsync(key, JSON.stringify(payload));

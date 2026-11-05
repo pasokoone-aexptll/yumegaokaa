@@ -42,7 +42,8 @@ internal fun readForegroundLocation(activity: Activity, promise: Promise) {
         promise.reject("location_unavailable", "位置情報を取得できません", null)
       } else {
         promise.resolve(mapOf("longitude" to location.longitude, "latitude" to location.latitude,
-          "accuracy" to location.accuracy.toDouble(), "observed_at" to location.time.toDouble()))
+          "accuracy" to location.accuracy.toDouble(), "observed_at" to location.time.toDouble(),
+          "elapsed_ms" to location.elapsedRealtimeNanos / 1_000_000.0))
       }
     }
   } catch (error: RuntimeException) {
