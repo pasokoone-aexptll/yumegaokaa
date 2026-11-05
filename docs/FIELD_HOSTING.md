@@ -28,3 +28,5 @@ Render Hobbyの512 MB常時稼働を1台$7として算出。SMTPはResend Free�
 Renderの単一サービス定義は render.yaml、起動入口は scripts/field-gateway.mjs。PostgresにはTLS検証付きのセッション接続を使い、清掃処理を同居させる。実Push workerは別途資格・設定後に接続する。クラウドへの移行、確認コード用メールテンプレートの設定、実際の携帯回線からの受信は配備先で確認する。
 
 現地プロジェクトのOTP桁数はユーザー指定の6桁を適用済み。再比較で該当差分0件。メール本文はカスタムSMTP待ち。Renderのyumegaokaワークスペースへログイン済み。配備先のソースにExisting Imageを使えるため、ゲートウェイだけを含むイメージ定義をdeploy/fieldに用意した。レジストリ・実配備は未設定。
+
+30人の接続・再接続は、試験専用30アカウントの短期access tokenを1行1件で標準入力し、`node scripts/field-reconnect-check.mjs wss://yumegaoka-field.onrender.com/street` で計測する。全員が同時にreadyになったことを確認してから接続を閉じ、同じ30人で再接続する。出力は各回の件数・readyまでのp95・最大時間。投稿・画像の負荷は別計測。
