@@ -1,4 +1,5 @@
 import { PermissionsAndroid, Platform } from "react-native";
+import { deliverMode } from "./modeDelivery";
 import { insideCell, projectStreetPoint } from "./streetGrid";
 import { uuid, requireNativeModule } from "expo-modules-core";
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
@@ -27,6 +28,28 @@ function unwrap<T extends { data: unknown; error: { message: string } | null }>(
 ): T["data"] {
   if (result.error) throw new Error(result.error.message);
   return result.data;
+}
+
+async function modeKey() {
+  return (await attemptKey()) + ".mode";
+}
+
+function sendStoredMode(key: string, payload: Record<string, unknown>) {
+  return deliverMode(payload, p => platformAuth.rpc("set_presence_mode", p), () => SecureStore.deleteItemAsync(key));
+}
+
+async function readVisitState(): Promise<NativeState> {
+  const { visit, ghost_preference } = await platformAuth.rpc<{
+    visit: NativeState["visit"] | null;
+    ghost_preference: boolean;
+  }>("get_my_visit");
+  return {
+    visit: visit ?? {},
+    ghost_preference,
+    pending_exit: false,
+    observing: false,
+    status: visit?.state === "active" ? "参加中" : "未参加",
+  };
 }
 
 export const platformAuth = {
@@ -184,7 +207,7 @@ export const platformAuth = {
             await SecureStore.deleteItemAsync(key);
             attempt = null;
             if (previous.visit?.state === "active" && previous.visit.can_update)
-              return platformAuth.resume();
+              return readVisitState();
           }
         } catch (error) {
           if (!String(error).includes("not_found")) throw error;
@@ -206,17 +229,28 @@ export const platformAuth = {
         throw error;
       }
       await SecureStore.deleteItemAsync(key);
-      return platformAuth.resume();
+      return readVisitState();
     });
   },
   setGhost(ghost: boolean) {
     return visitOperation(async () => {
+      // A newer explicit choice supersedes a pending retry, even if already at the desired state.
+      const key = await modeKey();
+      const saved = await SecureStore.getItemAsync(key);
+      if (saved) {
+        const previous = JSON.parse(saved);
+        if (previous.ghost === ghost) {
+          await sendStoredMode(key, previous);
+          return readVisitState();
+        }
+        await SecureStore.deleteItemAsync(key);
+      }
       const current = await platformAuth.rpc<{
         visit: NativeState["visit"] | null; mode_revision: string; ghost_preference: boolean;
       }>("get_my_visit");
       const visit = current.visit?.state === "active" ? current.visit : null;
       if (visit && !visit.can_update) throw new Error("wrong_writer");
-      if (current.ghost_preference === ghost && (!visit || visit.ghost === ghost)) return platformAuth.resume();
+      if (current.ghost_preference === ghost && (!visit || visit.ghost === ghost)) return readVisitState();
       const payload: Record<string, unknown> = { ghost, request_id: uuid.v4(), mode_revision: current.mode_revision };
       if (visit) payload.visit_id = visit.visit_id;
       if (visit && !ghost) {
@@ -237,12 +271,14 @@ export const platformAuth = {
           horizontal_accuracy_m: fix.accuracy, observed_at: new Date(Date.parse(config.server_time)+rtt/2-age).toISOString(),
         });
       }
-      await platformAuth.rpc("set_presence_mode", payload);
-      return platformAuth.resume();
+      await SecureStore.setItemAsync(key, JSON.stringify(payload));
+      await sendStoredMode(key, payload);
+      return readVisitState();
     });
   },
   stop() {
     return visitOperation(async () => {
+      await SecureStore.deleteItemAsync(await modeKey());
       const key = await attemptKey();
       const attempt = await SecureStore.getItemAsync(key);
       if (attempt) {
@@ -251,27 +287,29 @@ export const platformAuth = {
         });
         await SecureStore.deleteItemAsync(key);
       }
-      const { visit } = await platformAuth.resume();
+      const { visit } = await readVisitState();
       if (visit.state === "active" && visit.can_update)
         await platformAuth.rpc("end_visit", { visit_id: visit.visit_id, reason: "manual" });
-      return platformAuth.resume();
+      return readVisitState();
     });
   },
   async resume(): Promise<NativeState> {
-    const { visit, ghost_preference } = await platformAuth.rpc<{
-      visit: NativeState["visit"] | null;
-      ghost_preference: boolean;
-    }>("get_my_visit");
-    return {
-      visit: visit ?? {},
-      ghost_preference,
-      pending_exit: false,
-      observing: false,
-      status: visit?.state === "active" ? "参加中" : "未参加",
-    };
+    return visitOperation(async () => {
+      const key = await modeKey();
+      const saved = await SecureStore.getItemAsync(key);
+      if (saved) {
+        try { await sendStoredMode(key, JSON.parse(saved)); }
+        catch (error) {
+          if (await SecureStore.getItemAsync(key)) throw error;
+          // Terminal rejection (expired fix / another writer): show the server's state.
+        }
+      }
+      return readVisitState();
+    });
   },
   async logout() {
-    const current = await platformAuth.resume().catch(() => null);
+    await visitOperation(async () => SecureStore.deleteItemAsync(await modeKey()));
+    const current = await readVisitState().catch(() => null);
     const visit = current?.visit;
     if (visit?.state === "active" && visit.can_update) {
       await platformAuth.rpc("end_visit", {

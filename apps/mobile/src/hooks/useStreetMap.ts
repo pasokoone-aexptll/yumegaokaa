@@ -2,7 +2,7 @@ import { localBlocks } from "../lib/localBlocks";
 import { streetChanges } from "../lib/streetChanges";
 import "react-native-url-polyfill/auto";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { Alert, AppState } from "react-native";
+import { Alert, AppState, Platform } from "react-native";
 import { closeMenu, setToolsButtonVisible } from "expo-dev-client";
 import { gatewayConnection } from "../lib/gatewayConnection";
 import NfcManager, { NfcTech, Ndef } from "react-native-nfc-manager";
@@ -189,6 +189,9 @@ export function useStreetMap() {
         return new NativeWebSocket(endpoint, undefined, {
           headers: { Authorization: `Bearer ${token}` },
         });
+      },
+      reconnected: () => {
+        if (Platform.OS === "android") void native.resume().then(setState).catch(() => {});
       },
       changed: () => {
         streetChanges.notify();

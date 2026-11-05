@@ -5,6 +5,7 @@ export function gatewayConnection(options: {
   token(): Promise<string>;
   connect(token: string): Socket;
   changed(): void;
+  reconnected?(): void;
   retryMs?: number;
 }) {
   let active = false;
@@ -12,6 +13,7 @@ export function gatewayConnection(options: {
   let socket: Socket | undefined;
   let timer: ReturnType<typeof setTimeout> | undefined;
   let failures = 0;
+  let connectedBefore = false;
   function retry(version: number) {
     if (!active || generation !== version || timer) return;
     const delay = Math.min(
@@ -34,6 +36,10 @@ export function gatewayConnection(options: {
         try {
           const message = JSON.parse(String(event.data));
           if (message.type === "ready" || message.type === "changed") {
+            if (message.type === "ready") {
+              if (connectedBefore) options.reconnected?.();
+              connectedBefore = true;
+            }
             failures = 0;
             options.changed();
           }
