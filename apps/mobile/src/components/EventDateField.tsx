@@ -1,16 +1,13 @@
 import { IconPressable as Pressable } from "./icons/IconMotion";
 import { MapAsset } from "./map/MapAsset";
-import { useCallback, useState } from "react";
-import DateTimePicker from "@react-native-community/datetimepicker";
+import { useCallback, useRef } from "react";
+import { EventDatePicker, type DatePickerHandle } from "./EventDatePicker";
 import {
-  Animated,
   Keyboard,
-  Modal,
   StyleSheet,
   Text,
-  View,
 } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+
 
 type Props = {
   label: string;
@@ -29,17 +26,7 @@ export function EventDateField({
   suggested,
   compact = false,
 }: Props) {
-  const [editing, setEditing] = useState<Date | null>(null);
-  const [transition] = useState(() => new Animated.Value(0));
-  const close = () => {
-    Animated.timing(transition, {
-      toValue: 0,
-      duration: 180,
-      useNativeDriver: true,
-    }).start(({ finished }) => {
-      if (finished) setEditing(null);
-    });
-  };
+  const picker = useRef<DatePickerHandle>(null);
   const parsed = new Date(value);
   const valid = Number.isFinite(parsed.getTime());
   const handleOpen = useCallback(() => {
@@ -52,7 +39,7 @@ export function EventDateField({
         ? fallback
         : new Date(Date.now() + 3600000);
     next.setSeconds(0, 0);
-    setEditing(next);
+    picker.current?.open(next);
   }, [value, suggested]);
   return (
     <>
@@ -99,69 +86,7 @@ export function EventDateField({
             : "日時を選択"}
         </Text>
       </Pressable>
-      <Modal
-        visible={!!editing && !disabled}
-        transparent
-        animationType="none"
-        onShow={() => {
-          transition.setValue(0);
-          Animated.timing(transition, {
-            toValue: 1,
-            duration: 240,
-            useNativeDriver: true,
-          }).start();
-        }}
-        onRequestClose={close}
-      >
-        <View style={styles.backdrop}>
-          <Animated.View
-            pointerEvents="none"
-            style={[
-              StyleSheet.absoluteFill,
-              { backgroundColor: "#0006", opacity: transition },
-            ]}
-          />
-          <Animated.View
-            style={{
-              transform: [
-                {
-                  translateY: transition.interpolate({
-                    inputRange: [0, 1],
-                    outputRange: [360, 0],
-                  }),
-                },
-              ],
-            }}
-          >
-            <SafeAreaView edges={["bottom"]} style={styles.sheet}>
-              <View style={styles.toolbar}>
-                <Pressable accessibilityRole="button" onPress={close}>
-                  <Text style={styles.link}>キャンセル</Text>
-                </Pressable>
-                <Text style={styles.label}>{label}日時</Text>
-                <Pressable
-                  accessibilityRole="button"
-                  onPress={() => {
-                    if (editing) onChange(editing.toISOString());
-                    close();
-                  }}
-                >
-                  <Text style={styles.link}>決定</Text>
-                </Pressable>
-              </View>
-              {editing && (
-                <DateTimePicker
-                  value={editing}
-                  mode="datetime"
-                  display="spinner"
-                  themeVariant="light"
-                  onValueChange={(_, date) => setEditing(date)}
-                />
-              )}
-            </SafeAreaView>
-          </Animated.View>
-        </View>
-      </Modal>
+      <EventDatePicker ref={picker} label={label} onChange={onChange} />
     </>
   );
 }
@@ -185,17 +110,4 @@ const styles = StyleSheet.create({
   disabled: { opacity: 0.45 },
   label: { color: "#34434b", fontWeight: "600", fontSize: 16 },
   value: { color: "#008cff", fontSize: 16, flexShrink: 1 },
-  backdrop: { flex: 1, justifyContent: "flex-end" },
-  sheet: {
-    backgroundColor: "white",
-    borderTopLeftRadius: 24,
-    borderTopRightRadius: 24,
-  },
-  toolbar: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    padding: 20,
-  },
-  link: { color: "#008cff", fontSize: 17, paddingVertical: 8 },
 });

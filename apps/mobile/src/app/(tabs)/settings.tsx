@@ -1,9 +1,10 @@
 import { AccountPage } from "../../components/AccountPage";
-import { router } from "expo-router";
+import { useRouter } from "expo-router";
 import { Text } from "react-native";
 import { DetailRow, Section, detail } from "../../components/DetailUI";
 import { useProfile } from "../../hooks/useProfile";
 export default function Settings() {
+  const router = useRouter();
   const { profile, status } = useProfile();
   return (
     <AccountPage

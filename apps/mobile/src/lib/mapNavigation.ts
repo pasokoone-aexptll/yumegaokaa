@@ -1,8 +1,9 @@
-import { router } from "expo-router";
+import type { useRouter } from "expo-router";
 
 let request = 0;
 
 export function openMapAt(
+  router: ReturnType<typeof useRouter>,
   longitude: number,
   latitude: number,
   detail?: { kind: "event" | "recruitment"; id: string },

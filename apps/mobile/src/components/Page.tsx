@@ -1,7 +1,7 @@
 import { IconPressable as Pressable } from "./icons/IconMotion";
 import { DetailIcon } from "./DetailIcon";
 import { GridBackground } from "./GridBackground";
-import { router, usePathname } from "expo-router";
+import { useRouter, usePathname } from "expo-router";
 import { ReactNode, useState } from "react";
 import {
   ActivityIndicator,
@@ -22,6 +22,7 @@ export function Page({
   headerAction?: ReactNode;
   grid?: boolean;
 }) {
+  const router = useRouter();
   const path = usePathname();
   return (
     <SafeAreaView

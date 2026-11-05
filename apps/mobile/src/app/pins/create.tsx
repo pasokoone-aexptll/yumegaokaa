@@ -19,7 +19,7 @@ import {
   View,
 } from "react-native";
 import {
-  router,
+  useRouter,
   useNavigation,
   type NativeStackNavigationProp,
 } from "expo-router";
@@ -27,6 +27,7 @@ import { useLayoutEffect, useState } from "react";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { PinButton } from "../../components/pins/PinButton";
 export default function CreatePin() {
+  const router = useRouter();
   const {
     draft,
     busy,

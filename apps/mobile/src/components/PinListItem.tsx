@@ -1,3 +1,4 @@
+import { useRouter } from "expo-router";
 import { IconPressable as Pressable } from "./icons/IconMotion";
 import { StyleSheet, Text, View } from "react-native";
 import { openMapAt } from "../lib/mapNavigation";
@@ -20,6 +21,7 @@ export function PinListItem({
   onOpen: () => void;
   detail?: { kind: "event" | "recruitment"; id: string };
 }) {
+  const router = useRouter();
   return (
     <View style={s.row}>
       <Pressable
@@ -50,7 +52,7 @@ export function PinListItem({
       <Pressable
         accessibilityRole="button"
         accessibilityLabel={`${title}の地図を開く`}
-        onPress={() => openMapAt(longitude, latitude, detail)}
+        onPress={() => openMapAt(router, longitude, latitude, detail)}
         style={s.map}
       >
         <DetailIcon name="location-outline" size={16} color="#00000088" />

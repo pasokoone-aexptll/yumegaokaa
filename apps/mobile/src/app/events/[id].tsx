@@ -1,6 +1,6 @@
 import { openMapAt } from "../../lib/mapNavigation";
 import { Alert, ActivityIndicator, Text } from "react-native";
-import { router, useLocalSearchParams } from "expo-router";
+import { useRouter, useLocalSearchParams } from "expo-router";
 import {
   DetailPage,
   DetailRow,
@@ -10,6 +10,7 @@ import {
 } from "../../components/DetailUI";
 import { useEventDetail } from "../../hooks/useEventDetail";
 export default function Event() {
+  const router = useRouter();
   const { id, fromMap } = useLocalSearchParams<{
     id: string;
     fromMap?: string;
@@ -65,7 +66,7 @@ export default function Event() {
                 title="開催場所"
                 subtitle="地図で見る"
                 onPress={() =>
-                  openMapAt(event.longitude, event.latitude, {
+                  openMapAt(router, event.longitude, event.latitude, {
                     kind: "event",
                     id,
                   })

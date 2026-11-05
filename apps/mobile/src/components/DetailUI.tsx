@@ -11,7 +11,7 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { router } from "expo-router";
+import { useRouter } from "expo-router";
 import { DetailIcon } from "./DetailIcon";
 
 export function DetailPage({
@@ -29,6 +29,7 @@ export function DetailPage({
   refreshing?: boolean;
   onRefresh?: () => Promise<unknown>;
 }) {
+  const router = useRouter();
   const [reloading, setReloading] = useState(false);
   const glass = mapSheet && glassMapSheet;
   return (

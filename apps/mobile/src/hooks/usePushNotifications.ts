@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
 import { AppState } from "react-native";
-import { router } from "expo-router";
+import { useRouter } from "expo-router";
 import { native } from "../lib/native";
 
 export function usePushLifecycle(active: boolean, revision: number) {
+  const router = useRouter();
   useEffect(() => {
     if (!active) return;
     let disposed = false;

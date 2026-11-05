@@ -11,12 +11,13 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { StatusBar } from "expo-status-bar";
-import { router } from "expo-router";
+import { useRouter } from "expo-router";
 import { usePushPermission } from "../../hooks/usePushNotifications";
 import { useNotifications } from "../../hooks/useNotifications";
 import { DetailRow, Section, detail } from "../DetailUI";
 
 export function NotificationsScreen() {
+  const router = useRouter();
   const push = usePushPermission();
   const { items, error, loading, reading, load, markRead } = useNotifications();
   const [scroll] = useState(() => new Animated.Value(0));

@@ -22,7 +22,7 @@ import { StreetMapMarkers } from "../../components/StreetMapMarkers";
 import { streetMapStyles as styles } from "../../components/streetMapStyles";
 import { mapStyle } from "../../lib/mapStyle";
 import { StreetChat } from "../../components/StreetChat";
-import { router, useLocalSearchParams, useFocusEffect } from "expo-router";
+import { useRouter, useLocalSearchParams, useFocusEffect } from "expo-router";
 import { useCallback, useEffect, useRef, useState } from "react";
 import {
   useWindowDimensions,
@@ -46,6 +46,7 @@ import { liveCells } from "../../lib/presence";
 import { fieldTrial, localEntry, nfcDisabled } from "../../lib/development";
 import { useStreetMap } from "../../hooks/useStreetMap";
 export default function Street() {
+  const router = useRouter();
   const placement = usePinPlacement();
   const [mapMoving, setMapMoving] = useState(false);
   const { height } = useWindowDimensions();

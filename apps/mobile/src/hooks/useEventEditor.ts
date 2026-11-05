@@ -7,10 +7,11 @@ import { beginPinPlacement } from "../lib/pinPlacement";
 import { openMapAt } from "../lib/mapNavigation";
 import { eventInputError } from "../lib/eventInput";
 import { useCallback, useState } from "react";
-import { useFocusEffect, router } from "expo-router";
+import { useFocusEffect, useRouter } from "expo-router";
 import { native } from "../lib/native";
 import { StreetEvent } from "../lib/events";
 export function useEventEditor(id: string) {
+  const router = useRouter();
   const [restored] = useState(() => readEventEdit(id));
   const [event, setEvent] = useState<StreetEvent | undefined>(restored?.event),
     [title, setTitle] = useState(restored?.title ?? ""),
@@ -68,7 +69,7 @@ export function useEventEditor(id: string) {
       latest,
     });
     beginPinPlacement(point, id);
-    if (point) openMapAt(point[0], point[1]);
+    if (point) openMapAt(router, point[0], point[1]);
     else router.dismissTo("/(tabs)");
   }
   async function save() {

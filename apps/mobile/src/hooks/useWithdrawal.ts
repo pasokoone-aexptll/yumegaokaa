@@ -1,8 +1,9 @@
 import { useRef, useState } from "react";
-import { router } from "expo-router";
+import { useRouter } from "expo-router";
 import { native } from "../lib/native";
 
 export function useWithdrawal() {
+  const router = useRouter();
   const [request, setRequest] = useState<{ id: string; email: string }>(),
     [code, setCode] = useState(""),
     [busy, setBusy] = useState(false),

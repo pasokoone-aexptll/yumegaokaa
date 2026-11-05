@@ -16,7 +16,7 @@ import { ProgressiveBlur } from "./map/ProgressiveBlur";
 import { MapAsset } from "./map/MapAsset";
 import { MapFeedback, type MapNotice } from "./map/MapFeedback";
 import { SmoothSurface } from "./map/SmoothSurface";
-import { router } from "expo-router";
+import { useRouter } from "expo-router";
 import {
   Animated,
   Easing,
@@ -44,6 +44,7 @@ export function StreetChat({
     reload: () => Promise<void>;
   }) => void;
 }) {
+  const router = useRouter();
   const {
     readError,
     pending,
@@ -372,7 +373,7 @@ export function StreetChat({
                                   second: "2-digit",
                                 })}
                               </Text>
-                              <Text style={styles.body}>
+                              <Text textBreakStrategy="simple" android_hyphenationFrequency="none" style={styles.body}>
                                 {m.deleted ? (
                                   "削除されたメッセージ"
                                 ) : m.kind === "arrival" ? (
@@ -411,7 +412,7 @@ export function StreetChat({
                                   maxWidth: "100%",
                                 }}
                               >
-                                <Text style={styles.body}>{e.body}</Text>
+                                <Text textBreakStrategy="simple" android_hyphenationFrequency="none" style={styles.body}>{e.body}</Text>
                               </ChatTouchRegion>
                             </View>
                           </View>
@@ -442,7 +443,7 @@ export function StreetChat({
                                 maxWidth: "100%",
                               }}
                             >
-                              <Text style={styles.body}>{pendingText}</Text>
+                              <Text textBreakStrategy="simple" android_hyphenationFrequency="none" style={styles.body}>{pendingText}</Text>
                             </ChatTouchRegion>
                           </View>
                         </View>

@@ -1,9 +1,10 @@
-import { router } from "expo-router";
+import { useRouter } from "expo-router";
 import { Alert, Text, View } from "react-native";
 import { Action, Empty, Page, ui } from "../components/Page";
 import { useModeration } from "../hooks/useModeration";
 
 export default function Moderation() {
+  const router = useRouter();
   const { items, error, busy, loading, load, act } = useModeration();
   return (
     <Page title="通報対応">

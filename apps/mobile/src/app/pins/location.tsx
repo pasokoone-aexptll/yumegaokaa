@@ -1,7 +1,8 @@
-import { router } from "expo-router";
+import { useRouter } from "expo-router";
 import { LocationPicker } from "../../components/LocationPicker";
 import { updateDraft, usePinDraft } from "../../lib/pinDraft";
 export default function Location() {
+  const router = useRouter();
   const draft = usePinDraft();
   return (
     <LocationPicker

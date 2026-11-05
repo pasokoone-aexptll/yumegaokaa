@@ -4,12 +4,13 @@ import { homeEvents } from "../../lib/homeEvents";
 import { useState } from "react";
 import { Animated, RefreshControl, StyleSheet, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { router } from "expo-router";
+import { useRouter } from "expo-router";
 import { PinListItem } from "../../components/PinListItem";
 import { MapAsset } from "../../components/map/MapAsset";
 import { useHomePins } from "../../hooks/useHomePins";
 
 export default function Home() {
+  const router = useRouter();
   const { items, recruitments, error, loading, load } = useHomePins();
   const insets = useSafeAreaInsets();
   const [scroll] = useState(() => new Animated.Value(0));

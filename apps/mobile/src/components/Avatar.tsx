@@ -77,7 +77,7 @@ export function Avatar({
       {bucket === "street-icons" ? (
         <UIIcon name="presence-star" size={size * 0.7} />
       ) : name ? (
-        <Text>{Array.from(name)[0]}</Text>
+        <Text allowFontScaling={false} style={{ fontSize: size * 0.65, lineHeight: size * 0.92, fontWeight: "900", includeFontPadding: false, color: "rgba(0,0,0,0.06)" }}>{Array.from(name)[0]}</Text>
       ) : (
         <UIIcon name="user" size={size * 0.7} />
       )}

@@ -1,5 +1,5 @@
 import { useCallback, useState } from "react";
-import { router, useFocusEffect } from "expo-router";
+import { useRouter, useFocusEffect } from "expo-router";
 import { Alert, Modal, Text, View } from "react-native";
 import { Camera, Boundary, Map } from "../../components/map/PlatformMap";
 import { Action, Empty, Page, ui } from "../../components/Page";
@@ -24,6 +24,7 @@ type Preview = {
   boundary?: GeoJSON.Polygon;
 };
 export default function Area() {
+  const router = useRouter();
   const [placements, setPlacements] = useState<Placement[]>([]),
     [drafts, setDrafts] = useState<StickerDraft[]>([]),
     [selected, setSelected] = useState<string[]>([]),

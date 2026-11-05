@@ -1,6 +1,6 @@
 import { eventInputError } from "../lib/eventInput";
 import { useEffect, useState } from "react";
-import { router } from "expo-router";
+import { useRouter } from "expo-router";
 import { usePinDraft, updateDraft, clearDraft } from "../lib/pinDraft";
 import {
   submitCommand,
@@ -9,6 +9,7 @@ import {
 } from "../lib/commands";
 import { native, streetID } from "../lib/native";
 export function usePinCreation() {
+  const router = useRouter();
   const draft = usePinDraft();
   const { kind, title, description, starts, ends, location, capacity } = draft;
   const [busy, setBusy] = useState(false),

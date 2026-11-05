@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { router } from "expo-router";
+import { useRouter } from "expo-router";
 import {
   Modal,
   Pressable,
@@ -14,6 +14,7 @@ import { screenCatalog, scenarios } from "../components/debug/catalog";
 
 /** Isolated presentation fixtures: no native, repository, auth or DB mutations. */
 export default function UIPreview() {
+  const router = useRouter();
   const [selected, select] = useState("");
   const [query, setQuery] = useState("");
   const [id, setID] = useState("");

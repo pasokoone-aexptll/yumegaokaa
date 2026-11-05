@@ -1,7 +1,7 @@
 import { RecruitmentIcon } from "../../components/RecruitmentIcon";
 import { openMapAt } from "../../lib/mapNavigation";
 import { Alert, Text, TextInput } from "react-native";
-import { router, useLocalSearchParams } from "expo-router";
+import { useRouter, useLocalSearchParams } from "expo-router";
 import {
   DetailPage,
   DetailRow,
@@ -11,6 +11,7 @@ import {
 } from "../../components/DetailUI";
 import { useRecruitmentDetail } from "../../hooks/useRecruitmentDetail";
 export default function Detail() {
+  const router = useRouter();
   const { id, fromMap } = useLocalSearchParams<{
     id: string;
     fromMap?: string;
@@ -45,7 +46,7 @@ export default function Detail() {
             <PrimaryAction
               title="地図で場所を見る"
               onPress={() =>
-                openMapAt(pin.longitude, pin.latitude, {
+                openMapAt(router, pin.longitude, pin.latitude, {
                   kind: "recruitment",
                   id,
                 })

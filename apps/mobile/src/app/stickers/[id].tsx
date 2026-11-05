@@ -1,10 +1,11 @@
 import { LocationPicker } from "../../components/LocationPicker";
-import { router, useLocalSearchParams } from "expo-router";
+import { useRouter, useLocalSearchParams } from "expo-router";
 import { Alert, Modal, Text, TextInput } from "react-native";
 import { Action, Empty, Page, ui } from "../../components/Page";
 import { localStickerAdapter } from "../../lib/stickers";
 import { useStickerDetail } from "../../hooks/useStickerDetail";
 export default function Sticker() {
+  const router = useRouter();
   const { id } = useLocalSearchParams<{ id: string }>();
   const {
     draft,

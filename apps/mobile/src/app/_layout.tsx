@@ -7,13 +7,15 @@ import {
 } from "../hooks/useAccountAccess";
 import { useEffect, useRef, useSyncExternalStore } from "react";
 import { sessionState } from "../lib/sessionState";
-import { Stack, router, usePathname } from "expo-router";
+import { Stack, useRouter, usePathname } from "expo-router";
+import { Platform } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 export default function Layout() {
   const session = useSyncExternalStore(
     sessionState.subscribe,
     sessionState.get,
   );
+  const router = useRouter();
   const path = usePathname();
   const access = useAccountAccess(session.signed_in, session.revision);
   usePushLifecycle(access.status === "active", session.revision);
@@ -45,7 +47,7 @@ export default function Layout() {
       )
         router.replace("/");
     }
-  }, [session.ready, session.signed_in, path, access.status]);
+  }, [session.ready, session.signed_in, path, access.status, router]);
   return (
     <IconMotionProvider>
       <AccountAccessContext.Provider value={access}>
@@ -62,7 +64,7 @@ export default function Layout() {
                 sheetAllowedDetents: [0.57],
                 sheetInitialDetentIndex: 0,
                 sheetGrabberVisible: true,
-                contentStyle: { backgroundColor: "transparent" },
+                contentStyle: { backgroundColor: Platform.OS === "android" ? sheetBackground : "transparent" },
               }}
             />
             <Stack.Screen

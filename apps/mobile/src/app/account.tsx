@@ -1,9 +1,10 @@
 import { Text, TextInput } from "react-native";
-import { router } from "expo-router";
+import { useRouter } from "expo-router";
 import { DetailPage, Section, DetailRow } from "../components/DetailUI";
 import { Action, ui } from "../components/Page";
 import { useEmailChange } from "../hooks/useEmailChange";
 export default function Account() {
+  const router = useRouter();
   const a = useEmailChange();
   return (
     <DetailPage

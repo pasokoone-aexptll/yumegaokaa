@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { StretchySunset } from "./StretchySunset";
-import { router } from "expo-router";
+import { useRouter } from "expo-router";
 import {
   ActivityIndicator,
   Image,
@@ -41,6 +41,7 @@ export function StreetLogin({
   login,
   nextSendAt = 0,
 }: Props & { nextSendAt?: number }) {
+  const router = useRouter();
   const [scroll] = useState(() => new Animated.Value(0));
   const [now, setNow] = useState(Date.now);
   useEffect(() => {

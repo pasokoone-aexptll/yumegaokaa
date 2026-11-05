@@ -1,8 +1,9 @@
-import { router } from "expo-router";
+import { useRouter } from "expo-router";
 import { Text, TextInput, View } from "react-native";
 import { Action, Empty, Page, ui } from "../components/Page";
 import { useOperatorDashboard } from "../hooks/useOperatorDashboard";
 export default function Screen() {
+  const router = useRouter();
   const {
     operator,
     ready,

@@ -1,8 +1,9 @@
 import { useCallback, useRef, useState } from "react";
-import { router, useFocusEffect } from "expo-router";
+import { useRouter, useFocusEffect } from "expo-router";
 import { native } from "../lib/native";
 import { StickerDraft, stickerTouch } from "../lib/stickers";
 export function useStickerDetail(id: string) {
+  const router = useRouter();
   const [draft, setDraft] = useState<StickerDraft>(),
     [busy, setBusy] = useState(false),
     [error, setError] = useState("");

@@ -10,7 +10,7 @@ import { EventCloudPin } from "./EventCloudPin";
 import { MarkerFeedback } from "./map/MarkerFeedback";
 import { Avatar } from "./Avatar";
 import { Marker } from "./map/PlatformMap";
-import { router } from "expo-router";
+import { useRouter } from "expo-router";
 import { View } from "react-native";
 import { StreetEvent, countdown } from "../lib/events";
 import { Recruitment } from "../lib/recruitments";
@@ -30,6 +30,7 @@ export function StreetMapMarkers({
   now: number;
   onSelect: (longitude: number, latitude: number) => void;
 }) {
+  const router = useRouter();
   return (
     <>
       {cells.map((cell) => (

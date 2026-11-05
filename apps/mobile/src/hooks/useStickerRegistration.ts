@@ -1,5 +1,5 @@
 import { useCallback, useState } from "react";
-import { router, useFocusEffect } from "expo-router";
+import { useRouter, useFocusEffect } from "expo-router";
 import { native, streetID } from "../lib/native";
 import {
   submitCommand,
@@ -8,6 +8,7 @@ import {
 } from "../lib/commands";
 import { StickerDraft } from "../lib/stickers";
 export function useStickerRegistration() {
+  const router = useRouter();
   const [items, setItems] = useState<StickerDraft[]>([]),
     [title, setTitle] = useState(""),
     [point, setPoint] = useState<[number, number]>(),

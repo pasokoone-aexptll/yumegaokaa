@@ -5,7 +5,8 @@ import { sessionState } from "../../lib/sessionState";
 import { AccountAccessContext } from "../../hooks/useAccountAccess";
 import { usePinPlacement } from "../../lib/pinPlacement";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { Keyboard, useWindowDimensions, View, StyleSheet } from "react-native";
+import { Keyboard, Platform, useWindowDimensions, View, StyleSheet } from "react-native";
+import { mapBlur } from "../../components/map/mapBlur";
 import { BlurView } from "expo-blur";
 import { Tabs, usePathname } from "expo-router";
 import { AnimatedTabButton } from "../../components/AnimatedTabButton";
@@ -38,6 +39,12 @@ export default function StreetTabs() {
           tabBarIconStyle: tabIconStyle,
           tabBarActiveTintColor: dark ? "#fff" : "#000",
           tabBarInactiveTintColor: dark ? "#ffffff99" : "#00000099",
+          tabBarBackground: Platform.OS === "android" && dark ? () => (
+            <View pointerEvents="none" style={[StyleSheet.absoluteFill, { overflow: "hidden", backgroundColor: "#151518" }]}>
+              <BlurView {...mapBlur} tint="dark" intensity={40}
+                style={{ position: "absolute", inset: -16, backgroundColor: "#10101499" }} />
+            </View>
+          ) : undefined,
           tabBarStyle: {
             display: shouldShowTabs(
               session.ready,
@@ -48,7 +55,7 @@ export default function StreetTabs() {
             )
               ? "flex"
               : "none",
-            backgroundColor: dark ? "#000000e6" : "#fafafa",
+            backgroundColor: dark && Platform.OS === "android" ? "transparent" : dark ? "#000000e6" : "#fafafa",
             borderTopWidth: StyleSheet.hairlineWidth,
             borderTopColor: dark ? "#ffffff26" : "#0000001a",
             ...tabInsets(insets.bottom, width),
@@ -96,8 +103,8 @@ export default function StreetTabs() {
           }}
         />
       </Tabs>
-      {pathname === "/pins/create" && !placement.active && (
-        <BlurView
+      {((pathname === "/pins/create" && !placement.active) || (Platform.OS === "android" && pathname === "/street-entry")) && (
+        <BlurView {...mapBlur}
           pointerEvents="none"
           intensity={25}
           tint="default"

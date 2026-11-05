@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { router, useLocalSearchParams } from "expo-router";
+import { useRouter, useLocalSearchParams } from "expo-router";
 import { Text, TextInput } from "react-native";
 import {
   DetailPage as Page,
@@ -10,6 +10,7 @@ import {
 } from "../components/DetailUI";
 import { native } from "../lib/native";
 export default function Report() {
+  const router = useRouter();
   const { kind, id } = useLocalSearchParams<{ kind: string; id: string }>();
   const [reason, setReason] = useState("spam"),
     [description, setDescription] = useState(""),

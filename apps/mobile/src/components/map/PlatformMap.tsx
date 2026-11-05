@@ -1,4 +1,5 @@
 import { BlurTargetView } from "expo-blur";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { StyleSheet } from "react-native";
 import { streetMapTarget } from "./streetMapTarget";
 import { useRef, useImperativeHandle } from "react";
@@ -21,13 +22,15 @@ import type {
 export type { CameraRef } from "./PlatformMap.types";
 export function Map({
   mapStyle = defaultStyle,
-  placement: _placement,
+  placement,
   bottomInset: _bottomInset,
   onMovingChange,
   ...props
 }: MapProps) {
+  const insets = useSafeAreaInsets();
   const map = (
     <LibreMap
+      compass={false}
       androidView="texture"
       mapStyle={mapStyle}
       {...props}
@@ -36,7 +39,7 @@ export function Map({
     />
   );
   return onMovingChange ? (
-    <BlurTargetView ref={streetMapTarget} style={StyleSheet.absoluteFill}>{map}</BlurTargetView>
+    <BlurTargetView ref={streetMapTarget} style={[StyleSheet.absoluteFill, { bottom: placement ? 0 : -(48 + insets.bottom) }]}>{map}</BlurTargetView>
   ) : map;
 }
 export function Camera({ ref, ...props }: CameraProps) {

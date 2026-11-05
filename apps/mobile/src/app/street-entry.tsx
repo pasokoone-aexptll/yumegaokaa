@@ -3,7 +3,7 @@ import { scheduleEntrySuccessDismissal } from "../lib/entrySuccessDismissal";
 import { requireNativeModule } from "expo-modules-core";
 import type { NativeStackNavigationProp } from "expo-router";
 import { useEffect, useSyncExternalStore } from "react";
-import { router, useNavigation } from "expo-router";
+import { useNavigation } from "expo-router";
 import {
   Pressable,
   ScrollView,
@@ -43,8 +43,8 @@ export default function StreetEntry() {
     [navigation],
   );
   useEffect(() => {
-    if (!value?.sheet && router.canGoBack()) router.back();
-  }, [value?.sheet]);
+    if (!value?.sheet && navigation.canGoBack()) navigation.goBack();
+  }, [value?.sheet, navigation]);
   useEffect(() => {
     if (phase !== "success") return;
     const bridge = requireNativeModule("PresenceNative");

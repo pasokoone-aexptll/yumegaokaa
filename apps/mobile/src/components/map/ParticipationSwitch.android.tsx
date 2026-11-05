@@ -21,9 +21,9 @@ export function ParticipationSwitch({ value, onChange }: {
       <SmoothSurface radius={26} color="#ffffff26" blurIntensity={25}
         style={{ width: 65, height: 46, alignItems: "center", justifyContent: "center" }}>
         <View style={{ width: 51, height: 31, padding: 2, borderRadius: 16,
-          backgroundColor: value ? "#34C759" : "#76767A" }}>
+          backgroundColor: value ? "#34C759" : "#b8b8bc" }}>
           <Animated.View style={{ width: 27, height: 27, borderRadius: 14,
-            backgroundColor: "white", elevation: 2, transform: [{ translateX:
+            backgroundColor: "white", elevation: 3, transform: [{ translateX:
               progress.interpolate({ inputRange: [0, 1], outputRange: [0, 20] }) }] }} />
         </View>
       </SmoothSurface>
