@@ -1089,3 +1089,7 @@ VisitLifecycleに後方互換のoptional journal項目を追加し、オフラ�
 StreetLoginのScrollViewをAnimatedへ変更、既存StretchySunsetにscroll offsetを渡す。固定の暗色overlayは共通伸縮枠内へ移し、上端まで画像と一緒に覆う。既存キーボード追従・ログイン操作を維持。型/Lint結果は下記。iPhone更新・DB変更・ビルドは実施しない。実機外観は未確認。
 
 型/Lint・diff検査成功。共通伸縮処理は変更していないため、既存の伸縮試験や全件試験は反復しない。
+
+## 2026-11-05 一回限りのUI版実機更新
+
+ユーザー「おけ、一回更新して」により今回の更新だけ許可。e0bb1e1の製品コードに17b6f4aのStreetLogin伸縮修正を含む版をReleaseビルド、署名検証・iPhone上書き成功。039未適用の利用中DBと互換性を保つため79234d6のモバイル変更8ファイルをビルド時だけe0bb1e1に戻し、finallyで開発HEADへ全復元した。git diffで既存の素材削除2件以外に復元漏れがないことを確認。ビルドログは/tmp/yumegaoka-login-stretch-update.log。ゴースト・DB変更は今回の実機に含まない。ログイン背景の外観合格は未確認。今後のiPhone更新停止方針は継続。
