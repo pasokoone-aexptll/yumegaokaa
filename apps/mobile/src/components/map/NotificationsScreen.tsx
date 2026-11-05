@@ -208,7 +208,7 @@ export function NotificationsScreen() {
                 push.status === "unavailable"
                   ? "この検証ビルドはプッシュ通知に未対応です。"
                   : push.status === "denied"
-                    ? "iPhoneの設定で通知を許可してください。"
+                    ? "端末の設定で夢ヶ丘の通知を許可してください。"
                     : push.status === "error"
                       ? "登録できませんでした。再試行してください。"
                       : undefined

@@ -35,6 +35,8 @@ export function useStreetChat() {
     lastRead = useRef(0),
     pendingRefresh = useRef(false),
     mounted = useRef(true);
+  const consecutiveFailures = useRef(0);
+  const hasLoaded = useRef(false);
   const load = useCallback(async (more = false) => {
     if (!mounted.current) return;
     if (fetching.current) {
@@ -48,7 +50,7 @@ export function useStreetChat() {
       const last = previous.at(-1);
       const page = async (cursor?: ChatCursor) => {
         // Leave margin under the server's five reads / ten seconds limit.
-        const wait = Math.max(0, 2600 - (Date.now() - lastRead.current));
+        const wait = Math.max(0, 5100 - (Date.now() - lastRead.current));
         if (wait) await new Promise((resolve) => setTimeout(resolve, wait));
         if (gen !== generation.current) return [];
         lastRead.current = Date.now();
@@ -82,9 +84,11 @@ export function useStreetChat() {
       itemsRef.current = next.filter((m) => !localBlocks.hidden(m.author_id));
       setItems(itemsRef.current);
       reconcileEchoes.current(itemsRef.current.map((m) => m.id));
+      hasLoaded.current = true;
+      consecutiveFailures.current = 0;
       setError("");
     } catch {
-      if (gen === generation.current)
+      if (gen === generation.current && (++consecutiveFailures.current >= 2 || more || !hasLoaded.current))
         setError("チャットを取得できません。再読み込みしてください。");
     } finally {
       fetching.current = false;
@@ -105,7 +109,7 @@ export function useStreetChat() {
     void loadRef.current();
     const timer = setInterval(() => {
       if (AppState.currentState === "active") void loadRef.current();
-    }, 5000);
+    }, 11000);
     const unsubscribeBlocks = localBlocks.subscribe(() => {
       itemsRef.current = itemsRef.current.filter(
         (m) => !localBlocks.hidden(m.author_id),

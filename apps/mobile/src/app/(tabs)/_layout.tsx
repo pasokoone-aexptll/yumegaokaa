@@ -4,7 +4,7 @@ import { sessionState } from "../../lib/sessionState";
 import { AccountAccessContext } from "../../hooks/useAccountAccess";
 import { usePinPlacement } from "../../lib/pinPlacement";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { Keyboard, useWindowDimensions, View, StyleSheet } from "react-native";
+import { Keyboard, Platform, useWindowDimensions, View, StyleSheet } from "react-native";
 import { BlurView } from "expo-blur";
 import { Tabs, usePathname } from "expo-router";
 import { AnimatedTabButton } from "../../components/AnimatedTabButton";
@@ -34,7 +34,7 @@ export default function StreetTabs() {
           headerShown: false,
           tabBarButton: (props) => <AnimatedTabButton {...props} />,
           tabBarShowLabel: false,
-          tabBarIconStyle: { width: 60, height: 40 },
+          tabBarIconStyle: { width: 32, height: 32, alignSelf: "center" },
           tabBarActiveTintColor: dark ? "#fff" : "#000",
           tabBarInactiveTintColor: dark ? "#ffffff99" : "#00000099",
           tabBarStyle: {
@@ -50,9 +50,10 @@ export default function StreetTabs() {
             backgroundColor: dark ? "#000000e6" : "#fafafa",
             borderTopWidth: StyleSheet.hairlineWidth,
             borderTopColor: dark ? "#ffffff26" : "#0000001a",
-            height: 42 + insets.bottom,
+            height: (Platform.OS === "android" ? 48 : 42) + insets.bottom,
             paddingHorizontal: width * 0.085,
-            paddingTop: 4,
+            paddingTop: Platform.OS === "ios" ? 7 : 4,
+            paddingBottom: Platform.OS === "ios" ? Math.max(0, insets.bottom - 3) : insets.bottom + 5,
           },
         }}
       >

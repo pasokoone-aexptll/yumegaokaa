@@ -1,7 +1,11 @@
+import { PermissionsAndroid, Platform } from "react-native";
+import { requireNativeModule } from "expo-modules-core";
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 import * as SecureStore from "expo-secure-store";
 import type { NativeState } from "./native";
 
+const push = requireNativeModule<{ pushAllowed(): Promise<boolean>; pushToken(): Promise<string> }>("PresenceNative");
+let registration = "";
 let client: SupabaseClient;
 let origin: string;
 let publishableKey: string;
@@ -78,6 +82,25 @@ export const platformAuth = {
       }),
     );
   },
+  async pushStatus() {
+    if (!await push.pushAllowed()) return "denied";
+    return registration ? "registered" : "disabled";
+  },
+  async pushSync(request: boolean) {
+    if (request && Number(Platform.Version) >= 33 && !await push.pushAllowed()) {
+      await PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS);
+    }
+    if (!await push.pushAllowed()) { registration = ""; return "denied"; }
+    const session = unwrap(await client.auth.getSession()).session;
+    if (!session) { registration = ""; return "disabled"; }
+    const token = await push.pushToken();
+    const identity = session.access_token + ":" + token;
+    if (registration !== identity) {
+      unwrap(await client.rpc("push_registration", { operation: "register", payload: { environment: "fcm", token } }));
+      registration = identity;
+    }
+    return "registered";
+  },
   async realtimeToken() {
     const { session } = unwrap(await client.auth.getSession());
     if (!session) throw new Error("login_required");
@@ -111,6 +134,8 @@ export const platformAuth = {
         reason: "logout",
       }).catch(() => {});
     }
+    registration = "";
+    await client.rpc("push_registration", { operation: "remove" });
     const { error } = await client.auth.signOut({ scope: "local" });
     if (error && (await platformAuth.session()).signed_in) throw new Error(error.message);
   },

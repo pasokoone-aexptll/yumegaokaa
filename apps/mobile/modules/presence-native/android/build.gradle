@@ -9,3 +9,7 @@ version = '1.0.0'
 android {
   namespace 'jp.yumegaoka.presence'
 }
+
+dependencies {
+  implementation 'com.google.firebase:firebase-messaging:24.1.2'
+}

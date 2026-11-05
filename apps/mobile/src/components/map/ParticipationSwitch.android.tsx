@@ -19,7 +19,7 @@ export function ParticipationSwitch({ value, onChange }: {
     <Pressable accessibilityRole="switch" accessibilityLabel="街への参加"
       accessibilityState={{ checked: value }} onPress={() => onChange(!value)}>
       <SmoothSurface radius={26} color="#ffffff26" blurIntensity={25}
-        style={{ width: 82, height: 46, alignItems: "center", justifyContent: "center" }}>
+        style={{ width: 65, height: 46, alignItems: "center", justifyContent: "center" }}>
         <View style={{ width: 51, height: 31, padding: 2, borderRadius: 16,
           backgroundColor: value ? "#34C759" : "#76767A" }}>
           <Animated.View style={{ width: 27, height: 27, borderRadius: 14,

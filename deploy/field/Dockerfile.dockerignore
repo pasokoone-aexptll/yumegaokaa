@@ -9,3 +9,5 @@
 !scripts/lib/realtime-gateway.mjs
 !scripts/lib/maintenance.mjs
 !scripts/lib/notification-delivery.mjs
+!scripts/lib/fcm.mjs
+!scripts/lib/push-delivery.mjs

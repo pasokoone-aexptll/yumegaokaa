@@ -76,7 +76,7 @@ export function SmoothSurface({
         <Svg
           pointerEvents="none"
           accessible={false}
-          style={StyleSheet.absoluteFill}
+          style={[StyleSheet.absoluteFill, { left: 0, top: 0 }]}
           width={size.width}
           height={size.height}
         >

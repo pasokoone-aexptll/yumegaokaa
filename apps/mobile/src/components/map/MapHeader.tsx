@@ -87,9 +87,12 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingHorizontal: 10,
     height: 39,
+    flexShrink: 0,
+    justifyContent: "center",
   },
   number: {
     color: "white",
+    includeFontPadding: false,
     fontSize: 22,
     fontWeight: "600",
     fontFamily: Platform.OS === "ios" ? "ui-rounded" : undefined,

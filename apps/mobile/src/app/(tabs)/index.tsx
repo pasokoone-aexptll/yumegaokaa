@@ -273,8 +273,8 @@ export default function Street() {
         <View style={{ minHeight: 48 }}>
           <PresenceHeader icons={presenceIcons} />
         </View>
-        {!!modeNotice && <MapStatusBanner key={modeNotice} message={modeNotice} />}
-        {!!chatRead?.error && (
+        <MapStatusBanner message={modeNotice} />
+        {chatRead && (
           <MapStatusBanner
             message={chatRead.error}
             actionLabel="再読み込み"
@@ -282,8 +282,8 @@ export default function Street() {
             autoDismiss={false}
           />
         )}
-        {!["未参加", "気配を観測中"].includes(state.status) && !/^(ゴーストモード|公開への切替待ち|非公開への切替待ち)/.test(state.status) && (
-          <MapStatusBanner key={state.status} message={state.status}>
+        {(
+          <MapStatusBanner message={["未参加", "気配を観測中"].includes(state.status) || /^(ゴーストモード|公開への切替待ち|非公開への切替待ち)/.test(state.status) ? "" : state.status}>
             {state.visit.can_update === false &&
               state.visit.state === "active" && (
                 <Pressable
