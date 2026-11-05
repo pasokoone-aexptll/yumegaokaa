@@ -27,22 +27,24 @@ export function StretchySunset({
   });
   return (
     <View style={[{ height }, style]}>
-      <Animated.Image
-        source={require("../../assets/backgrounds/yuuyake.png")}
-        resizeMode="cover"
+      <Animated.View
         pointerEvents="none"
         style={[
           StyleSheet.absoluteFill,
           {
-            width: "100%",
-            height: "100%",
             transform: [
               { translateY: Animated.multiply(pull, -0.5) },
               { scale: Animated.add(1, Animated.divide(pull, height)) },
             ],
           },
         ]}
-      />
+      >
+        <Animated.Image
+          source={require("../../assets/backgrounds/yuuyake.png")}
+          resizeMode="cover"
+          style={{ width: "100%", height: "100%" }}
+        />
+      </Animated.View>
       {children}
     </View>
   );

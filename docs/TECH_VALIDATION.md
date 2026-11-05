@@ -1053,3 +1053,9 @@ figma-mapの現役素材をbrand/tabs/backgrounds/illustrationsに移動し全�
 型/Lint、参照画像15件の存在、ui-interactions4試験（badgeとpull幅50/200pt・通常scrollを含む）、diff検査成功。実機外観/スクロール感は未確認。DB・保持期限・認可の変更なし。既定33タスク/固定残量は不変。
 
 最終Releaseビルド（/tmp/yumegaoka-header-assets-final.log）、codesign検証、iPhone上書きインストール成功。起動要求は端末ロック（Locked）で拒否され、最新版の起動と実機外観は未確認。DBリセット・チャット削除・pushなし。
+
+## 11月5日 ヘッダー背景の配置回帰修正（R19）
+
+ユーザーの実機画像でAccountの背景が右端/下端まで届かず、名前・タイトルの背景が灰色になる回帰を確認。StretchySunsetの画像直接の百分率指定を廃止し、四辺0の背景専用Animated.View内で画像を全面表示する。親のpaddingと画像の割合寸法を分離。Homeも同じ修正を適用。型/Lint・関連4試験成功。前回の数式試験は実レイアウトの保証ではなかった。今回も実機の外観合格は未確認。アイコンサイズ・タブ・MVP進捗は不変。
+
+修正版Releaseビルド（/tmp/yumegaoka-header-bounds-fix.log）、署名検証、iPhone上書きインストール成功。画面の外観確認は未完。

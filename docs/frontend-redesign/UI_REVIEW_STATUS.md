@@ -88,3 +88,7 @@ Homeの既存pull更新は短い/空の一覧でも引けるよう明示し、�
 現役素材はassets/brand・tabs・backgrounds・illustrationsへ分類。mapAssets.tsは退役し、brandAndTabAssets.tsが現役ロゴ/タブ9SVGを生成。MapAssetは汎用アイコンへの互換名ルーティングを維持し、使われなくなった旧viewBox補正を削除。旧SVG/未参照画像と変更開始時のmapAssets内容はdocs/reference/figma-map-legacyへ保持。生成はscripts/build-brand-assets.mjs。汎用アイコンはcomponents/icons/frames.json、原本はicons/yumegaoka-ui。
 
 型/Lint・実行時画像15参照の存在・オフラインbadge/伸縮境界テスト成功。iPhoneでの見え方は未確認。
+
+## 11月5日 ヘッダー背景の配置回帰修正（R19）
+
+ユーザーの実機画像でAccountの背景が右端/下端まで届かず、名前・タイトルの背景が灰色になる回帰を確認。StretchySunsetの画像直接の百分率指定を廃止し、四辺0の背景専用Animated.View内で画像を全面表示する。親のpaddingと画像の割合寸法を分離。Homeも同じ修正を適用。型/Lint・関連4試験成功。前回の数式試験は実レイアウトの保証ではなかった。今回も実機の外観合格は未確認。アイコンサイズ・タブ・MVP進捗は不変。

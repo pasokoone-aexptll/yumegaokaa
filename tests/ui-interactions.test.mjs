@@ -48,7 +48,7 @@ test('Offline header removes the count badge and gives the logo more space',()=>
 });
 
 test('sunset stretch covers pull-down gap and stays unchanged on normal upward scroll',()=>{
- const numericAnimated={Image:'Image',multiply:(a,b)=>a*b,divide:(a,b)=>a/b,add:(a,b)=>a+b};
+ const numericAnimated={View:'AnimatedView',Image:'Image',multiply:(a,b)=>a*b,divide:(a,b)=>a/b,add:(a,b)=>a+b};
  const {StretchySunset}=moduleAt('apps/mobile/src/components/StretchySunset.tsx',{
   'react-native':{Animated:numericAnimated,StyleSheet:{absoluteFill:{}},View:'View'},
   '../../assets/backgrounds/yuuyake.png':0,
@@ -60,7 +60,11 @@ test('sunset stretch covers pull-down gap and stays unchanged on normal upward s
    return o[i]+(offset-r[i])/(r[i+1]-r[i])*(o[i+1]-o[i]);
   }};
   const h=300,tree=StretchySunset({scroll,height:h});
-  const transform=tree.props.children[0].props.style[1].transform;
+  const background=tree.props.children[0];
+  assert.equal(background.type, "AnimatedView");
+  assert.equal(background.props.style[1].height, undefined, "background bounds use all four edges, independent of header padding");
+  assert.equal(background.props.children.props.style.height, "100%");
+  const transform=background.props.style[1].transform;
   const translate=transform[0].translateY,scale=transform[1].scale;
   if(offset<0) {
    assert.ok(Math.abs(h/2+translate-h*scale/2-offset)<0.001,'top covers the viewport edge');
