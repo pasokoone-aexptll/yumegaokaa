@@ -13,7 +13,7 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import type { useStreetMap } from "../hooks/useStreetMap";
-import { localEntry } from "../lib/development";
+import { fieldTrial, localEntry } from "../lib/development";
 
 type Props = Pick<
   ReturnType<typeof useStreetMap>,
@@ -78,24 +78,26 @@ export function StreetLogin({
           </Text>
           <Text style={s.note}>
             {sent
-              ? `${email} に確認コードを送りました。`
+              ? `${email} に${fieldTrial ? "確認メールを送りました。メールのリンクを長押ししてコピーし、下に貼り付けてください。" : "確認コードを送りました。"}`
               : "招待されたメールアドレスを入力してください。"}
           </Text>
           <View style={s.card}>
             <Text style={s.label}>
-              {sent ? "確認コード" : "メールアドレス"}
+              {sent ? (fieldTrial ? "メールの確認リンク" : "確認コード") : "メールアドレス"}
             </Text>
             {sent ? (
               <TextInput
-                style={[s.input, { fontSize: 28, letterSpacing: 6 }]}
-                keyboardType="number-pad"
+                style={[s.input, { fontSize: fieldTrial ? 15 : 28, letterSpacing: fieldTrial ? 0 : 6 }]}
+                keyboardType={fieldTrial ? "url" : "number-pad"}
+                autoCapitalize="none"
+                autoCorrect={false}
                 textContentType="oneTimeCode"
                 autoComplete="one-time-code"
-                placeholder="000000"
+                placeholder={fieldTrial ? "https://…" : "000000"}
                 placeholderTextColor="#00000033"
                 value={code}
                 onChangeText={setCode}
-                accessibilityLabel="メールの確認コード"
+                accessibilityLabel={fieldTrial ? "メールの確認リンク" : "メールの確認コード"}
               />
             ) : (
               <TextInput

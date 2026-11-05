@@ -17,7 +17,7 @@ import {
 } from "../lib/native";
 import { Recruitment } from "../lib/recruitments";
 import { StreetEvent } from "../lib/events";
-import { localEntry, localHost, nfcDisabled } from "../lib/development";
+import { fieldTrial, localEntry, localHost, nfcDisabled } from "../lib/development";
 const initial: NativeState = {
   observing: false,
   status: "未参加",
@@ -258,14 +258,12 @@ export function useStreetMap() {
       setError("端末の観測は停止しました。退出は通信回復後に反映します。");
     }
   }
-  async function enterFixture() {
+  async function enterFixture(tagId: string) {
     canceled.current = false;
     setSheet("checking");
     setError("");
     try {
-      const result = await native.checkin(
-        "22222222-2222-4222-8222-222222222222",
-      );
+      const result = await native.checkin(tagId);
       if (!canceled.current) {
         setState(result);
         setSheet("success");
@@ -291,6 +289,10 @@ export function useStreetMap() {
     }
   }
   async function performScan() {
+    if (fieldTrial) {
+      await enterFixture("14fdc906-3ff4-4576-a212-35c42642dd49");
+      return;
+    }
     if (nfcDisabled && !localEntry) {
       setError(
         "NFC代替はローカルAPIに接続した開発・検証用ビルドで使用してください。",
@@ -299,7 +301,7 @@ export function useStreetMap() {
       return;
     }
     if (localEntry) {
-      await enterFixture();
+      await enterFixture("22222222-2222-4222-8222-222222222222");
       return;
     }
     canceled.current = false;

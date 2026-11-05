@@ -48,7 +48,20 @@ actor APIClient {
  func sendOTP(email:String) async throws { _ = try await request(path:"/auth/v1/otp",body:["email":email,"create_user":true]) }
  func verifyOTP(email:String,code:String) async throws -> [String:Any] {
   authGeneration+=1;let generation=authGeneration
-  let r=try await request(path:"/auth/v1/verify",body:["email":email,"token":code,"type":"email"]);guard generation==authGeneration else{throw ServiceError(code:"login_required")};try save(r);return session()
+  var body:[String:Any]=["email":email,"token":code,"type":"email"]
+  if code.hasPrefix("https://") {
+   guard let link=URLComponents(string:code), link.scheme=="https", link.host==URL(string:base)?.host,
+         link.port==nil,link.user==nil,link.password==nil,link.path=="/auth/v1/verify",
+         let hash=link.queryItems?.first(where:{$0.name=="token"})?.value,!hash.isEmpty,
+         let type=link.queryItems?.first(where:{$0.name=="type"})?.value,["signup","magiclink","email"].contains(type)
+   else {throw ServiceError(code:"invalid_input")}
+   body=["token_hash":hash,"type":type]
+  }
+  let r=try await request(path:"/auth/v1/verify",body:body)
+  guard generation==authGeneration,let identity=r["user"] as? [String:Any],
+        let actual=identity["email"] as? String,actual.caseInsensitiveCompare(email) == .orderedSame,
+        r["access_token"] is String else{throw ServiceError(code:"login_required")}
+  try save(r);return session()
  }
  func lifecycleScope() throws -> String {
   guard let token=credentials["access_token"] as? String else { throw ServiceError(code:"login_required") }

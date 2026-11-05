@@ -16,7 +16,7 @@ import { brandAndTabSvgAssets } from "../components/map/brandAndTabAssets";
 import { EntryAnimation } from "../components/map/EntryAnimation";
 import { entrySheetState } from "../lib/entrySheetState";
 import { useEntryPresentation } from "../hooks/useEntryPresentation";
-import { localEntry } from "../lib/development";
+import { fieldTrial, localEntry } from "../lib/development";
 const header = brandAndTabSvgAssets["DreamCloud Logo"]
   .replaceAll('fill="white"', 'fill="black"')
   .replaceAll('fill="#FFFFFF"', 'fill="#000000"');
@@ -87,7 +87,7 @@ export default function StreetEntry() {
               }}
             >
               <Text style={{ color: "#00ADF2", fontSize: 13.44 }}>
-                {localEntry ? "開発用タグで入街（NFC代用）" : "NFCを読み取る"}
+                {fieldTrial ? "現地試験で入街" : localEntry ? "開発用タグで入街（NFC代用）" : "NFCを読み取る"}
               </Text>
             </Pressable>
           )}

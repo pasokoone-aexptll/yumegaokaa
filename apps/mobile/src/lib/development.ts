@@ -27,3 +27,7 @@ const validationRelease =
   Constants.expoConfig?.extra?.validationRelease === true;
 export const localEntry =
   (__DEV__ || validationRelease) && nfcDisabled && localHost;
+
+// Only this project's server provisions the account-bound trial tag.
+export const fieldTrial = url === "https://kchsbjayfdwjjbevqlop.supabase.co" &&
+  process.env.EXPO_PUBLIC_FIELD_TRIAL === "1";

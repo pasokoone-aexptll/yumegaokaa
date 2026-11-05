@@ -21,7 +21,7 @@
 | C06 | 構成/認可/公開面/不要処理/保持と常時稼働を対象点検、月額案を比較 | FIELD_HOSTING.mdに構成・運用不足・3案を記録。ユーザーが月$7案を選択、30人負荷は現地配備後 |
 | C07 | Androidの認証・永続状態・背景観測・UIのnative依存を移植、ビルド | Android prebuild・固有モジュールのKotlinコンパイル成功。時計・触覚を登録、認証・背景測位・アプリ起動確認が残る |
 | C08 | Android NFC/FCMと通知遷移を接続、実端末で検証可能にする | 未着手 |
-| C09 | 承認されたクラウド・メール・常時worker/gatewayへ配備しLAN外利用を可能にする | 東京の専用Supabase yumegaoka-field に044まで適用。Render Starter（$7/月）の配備完了。公開HTTPS /healthz は200、/street の未認証WebSocket要求は401。認証付き接続・イベント受信は未確認。Free標準SMTPではコード本文への変更を管理APIが400で拒否。独自SMTPまたは標準リンク対応が必要。現地の入街と携帯回線確認が残る |
+| C09 | 承認されたクラウド・メール・常時worker/gatewayへ配備しLAN外利用を可能にする | 東京の専用Supabase yumegaoka-field に044まで適用。Render Starter（$7/月）の配備完了。公開HTTPS /healthz は200、/street の未認証WebSocket要求は401。認証付き接続・イベント受信は未確認。Free標準SMTPではコード本文への変更を管理APIが400で拒否。iPhone現地版は標準メールの確認リンク貼付に対応。池袋試験区画、一般会員1名、11月12日09:52 JSTまでの専用タグを設定。クラウドReleaseの署名・実機インストール・起動成功。DBで許可対象・他者拒否・期限切れ拒否をrollback確認。携帯回線での本人ログインと入街は操作待ち |
 | C10 | iPhone/Androidの新規登録・入街・ゴースト・チャット・募集・通知を一巡、現地/背景確認 | 関連実装・実機待ち |
 
 ## 今回のゴールと判定方法

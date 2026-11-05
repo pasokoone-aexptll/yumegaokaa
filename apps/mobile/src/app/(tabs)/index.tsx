@@ -41,7 +41,7 @@ import {
 } from "../../components/map/PlatformMap";
 import { native, url } from "../../lib/native";
 import { liveCells } from "../../lib/presence";
-import { localEntry, nfcDisabled } from "../../lib/development";
+import { fieldTrial, localEntry, nfcDisabled } from "../../lib/development";
 import { useStreetMap } from "../../hooks/useStreetMap";
 export default function Street() {
   const placement = usePinPlacement();
@@ -286,7 +286,7 @@ export default function Street() {
                   onPress={() => setSheet("explain")}
                 >
                   <Text style={styles.link}>
-                    {localEntry ? "開発用の入街を開始" : "この端末でNFCを読む"}
+                    {fieldTrial ? "現地試験で入街" : localEntry ? "開発用の入街を開始" : "この端末でNFCを読む"}
                   </Text>
                 </Pressable>
               )}
