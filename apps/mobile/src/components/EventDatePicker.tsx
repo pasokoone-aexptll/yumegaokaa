@@ -1,25 +1,19 @@
-import { useImperativeHandle, useState, type Ref } from "react";
-import { Modal, Pressable, Text, View } from "react-native";
-import DateTimePicker from "@react-native-community/datetimepicker";
+import { useImperativeHandle, type Ref } from "react";
+import { requireNativeModule } from "expo-modules-core";
 
 export type DatePickerHandle = { open: (date: Date) => void };
 export type DatePickerProps = { ref: Ref<DatePickerHandle>; label: string; onChange: (value: string) => void };
 
+const picker = requireNativeModule<{
+  pickEventDate(title: string, milliseconds: number): Promise<number | null>;
+}>("PresenceNative");
+
 export function EventDatePicker({ ref, label, onChange }: DatePickerProps) {
-  const [draft, setDraft] = useState<Date | null>(null);
-  useImperativeHandle(ref, () => ({ open: setDraft }), []);
-  return (
-    <Modal visible={!!draft} presentationStyle="pageSheet" animationType="slide"
-      allowSwipeDismissal onRequestClose={() => setDraft(null)}>
-      <View style={{ padding: 20, flexDirection: "row", justifyContent: "space-between" }}>
-        <Pressable onPress={() => setDraft(null)}><Text>キャンセル</Text></Pressable>
-        <Text>{label}日時</Text>
-        <Pressable onPress={() => { if (draft) onChange(draft.toISOString()); setDraft(null); }}>
-          <Text>決定</Text>
-        </Pressable>
-      </View>
-      {draft && <DateTimePicker value={draft} mode="datetime" display="spinner"
-        onValueChange={(_, date) => setDraft(date)} />}
-    </Modal>
-  );
+  useImperativeHandle(ref, () => ({
+    async open(date) {
+      const value = await picker.pickEventDate(label + "日時", date.getTime());
+      if (value != null) onChange(new Date(value).toISOString());
+    },
+  }), [label, onChange]);
+  return null;
 }

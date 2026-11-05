@@ -24,6 +24,15 @@ public class PresenceNativeModule: Module {
    Prop("maxLength", 500) { (view:ChatIMEInput, value:Int) in view.maxLength=value }
    Prop("inputLabel") { (view:ChatIMEInput, value:String) in view.setLabel(value) }
   }
+  AsyncFunction("pickEventDate") { [weak self] (title: String, milliseconds: Double, promise: Promise) in
+   Task { @MainActor in
+    guard let presenter = self?.appContext?.utilities?.currentViewController(),
+          !presenter.isBeingDismissed,
+          !((presenter as? UINavigationController)?.topViewController is EventDateSheet)
+    else { promise.resolve(nil as Double?); return }
+    EventDateSheet(title: title, milliseconds: milliseconds) { promise.resolve($0) }.present(from: presenter)
+   }
+  }.runOnQueue(.main)
   AsyncFunction("selectionHaptic") { await MainActor.run {
    let feedback = UIImpactFeedbackGenerator(style: .light)
    feedback.prepare()
