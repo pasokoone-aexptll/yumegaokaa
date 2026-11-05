@@ -51,3 +51,5 @@ C07/C08/C10（11月5日）：PixelへAndroid専用のチャットヒット判定
 Firebase yuwegaoka-staging に jp.yumegaoka.development を登録。Pixel版にFCMトークン取得と通知許可・Supabase登録を実装、現地DBに045を適用。Render配信処理はコードまで。Pixelはログイン画面まで確認、アカウントでの通知許可/登録・実受信/遷移とRender配信資格の設定は未完。型検査とAndroid Release成功。既存Push試験は署名試験成功、ローカルDB試験はサービス停止中で接続できず。
 
 C07/C08/C10 OS境界：タブ、バッジ、地図ぼかし/シート、NFC・通知案内、チャット更新、トースト、認証を端末別モジュールから選ぶ。iOSのチャット間隔を5秒/最短2.6秒に戻し、Androidは11秒/最短5.1秒。両OSのMetro出力で9組のモジュールについて相手OSの実装が含まれないことを確認。型確認・ネイティブ設定テスト成功。クラウド046でFCM登録/配信入口を分割。旧Pixelの登録は互換分岐。APNsからFCMをclaimできず、認証済み一般会員が配信関数を呼べないことをロールバック試験して適用。端末更新、実Push、見た目の実機合格は別。
+
+C09 認証メール：auth.dreamcloud.sh のResend SMTPを現地Supabaseに設定。送信元 noreply@auth.dreamcloud.sh、確認コード6桁。指定済み試験アドレスへのOTP要求はHTTP 200、Resendで件名「夢ヶ丘の確認コード」がDelivered。新規会員の招待・端末上のコード入力は別確認。秘密値は設定ファイルに含めない。
