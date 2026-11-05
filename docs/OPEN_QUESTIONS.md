@@ -47,4 +47,4 @@ ADPは約1か月後の予定。実NFCと実Pushは分離し、ローカル画面
 
 ## Map再設計後の追加機能（後工程）
 
-[MAP_REDESIGN](frontend-redesign/MAP_REDESIGN.md)のMR01〜05。ゴーストの更新/復元、滞在時間レベルの尺度、メンション通知の詳細、募集pool画像接続は後日具体化。地図は最新指示でiOS=Apple Maps、Android=MapLibreを採用済み。今回UI作業の先行条件にしない。
+[MAP_REDESIGN](frontend-redesign/MAP_REDESIGN.md)のMR01〜05。ゴーストの更新/復元は11月5日に承認済み。残る判断は滞在時間レベルの尺度、メンション通知の詳細、募集pool画像接続は後日具体化。地図は最新指示でiOS=Apple Maps、Android=MapLibreを採用済み。今回UI作業の先行条件にしない。

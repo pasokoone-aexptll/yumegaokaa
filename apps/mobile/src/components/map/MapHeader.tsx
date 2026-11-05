@@ -11,6 +11,9 @@ export function MapHeader({
   stale,
   active,
   onToggle,
+  ghost = false,
+  modeDisabled = false,
+  onModePress,
 }: {
   name: string;
   offline?: boolean;
@@ -18,6 +21,9 @@ export function MapHeader({
   stale: boolean;
   active: boolean;
   onToggle: (value: boolean) => void;
+  ghost?: boolean;
+  modeDisabled?: boolean;
+  onModePress?: () => void;
 }) {
   return (
     <View style={styles.row}>
@@ -62,10 +68,11 @@ export function MapHeader({
       )}
       <View style={{ flex: 1 }} />
       <Pressable
-        disabled
+        disabled={modeDisabled || !onModePress}
+        onPress={onModePress}
         accessibilityRole="button"
-        accessibilityLabel="気配の公開設定（準備中）"
-        accessibilityState={{ disabled: true }}
+        accessibilityLabel={`気配の公開設定：${ghost ? "ゴースト" : "通常"}`}
+        accessibilityState={{ disabled: modeDisabled || !onModePress }}
       >
         <SmoothSurface
           color="#ffffff26"
@@ -76,7 +83,7 @@ export function MapHeader({
           <View
             style={[
               styles.dot,
-              { backgroundColor: active ? "#00bc83" : "#ffffff66" },
+              { backgroundColor: ghost ? "#c3a6ff" : active ? "#00bc83" : "#ffffff66" },
             ]}
           />
           <View style={{ transform: [{ rotate: "90deg" }] }}>

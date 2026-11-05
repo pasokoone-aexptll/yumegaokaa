@@ -1,11 +1,21 @@
 import Foundation
 
 // Persist intent before network I/O. This journal contains IDs/sequence only, never location.
+struct PresenceModeIntent: Codable {
+ var ghost: Bool
+ var request: String = UUID().uuidString
+ var revision: String?
+ var visit: String?
+}
 struct VisitIntent: Codable {
  var attempt: String?
  var visit: String?
  var sequence: Int64 = 0
  var stopping = false
+ // Optional fields keep journals written before ghost mode decodable.
+ var mode: PresenceModeIntent?
+ var ghostPreference: Bool?
+ var modeRevision: String?
 }
 @MainActor final class VisitLifecycle {
  typealias RPC = (String, [String:Any]) async throws -> [String:Any]
@@ -33,6 +43,8 @@ struct VisitIntent: Codable {
    let ticket=generation
    if intent.stopping { try await flushStop() }
    guard ticket==generation else {throw ServiceError(code:"canceled")}
+   try await flushMode()
+   guard intent.mode == nil else { throw ServiceError(code:"operation_in_progress") }
    // Resolve a previous uncertain commit before accepting a new input.
    if intent.attempt != nil { try await recoverAttempt() }
    guard valid(ticket) else {throw ServiceError(code:"canceled")}
@@ -70,6 +82,10 @@ struct VisitIntent: Codable {
    next.visit=id
    next.sequence=max(next.sequence,Int64(v["last_seq"] as? String ?? "0") ?? 0)
   } else { next.visit=nil; next.sequence=0 }
+  if let preference=result["ghost_preference"] as? Bool { next.ghostPreference=preference }
+  if let revision=result["mode_revision"] as? String { next.modeRevision=revision }
+  if let ghost=v?["ghost"] as? Bool, next.ghostPreference == nil { next.ghostPreference=ghost }
+  if next.modeRevision == nil { next.modeRevision=v?["mode_revision"] as? String }
   try write(next); visit=v; changed?()
  }
  func resume() async throws {
@@ -83,6 +99,7 @@ struct VisitIntent: Codable {
    let r=try await rpc("get_my_visit",[:])
    guard valid(ticket) else { await finish(); return }
    try accept(r)
+   try await flushMode()
    await finish()
   } catch { await finish(); throw error }
  }
@@ -104,7 +121,71 @@ struct VisitIntent: Codable {
    do { _ = try await rpc("end_visit",["visit_id":id,"reason":"manual"]) }
    catch let e as ServiceError where ["not_found","wrong_writer"].contains(e.code) { }
   }
-  try write(VisitIntent()); visit=nil; changed?()
+  var next=VisitIntent()
+  next.ghostPreference=intent.ghostPreference; next.modeRevision=intent.modeRevision
+  // Keep an offline hide preference for the next entry, but never a pending publish.
+  if var mode=intent.mode, mode.ghost { mode.visit=nil; next.mode=mode }
+  try write(next); visit=nil; changed?()
+  try await flushMode()
+ }
+ // Mode requests are journaled before I/O. Ordinary observations must pause
+ // while pending, and every request carries a server revision and unique retry ID.
+ func setGhost(_ ghost: Bool) async throws {
+  guard !intent.stopping, !busy || ghost else { throw ServiceError(code:"operation_in_progress") }
+  generation+=1
+  var next=intent
+  // A hide may interrupt an in-flight publish. Fetch its resulting revision
+  // after that request finishes, without ever rebasing a publish request.
+  next.mode=PresenceModeIntent(ghost:ghost,revision:busy ? nil : intent.modeRevision,visit:intent.visit)
+  if ghost { intent=next; changed?(); try save(next) } else { try write(next) }
+  if busy { return }
+  busy=true
+  do { try await flushMode(); await finish() }
+  catch { await finish(); throw error }
+ }
+ private func flushMode() async throws {
+  guard let mode=intent.mode else { return }
+  // Publishing an active visit is only allowed through a fresh observation.
+  if !mode.ghost && intent.visit != nil { return }
+  try await sendMode(observation:nil)
+ }
+ private func sendMode(observation: [String:Any]?) async throws {
+  guard var mode=intent.mode else { return }
+  let ticket=generation
+  if mode.revision == nil {
+   let current=try await rpc("get_my_visit",[:])
+   guard valid(ticket) else { return }
+   try accept(current)
+   if let target=mode.visit, target != intent.visit {
+    var next=intent; next.mode=nil; try write(next)
+    throw ServiceError(code:"inactive_visit")
+   }
+   mode.revision=intent.modeRevision
+   mode.visit=intent.visit
+   var next=intent; next.mode=mode; try write(next)
+  }
+  guard let revision=mode.revision else { throw ServiceError(code:"invalid_response") }
+  var body=observation ?? [:]
+  body["ghost"]=mode.ghost; body["request_id"]=mode.request; body["mode_revision"]=revision
+  if let id=mode.visit { body["visit_id"]=id }
+  do {
+   let result=try await rpc("set_presence_mode",body)
+   guard ticket==generation, intent.mode?.request==mode.request else { return }
+   try accept(result)
+   var next=intent; next.mode=nil; try write(next)
+  } catch let error as ServiceError where ["conflict","wrong_writer","inactive_visit"].contains(error.code) {
+   // Never rebase a stale publish onto a new visit or a newer privacy choice.
+   if ticket==generation, intent.mode?.request==mode.request {
+    var next=intent; next.mode=nil; try write(next)
+   }
+   throw error
+  }
+ }
+ func publishWithObservation(_ body:[String:Any]) async throws {
+  guard !busy, !intent.stopping, intent.mode?.ghost == false else { throw ServiceError(code:"operation_in_progress") }
+  busy=true
+  do { try await sendMode(observation:body); await finish() }
+  catch { await finish(); throw error }
  }
  func nextSequence() throws -> Int64 {
   guard !intent.stopping, intent.visit != nil else { throw ServiceError(code:"inactive_visit") }

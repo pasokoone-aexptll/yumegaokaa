@@ -96,3 +96,7 @@ Homeの既存pull更新は短い/空の一覧でも引けるよう明示し、�
 ## 11月5日 伸縮背景の暗色overlay（R19）
 
 ユーザー指摘の上端で暗色overlayが切れる問題を修正。Home/Accountの固定overlayをStretchySunsetの背景専用Animated.View内へ移し、画像と同じ変換を共有する。既存の濃さ（Home #00000020、Account #00000026）は維持。型/Lint・関連4試験成功（overlayが画像と同じ伸縮枠内にあることを追加確認）。実機外観合格は未確認。MVP進捗不変。
+
+## 11月5日 MR01 ゴースト操作接続
+
+既存の公開設定枠に通常/ゴースト選択を接続し、確認済みモードと切替待ちを区別して表示。募集作成は通常復帰を案内。最終Figma未提供につき暫定操作接続。039 migration/Swift実装は利用中DB・iPhoneに未反映、外観と実機操作の合格は未確認。詳細はMAP_REDESIGN/TECH_VALIDATION。

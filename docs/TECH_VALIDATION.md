@@ -1071,3 +1071,15 @@ Releaseビルド（/tmp/yumegaoka-overlay-fix.log）・署名検証・iPhone上�
 ユーザー指定Downloads/assets/ikebukuro.png（224×166）をapps/mobile/assets/brand/ikebukuro.pngへそのままコピー。MapHeaderは既存参照とcontain表示を維持し、新しい縦横比を保持。他のDownloads素材は対象外。実機外観合格は未確認。
 
 元画像とのバイト一致、型/Lint、Releaseビルド（/tmp/yumegaoka-ikebukuro-asset.log）、署名検証、iPhone上書き成功。素材のみの変更につき機能試験は反復せず。
+
+## 2026-11-05 MR01 ゴースト実装（R04〜R11/R12/R15/R19/R21）
+
+採用された①〜⑦に基づき039 migrationを追加。membersに次回入街へ引き継ぐ私有設定/版/再送ID、visitsにghost/版を保持。新規visitの初期値とarrival_log抑止をtriggerで保証。set_presence_modeは会員行ロック・更新元制約・版照合・再送IDで順序と再送を管理。非公開時は気配削除/募集終了、通常復帰は既存の新しい街内観測検査と同一transaction。ghost観測はcell/gridを拒否し、時刻/鮮度/精度/順序/街範囲版を検査して3時間延長。公開行/募集insertにもghost拒否を設置。
+
+VisitLifecycleに後方互換のoptional journal項目を追加し、オフライン意思・再起動・応答紛失を回復。PresenceEngineはゴースト中cellを送らず、通常復帰時は計測開始以降の新しい街内位置から切替を確定。切替時のgenerationとmode_revisionで旧公開応答/要求を抑止。UIは既存選択枠に標準メニューを接続、モードと切替待ちを表示。募集の案内/送信ガードを接続。Figma最終UIではない。
+
+確認：型/Lint成功。既存VisitLifecycle最小12assertions成功。追加ghost coordinatorのオフライン・応答紛失/再起動・新観測待ち・古い応答無視・公開競合拒否・旧journal読込が成功。Swift engine/module構文解析成功。初回追加試験のthrowing autoclosureを修正後成功。SQLの実行・ネイティブ全体ビルド・実機は未実施。ユーザーの速度優先/利用中環境維持指示により全件監査/DB試験/反復ビルドは省略。
+
+039は利用中DBへ未適用。接続先サービス停止/変更なし。iPhoneへインストール/起動なし。DBリセット・チャット再削除・pushなし。コード実装済み、DB統合/実機未確認でありMVP完成ではない。既存DONE27/33、固定残量ローカル4/外部3を維持。次の導入時は039と新native bridgeを含むアプリを揃え、残る実DB/実機確認を行う。
+
+補足：公開要求の応答待ち中にもhide意思を永続化し、その要求完了後の版を取得して非公開を反映する。公開側の版の自動更新は行わない。追加の応答待ち中hideケースもcoordinatorで成功。退会時はghost設定/最終再送IDを消去するtriggerを追加（DB実行未確認）。

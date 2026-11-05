@@ -74,6 +74,7 @@ public class PresenceNativeModule: Module {
   AsyncFunction("verifyOTP") { (email:String,code:String) in try await APIClient.shared.verifyOTP(email:email,code:code) }
   AsyncFunction("rpc") { (operation:String,payload:[String:Any]) in try await APIClient.shared.rpc(operation,payload) }
   AsyncFunction("checkin") { (tag:String) in try await PresenceEngine.shared.checkin(tagID:tag) }
+  AsyncFunction("setGhost") { (ghost:Bool) in try await PresenceEngine.shared.setGhost(ghost) }
   AsyncFunction("stop") { try await PresenceEngine.shared.stop() }
   AsyncFunction("resume") { await PresenceEngine.shared.resume();return await PresenceEngine.shared.state() }
   AsyncFunction("logout") {

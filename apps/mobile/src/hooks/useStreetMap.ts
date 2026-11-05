@@ -392,6 +392,29 @@ export function useStreetMap() {
     state.visit.can_update === true &&
     !state.pending_exit &&
     (!state.visit.expires_at || Date.parse(state.visit.expires_at) > now);
+  async function changeMode(ghost: boolean) {
+    if (busy) return;
+    setBusy(true);
+    try {
+      setState(await native.setGhost(ghost));
+      await refresh();
+    } catch (e) {
+      setError(friendly(e));
+    } finally {
+      setBusy(false);
+    }
+  }
+  function chooseMode() {
+    Alert.alert(
+      "気配の公開設定",
+      "ゴーストでも人数に含まれます。位置は公開せず、募集は終了します。投稿やイベントの名前は表示されます。次の入街にも設定を引き継ぎます。",
+      [
+        { text: "通常モード", onPress: () => void changeMode(false) },
+        { text: "ゴーストモード", onPress: () => void changeMode(true) },
+        { text: "キャンセル", style: "cancel" },
+      ],
+    );
+  }
   async function logout() {
     snapshotGeneration.current++;
     refreshQueued.current = false;
@@ -435,5 +458,6 @@ export function useStreetMap() {
     writeTestTag,
     active,
     logout,
+    chooseMode,
   };
 }

@@ -7,11 +7,15 @@ export type Visit = {
   can_update: boolean;
   expires_at: string;
   last_seq: string;
+  ghost?: boolean;
+  mode_revision?: string;
 };
 export type NativeState = {
   observing: boolean;
   status: string;
   pending_exit: boolean;
+  ghost_preference?: boolean;
+  pending_mode?: "" | "ghost" | "public";
   visit: Partial<Visit>;
 };
 export type Snapshot = {
@@ -59,6 +63,7 @@ const bridge = requireNativeModule("PresenceNative") as {
   verifyOTP(email: string, code: string): Promise<unknown>;
   rpc<T>(operation: string, payload: Record<string, unknown>): Promise<T>;
   checkin(tag: string): Promise<NativeState>;
+  setGhost(ghost: boolean): Promise<NativeState>;
   stop(): Promise<NativeState>;
   resume(): Promise<NativeState>;
   logout(): Promise<void>;
@@ -120,6 +125,7 @@ export const native: typeof bridge = {
   sendOTP: (email) => bridge.sendOTP(email),
   rpc: (operation, payload) => bridge.rpc(operation, payload),
   checkin: (tag) => bridge.checkin(tag),
+  setGhost: (ghost) => bridge.setGhost(ghost),
   stop: () => bridge.stop(),
   resume: () => bridge.resume(),
   addListener: (event, listener) => bridge.addListener(event, listener),

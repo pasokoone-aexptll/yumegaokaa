@@ -95,6 +95,7 @@ export default function Street() {
     writeTestTag,
     active,
     logout,
+    chooseMode,
   } = useStreetMap();
   function closeAccount() {
     setSettings(false);
@@ -251,8 +252,20 @@ export default function Street() {
           count={snapshot?.checked_in_count}
           stale={!!error}
           active={active}
+          ghost={state.visit.ghost ?? state.ghost_preference}
+          modeDisabled={busy || state.pending_exit}
+          onModePress={chooseMode}
           onToggle={(value) => (value ? setSheet("explain") : void exit())}
         />
+        {(state.pending_mode || state.visit.ghost || state.ghost_preference) && (
+          <Text style={{ color: "white", fontSize: 12, marginTop: 6 }} accessibilityLiveRegion="polite">
+            {state.pending_mode === "ghost"
+              ? "非公開への切替待ち"
+              : state.pending_mode === "public"
+                ? "公開への切替待ち・新しい位置を確認中"
+                : "ゴーストモード"}
+          </Text>
+        )}
         <View style={{ minHeight: 48 }}>
           <PresenceHeader icons={presenceIcons} />
         </View>

@@ -125,8 +125,12 @@ export function usePinCreation() {
       }
       const p = await native.currentLocation();
       const v = await native.rpc<{
-        visit: { visit_id: string; can_update: boolean } | null;
+        visit: { visit_id: string; can_update: boolean; ghost?: boolean } | null;
       }>("get_my_visit", {});
+      if (v.visit?.ghost) {
+        setError("募集するには通常モードへ戻してください。");
+        return;
+      }
       if (!v.visit?.can_update || p.accuracy > 50)
         throw Error("location_or_visit");
       setRecruitBody({
@@ -154,6 +158,11 @@ export function usePinCreation() {
       }
       setBusy(true);
       try {
+        const state = await native.resume();
+        if (state.visit.ghost || state.pending_mode === "ghost") {
+          setError("募集するには通常モードへ戻してください。");
+          return;
+        }
         const r = await submitCommand<{ id: string }>(
           "recruitment_create",
           recruitBody,

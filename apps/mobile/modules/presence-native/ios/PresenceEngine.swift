@@ -40,7 +40,7 @@ import Darwin
   }
  }
  private func emit(_ message:String?=nil){if let message {status=message};onChange?(state())}
- func state()->[String:Any]{["observing":enabled,"status":status,"visit":visit ?? [:],"pending_exit":(stopRequested && visit?["state"] as? String == "active") || (lifecycle?.intent.stopping ?? false)]}
+ func state()->[String:Any]{["observing":enabled,"status":status,"visit":visit ?? [:],"ghost_preference":lifecycle?.intent.ghostPreference ?? false,"pending_mode":lifecycle?.intent.mode.map { $0.ghost ? "ghost" : "public" } ?? "","pending_exit":(stopRequested && visit?["state"] as? String == "active") || (lifecycle?.intent.stopping ?? false)]}
  private func prepareLifecycle() async throws -> VisitLifecycle {
   let scope=try await api.lifecycleScope()
   if scope != lifecycleScope {
@@ -64,7 +64,7 @@ import Darwin
     try? await Task.sleep(nanoseconds:delay*1_000_000_000)
     guard !Task.isCancelled,let self else{return}
     await self.resume()
-    if self.lifecycle?.intent.stopping != true && self.lifecycle?.intent.attempt == nil {break}
+    if self.lifecycle?.intent.stopping != true && self.lifecycle?.intent.attempt == nil && self.lifecycle?.intent.mode == nil {break}
     delay=min(30,delay*2)
    }
    self?.recoveryTask=nil
@@ -74,7 +74,26 @@ import Darwin
  private func start(){
   guard !stopRequested,visit?["can_update"] as? Bool==true,lifecycle?.intent.stopping != true else{return}
   enabled=true;startedWall=Date();wallBase=Date().timeIntervalSince1970;monoBase=Self.mono()
-  manager.requestAlwaysAuthorization();manager.startUpdatingLocation();emit("気配を観測中")
+  manager.requestAlwaysAuthorization();manager.startUpdatingLocation();emit(modeStatus)
+ }
+ private var modeStatus:String {
+  if let pending=lifecycle?.intent.mode { return pending.ghost ? "非公開への切替待ち" : "公開への切替待ち。新しい位置を確認中" }
+  return visit?["ghost"] as? Bool == true ? "ゴーストモード" : "気配を観測中"
+ }
+ func setGhost(_ ghost:Bool) async throws -> [String:Any] {
+  let life=try await prepareLifecycle()
+  guard (!life.busy || ghost),!entering,(!resuming || ghost) else {throw ServiceError(code:"operation_in_progress")}
+  clearObservation()
+  do {
+   try await life.setGhost(ghost)
+   if life.intent.mode != nil {scheduleRecovery()}
+   await resume()
+   emit(modeStatus)
+   return state()
+  } catch {
+   scheduleRecovery();emit(life.intent.mode != nil ? modeStatus : "公開設定を確認してください")
+   throw error
+  }
  }
  func syncClock() async throws {
   var best:(Double,Double,Double)?
@@ -132,8 +151,8 @@ import Darwin
    config=try await api.rpc("get_street_config",["street_id":v["street_id"]!]);try await syncClock()
    if ticket==generation {start()}
   }catch{
-   if lifecycle?.intent.stopping == true || lifecycle?.intent.attempt != nil {scheduleRecovery()}
-   emit("通信を確認してください。気配の期限は延長されません")
+   if lifecycle?.intent.stopping == true || lifecycle?.intent.attempt != nil || lifecycle?.intent.mode != nil {scheduleRecovery()}
+   emit(lifecycle?.intent.mode != nil ? modeStatus : "通信を確認してください。気配の期限は延長されません")
   }
  }
  func locationManagerDidChangeAuthorization(_ manager:CLLocationManager){
@@ -155,6 +174,7 @@ import Darwin
   do {
    if clockServer==nil || mono-clockMono>900 {try await syncClock()}
    guard enabled,ticket==generation,let v=visit,let street=v["street_id"] as? String else{return}
+   guard lifecycle?.busy == false, lifecycle?.intent.mode?.ghost != true else {return}
    // Always classify against the current published boundary before sending.
    let latest=try await api.rpc("get_street_config",["street_id":street])
    guard enabled,ticket==generation else{return}
@@ -178,17 +198,26 @@ import Darwin
    if let expiry=Self.date(v["expires_at"]),expiry.timeIntervalSince1970<=now {clearObservation();emit("参加期限が切れました。再参加にはNFCが必要です");return}
    guard let life=lifecycle else{return}
    let lifeTicket=life.generation
+   let ghost=v["ghost"] as? Bool == true
+   let publishing=life.intent.mode?.ghost == false
    let sequence=try life.nextSequence()
    var body:[String:Any]=["visit_id":v["visit_id"]!,"seq":String(sequence),"area_version":latest["area_version"]!,"observed_at":Self.formatter.string(from:Date(timeIntervalSince1970:now-(Self.mono()-mono)-age)),"horizontal_accuracy_m":a,"verdict":verdict]
-   if let cell {body["cell_id"]=cell;body["grid_version"]=latest["grid_version"]}
+   body["mode_revision"]=v["mode_revision"] as? String ?? "0"
+   if let cell, !ghost || publishing {body["cell_id"]=cell;body["grid_version"]=latest["grid_version"]}
+   if publishing && verdict=="inside" {
+    try await life.publishWithObservation(body)
+    guard enabled,ticket==generation else{return}
+    lastObserved=location.timestamp;lastCell=cell;lastSent=mono;emit(modeStatus);return
+   }
    let r=try await api.rpc("observe_visit",body)
    guard enabled,ticket==generation else{return}
    try life.observation(r,ticket:lifeTicket);lastObserved=location.timestamp
    if r["result"] as? String=="ended" {clearObservation();emit("街から退出しました")}
-   else if r["result"] as? String=="accepted" {lastCell=cell;lastSent=mono;emit("新しい気配を共有しました")}
+   else if r["result"] as? String=="accepted" {lastCell=cell;lastSent=mono;emit(ghost ? "ゴーストモード。街への参加を更新しました" : "新しい気配を共有しました")}
   }catch let e as ServiceError {
    if ["inactive_visit","wrong_writer","membership_required","unauthorized","login_required"].contains(e.code){clearObservation();emit("参加状態を確認してください")}
-   else{outside.reset();emit("更新待ち。古い気配は期限で消えます")}
+   else if e.code=="conflict" {clearObservation();await resume()}
+   else{outside.reset();emit(lifecycle?.intent.mode != nil ? modeStatus : "更新待ち。古い気配は期限で消えます")}
   }catch{outside.reset();emit("通信待ち。古い気配は期限で消えます")}
  }
 }
