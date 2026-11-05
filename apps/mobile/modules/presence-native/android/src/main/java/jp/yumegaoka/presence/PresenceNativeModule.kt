@@ -12,6 +12,7 @@ class PresenceNativeModule : Module() {
   override fun definition() = ModuleDefinition {
     Name("PresenceNative")
     Events("onChange")
+    View(HistoryBlur::class) { Name("HistoryBlur") }
     View(SheetHandle::class) {
       Name("SheetHandle")
       Prop("expanded") { view: SheetHandle, expanded: Boolean? -> view.setExpanded(expanded) }

@@ -1,3 +1,5 @@
+import { requireNativeViewManager } from "expo-modules-core";
+import type { ViewProps } from "react-native";
 import { PlacementHandle, type PlacementProjection } from "../pins/PlacementHandle";
 import { MarkerScale, RefreshMarker, useMarkerScale } from "./markerScale";
 
@@ -23,7 +25,9 @@ import type {
   ViewState,
 } from "./PlatformMap.types";
 export type { CameraRef } from "./PlatformMap.types";
+const HistoryBlur = requireNativeViewManager<ViewProps>("PresenceNative", "HistoryBlur");
 export function Map({
+  historyBlur = false,
   mapStyle = defaultStyle,
   placement,
   bottomInset = 0,
@@ -86,6 +90,7 @@ export function Map({
     <>
     <View style={{ position: "absolute", top: 0, left: 0, right: 0, height }}>
       <MarkerScale.Provider value={scale}>{map}</MarkerScale.Provider>
+      {historyBlur && <HistoryBlur pointerEvents="none" style={StyleSheet.absoluteFill} />}
       <Animated.View pointerEvents="none" style={[StyleSheet.absoluteFill, { backgroundColor: "#303947", opacity: cover }]} />
     </View>
     {placement && <PlacementHandle map={projection} point={placement.point} revision={placement.revision}

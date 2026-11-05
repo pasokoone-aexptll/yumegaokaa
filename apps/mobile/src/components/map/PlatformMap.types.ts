@@ -10,6 +10,7 @@ export type ViewState = {
 export type CameraRef = { flyTo: (view: ViewState) => void };
 export type CameraProps = { initialViewState: ViewState; ref?: Ref<CameraRef> };
 export type MapProps = {
+  historyBlur?: boolean;
   bottomInset?: number;
   onMovingChange?: (moving: boolean) => void;
   placement?: {

@@ -37,7 +37,9 @@ export function StreetChat({
   mapError = "",
   mapMoving = false,
   onReadStatus,
+  onHistoryChange,
 }: {
+  onHistoryChange?: (expanded: boolean) => void;
   mapError?: string;
   mapMoving?: boolean;
   onReadStatus?: (status: {
@@ -75,6 +77,10 @@ export function StreetChat({
     loadMore,
     reload,
   } = useStreetChat();
+  useEffect(() => {
+    onHistoryChange?.(expanded);
+    return () => onHistoryChange?.(false);
+  }, [expanded, onHistoryChange]);
   useEffect(() => {
     onReadStatus?.({ error: readError, reload });
   }, [readError, reload, onReadStatus]);

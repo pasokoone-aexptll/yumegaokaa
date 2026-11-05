@@ -46,6 +46,7 @@ import { useStreetMap } from "../../hooks/useStreetMap";
 export default function Street() {
   const router = useRouter();
   const placement = usePinPlacement();
+  const [historyExpanded, setHistoryExpanded] = useState(false);
   const [mapMoving, setMapMoving] = useState(false);
   const { height } = useWindowDimensions();
   // Move the pin down 24pt so the title and countdown share the visible center.
@@ -198,6 +199,7 @@ export default function Street() {
     <View style={styles.root}>
       <StatusBar style="light" />
       <Map
+        historyBlur={historyExpanded}
         bottomInset={detailInset}
         onMovingChange={setMapMoving}
         style={StyleSheet.absoluteFill}
@@ -339,7 +341,7 @@ export default function Street() {
         </View>
       </SafeAreaView>
       {!placement.active && (
-        <StreetChat mapMoving={mapMoving} onReadStatus={setChatRead} />
+        <StreetChat onHistoryChange={Platform.OS === "android" ? setHistoryExpanded : undefined} mapMoving={mapMoving} onReadStatus={setChatRead} />
       )}
       {placement.active && (
         <PlacementFooter
