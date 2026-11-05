@@ -20,12 +20,14 @@ export function MapAsset({
   width = size,
   height = size,
   tint,
+  fillOpacity,
 }: {
   name: keyof typeof brandAndTabSvgAssets | keyof typeof iconAliases;
   size?: number;
   width?: number;
   height?: number;
   tint?: string;
+  fillOpacity?: number;
 }) {
   const icon =
     name in iconAliases
@@ -33,7 +35,8 @@ export function MapAsset({
       : undefined;
   if (icon)
     return <UIIcon name={icon} size={size} width={width} height={height} />;
-  const xml = brandAndTabSvgAssets[name as keyof typeof brandAndTabSvgAssets];
+  const source = brandAndTabSvgAssets[name as keyof typeof brandAndTabSvgAssets];
+  const xml = fillOpacity === undefined ? source : source.replace(/fill-opacity="[^"]*"/g, `fill-opacity="${fillOpacity}"`);
   return (
     <SvgXml
       xml={
