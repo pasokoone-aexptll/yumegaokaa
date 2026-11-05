@@ -41,7 +41,7 @@ export function ModeDropdown({ ghost, active, disabled, onChange }: {
         <Animated.View accessibilityViewIsModal style={[styles.menu, anchor, { opacity: progress,
           transform: [{ translateY: progress.interpolate({ inputRange: [0,1], outputRange: [-9,0] }) },
             { scale: progress.interpolate({ inputRange: [0,1], outputRange: [0.96,1] }) }] }]}>
-          <SmoothSurface radius={18} color="#202029ed" blurIntensity={28} style={{ padding: 8 }}>
+          <SmoothSurface radius={18} color="#000000cc" blurIntensity={28} style={{ padding: 8 }}>
             {[false,true].map((option) => (
               <Pressable key={String(option)} accessibilityRole="radio" accessibilityState={{ checked: ghost === option, disabled }}
                 disabled={disabled} onPress={() => { close(); if (option !== ghost) onChange?.(option); }}
