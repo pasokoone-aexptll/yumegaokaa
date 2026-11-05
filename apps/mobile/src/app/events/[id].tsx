@@ -29,6 +29,7 @@ export default function Event() {
   } = useEventDetail(id);
   return (
     <DetailPage
+      mapSheet={fromMap === "1"}
       title={event?.title ?? "オフ会"}
       refreshing={busy || loading}
       onRefresh={canceled ? undefined : load}

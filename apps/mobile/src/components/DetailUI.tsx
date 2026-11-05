@@ -1,8 +1,11 @@
+import { BlurView } from "expo-blur";
+import { mapBlur } from "./map/mapBlur";
 import { IconPressable as Pressable } from "./icons/IconMotion";
 import type { ReactNode } from "react";
 import { useState } from "react";
 import {
   ActivityIndicator,
+  Platform,
   ScrollView,
   StyleSheet,
   Text,
@@ -16,24 +19,29 @@ export function DetailPage({
   title,
   children,
   root = false,
+  mapSheet = false,
   refreshing = false,
   onRefresh,
 }: {
   title: string;
   children: ReactNode;
   root?: boolean;
+  mapSheet?: boolean;
   refreshing?: boolean;
   onRefresh?: () => Promise<unknown>;
 }) {
   const [reloading, setReloading] = useState(false);
+  const glass = mapSheet && Platform.OS === "android";
   return (
     <SafeAreaView
       edges={
         root ? ["top", "left", "right"] : ["top", "bottom", "left", "right"]
       }
-      style={detail.page}
+      style={[detail.page, glass && { backgroundColor: "#f2f2f799" }]}
     >
+      {glass && <BlurView {...mapBlur} pointerEvents="none" tint="light" intensity={55} style={StyleSheet.absoluteFill} />}
       <ScrollView
+        nestedScrollEnabled={glass}
         contentContainerStyle={detail.content}
         keyboardShouldPersistTaps="handled"
         automaticallyAdjustKeyboardInsets

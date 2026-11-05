@@ -1,3 +1,4 @@
+import { mapBlur } from "../components/map/mapBlur";
 import { scheduleEntrySuccessDismissal } from "../lib/entrySuccessDismissal";
 import { requireNativeModule } from "expo-modules-core";
 import type { NativeStackNavigationProp } from "expo-router";
@@ -56,7 +57,7 @@ export default function StreetEntry() {
   if (!value || !phase) return null;
   return (
     <View style={{ flex: 1, backgroundColor: "#ffffff66" }}>
-      <BlurView
+      <BlurView {...mapBlur}
         pointerEvents="none"
         intensity={45}
         tint="light"

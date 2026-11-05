@@ -19,6 +19,7 @@ export default function Detail() {
     useRecruitmentDetail(id);
   return (
     <DetailPage
+      mapSheet={fromMap === "1"}
       title={pin?.title ?? "募集"}
       refreshing={busy || loading}
       onRefresh={ended ? undefined : () => load()}

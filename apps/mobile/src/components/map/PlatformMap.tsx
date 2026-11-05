@@ -1,3 +1,6 @@
+import { BlurTargetView } from "expo-blur";
+import { StyleSheet } from "react-native";
+import { streetMapTarget } from "./mapBlur";
 import { useRef, useImperativeHandle } from "react";
 import type { CameraRef as LibreCameraRef } from "@maplibre/maplibre-react-native";
 // Android/default implementation. Preserve MapLibre for the future Android build.
@@ -23,14 +26,18 @@ export function Map({
   onMovingChange,
   ...props
 }: MapProps) {
-  return (
+  const map = (
     <LibreMap
+      androidView="texture"
       mapStyle={mapStyle}
       {...props}
       onRegionWillChange={() => onMovingChange?.(true)}
       onRegionDidChange={() => onMovingChange?.(false)}
     />
   );
+  return onMovingChange ? (
+    <BlurTargetView ref={streetMapTarget} style={StyleSheet.absoluteFill}>{map}</BlurTargetView>
+  ) : map;
 }
 export function Camera({ ref, ...props }: CameraProps) {
   const camera = useRef<LibreCameraRef>(null);
@@ -43,7 +50,7 @@ export function Camera({ ref, ...props }: CameraProps) {
     }),
     [],
   );
-  return <LibreCamera ref={camera} {...props} />;
+  return <LibreCamera maxZoom={18} ref={camera} {...props} />;
 }
 export function Marker({ lngLat, children }: MarkerProps) {
   // MapLibre Marker does not expose native dragging; retain tap placement on Android.
