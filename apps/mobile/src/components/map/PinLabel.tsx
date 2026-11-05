@@ -71,12 +71,15 @@ export function PinGradientText({
 // inside the snapshot, outside the clipped pill and its text.
 function LabelShadow({ bubble = false, children }: { bubble?: boolean; children: ReactNode }) {
   const refresh = useContext(RefreshMarker);
+  const shadow = Platform.OS === "ios"
+    ? (bubble ? require("../../../assets/map-markers/bubble-shadow-ios.png") : require("../../../assets/map-markers/countdown-shadow-ios.png"))
+    : (bubble ? require("../../../assets/map-markers/bubble-shadow.png") : require("../../../assets/map-markers/countdown-shadow.png"));
   return (
     <View collapsable={false} style={s.shadowFrame}>
       <View pointerEvents="none" style={StyleSheet.absoluteFill}>
         <Image accessible={false} resizeMode="stretch" fadeDuration={0}
           onLoadEnd={refresh}
-          source={bubble ? require("../../../assets/map-markers/bubble-shadow.png") : require("../../../assets/map-markers/countdown-shadow.png")}
+          source={shadow}
           style={{ width: "100%", height: "100%" }} />
       </View>
       {children}

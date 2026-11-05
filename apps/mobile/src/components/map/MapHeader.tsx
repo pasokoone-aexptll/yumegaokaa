@@ -1,6 +1,6 @@
 import { ModeDropdown } from "./ModeDropdown";
 import { ParticipationSwitch } from "./ParticipationSwitch";
-import { Platform, StyleSheet, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 import { MapAsset } from "./MapAsset";
 
 export function MapHeader({
@@ -19,7 +19,7 @@ export function MapHeader({
   return (
     <View style={styles.row}>
       <View accessible accessibilityLabel="DreamCloud" style={{ flex: 1, minWidth: 0, alignItems: "flex-start" }}>
-        <MapAsset name="DreamCloud Logo" width={164} height={32} tint="white" fillOpacity={Platform.OS === "android" ? 0.95 : undefined} />
+        <MapAsset name="DreamCloud Logo" width={164} height={32} tint="white" fillOpacity={0.6} />
       </View>
       <ModeDropdown ghost={ghost} active={active} disabled={modeDisabled} onChange={onModeChange} />
       <ParticipationSwitch value={active} onChange={onToggle} />

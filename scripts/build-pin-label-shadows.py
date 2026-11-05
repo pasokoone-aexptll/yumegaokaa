@@ -8,7 +8,7 @@ OUT = Path(__file__).resolve().parents[1] / "apps/mobile/assets/map-markers"
 PAD, WIDTH, HEIGHT, SCALE = 8, 130, 34, 3
 
 
-def render(name, tail):
+def render(name, tail, alpha=0.72, sigma=3):
     width, height = WIDTH + 2 * PAD, HEIGHT + 2 * PAD + tail
     rows = bytearray()
     for y in range(height * SCALE):
@@ -21,7 +21,7 @@ def render(name, tail):
             if tail and HEIGHT - 1 <= py <= HEIGHT + tail:
                 half = 10 * (1 - (py - HEIGHT) / tail)
                 edge = min(edge, abs(px) - half)
-            opacity = 0.72 * 0.5 * math.erfc(edge / (math.sqrt(2) * 3))
+            opacity = alpha * 0.5 * math.erfc(edge / (math.sqrt(2) * sigma))
             rows.extend((8, 10, 16, round(255 * opacity)))
     def chunk(kind, content):
         return struct.pack(">I", len(content)) + kind + content + struct.pack(">I", zlib.crc32(kind + content))
@@ -31,3 +31,6 @@ def render(name, tail):
 
 render("bubble-shadow.png", 13)
 render("countdown-shadow.png", 0)
+
+render("bubble-shadow-ios.png", 13, 0.42, 4.5)
+render("countdown-shadow-ios.png", 0, 0.42, 4.5)
