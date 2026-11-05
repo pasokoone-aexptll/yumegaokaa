@@ -34,15 +34,13 @@ export function AccountPage({
       >
         <StretchySunset
           scroll={scroll}
+          overlayColor="#00000026"
           height={300 + insets.top}
           style={[
             s.hero,
             { minHeight: 300 + insets.top, paddingTop: insets.top + 24 },
           ]}
         >
-          <View
-            style={[StyleSheet.absoluteFill, { backgroundColor: "#00000026" }]}
-          />
           <Animated.View
             style={{
               gap: 12,

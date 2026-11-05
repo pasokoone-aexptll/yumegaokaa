@@ -46,10 +46,10 @@ export default function Home() {
     >
       <StretchySunset
         scroll={scroll}
+        overlayColor="#00000020"
         height={insets.top + 150}
         style={[s.hero, { height: insets.top + 150, paddingTop: insets.top }]}
       >
-        <View style={s.shade} />
         <MapAsset
           name="DreamCloud Logo"
           width={210}
@@ -160,7 +160,6 @@ const s = StyleSheet.create({
     paddingHorizontal: 20,
     paddingBottom: 24,
   },
-  shade: { ...StyleSheet.absoluteFill, backgroundColor: "#00000020" },
   content: { paddingHorizontal: 20, paddingTop: 24 },
   headingRow: {
     flexDirection: "row",

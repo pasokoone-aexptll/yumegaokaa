@@ -59,11 +59,12 @@ test('sunset stretch covers pull-down gap and stays unchanged on normal upward s
    if(offset>r[2]&&extrapolateRight==='clamp')return o[2];
    return o[i]+(offset-r[i])/(r[i+1]-r[i])*(o[i+1]-o[i]);
   }};
-  const h=300,tree=StretchySunset({scroll,height:h});
+  const h=300,tree=StretchySunset({scroll,height:h,overlayColor:"#00000026"});
   const background=tree.props.children[0];
   assert.equal(background.type, "AnimatedView");
   assert.equal(background.props.style[1].height, undefined, "background bounds use all four edges, independent of header padding");
-  assert.equal(background.props.children.props.style.height, "100%");
+  assert.equal(background.props.children[0].props.style.height, "100%");
+  assert.equal(background.props.children[1].props.style[1].backgroundColor, "#00000026", "shade shares the image transform and covers the pull-down area");
   const transform=background.props.style[1].transform;
   const translate=transform[0].translateY,scale=transform[1].scale;
   if(offset<0) {

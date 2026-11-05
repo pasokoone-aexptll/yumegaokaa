@@ -1059,3 +1059,9 @@ figma-mapの現役素材をbrand/tabs/backgrounds/illustrationsに移動し全�
 ユーザーの実機画像でAccountの背景が右端/下端まで届かず、名前・タイトルの背景が灰色になる回帰を確認。StretchySunsetの画像直接の百分率指定を廃止し、四辺0の背景専用Animated.View内で画像を全面表示する。親のpaddingと画像の割合寸法を分離。Homeも同じ修正を適用。型/Lint・関連4試験成功。前回の数式試験は実レイアウトの保証ではなかった。今回も実機の外観合格は未確認。アイコンサイズ・タブ・MVP進捗は不変。
 
 修正版Releaseビルド（/tmp/yumegaoka-header-bounds-fix.log）、署名検証、iPhone上書きインストール成功。画面の外観確認は未完。
+
+## 11月5日 伸縮背景の暗色overlay（R19）
+
+ユーザー指摘の上端で暗色overlayが切れる問題を修正。Home/Accountの固定overlayをStretchySunsetの背景専用Animated.View内へ移し、画像と同じ変換を共有する。既存の濃さ（Home #00000020、Account #00000026）は維持。型/Lint・関連4試験成功（overlayが画像と同じ伸縮枠内にあることを追加確認）。実機外観合格は未確認。MVP進捗不変。
+
+Releaseビルド（/tmp/yumegaoka-overlay-fix.log）・署名検証・iPhone上書き成功。実機外観は未確認。

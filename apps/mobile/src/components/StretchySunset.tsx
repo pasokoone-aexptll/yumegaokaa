@@ -12,11 +12,13 @@ export function StretchySunset({
   scroll,
   height,
   children,
+  overlayColor,
   style,
 }: {
   scroll: Animated.Value;
   height: number;
   children: ReactNode;
+  overlayColor: string;
   style?: StyleProp<ViewStyle>;
 }) {
   const pull = scroll.interpolate({
@@ -43,6 +45,9 @@ export function StretchySunset({
           source={require("../../assets/backgrounds/yuuyake.png")}
           resizeMode="cover"
           style={{ width: "100%", height: "100%" }}
+        />
+        <View
+          style={[StyleSheet.absoluteFill, { backgroundColor: overlayColor }]}
         />
       </Animated.View>
       {children}
