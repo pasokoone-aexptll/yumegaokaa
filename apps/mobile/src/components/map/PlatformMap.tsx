@@ -32,6 +32,7 @@ export function Map({
   placement,
   bottomInset = 0,
   onMovingChange,
+  onMapReady,
   ...props
 }: MapProps) {
   const mapRef = useRef<MapRef>(null);
@@ -74,6 +75,7 @@ export function Map({
           setCameraRevision(r => r + 1);
         }
       }}
+      onDidFinishLoadingMap={onMapReady}
       onDidFinishRenderingFrameFully={mapReady ? undefined : reveal}
       onDidFailLoadingMap={reveal}
       contentInset={bottomInset ? undefined : { top: 0, left: 0, right: 0, bottom: 0 }}
@@ -104,7 +106,7 @@ export function Camera({ ref, ...props }: CameraProps) {
     flyTo({ detailPadding, ...view }: ViewState) {
       if (detailPadding) {
         // Apply the padded target before the sheet can pause the underlying map.
-        camera.current?.jumpTo({ ...view, padding: { top: 0, left: 0, right: 0, bottom: detailPadding } });
+        return camera.current?.setStop({ ...view, duration: 0, padding: { top: 0, left: 0, right: 0, bottom: detailPadding } });
       } else {
         camera.current?.flyTo(view);
       }

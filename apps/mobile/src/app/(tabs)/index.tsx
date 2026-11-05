@@ -51,10 +51,14 @@ export default function Street() {
   const { height } = useWindowDimensions();
   // Move the pin down 24pt so the title and countdown share the visible center.
   const detailSheetHeight = Math.max(0, height * (Platform.OS === "android" ? 0.5 : 0.38) - 48);
+  const [mapFocused, setMapFocused] = useState(false);
+  const [androidMapReady, setAndroidMapReady] = useState(false);
   const [detailInset, setDetailInset] = useState(0);
   useFocusEffect(
     useCallback(() => {
+      setMapFocused(true);
       setDetailInset(0);
+      return () => setMapFocused(false);
     }, []),
   );
   const [chatRead, setChatRead] = useState<{
@@ -131,21 +135,31 @@ export default function Street() {
       const showDetail =
         !!params.detailId &&
         (params.detailKind === "event" || params.detailKind === "recruitment");
-      const frame = requestAnimationFrame(() => {
+      if (Platform.OS === "android" && (!mapFocused || !androidMapReady)) return;
+      if (params.mapRequest && openedRequest.current === params.mapRequest) return;
+      let cancelled = false;
+      const frame = requestAnimationFrame(async () => {
+        const target = camera.current;
+        if (!target || cancelled) return;
         setDetailInset(showDetail ? detailSheetHeight : 0);
-        camera.current?.flyTo({ center: [lon, lat], zoom: 17, duration: 600, detailPadding: showDetail ? detailSheetHeight : 0 });
-        if (showDetail && openedRequest.current !== params.mapRequest) {
-          openedRequest.current = params.mapRequest;
-          router.push({
-            pathname:
-              params.detailKind === "event" ? "/map-event" : "/map-recruitment",
-            params: { id: params.detailId!, fromMap: "1" },
-          });
+        try {
+          await target.flyTo({ center: [lon, lat], zoom: 17, duration: 600, detailPadding: showDetail ? detailSheetHeight : 0 });
+        } catch {
+          if (!cancelled) setError("開催場所を表示できませんでした。もう一度「地図で見る」を押してください。");
+          return;
         }
+        if (cancelled) return;
+        openedRequest.current = params.mapRequest;
+        if (showDetail) router.push({
+          pathname: params.detailKind === "event" ? "/map-event" : "/map-recruitment",
+          params: { id: params.detailId!, fromMap: "1" },
+        });
       });
-      return () => cancelAnimationFrame(frame);
+      return () => { cancelled = true; cancelAnimationFrame(frame); };
     }
   }, [
+    mapFocused,
+    androidMapReady,
     params.longitude,
     params.latitude,
     params.mapRequest,
@@ -199,6 +213,7 @@ export default function Street() {
     <View style={styles.root}>
       <StatusBar style="light" />
       <Map
+        onMapReady={() => setAndroidMapReady(true)}
         historyBlur={historyExpanded}
         bottomInset={detailInset}
         onMovingChange={setMapMoving}

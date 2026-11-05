@@ -7,11 +7,12 @@ export type ViewState = {
   duration?: number;
   detailPadding?: number;
 };
-export type CameraRef = { flyTo: (view: ViewState) => void };
+export type CameraRef = { flyTo: (view: ViewState) => void | Promise<void> };
 export type CameraProps = { initialViewState: ViewState; ref?: Ref<CameraRef> };
 export type MapProps = {
   historyBlur?: boolean;
   bottomInset?: number;
+  onMapReady?: () => void;
   onMovingChange?: (moving: boolean) => void;
   placement?: {
     point: [number, number];
