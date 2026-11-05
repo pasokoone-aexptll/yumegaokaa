@@ -1,3 +1,4 @@
+import { platformAuth } from "./platformAuth";
 import { sessionState } from "./sessionState";
 import { requireNativeModule } from "expo-modules-core";
 export type Visit = {
@@ -72,17 +73,18 @@ const bridge = requireNativeModule("PresenceNative") as {
     listener: (state: NativeState) => void,
   ): { remove(): void };
 };
+const auth = platformAuth ?? bridge;
 // Reset mounted screens when the local identity changes. Same-account OTP
 // reauthentication (for withdrawal) must keep its current operation alive.
 const session = async () => {
-  const result = await bridge.session();
+  const result = await auth.session();
   sessionState.publish(result);
   return result;
 };
 const authMethods = {
   session,
   async verifyOTP(email: string, code: string) {
-    const result = await bridge.verifyOTP(email, code);
+    const result = await auth.verifyOTP(email, code);
     await session();
     return result;
   },
@@ -92,7 +94,7 @@ const authMethods = {
     return result;
   },
   async logout() {
-    await bridge.logout();
+    await auth.logout();
     sessionState.publish({ signed_in: false, email: "" });
   },
 };
@@ -101,7 +103,7 @@ let configuration:
 function configure(url: string, key: string) {
   if (configuration?.url === url && configuration.key === key)
     return configuration.promise;
-  const promise = bridge.configure(url, key).catch((error) => {
+  const promise = auth.configure(url, key).catch((error) => {
     if (configuration?.promise === promise) configuration = undefined;
     throw error;
   });
@@ -111,23 +113,23 @@ function configure(url: string, key: string) {
 export const native: typeof bridge = {
   ...authMethods,
   pushSync: (request) => bridge.pushSync(request),
-  pushStatus: () => bridge.pushStatus(),
-  pushOpen: () => bridge.pushOpen(),
+  pushStatus: async () => bridge.pushStatus(),
+  pushOpen: async () => bridge.pushOpen(),
   currentLocation: () => bridge.currentLocation(),
   monotonicTime: () => bridge.monotonicTime(),
-  realtimeToken: () => bridge.realtimeToken(),
+  realtimeToken: () => auth.realtimeToken(),
   accountDetails: () => bridge.accountDetails(),
   changeEmail: (email) => bridge.changeEmail(email),
   mfaFactors: () => bridge.mfaFactors(),
   mfaEnroll: () => bridge.mfaEnroll(),
   mfaVerify: (factor, code) => bridge.mfaVerify(factor, code),
   configure,
-  sendOTP: (email) => bridge.sendOTP(email),
-  rpc: (operation, payload) => bridge.rpc(operation, payload),
+  sendOTP: (email) => auth.sendOTP(email),
+  rpc: (operation, payload) => auth.rpc(operation, payload),
   checkin: (tag) => bridge.checkin(tag),
   setGhost: (ghost) => bridge.setGhost(ghost),
   stop: () => bridge.stop(),
-  resume: () => bridge.resume(),
+  resume: () => auth.resume(),
   addListener: (event, listener) => bridge.addListener(event, listener),
 };
 export const streetID =
