@@ -128,3 +128,5 @@ C08/C09：Renderのローリング更新で旧版のDBロック取得中に新�
 C10 Android（R04）：NFC入街シートのコンテンツ上余白を24dpから0にし、端で引っ張った際のオーバースクロールを無効化。小画面や長いエラー文は必要な範囲だけスクロールできる。対象lint成功。Pixelでの表示確認は未実施。
 
 C07（R05/R06/R07）：Androidで書込可能な滞在の間、位置更新通知付きのサービスが観測を受け、端末内で区画化して既存RPCに送る。ゴースト時は区画を送らず、退出または有効期限で停止する。Release Kotlinコンパイル、TypeScript型検査、退出再送の回帰試験成功。Pixelでのロック中の継続・DB反映・電池消費は未検証。
+
+T033 Android：Google Play内部テスト準備用AAB（jp.yumegaoka.development、versionCode 1）を4 ABIでReleaseビルド。専用アップロード鍵はMacの ~/.android/yumegaoka-internal-upload に所有者限定で保存。scripts/build-play-internal.sh は試験タグを無効化し、署名と証明書の一致を検査。成果物は apps/mobile/android/app/build/outputs/bundle/release/app-release.aab。Play Consoleへの登録・アップロード・テスター配布は未実施。
