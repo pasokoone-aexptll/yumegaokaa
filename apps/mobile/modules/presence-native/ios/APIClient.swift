@@ -39,7 +39,7 @@ actor APIClient {
   let json=(try? JSONSerialization.jsonObject(with:data)) as? [String:Any] ?? [:]
   guard let http=response as? HTTPURLResponse,(200..<300).contains(http.statusCode) else {
    // Only allow known short server errors across the bridge; never log HTTP bodies.
-   let raw=json["message"] as? String ?? json["error_code"] as? String ?? "request_failed"
+   let raw=json["error_code"] as? String ?? json["message"] as? String ?? "request_failed"
    let safe=raw.range(of:"^[a-z_]{1,60}$",options:.regularExpression) != nil ? raw : "request_failed"
    throw ServiceError(code:safe)
   }

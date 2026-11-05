@@ -225,20 +225,40 @@ export function useStreetMap() {
       gateway.setActive(false);
     };
   }, [signed, refresh, invalidateSnapshot]);
-  async function login() {
+  const authInFlight = useRef(false);
+  const [nextSendAt, setNextSendAt] = useState(0);
+  async function login(resend = false) {
+    if (authInFlight.current) return;
+    const sending = resend || !sent;
+    if (sending && Date.now() < nextSendAt) {
+      setSent(true);
+      setError("再送まで少しお待ちください。届いているコードは入力できます。");
+      return;
+    }
+    authInFlight.current = true;
     setBusy(true);
     setError("");
     try {
-      if (sent) {
+      if (sending) {
+        await native.sendOTP(email.trim());
+        setNextSendAt(Date.now() + 60000);
+        setCode("");
+        setSent(true);
+      } else {
         await native.verifyOTP(email.trim(), code.trim());
         setSigned(true);
-      } else {
-        await native.sendOTP(email.trim());
-        setSent(true);
       }
     } catch (e) {
-      setError(friendly(e));
+      const message = String(e);
+      if (sending && /over_email_send_rate_limit|over_request_rate_limit|rate limit|after .*seconds/i.test(message)) {
+        setSent(true);
+        setNextSendAt(Date.now() + 60000);
+        setError("メールの送信上限に達しました。届いている最新のコードを入力するか、時間をおいて再送してください。");
+      } else {
+        setError(friendly(e));
+      }
     } finally {
+      authInFlight.current = false;
       setBusy(false);
     }
   }
@@ -445,6 +465,7 @@ export function useStreetMap() {
     events,
     recruitments,
     login,
+    nextSendAt,
     exit,
     scan,
     writeTestTag,

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { StretchySunset } from "./StretchySunset";
 import { router } from "expo-router";
 import {
@@ -39,8 +39,21 @@ export function StreetLogin({
   setError,
   busy,
   login,
-}: Props) {
+  nextSendAt = 0,
+}: Props & { nextSendAt?: number }) {
   const [scroll] = useState(() => new Animated.Value(0));
+  const [now, setNow] = useState(Date.now);
+  useEffect(() => {
+    if (nextSendAt <= Date.now()) return;
+    setNow(Date.now());
+    const timer = setInterval(() => {
+      const current = Date.now();
+      setNow(current);
+      if (current >= nextSendAt) clearInterval(timer);
+    }, 1000);
+    return () => clearInterval(timer);
+  }, [nextSendAt]);
+  const remaining = Math.max(0, Math.ceil((nextSendAt - now) / 1000));
   const disabled = busy || !email.trim() || (sent && !/^\d{6}$/.test(code));
   return (
     <View style={{ flex: 1, backgroundColor: "#f2f2f7" }}>
@@ -79,7 +92,7 @@ export function StreetLogin({
           </Text>
           <Text style={s.note}>
             {sent
-              ? `${email} に6桁の確認コードを送りました。`
+              ? `${email} 宛ての最新の6桁の確認コードを入力してください。`
               : "招待されたメールアドレスを入力してください。"}
           </Text>
           <View style={s.card}>
@@ -126,7 +139,7 @@ export function StreetLogin({
             accessibilityRole="button"
             style={[s.button, disabled && { opacity: 0.5 }]}
             disabled={disabled}
-            onPress={login}
+            onPress={() => void login()}
           >
             {busy ? (
               <ActivityIndicator color="#111" />
@@ -136,6 +149,18 @@ export function StreetLogin({
               </Text>
             )}
           </Pressable>
+          {sent && (
+            <Pressable accessibilityRole="button" disabled={busy || remaining > 0}
+              onPress={() => void login(true)} style={{ padding: 12, alignItems: "center" }}>
+              <Text style={s.note}>{remaining ? `再送まで${remaining}秒` : "新しいコードを送る"}</Text>
+            </Pressable>
+          )}
+          {!sent && email.trim().includes("@") && (
+            <Pressable accessibilityRole="button" disabled={busy} onPress={() => { setError(""); setSent(true); }}
+              style={{ padding: 12, alignItems: "center" }}>
+              <Text style={s.note}>届いているコードを入力</Text>
+            </Pressable>
+          )}
           {sent && (
             <Pressable
               accessibilityRole="button"
@@ -147,7 +172,7 @@ export function StreetLogin({
               }}
               style={{ padding: 12, alignItems: "center" }}
             >
-              <Text style={s.note}>メールアドレスを確認・コードを再送</Text>
+              <Text style={s.note}>メールアドレスを変更</Text>
             </Pressable>
           )}
           {__DEV__ && (

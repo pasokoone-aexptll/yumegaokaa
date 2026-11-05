@@ -91,7 +91,7 @@ export default function Street() {
     setSettings,
     events,
     recruitments,
-    login,
+    login, nextSendAt,
     exit,
     scan,
     writeTestTag,
@@ -187,6 +187,7 @@ export default function Street() {
         setError={setError}
         busy={busy}
         login={login}
+        nextSendAt={nextSendAt}
       />
     );
   const cells = snapshot ? liveCells(snapshot, now) : [];

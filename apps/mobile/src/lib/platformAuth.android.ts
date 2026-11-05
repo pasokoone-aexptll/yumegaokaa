@@ -40,13 +40,13 @@ export const platformAuth = {
     return { signed_in: !!session, email: session?.user.email ?? "" };
   },
   async sendOTP(email: string) {
-    unwrap(await client.auth.signInWithOtp({ email }));
+    const { error } = await client.auth.signInWithOtp({ email });
+    if (error) throw new Error(error.code ?? error.message);
   },
   async verifyOTP(email: string, code: string) {
     if (!code.startsWith("https://")) {
-      unwrap(
-        await client.auth.verifyOtp({ email, token: code, type: "email" }),
-      );
+      const { error } = await client.auth.verifyOtp({ email, token: code, type: "email" });
+      if (error) throw new Error(error.code ?? error.message);
       return;
     }
     const link = new URL(code);
