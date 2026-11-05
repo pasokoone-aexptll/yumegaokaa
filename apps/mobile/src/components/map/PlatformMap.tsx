@@ -1,6 +1,6 @@
 import { BlurTargetView } from "expo-blur";
 import { StyleSheet } from "react-native";
-import { streetMapTarget } from "./mapBlur";
+import { streetMapTarget } from "./streetMapTarget";
 import { useRef, useImperativeHandle } from "react";
 import type { CameraRef as LibreCameraRef } from "@maplibre/maplibre-react-native";
 // Android/default implementation. Preserve MapLibre for the future Android build.

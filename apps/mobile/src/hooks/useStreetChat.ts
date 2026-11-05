@@ -1,3 +1,4 @@
+import { readSpacingMs, refreshIntervalMs, showReadFailure } from "./chatReadPolicy";
 import { localBlocks } from "../lib/localBlocks";
 import { readChatWindow, ChatCursor } from "../lib/chatWindow";
 import { streetChanges } from "../lib/streetChanges";
@@ -50,7 +51,7 @@ export function useStreetChat() {
       const last = previous.at(-1);
       const page = async (cursor?: ChatCursor) => {
         // Leave margin under the server's five reads / ten seconds limit.
-        const wait = Math.max(0, 5100 - (Date.now() - lastRead.current));
+        const wait = Math.max(0, readSpacingMs - (Date.now() - lastRead.current));
         if (wait) await new Promise((resolve) => setTimeout(resolve, wait));
         if (gen !== generation.current) return [];
         lastRead.current = Date.now();
@@ -88,7 +89,7 @@ export function useStreetChat() {
       consecutiveFailures.current = 0;
       setError("");
     } catch {
-      if (gen === generation.current && (++consecutiveFailures.current >= 2 || more || !hasLoaded.current))
+      if (gen === generation.current && showReadFailure(hasLoaded.current, more, ++consecutiveFailures.current))
         setError("チャットを取得できません。再読み込みしてください。");
     } finally {
       fetching.current = false;
@@ -109,7 +110,7 @@ export function useStreetChat() {
     void loadRef.current();
     const timer = setInterval(() => {
       if (AppState.currentState === "active") void loadRef.current();
-    }, 11000);
+    }, refreshIntervalMs);
     const unsubscribeBlocks = localBlocks.subscribe(() => {
       itemsRef.current = itemsRef.current.filter(
         (m) => !localBlocks.hidden(m.author_id),

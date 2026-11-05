@@ -1,6 +1,7 @@
 import { ModeDropdown } from "./ModeDropdown";
 import { ParticipationSwitch } from "./ParticipationSwitch";
-import { Image, Platform, StyleSheet, Text, View } from "react-native";
+import { badgeStyle, numberStyle } from "./headerLayout";
+import { Image, StyleSheet, Text, View } from "react-native";
 import { MapAsset } from "./MapAsset";
 import { SmoothSurface } from "./SmoothSurface";
 
@@ -87,14 +88,12 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingHorizontal: 10,
     height: 39,
-    flexShrink: 0,
-    justifyContent: "center",
+    ...badgeStyle,
   },
   number: {
     color: "white",
-    includeFontPadding: false,
+    ...numberStyle,
     fontSize: 22,
     fontWeight: "600",
-    fontFamily: Platform.OS === "ios" ? "ui-rounded" : undefined,
   },
 });

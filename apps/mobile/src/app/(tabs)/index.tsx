@@ -1,3 +1,4 @@
+import { initialPitch } from "../../components/map/headerLayout";
 import { mapBlur } from "../../components/map/mapBlur";
 import { IconPressable as Pressable } from "../../components/icons/IconMotion";
 import { PlacementFooter } from "../../components/pins/PlacementFooter";
@@ -219,7 +220,7 @@ export default function Street() {
           initialViewState={{
             center: [139.7109, 35.7295],
             zoom: 17,
-            pitch: Platform.OS === "android" ? 38 : 55,
+            pitch: initialPitch,
           }}
         />
         {Platform.OS !== "ios" && placement.active && placement.point && (

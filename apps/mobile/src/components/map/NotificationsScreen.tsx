@@ -1,3 +1,4 @@
+import { deniedMessage } from "../../lib/pushPlatform";
 import { useState } from "react";
 import {
   Animated,
@@ -208,7 +209,7 @@ export function NotificationsScreen() {
                 push.status === "unavailable"
                   ? "この検証ビルドはプッシュ通知に未対応です。"
                   : push.status === "denied"
-                    ? "端末の設定で夢ヶ丘の通知を許可してください。"
+                    ? deniedMessage
                     : push.status === "error"
                       ? "登録できませんでした。再試行してください。"
                       : undefined

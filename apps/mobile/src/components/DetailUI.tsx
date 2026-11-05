@@ -1,11 +1,10 @@
 import { BlurView } from "expo-blur";
-import { mapBlur } from "./map/mapBlur";
+import { glassMapSheet, mapBlur } from "./map/mapBlur";
 import { IconPressable as Pressable } from "./icons/IconMotion";
 import type { ReactNode } from "react";
 import { useState } from "react";
 import {
   ActivityIndicator,
-  Platform,
   ScrollView,
   StyleSheet,
   Text,
@@ -31,7 +30,7 @@ export function DetailPage({
   onRefresh?: () => Promise<unknown>;
 }) {
   const [reloading, setReloading] = useState(false);
-  const glass = mapSheet && Platform.OS === "android";
+  const glass = mapSheet && glassMapSheet;
   return (
     <SafeAreaView
       edges={

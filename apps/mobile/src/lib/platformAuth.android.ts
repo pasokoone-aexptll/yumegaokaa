@@ -96,7 +96,7 @@ export const platformAuth = {
     const token = await push.pushToken();
     const identity = session.access_token + ":" + token;
     if (registration !== identity) {
-      unwrap(await client.rpc("push_registration", { operation: "register", payload: { environment: "fcm", token } }));
+      unwrap(await client.rpc("fcm_registration", { operation: "register", payload: { environment: "fcm", token } }));
       registration = identity;
     }
     return "registered";
@@ -135,7 +135,7 @@ export const platformAuth = {
       }).catch(() => {});
     }
     registration = "";
-    await client.rpc("push_registration", { operation: "remove" });
+    await client.rpc("fcm_registration", { operation: "remove" });
     const { error } = await client.auth.signOut({ scope: "local" });
     if (error && (await platformAuth.session()).signed_in) throw new Error(error.message);
   },

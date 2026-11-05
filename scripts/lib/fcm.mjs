@@ -40,7 +40,7 @@ export function fieldFcmTick(apiURL, serviceKey, credentials) {
     return { kind: response.status === 429 || response.status >= 500 ? "retry" : "failed" };
   }
   async function rpc(operation, payload) {
-    const response = await fetch(apiURL + "/rest/v1/rpc/push_delivery", {
+    const response = await fetch(apiURL + "/rest/v1/rpc/fcm_delivery", {
       method: "POST", signal: AbortSignal.timeout(12000),
       headers: { apikey: serviceKey, Authorization: "Bearer " + serviceKey, "Content-Type": "application/json" },
       body: JSON.stringify({ operation, payload }),

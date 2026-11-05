@@ -1,4 +1,4 @@
-import { Platform } from "react-native";
+import { sheetBackground } from "../components/map/mapBlur";
 import { IconMotionProvider } from "../components/icons/IconMotion";
 import { usePushLifecycle } from "../hooks/usePushNotifications";
 import {
@@ -74,7 +74,7 @@ export default function Layout() {
                 sheetGrabberVisible: true,
                 sheetExpandsWhenScrolledToEdge: true,
                 sheetLargestUndimmedDetentIndex: 0,
-                contentStyle: { backgroundColor: Platform.OS === "android" ? "transparent" : "#f2f2f7" },
+                contentStyle: { backgroundColor: sheetBackground },
               }}
             />
             <Stack.Screen
@@ -86,7 +86,7 @@ export default function Layout() {
                 sheetGrabberVisible: true,
                 sheetExpandsWhenScrolledToEdge: true,
                 sheetLargestUndimmedDetentIndex: 0,
-                contentStyle: { backgroundColor: Platform.OS === "android" ? "transparent" : "#f2f2f7" },
+                contentStyle: { backgroundColor: sheetBackground },
               }}
             />
             <Stack.Screen

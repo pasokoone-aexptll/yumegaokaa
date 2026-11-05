@@ -112,8 +112,8 @@ function configure(url: string, key: string) {
 }
 export const native: typeof bridge = {
   ...authMethods,
-  pushSync: (request) => platformAuth ? platformAuth.pushSync(request) : bridge.pushSync(request),
-  pushStatus: async () => platformAuth ? platformAuth.pushStatus() : bridge.pushStatus(),
+  pushSync: (request) => auth.pushSync(request),
+  pushStatus: async () => auth.pushStatus(),
   pushOpen: async () => bridge.pushOpen(),
   currentLocation: () => bridge.currentLocation(),
   monotonicTime: () => bridge.monotonicTime(),

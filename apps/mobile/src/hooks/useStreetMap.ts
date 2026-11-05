@@ -17,6 +17,7 @@ import {
 } from "../lib/native";
 import { Recruitment } from "../lib/recruitments";
 import { StreetEvent } from "../lib/events";
+import { scanPrompt } from "../lib/entryPlatform";
 import { fieldTrial, localEntry, localHost, nfcDisabled } from "../lib/development";
 const initial: NativeState = {
   observing: false,
@@ -310,7 +311,7 @@ export function useStreetMap() {
     try {
       await NfcManager.start();
       await NfcManager.requestTechnology(NfcTech.Ndef, {
-        alertMessage: "夢ヶ丘のステッカーに端末を近づけてください",
+        alertMessage: scanPrompt,
       });
       const tag = await NfcManager.getTag();
       const record = tag?.ndefMessage?.find((r) =>
