@@ -1,3 +1,4 @@
+import { ComposerSurface } from "./ComposerSurface";
 import { ChatInput } from "./ChatInput";
 import { IconPressable as Pressable } from "./icons/IconMotion";
 import { ArrivalIcon } from "./map/ArrivalIcon";
@@ -36,9 +37,7 @@ export function StreetChat({
   mapError = "",
   mapMoving = false,
   onReadStatus,
-  onHistoryChange,
 }: {
-  onHistoryChange?: (expanded: boolean) => void;
   mapError?: string;
   mapMoving?: boolean;
   onReadStatus?: (status: {
@@ -76,10 +75,6 @@ export function StreetChat({
     loadMore,
     reload,
   } = useStreetChat();
-  useEffect(() => {
-    onHistoryChange?.(expanded);
-    return () => onHistoryChange?.(false);
-  }, [expanded, onHistoryChange]);
   useEffect(() => {
     onReadStatus?.({ error: readError, reload });
   }, [readError, reload, onReadStatus]);
@@ -209,7 +204,7 @@ export function StreetChat({
         measure();
       }}
     >
-      <ProgressiveBlur edge="solid" intensity={Platform.OS === "android" ? 85 : 30} active={expanded && Platform.OS !== "android"} />
+      <ProgressiveBlur edge="solid" intensity={Platform.OS === "android" ? 85 : 30} active={expanded} />
       <Animated.View
         style={[
           StyleSheet.absoluteFill,
@@ -232,7 +227,7 @@ export function StreetChat({
               height: Math.min(height * 0.55, availableHeight - overlap),
             }}
           >
-            <ProgressiveBlur edge="bottom" intensity={24} />
+            {Platform.OS !== "android" && <ProgressiveBlur edge="bottom" intensity={24} />}
             {Platform.OS === "android" ? (
               <View style={[StyleSheet.absoluteFill, {
                 experimental_backgroundImage: "linear-gradient(180deg, rgba(23,27,35,0) 0%, rgba(23,27,35,0.32) 50%, rgba(23,27,35,0.82) 100%)",
@@ -517,7 +512,7 @@ export function StreetChat({
                 </View>
               )}
               <View style={styles.composer} onTouchStart={Keyboard.dismiss}>
-                <SmoothSurface
+                <ComposerSurface
                   color="#ffffff26"
                   blurIntensity={0}
                   backdrop={<ProgressiveBlur edge="solid" intensity={85} />}
@@ -568,7 +563,7 @@ export function StreetChat({
                       <Text style={styles.arrow}>↑</Text>
                     )}
                   </Pressable>
-                </SmoothSurface>
+                </ComposerSurface>
               </View>
             </View>
           </Animated.View>

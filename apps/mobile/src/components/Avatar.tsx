@@ -1,5 +1,6 @@
 import { UIIcon } from "./icons/UIIcon";
-import { useEffect, useRef, useState } from "react";
+import { RefreshMarker } from "./map/markerScale";
+import { useContext, useEffect, useRef, useState } from "react";
 import { SymbolView } from "expo-symbols";
 import type { SFSymbol } from "sf-symbols-typescript";
 import { avatarInitial } from "../lib/avatarInitial";
@@ -19,6 +20,7 @@ export function Avatar({
   size?: number;
   bucket?: "avatars" | "street-icons";
 }) {
+  const refreshMarker = useContext(RefreshMarker);
   const identity = JSON.stringify([bucket, path, version]);
   const [image, setImage] = useState({ identity: "", token: "", attempt: 0 });
   const [failed, setFailed] = useState("");
@@ -95,6 +97,7 @@ export function Avatar({
           <Image
             key={identity + ":" + image.attempt}
             style={[style, { position: "absolute" }]}
+            onLoadEnd={refreshMarker}
             onError={() => void retry()}
             source={{
               uri:

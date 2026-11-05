@@ -428,7 +428,7 @@ final class Smoke: XCTestCase {
   try await control("online")
   app.terminate();app.launch()
   assertParticipation(app,active:false,timeout:30)
-  XCTAssertTrue(app.staticTexts.containing(NSPredicate(format:"label CONTAINS %@","0人がチェックイン中")).firstMatch.waitForExistence(timeout:30))
+  XCTAssertFalse(app.staticTexts.containing(NSPredicate(format:"label CONTAINS %@","通信回復後")).firstMatch.exists)
   attach(app,"offline-exit-recovered")
  }
  @MainActor func testOtherWriterEntryState() throws {
@@ -449,7 +449,8 @@ final class Smoke: XCTestCase {
   let app=XCUIApplication(bundleIdentifier:"jp.yumegaoka.development")
   app.launch()
   XCTAssertTrue(app.descendants(matching:.any).matching(identifier:"気配の街アイコン 8人分").firstMatch.waitForExistence(timeout:30))
-  XCTAssertTrue(app.staticTexts.containing(NSPredicate(format:"label CONTAINS %@","10人がチェックイン中")).firstMatch.exists)
+  XCTAssertTrue(app.descendants(matching:.any).matching(identifier:"DreamCloud").firstMatch.exists)
+  XCTAssertFalse(app.staticTexts.containing(NSPredicate(format:"label CONTAINS %@","人がチェックイン中")).firstMatch.exists)
   attach(app,"presence-header-eight-with-ten-checkins")
  }
  @MainActor func testProfileImageDisplay() throws {

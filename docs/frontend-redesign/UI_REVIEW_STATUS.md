@@ -83,7 +83,7 @@ Homeの既存pull更新は短い/空の一覧でも引けるよう明示し、�
 
 ## badge・夕焼けと素材整理（2026-11-05）
 
-人数badgeは縦方向の背景FF9E9E→FF5151・枠線FFD9D9→FFB8B8（1.5pt）。Home/AccountPageはStretchySunsetを共通使用し、負のスクロール量に応じて画像を拡大/上方補正して白い上余白を埋める。通常高さは維持し、通常の上方向スクロールでは伸ばさない。ユーザー訂正の「もっと大きく」は画像でなく汎用アイコンへ適用（元サイズ1.75倍/48pt上限）、タブ32ptは維持。
+地図ヘッダーは両OSともDreamCloudロゴに統一し、人数badgeは表示しない。Home/AccountPageはStretchySunsetを共通使用し、負のスクロール量に応じて画像を拡大/上方補正して白い上余白を埋める。通常高さは維持し、通常の上方向スクロールでは伸ばさない。ユーザー訂正の「もっと大きく」は画像でなく汎用アイコンへ適用（元サイズ1.75倍/48pt上限）、タブ32ptは維持。
 
 現役素材はassets/brand・tabs・backgrounds・illustrationsへ分類。mapAssets.tsは退役し、brandAndTabAssets.tsが現役ロゴ/タブ9SVGを生成。MapAssetは汎用アイコンへの互換名ルーティングを維持し、使われなくなった旧viewBox補正を削除。旧SVG/未参照画像と変更開始時のmapAssets内容はdocs/reference/figma-map-legacyへ保持。生成はscripts/build-brand-assets.mjs。汎用アイコンはcomponents/icons/frames.json、原本はicons/yumegaoka-ui。
 

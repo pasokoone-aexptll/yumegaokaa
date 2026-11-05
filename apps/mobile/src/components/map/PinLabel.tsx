@@ -77,6 +77,13 @@ export function PinBubble({ children }: { children: ReactNode }) {
   );
 }
 export function PinCountdown({ children }: { children: string }) {
+  if (Platform.OS === "android") return (
+    <View style={[s.countdown, {
+      experimental_backgroundImage: "linear-gradient(180deg, #FE2E31, #FFABED)",
+    }]}>
+      <Text numberOfLines={1} style={[s.text, { color: "white", includeFontPadding: false }]}>{children}</Text>
+    </View>
+  );
   return (
     <View collapsable={false} style={s.countdown}>
       <Gradient colors={pinRed} />
@@ -89,7 +96,7 @@ export function PinCountdown({ children }: { children: string }) {
 const s = StyleSheet.create({
   text: {
     fontFamily: Platform.OS === "ios" ? "ui-rounded" : undefined,
-    fontSize: 16,
+    fontSize: 14.4,
     fontWeight: "600",
   },
   bubbleWrapper: { alignItems: "center", maxWidth: 240 },

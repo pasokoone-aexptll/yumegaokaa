@@ -46,7 +46,6 @@ import { useStreetMap } from "../../hooks/useStreetMap";
 export default function Street() {
   const router = useRouter();
   const placement = usePinPlacement();
-  const [historyOpen, setHistoryOpen] = useState(false);
   const [mapMoving, setMapMoving] = useState(false);
   const { height } = useWindowDimensions();
   // Move the pin down 24pt so the title and countdown share the visible center.
@@ -82,8 +81,6 @@ export default function Street() {
     state,
     snapshot,
     now,
-    name,
-    connectionUnavailable,
     error,
     setError,
     busy,
@@ -201,7 +198,6 @@ export default function Street() {
     <View style={styles.root}>
       <StatusBar style="light" />
       <Map
-        historyBlur={historyOpen}
         bottomInset={detailInset}
         onMovingChange={setMapMoving}
         style={StyleSheet.absoluteFill}
@@ -262,10 +258,6 @@ export default function Street() {
           <ProgressiveBlur edge="top" intensity={30} />
         </View>
         <MapHeader
-          name={name}
-          offline={connectionUnavailable}
-          count={snapshot?.checked_in_count}
-          stale={!!error}
           active={active}
           ghost={state.pending_mode ? state.pending_mode === "ghost" : ghost}
           modeDisabled={busy || state.pending_exit}
@@ -347,7 +339,7 @@ export default function Street() {
         </View>
       </SafeAreaView>
       {!placement.active && (
-        <StreetChat onHistoryChange={setHistoryOpen} mapMoving={mapMoving} onReadStatus={setChatRead} />
+        <StreetChat mapMoving={mapMoving} onReadStatus={setChatRead} />
       )}
       {placement.active && (
         <PlacementFooter

@@ -42,6 +42,7 @@ export function StreetMapMarkers({
       {cells.map((cell) => (
         <Marker
           key={`${cell.area_version}:${cell.cell_id}`}
+          snapshotKey={JSON.stringify(cell.clusters)}
           lngLat={[cell.anchor.longitude, cell.anchor.latitude]}
         >
           <View style={styles.clusterRow}>
@@ -99,7 +100,7 @@ export function StreetMapMarkers({
       {events
         .filter((e) => Date.parse(e.ends_at) > now)
         .map((event) => (
-          <Marker key={event.id} lngLat={[event.longitude, event.latitude]}
+          <Marker key={event.id} snapshotKey={event.title + countdown(event, now)} lngLat={[event.longitude, event.latitude]}
             onPress={Platform.OS === "android" ? () => openDetail("event", event.id, event.longitude, event.latitude) : undefined}>
             <MarkerFeedback
               pointerEvents={Platform.OS === "android" ? "none" : "auto"}
@@ -122,7 +123,7 @@ export function StreetMapMarkers({
       {recruitments
         .filter((p) => Date.parse(p.expires_at) > now)
         .map((pin) => (
-          <Marker key={pin.id} lngLat={[pin.longitude, pin.latitude]}
+          <Marker key={pin.id} snapshotKey={pin.display_name + pin.icon_path} lngLat={[pin.longitude, pin.latitude]}
             onPress={Platform.OS === "android" ? () => openDetail("recruitment", pin.id, pin.longitude, pin.latitude) : undefined}>
             <MarkerFeedback
               pointerEvents={Platform.OS === "android" ? "none" : "auto"}

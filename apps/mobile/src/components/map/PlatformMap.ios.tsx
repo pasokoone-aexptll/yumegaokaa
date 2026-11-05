@@ -1,4 +1,5 @@
-import { View } from "react-native";
+import { MarkerScale, useMarkerScale } from "./markerScale";
+import { View, useWindowDimensions } from "react-native";
 import { PlacementHandle } from "../pins/PlacementHandle";
 import {
   createContext,
@@ -30,7 +31,6 @@ function appleCamera(view: ViewState) {
   };
 }
 export function Map({
-  historyBlur: _historyBlur,
   children,
   style,
   onPress,
@@ -39,10 +39,15 @@ export function Map({
   bottomInset = 0,
 }: MapProps) {
   const map = useRef<MapView>(null);
+  const { width } = useWindowDimensions();
+  const [scale, updateZoom] = useMarkerScale();
+  const regionZoom = (longitudeDelta: number) => {
+    if (longitudeDelta > 0) updateZoom(Math.log2(360 * width / (256 * longitudeDelta)));
+  };
   const [ready, setReady] = useState(false);
   const [cameraRevision, setCameraRevision] = useState(0);
   return (
-    <Context.Provider value={{ map, ready }}>
+    <MarkerScale.Provider value={scale}><Context.Provider value={{ map, ready }}>
       <View style={style}>
         <MapView
           mapPadding={{ top: 0, right: 0, bottom: bottomInset, left: 0 }}
@@ -59,11 +64,13 @@ export function Map({
             zoom: 17,
             pitch: 55,
           })}
-          onRegionChange={() => {
+          onRegionChange={region => {
+            regionZoom(region.longitudeDelta);
             onMovingChange?.(true);
             if (placement) setCameraRevision((r) => r + 1);
           }}
-          onRegionChangeComplete={() => {
+          onRegionChangeComplete={region => {
+            regionZoom(region.longitudeDelta);
             onMovingChange?.(false);
             if (placement) setCameraRevision((r) => r + 1);
           }}
@@ -91,7 +98,7 @@ export function Map({
           />
         )}
       </View>
-    </Context.Provider>
+    </Context.Provider></MarkerScale.Provider>
   );
 }
 export function Camera({ initialViewState, ref }: CameraProps) {
@@ -120,6 +127,7 @@ export function Marker({
   draggable,
   onDragEnd,
 }: MarkerProps) {
+  const scale = useContext(MarkerScale);
   return (
     <AppleMarker
       coordinate={{ longitude: lngLat[0], latitude: lngLat[1] }}
@@ -132,7 +140,7 @@ export function Marker({
       }
       tracksViewChanges
     >
-      {children}
+      <View style={{ transform: [{ scale }] }}>{children}</View>
     </AppleMarker>
   );
 }

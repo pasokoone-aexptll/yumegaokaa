@@ -1,25 +1,15 @@
 import { ModeDropdown } from "./ModeDropdown";
 import { ParticipationSwitch } from "./ParticipationSwitch";
-import { badgeStyle, numberStyle } from "./headerLayout";
-import { Image, StyleSheet, Text, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 import { MapAsset } from "./MapAsset";
-import { SmoothSurface } from "./SmoothSurface";
 
 export function MapHeader({
-  name,
-  offline = false,
-  count,
-  stale,
   active,
   onToggle,
   ghost = false,
   modeDisabled = false,
   onModeChange,
 }: {
-  name: string;
-  offline?: boolean;
-  count?: number;
-  stale: boolean;
   active: boolean;
   onToggle: (value: boolean) => void;
   ghost?: boolean;
@@ -28,46 +18,9 @@ export function MapHeader({
 }) {
   return (
     <View style={styles.row}>
-      {!offline && name.startsWith("池袋") ? (
-        <Image
-          accessibilityLabel={name}
-          source={require("../../../assets/brand/ikebukuro.png")}
-          style={styles.logo}
-          resizeMode="contain"
-        />
-      ) : (
-        <View accessible accessibilityLabel={name}>
-          <MapAsset
-            name="DreamCloud Logo"
-            width={offline ? 172 : 112}
-            height={28}
-            tint="white"
-          />
-        </View>
-      )}
-      {!offline && (
-        <SmoothSurface
-          color="#FF5151"
-          gradient={["#FF9E9E", "#FF5151"]}
-          borderGradient={["#FFD9D9", "#FFB8B8"]}
-          radius={24}
-          style={styles.count}
-        >
-          <MapAsset name="usericon" width={18} height={20} />
-          <Text
-            accessibilityLabel={
-              count === undefined
-                ? "チェックイン人数を取得中"
-                : `${count}人がチェックイン中${stale ? "、最終取得時" : ""}`
-            }
-            style={styles.number}
-          >
-            {count ?? "—"}
-            {stale && count !== undefined ? "*" : ""}
-          </Text>
-        </SmoothSurface>
-      )}
-      <View style={{ flex: 1 }} />
+      <View accessible accessibilityLabel="DreamCloud" style={{ flex: 1, minWidth: 0, alignItems: "flex-start" }}>
+        <MapAsset name="DreamCloud Logo" width={164} height={32} tint="white" />
+      </View>
       <ModeDropdown ghost={ghost} active={active} disabled={modeDisabled} onChange={onModeChange} />
       <ParticipationSwitch value={active} onChange={onToggle} />
     </View>
@@ -80,20 +33,5 @@ const styles = StyleSheet.create({
     gap: 7,
     marginTop: 10,
     marginBottom: 10,
-  },
-  logo: { width: 80, height: 51 },
-  count: {
-    flexDirection: "row",
-    gap: 4,
-    alignItems: "center",
-    paddingHorizontal: 10,
-    height: 39,
-    ...badgeStyle,
-  },
-  number: {
-    color: "white",
-    ...numberStyle,
-    fontSize: 22,
-    fontWeight: "600",
   },
 });

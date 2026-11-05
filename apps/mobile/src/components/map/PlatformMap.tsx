@@ -1,16 +1,15 @@
 import { PlacementHandle, type PlacementProjection } from "../pins/PlacementHandle";
-import { requireNativeViewManager } from "expo-modules-core";
-import type { ViewProps } from "react-native";
+import { MarkerScale, RefreshMarker, useMarkerScale } from "./markerScale";
+
 
 import { StyleSheet, View, Animated, useWindowDimensions } from "react-native";
 
-import { useRef, useImperativeHandle, useEffect, useCallback, useMemo, useState } from "react";
-import type { CameraRef as LibreCameraRef, MapRef } from "@maplibre/maplibre-react-native";
+import { useRef, useContext, useImperativeHandle, useEffect, useCallback, useMemo, useState } from "react";
+import type { CameraRef as LibreCameraRef, ViewAnnotationRef, MapRef } from "@maplibre/maplibre-react-native";
 // Android/default implementation. Preserve MapLibre for the future Android build.
 import {
   Map as LibreMap,
   Camera as LibreCamera,
-  Marker as LibreMarker,
   ViewAnnotation,
   GeoJSONSource,
   Layer,
@@ -24,9 +23,7 @@ import type {
   ViewState,
 } from "./PlatformMap.types";
 export type { CameraRef } from "./PlatformMap.types";
-const MapPixels = requireNativeViewManager<ViewProps & { blurred: boolean; revision: number }>("PresenceNative", "MapPixels");
 export function Map({
-  historyBlur = false,
   mapStyle = defaultStyle,
   placement,
   bottomInset = 0,
@@ -34,7 +31,7 @@ export function Map({
   ...props
 }: MapProps) {
   const mapRef = useRef<MapRef>(null);
-  const [backdropRevision, refreshBackdrop] = useState(0);
+  const [scale, updateZoom] = useMarkerScale();
   const lastProjectionAt = useRef(0);
   const [mapReady, setMapReady] = useState(false);
   const [cameraRevision, setCameraRevision] = useState(0);
@@ -56,7 +53,6 @@ export function Map({
     if (revealed.current) return;
     revealed.current = true;
     setMapReady(true);
-    refreshBackdrop(n => n + 1);
     Animated.timing(cover, { toValue: 0, duration: 220, useNativeDriver: true }).start();
   }, [cover]);
   useEffect(() => {
@@ -66,13 +62,14 @@ export function Map({
   const map = (
     <LibreMap
       ref={mapRef}
-      onRegionIsChanging={placement ? () => {
+      onRegionIsChanging={event => {
+        updateZoom(event.nativeEvent.zoom);
         const now = Date.now();
-        if (now - lastProjectionAt.current >= 80) {
+        if (placement && now - lastProjectionAt.current >= 80) {
           lastProjectionAt.current = now;
           setCameraRevision(r => r + 1);
         }
-      } : undefined}
+      }}
       onDidFinishRenderingFrameFully={mapReady ? undefined : reveal}
       onDidFailLoadingMap={reveal}
       contentInset={bottomInset ? undefined : { top: 0, left: 0, right: 0, bottom: 0 }}
@@ -82,13 +79,13 @@ export function Map({
       mapStyle={mapStyle}
       {...props}
       onRegionWillChange={() => onMovingChange?.(true)}
-      onRegionDidChange={() => { refreshBackdrop(n => n + 1); onMovingChange?.(false); if (placement) setCameraRevision(r => r + 1); }}
+      onRegionDidChange={event => { updateZoom(event.nativeEvent.zoom); onMovingChange?.(false); if (placement) setCameraRevision(r => r + 1); }}
     />
   );
   return onMovingChange ? (
     <>
     <View style={{ position: "absolute", top: 0, left: 0, right: 0, height }}>
-      <MapPixels revision={backdropRevision} blurred={historyBlur} style={StyleSheet.absoluteFill}>{map}</MapPixels>
+      <MarkerScale.Provider value={scale}>{map}</MarkerScale.Provider>
       <Animated.View pointerEvents="none" style={[StyleSheet.absoluteFill, { backgroundColor: "#303947", opacity: cover }]} />
     </View>
     {placement && <PlacementHandle map={projection} point={placement.point} revision={placement.revision}
@@ -110,13 +107,34 @@ export function Camera({ ref, ...props }: CameraProps) {
   }), []);
   return <LibreCamera maxZoom={18} ref={camera} {...props} />;
 }
-export function Marker({ lngLat, children, draggable, onDragEnd, onPress }: MarkerProps) {
-  if (draggable) return (
-    <ViewAnnotation lngLat={lngLat} draggable onDragEnd={event => onDragEnd?.(event.nativeEvent.lngLat)}>
-      {children}
+export function Marker({ lngLat, children, draggable, onDragEnd, onPress, snapshotKey }: MarkerProps) {
+  const ref = useRef<ViewAnnotationRef>(null);
+  const frame = useRef<number | null>(null);
+  const scale = useContext(MarkerScale);
+  const refresh = useCallback(() => {
+    if (frame.current !== null) return;
+    frame.current = requestAnimationFrame(() => {
+      frame.current = null;
+      ref.current?.refresh();
+    });
+  }, []);
+  useEffect(() => {
+    refresh();
+    return () => {
+      if (frame.current !== null) cancelAnimationFrame(frame.current);
+      frame.current = null;
+    };
+  }, [scale, snapshotKey, refresh]);
+  return (
+    <ViewAnnotation ref={ref} lngLat={lngLat} draggable={draggable} onPress={onPress}
+      onDragEnd={event => onDragEnd?.(event.nativeEvent.lngLat)}>
+      <View collapsable={false} onLayout={refresh}>
+        <RefreshMarker.Provider value={refresh}>
+          <View collapsable={false} style={{ transform: [{ scale }] }}>{children}</View>
+        </RefreshMarker.Provider>
+      </View>
     </ViewAnnotation>
   );
-  return <LibreMarker lngLat={lngLat} onPress={onPress}>{children}</LibreMarker>;
 }
 export function Boundary({ data }: BoundaryProps) {
   return (

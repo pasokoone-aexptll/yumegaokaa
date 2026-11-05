@@ -6,9 +6,8 @@
 
 | 部位 | 現在の接続・変更 | 実装場所 |
 | --- | --- | --- |
-| 池袋ロゴ＋赤い人数 | 提供画像とchecked_in_count。気配数とは別。取得前は—、取得失敗時は最終値に* | MapHeader、(tabs)/index.tsx |
+| 地図ヘッダー | 両OS・接続状態共通でDreamCloudロゴを表示。チェックイン人数バッジは非表示、気配の画像列は維持 | MapHeader、(tabs)/index.tsx |
 | 参加トグル | 既存の説明→NFC/開発導線、OFF→退出。ゴーストと混同しない | useStreetMap、StreetEntrySheet |
-| API雲ロゴ | 表示しない | MapHeader |
 | 気配画像列 | 有効な気配の街pool画像、画面幅とアイコン幅から個数計算＋残り人数。0件では列なし | PresenceHeader、presenceHeader |
 | 地図上の気配 | 既存区画・人数・割当・失効を維持、吹き出しを「ここにN人の気配」 | StreetMapMarkers |
 | イベント | 提供pin.pngへ置換。日時・題名と詳細への遷移を維持 | EventCloudPin、StreetMapMarkers |

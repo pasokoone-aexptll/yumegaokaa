@@ -10,7 +10,6 @@ export type ViewState = {
 export type CameraRef = { flyTo: (view: ViewState) => void };
 export type CameraProps = { initialViewState: ViewState; ref?: Ref<CameraRef> };
 export type MapProps = {
-  historyBlur?: boolean;
   bottomInset?: number;
   onMovingChange?: (moving: boolean) => void;
   placement?: {
@@ -26,6 +25,7 @@ export type MapProps = {
 export type MarkerProps = {
   lngLat: [number, number];
   children: ReactElement;
+  snapshotKey?: string;
   onPress?: () => void;
   draggable?: boolean;
   onDragEnd?: (point: [number, number]) => void;
