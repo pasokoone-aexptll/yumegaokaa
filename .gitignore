@@ -22,3 +22,7 @@ tests/ios-ui/Smoke.xcodeproj/
 *.pem
 *.key
 *.mobileprovision
+
+# Local icon authoring tools and prompts; keep separate from the shipped icon set.
+/icons/kubai-icons/
+/docs/KUBAI_ICONS_PROMPT.md
