@@ -1,7 +1,11 @@
 {
   "platforms": [
-    "apple"
+    "apple",
+    "android"
   ],
+  "android": {
+    "modules": ["jp.yumegaoka.presence.PresenceNativeModule"]
+  },
   "apple": {
     "modules": [
       "PresenceNativeModule"

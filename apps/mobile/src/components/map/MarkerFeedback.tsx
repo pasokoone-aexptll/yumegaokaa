@@ -21,7 +21,7 @@ export function MarkerFeedback({
         onPress={onPress}
         onPressIn={(event) => {
           pulse();
-          if (Platform.OS === "ios") {
+          if (Platform.OS === "ios" || Platform.OS === "android") {
             try {
               void requireNativeModule("PresenceNative")
                 .selectionHaptic?.()
