@@ -12,7 +12,9 @@ test("Home expires saved cards using monotonic server time even after network fa
   let index = 0,
     focus,
     mono = 100,
-    offline = true;
+    offline = true,
+    clockGate = null,
+    clockCalls = 0;
   const exports = {};
   new Function("require", "exports", "setInterval", "clearInterval", source)(
     (id) => {
@@ -53,6 +55,8 @@ test("Home expires saved cards using monotonic server time even after network fa
       return {
         streetID: "street",
         displayClock: async () => {
+          clockCalls++;
+          if (clockGate) await clockGate;
           if (offline) throw Error("offline");
           return { server: 1000, local: 100 };
         },
@@ -100,6 +104,18 @@ test("Home expires saved cards using monotonic server time even after network fa
   await hook.load();
   assert.equal(state[0].length, 0);
   assert.equal(state[1].length, 0);
+  // A pull while polling is pending must issue a fresh request and await it.
+  let release;
+  clockGate = new Promise((resolve) => { release = resolve; });
+  const before = clockCalls;
+  const old = hook.load();
+  clockGate = null;
+  await hook.load(true);
+  assert.equal(clockCalls, before + 2);
+  assert.equal(state[2], "");
+  release();
+  await old;
+  assert.equal(state[2], "");
   blur();
   assert.equal(timers.size, 0);
 });

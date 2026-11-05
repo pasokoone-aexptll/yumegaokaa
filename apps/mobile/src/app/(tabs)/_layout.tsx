@@ -7,6 +7,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Keyboard, useWindowDimensions, View, StyleSheet } from "react-native";
 import { BlurView } from "expo-blur";
 import { Tabs, usePathname } from "expo-router";
+import { AnimatedTabButton } from "../../components/AnimatedTabButton";
 import { TabIcon } from "../../components/TabIcon";
 export default function StreetTabs() {
   const session = useSyncExternalStore(
@@ -31,6 +32,7 @@ export default function StreetTabs() {
         screenListeners={{ tabPress: Keyboard.dismiss }}
         screenOptions={{
           headerShown: false,
+          tabBarButton: (props) => <AnimatedTabButton {...props} />,
           tabBarShowLabel: false,
           tabBarIconStyle: { width: 60, height: 40 },
           tabBarActiveTintColor: dark ? "#fff" : "#000",
@@ -41,6 +43,7 @@ export default function StreetTabs() {
               session.signed_in,
               access.status,
               placement.active,
+              access.unavailable,
             )
               ? "flex"
               : "none",

@@ -45,6 +45,7 @@ import { localEntry, nfcDisabled } from "../../lib/development";
 import { useStreetMap } from "../../hooks/useStreetMap";
 export default function Street() {
   const placement = usePinPlacement();
+  const [mapMoving, setMapMoving] = useState(false);
   const { height } = useWindowDimensions();
   const [detailInset, setDetailInset] = useState(0);
   useFocusEffect(
@@ -181,6 +182,7 @@ export default function Street() {
       <StatusBar style="light" />
       <Map
         bottomInset={detailInset}
+        onMovingChange={setMapMoving}
         style={StyleSheet.absoluteFill}
         mapStyle={mapStyle}
         placement={
@@ -322,7 +324,9 @@ export default function Street() {
           </Pressable>
         </View>
       </SafeAreaView>
-      {!placement.active && <StreetChat onReadStatus={setChatRead} />}
+      {!placement.active && (
+        <StreetChat mapMoving={mapMoving} onReadStatus={setChatRead} />
+      )}
       {placement.active && (
         <PlacementFooter
           disabled={!placement.point}

@@ -140,7 +140,7 @@ export function MapStatusBanner({
               }
             }}
             style={{
-              backgroundColor: "#ffffffb3",
+              backgroundColor: "white",
               borderRadius: 24,
               paddingHorizontal: 24,
               paddingVertical: 12,

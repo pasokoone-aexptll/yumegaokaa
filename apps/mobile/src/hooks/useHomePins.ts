@@ -16,8 +16,8 @@ export function useHomePins() {
   const request = useRef(0);
   const fetching = useRef(false);
   const clock = useRef<{ server: number; local: number } | null>(null);
-  const load = useCallback(async () => {
-    if (fetching.current) return;
+  const load = useCallback(async (force = false) => {
+    if (fetching.current && !force) return;
     fetching.current = true;
     const gen = generation.current;
     const seq = ++request.current;

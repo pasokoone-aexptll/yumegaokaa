@@ -33,7 +33,14 @@ export function MapHeader({
           resizeMode="contain"
         />
       ) : (
-        <Text style={styles.name}>{name}</Text>
+        <View accessible accessibilityLabel={name}>
+          <MapAsset
+            name="DreamCloud Logo"
+            width={112}
+            height={28}
+            tint="white"
+          />
+        </View>
       )}
       <SmoothSurface color="#ff4b57" radius={24} style={styles.count}>
         <MapAsset name="usericon" width={18} height={20} />
@@ -86,7 +93,6 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   logo: { width: 80, height: 51 },
-  name: { color: "#7196ff", fontSize: 22, fontWeight: "600", maxWidth: 100 },
   count: {
     flexDirection: "row",
     gap: 4,
@@ -110,5 +116,4 @@ const styles = StyleSheet.create({
     gap: 4,
   },
   dot: { width: 14, height: 14, borderRadius: 7 },
-  chevron: { color: "#cbd2db", fontSize: 24, lineHeight: 27 },
 });

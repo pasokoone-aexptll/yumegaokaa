@@ -13,6 +13,7 @@ export type AccessStatus =
 export const AccountAccessContext = createContext({
   status: "unknown" as AccessStatus,
   retry: () => {},
+  unavailable: false,
   chatRestrictedUntil: null as string | null,
 });
 export function useAccountAccess(signed: boolean, revision: number) {
@@ -21,6 +22,7 @@ export function useAccountAccess(signed: boolean, revision: number) {
     status: AccessStatus;
     chatRestrictedUntil?: string | null;
   }>({ revision: -1, status: "unknown" });
+  const [failedRevision, setFailedRevision] = useState<number | null>(null);
   const generation = useRef(0);
   const inFlight = useRef(false);
   const refresh = useCallback(async () => {
@@ -48,6 +50,7 @@ export function useAccountAccess(signed: boolean, revision: number) {
         }
       }
       if (gen === generation.current) {
+        setFailedRevision(null);
         setAccess({
           revision,
           status,
@@ -58,6 +61,7 @@ export function useAccountAccess(signed: boolean, revision: number) {
       }
     } catch (e) {
       if (gen !== generation.current) return;
+      setFailedRevision(revision);
       if (String(e).includes("login_required")) {
         await native.session();
         return;
@@ -92,6 +96,7 @@ export function useAccountAccess(signed: boolean, revision: number) {
     };
   }, [revision, refresh]);
   return {
+    unavailable: signed && failedRevision === revision,
     chatRestrictedUntil:
       access.revision === revision
         ? (access.chatRestrictedUntil ?? null)

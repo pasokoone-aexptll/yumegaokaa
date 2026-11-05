@@ -20,9 +20,17 @@ export function Map({
   mapStyle = defaultStyle,
   placement: _placement,
   bottomInset: _bottomInset,
+  onMovingChange,
   ...props
 }: MapProps) {
-  return <LibreMap mapStyle={mapStyle} {...props} />;
+  return (
+    <LibreMap
+      mapStyle={mapStyle}
+      {...props}
+      onRegionWillChange={() => onMovingChange?.(true)}
+      onRegionDidChange={() => onMovingChange?.(false)}
+    />
+  );
 }
 export function Camera({ ref, ...props }: CameraProps) {
   const camera = useRef<LibreCameraRef>(null);

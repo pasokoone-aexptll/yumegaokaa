@@ -73,6 +73,7 @@ export function MapErrorDialog({ message }: { message: string }) {
             accessibilityRole="button"
             onPress={onClose}
             style={{
+              backgroundColor: "white",
               marginTop: "auto",
               width: "42%",
               borderRadius: 24,
@@ -81,12 +82,6 @@ export function MapErrorDialog({ message }: { message: string }) {
               alignItems: "center",
             }}
           >
-            <BlurView
-              pointerEvents="none"
-              intensity={85}
-              tint="light"
-              style={StyleSheet.absoluteFill}
-            />
             <Text
               style={{
                 color: "black",

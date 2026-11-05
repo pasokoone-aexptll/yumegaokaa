@@ -5,10 +5,11 @@ import {
   pinRed,
 } from "./map/PinLabel";
 import { EventCloudPin } from "./EventCloudPin";
+import { MarkerFeedback } from "./map/MarkerFeedback";
 import { Avatar } from "./Avatar";
 import { Marker } from "./map/PlatformMap";
 import { router } from "expo-router";
-import { Pressable, Text, View } from "react-native";
+import { Text, View } from "react-native";
 import { StreetEvent, countdown } from "../lib/events";
 import { Recruitment } from "../lib/recruitments";
 import { liveCells } from "../lib/presence";
@@ -36,9 +37,8 @@ export function StreetMapMarkers({
         >
           <View style={styles.clusterRow}>
             {cell.clusters.map((cluster, i) => (
-              <View
+              <MarkerFeedback
                 key={i}
-                accessible
                 accessibilityLabel={`ここに${cluster.count}人の気配`}
                 style={[
                   styles.presence,
@@ -82,7 +82,7 @@ export function StreetMapMarkers({
                     </View>
                   ))}
                 </View>
-              </View>
+              </MarkerFeedback>
             ))}
           </View>
         </Marker>
@@ -91,7 +91,7 @@ export function StreetMapMarkers({
         .filter((e) => Date.parse(e.ends_at) > now)
         .map((event) => (
           <Marker key={event.id} lngLat={[event.longitude, event.latitude]}>
-            <Pressable
+            <MarkerFeedback
               accessibilityRole="button"
               onPress={() => {
                 onSelect(event.longitude, event.latitude);
@@ -111,14 +111,14 @@ export function StreetMapMarkers({
               <View style={{ alignItems: "center" }}>
                 <EventCloudPin />
               </View>
-            </Pressable>
+            </MarkerFeedback>
           </Marker>
         ))}
       {recruitments
         .filter((p) => Date.parse(p.expires_at) > now)
         .map((pin) => (
           <Marker key={pin.id} lngLat={[pin.longitude, pin.latitude]}>
-            <Pressable
+            <MarkerFeedback
               onPress={() => {
                 onSelect(pin.longitude, pin.latitude);
                 router.push({
@@ -131,7 +131,7 @@ export function StreetMapMarkers({
               <PinBubble>
                 <PinGradientText>{`${pin.display_name}が募集中`}</PinGradientText>
               </PinBubble>
-            </Pressable>
+            </MarkerFeedback>
           </Marker>
         ))}
     </>

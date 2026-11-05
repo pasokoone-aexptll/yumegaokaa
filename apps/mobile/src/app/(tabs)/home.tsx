@@ -24,7 +24,7 @@ export default function Home() {
     if (refreshing) return;
     setRefreshing(true);
     try {
-      await load();
+      await load(true);
     } finally {
       setRefreshing(false);
     }
@@ -35,10 +35,13 @@ export default function Home() {
   return (
     <ScrollView
       style={s.page}
+      alwaysBounceVertical
       contentInsetAdjustmentBehavior="never"
       contentContainerStyle={{ paddingBottom: 32 }}
       refreshControl={
         <RefreshControl
+          tintColor="#000000"
+          progressViewOffset={insets.top}
           refreshing={refreshing}
           onRefresh={() => void refresh()}
         />

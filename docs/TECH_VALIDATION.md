@@ -990,3 +990,18 @@ read-onlyのlisten確認では54321/54322/54324にssh転送あり、54325/8081�
 既存engine/check/exportはバイト一致。check.mjsで通常・黄色の両方にスクリプトエラーなし。静止/終点/途中6フレーム/24px/28px/7配色を比較し、納品SVGの明暗背景プレビューも目視確認。26 SVGのXML・内部参照を検査。[対応表と検証画像](../icons/yumegaoka-ui/README.md)に記録。
 
 RN/Expo組込み・iOS/Android実機・最終UI承認は未確認。アニメーションはブラウザ用。MVP33タスク/DONE/ローカル残4件・外部3件は変更せず、この素材検査を統合・実機合格へ加算しない。アプリビルド・DB試験は再実行していない。
+
+
+## 2026-11-05 UI操作反応・オフライン導線・整理（R03/R13/R15/R19）
+
+- Mapカメラ変化→StreetChat本文の減光/復帰、マーカーの拡大/軽いnative impact、タブのタップpulseを接続。既存DreamCloudロゴと白いOK操作に変更。背景ぼかしの親alpha制約を維持。
+- Homeは既存RefreshControlを再利用し、手動force取得と古い応答の棄却を接続。短い一覧のbounce・更新indicatorの上部offsetを設定。
+- useAccountAccessは通信失敗のrevisionを分離し、ログイン済みunknown＋取得失敗時のみタブを表示。既知の制限を解除せず、セッション変更へ失敗フラグを持ち越さない。
+- 型チェック、Lint、Swift構文parse、git diff --check成功。tab-visibility 21 assertion、account-access-offline、home-expiry（手動更新と自動取得の競合を追加）成功。DB試験・成功済み全件試験は反復せず。初回のタブ試験はNodeのTS読込flag不足で起動失敗、--experimental-strip-typesで成功。初回LintはAnimated.Valueのref参照を検出し、useState初期化へ修正後成功。
+- 整理は実害に沿ってtap hook共通化、UIプレビュー状態描画のルート外分離、不要style/Map再描画除去。元画像・試作・過去証拠は保持。開始時に存在したアイコン削除/mapAssets差分/新規アイコン資料は今回のcommitへ含めない。
+- 本番用の全体整理・全ページモック・最新UI実機確認は未完。33タスク/DONE増分0、固定残ローカル4→4・外部3→3。追加UI総工数は未計測。
+
+- 実機ビルド1回目はiPhoneロックによるdestination timeout（exit70）。ユーザー解除後、署名を分離して確認したgeneric iOSビルドはXcode未サインイン/有効profileなしで失敗。Xcode SettingsのApple Accountsも未サインインであることを確認しユーザーへログインを依頼。ログ `/tmp/yumegaoka-ui-20261105-build.log` / `/tmp/yumegaoka-ui-20261105-generic.log`。ビルド/インストール成功はまだ未記録。
+- API health HTTP200。既存 `npm run realtime:local` で54325配信gatewayを起動（`/tmp/yumegaoka-gateway-20261105.log`）。DBリセット/チャット削除なし。接続先の現在IP一致を確認。Metroは起動していない。
+
+- 再サインイン後の再試行も `No Account for Team 8RHW9L5LBF` で停止（`/tmp/yumegaoka-ui-20261105-signed.log`）。現在サインインしたPersonal Teamは登録端末0台。旧署名チームを持つアカウントの追加を依頼中。別チーム変更やアプリ削除は行っていない。

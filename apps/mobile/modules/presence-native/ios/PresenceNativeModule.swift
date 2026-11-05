@@ -14,6 +14,11 @@ public class PresenceNativeModule: Module {
    ViewName("ChatTouchRegion")
    Prop("surface", false) { (view: ChatTouchRegion, value: Bool) in view.surface = value }
   }
+  AsyncFunction("selectionHaptic") { await MainActor.run {
+   let feedback = UIImpactFeedbackGenerator(style: .light)
+   feedback.prepare()
+   feedback.impactOccurred()
+  } }
   AsyncFunction("entrySuccessHaptic") { await MainActor.run {
    let feedback = UINotificationFeedbackGenerator()
    feedback.prepare()
