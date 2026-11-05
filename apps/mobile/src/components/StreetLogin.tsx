@@ -1,10 +1,11 @@
+import { useState } from "react";
+import { StretchySunset } from "./StretchySunset";
 import { router } from "expo-router";
 import {
   ActivityIndicator,
   Image,
-  ImageBackground,
+  Animated,
   Pressable,
-  ScrollView,
   StyleSheet,
   Text,
   TextInput,
@@ -39,21 +40,28 @@ export function StreetLogin({
   busy,
   login,
 }: Props) {
+  const [scroll] = useState(() => new Animated.Value(0));
   return (
     <View style={{ flex: 1, backgroundColor: "#f2f2f7" }}>
-      <ScrollView
+      <Animated.ScrollView
+        removeClippedSubviews={false}
+        contentInsetAdjustmentBehavior="never"
+        scrollEventThrottle={16}
+        onScroll={Animated.event(
+          [{ nativeEvent: { contentOffset: { y: scroll } } }],
+          { useNativeDriver: true },
+        )}
         contentContainerStyle={{ flexGrow: 1 }}
         automaticallyAdjustKeyboardInsets
         keyboardShouldPersistTaps="handled"
         keyboardDismissMode="interactive"
       >
-        <ImageBackground
-          source={require("../../assets/backgrounds/yuuyake.png")}
+        <StretchySunset
+          scroll={scroll}
+          height={280}
+          overlayColor="#00000026"
           style={s.hero}
         >
-          <View
-            style={[StyleSheet.absoluteFill, { backgroundColor: "#00000026" }]}
-          />
           <SafeAreaView edges={["top"]} style={{ gap: 12 }}>
             <Image
               source={require("../../assets/brand/DreamCloud.png")}
@@ -63,7 +71,7 @@ export function StreetLogin({
             <Text style={s.brand}>夢ヶ丘オラクル</Text>
             <Text style={s.subtitle}>接続センター アシスタント</Text>
           </SafeAreaView>
-        </ImageBackground>
+        </StretchySunset>
         <View style={s.body}>
           <Text style={s.heading}>
             {sent ? "メールを確認" : "夢ヶ丘にログイン"}
@@ -151,7 +159,7 @@ export function StreetLogin({
             <Text style={s.note}>開発用メールはMacのMailpitに届きます。</Text>
           )}
         </View>
-      </ScrollView>
+      </Animated.ScrollView>
     </View>
   );
 }

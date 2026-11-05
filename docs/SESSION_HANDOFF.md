@@ -214,3 +214,7 @@ ReleaseはMetro不要だが**ローカルAPI・配信サーバーは必要**。�
 ## MR01実装の次回再開点
 
 039_ghost_mode.sqlは未適用。Swift/TSの変更はコードのみ。型/Lint・coordinatorの限定試験・Swift構文解析成功。実DB統合/ネイティブ全体ビルド/実機は未実施。利用中DBとiPhoneを変更しない制約を継続。次回導入はmigrationとnative bridgeの両方が必要。MR02以降へは新しいユーザー指示なしで進まない。
+
+## ログアウト後の背景（11月5日）
+
+MR02〜04も進める依頼の直後、ユーザーが待機を指示しログアウト後UIの修正を優先。StreetLoginの夕焼けをStretchySunsetへ統一し、スクロール時に画像と暗色overlayを一緒に伸縮させる。メール入力/確認コード入力の両状態へ適用。iPhoneと利用中DBを更新しない制約は継続。MR02〜04は未着手。
