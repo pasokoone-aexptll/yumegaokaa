@@ -4,9 +4,10 @@
     "slug": "yumegaoka",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/ios/yumegaoka-iOS-Default-1024@1x.png",
     "userInterfaceStyle": "light",
     "ios": {
+      "icon": "./assets/ios/yumegaoka.icon",
       "bundleIdentifier": "jp.yumegaoka.development",
       "supportsTablet": false,
       "infoPlist": {
@@ -22,6 +23,7 @@
       }
     },
     "android": {
+      "icon": "./assets/icon.png",
       "package": "jp.yumegaoka.development",
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE",

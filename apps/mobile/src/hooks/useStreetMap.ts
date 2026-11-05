@@ -343,6 +343,7 @@ export function useStreetMap() {
     try {
       await NfcManager.start();
       if (!await NfcManager.isEnabled()) throw new Error("nfc_off");
+      if (canceled.current) return;
       await NfcManager.requestTechnology(NfcTech.Ndef, {
         alertMessage: scanPrompt,
       });

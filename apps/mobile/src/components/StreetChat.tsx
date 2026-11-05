@@ -408,7 +408,7 @@ export function StreetChat({
                                     が街に参加しました
                                   </>
                                 ) : (
-                                  <>{m.mentions?.length ? <Text style={{ color: "#81bdff" }}>{m.mentions.map(name => "@" + name).join(" ")} </Text> : null}{m.body}</>
+                                  <>{m.mentions?.length ? <Text style={{ color: "#39A3FF" }}>{m.mentions.map(name => "@" + name).join(" ")} </Text> : null}{m.body}</>
                                 )}
                               </Text>
                             </ChatTouchRegion>
@@ -523,7 +523,7 @@ export function StreetChat({
                 <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 8 }}>
                   {mentions.map(m => <Text key={m.id} accessibilityRole="button"
                     accessibilityLabel={`${m.name}を宛先から外す`}
-                    onPress={() => toggleMention(m.id, m.name)} style={{ color: "#81bdff" }}>
+                    onPress={() => toggleMention(m.id, m.name)} style={{ color: "#39A3FF" }}>
                     @{m.name || items.find(item => item.author_id === m.id)?.display_name || "選択済み"} ×
                   </Text>)}
                 </View>

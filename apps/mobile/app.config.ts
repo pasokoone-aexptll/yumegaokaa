@@ -56,6 +56,7 @@ export default ({ config }: ConfigContext): ExpoConfig => {
       entitlements,
       infoPlist: {
         ...config.ios?.infoPlist,
+        CFBundleDisplayName: "夢ヶ丘",
         YumegaokaPushEnvironment: pushEnvironment ?? "",
       },
       ...(process.env.APPLE_TEAM_ID

@@ -2,7 +2,9 @@
 
 更新：2026-11-05。実装・レビューはここから開始する。現行文書は現在の合意を示し、履歴は採用根拠を残す。記載がない詳細を承認済みと解釈しない。
 
-新セッションは [SESSION_HANDOFF](SESSION_HANDOFF.md) を読む。現在は主要ロジック・ローカル統合済み、UI改修・実機確認・外部接続を残す段階。iOSはApple Maps、将来Android用MapLibreは保持。APNs直接送信はローカル実装済みで本番接続待ち。
+新セッションは [SESSION_HANDOFF](SESSION_HANDOFF.md) を読む。現在は主要ロジック・ローカル統合済み、UI改修・実機確認・外部接続を残す段階。iOSはApple Maps、AndroidはMapLibre。APNs直接送信はローカル実装済みで本番接続待ち。
+
+11月6日の残件一覧は[作業台帳「残件の照合」](DELIVERY_PLAN.md#11月6日-残件の照合)を参照。
 
 ## 文書の役割
 
