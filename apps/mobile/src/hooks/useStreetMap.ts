@@ -420,6 +420,7 @@ export function useStreetMap() {
     now,
     name,
     error: error || refreshError,
+    connectionUnavailable: !!refreshError,
     setError,
     busy,
     sheet,

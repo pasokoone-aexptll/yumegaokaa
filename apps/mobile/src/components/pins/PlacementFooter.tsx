@@ -1,4 +1,5 @@
-import { View, Text, Pressable, StyleSheet, Image } from "react-native";
+import { IconPressable as Pressable } from "../icons/IconMotion";
+import { View, Text, StyleSheet, Image } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { MapAsset } from "../map/MapAsset";
 export function PlacementFooter({

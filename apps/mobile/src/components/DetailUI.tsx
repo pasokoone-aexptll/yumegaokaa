@@ -1,8 +1,8 @@
+import { IconPressable as Pressable } from "./icons/IconMotion";
 import type { ReactNode } from "react";
 import { useState } from "react";
 import {
   ActivityIndicator,
-  Pressable,
   ScrollView,
   StyleSheet,
   Text,
@@ -10,7 +10,7 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { router } from "expo-router";
-import { DetailIcon as SFIcon } from "./DetailIcon";
+import { DetailIcon } from "./DetailIcon";
 
 export function DetailPage({
   title,
@@ -50,7 +50,7 @@ export function DetailPage({
               }
               style={detail.round}
             >
-              <SFIcon name="chevron-back" size={22} color="#111" />
+              <DetailIcon name="chevron-back" size={22} color="#111" />
             </Pressable>
           ) : (
             <View />
@@ -73,7 +73,7 @@ export function DetailPage({
               {refreshing || reloading ? (
                 <ActivityIndicator color="#111" />
               ) : (
-                <SFIcon name="reload" size={19} color="#111" />
+                <DetailIcon name="reload" size={19} color="#111" />
               )}
             </Pressable>
           )}
@@ -109,7 +109,7 @@ export function DetailRow({
 }: {
   title: string;
   subtitle?: string;
-  icon?: React.ComponentProps<typeof SFIcon>["name"];
+  icon?: React.ComponentProps<typeof DetailIcon>["name"];
   onPress?: () => void;
   danger?: boolean;
   disabled?: boolean;
@@ -118,7 +118,7 @@ export function DetailRow({
   const content = (
     <>
       {icon && (
-        <SFIcon
+        <DetailIcon
           name={icon}
           size={21}
           color={danger ? "#c52836" : "#00000088"}
@@ -131,13 +131,15 @@ export function DetailRow({
         {subtitle && <Text style={detail.secondary}>{subtitle}</Text>}
       </View>
       {selected !== undefined ? (
-        <SFIcon
+        <DetailIcon
           name={selected ? "checkmark-circle" : "ellipse-outline"}
           size={23}
           color={selected ? "#008cff" : "#00000033"}
         />
       ) : (
-        onPress && <SFIcon name="chevron-forward" size={17} color="#00000055" />
+        onPress && (
+          <DetailIcon name="chevron-forward" size={17} color="#00000055" />
+        )
       )}
     </>
   );

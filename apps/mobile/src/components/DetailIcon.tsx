@@ -1,44 +1,34 @@
-import { SymbolView } from "expo-symbols";
-
+import { UIIcon } from "./icons/UIIcon";
 const symbols = {
-  "chevron-back": "chevron.left",
-  "chevron-forward": "chevron.right",
-  reload: "arrow.clockwise",
+  "chevron-back": "chevron-left",
+  "chevron-forward": "chevron-right",
+  reload: "refresh",
   "calendar-outline": "calendar",
-  "location-outline": "mappin.and.ellipse",
-  "people-outline": "person.2",
-  "person-circle-outline": "person.crop.circle",
-  "person-add-outline": "person.badge.plus",
+  "location-outline": "map-pin",
+  "people-outline": "users",
+  "person-circle-outline": "user",
+  "person-add-outline": "user-plus",
   "create-outline": "pencil",
   "flag-outline": "flag",
-  "images-outline": "photo.on.rectangle.angled",
+  "images-outline": "image",
   "notifications-outline": "bell",
-  "hand-left-outline": "hand.raised",
-  "shield-checkmark-outline": "checkmark.shield",
+  "hand-left-outline": "hand",
+  "shield-checkmark-outline": "shield-check",
   "wifi-outline": "wifi",
-  "construct-outline": "wrench.and.screwdriver",
+  "construct-outline": "wrench",
   "time-outline": "clock",
-  "checkmark-circle": "checkmark.circle.fill",
-  "checkmark-circle-outline": "checkmark.circle",
-  "close-circle-outline": "xmark.circle",
+  "checkmark-circle": "circle-check",
+  "checkmark-circle-outline": "circle-check",
+  "close-circle-outline": "x",
   "ellipse-outline": "circle",
 } as const;
 export function DetailIcon({
   name,
   size = 22,
-  color = "#111",
 }: {
   name: keyof typeof symbols;
   size?: number;
   color?: string;
 }) {
-  return (
-    <SymbolView
-      name={symbols[name]}
-      size={size}
-      tintColor={color}
-      weight="regular"
-      accessible={false}
-    />
-  );
+  return <UIIcon name={symbols[name]} size={size} />;
 }

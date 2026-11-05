@@ -12,7 +12,7 @@ export function ArrivalIcon() {
         justifyContent: "center",
       }}
     >
-      <MapAsset name="plug" width={11} height={18} />
+      <MapAsset name="plug" size={24} />
     </View>
   );
 }

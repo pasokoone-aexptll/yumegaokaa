@@ -62,12 +62,15 @@ test("Home expires saved cards using monotonic server time even after network fa
         },
         native: {
           monotonicTime: () => mono,
-          rpc: async (op) => ({
+          rpc: async (op, payload) => {
+            if (op === "event_list") assert.equal(payload.mine_only, false);
+            return ({
             items:
               op === "event_list"
                 ? [{ id: "event", ends_at: new Date(3000).toISOString() }]
                 : [{ id: "pin", expires_at: new Date(2000).toISOString() }],
-          }),
+          });
+          },
         },
       };
     },

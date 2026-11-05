@@ -1,3 +1,4 @@
+import { UIIcon, type UIIconName } from "../icons/UIIcon";
 import { SvgXml } from "react-native-svg";
 import { mapSvgAssets } from "./mapAssets";
 
@@ -16,6 +17,20 @@ export function MapAsset({
   centered?: boolean;
   tint?: string;
 }) {
+  const icons: Partial<Record<keyof typeof mapSvgAssets, UIIconName>> = {
+    "chevron.right": "chevron-right",
+    usericon: "users",
+    clock: "clock",
+    close: "x",
+    trash: "trash",
+    checkcreate: "check",
+    CreatePIN: "create-pin",
+    Navi: "navi",
+    plug: "arrival-plug",
+  };
+  const icon = icons[name];
+  if (icon)
+    return <UIIcon name={icon} size={size} width={width} height={height} />;
   // Figma exports include asymmetric shadow margins. Use the visible path bounds
   // plus equal padding for circular controls; retain the original SVG elsewhere.
   const controlViewBox = {

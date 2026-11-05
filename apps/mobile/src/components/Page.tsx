@@ -1,10 +1,10 @@
+import { IconPressable as Pressable } from "./icons/IconMotion";
 import { DetailIcon } from "./DetailIcon";
 import { GridBackground } from "./GridBackground";
 import { router, usePathname } from "expo-router";
 import { ReactNode, useState } from "react";
 import {
   ActivityIndicator,
-  Pressable,
   ScrollView,
   StyleSheet,
   Text,

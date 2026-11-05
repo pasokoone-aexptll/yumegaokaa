@@ -26,7 +26,7 @@ export function useHomePins() {
       const [events, pins] = await Promise.all([
         native.rpc<{ items: StreetEvent[] }>("event_list", {
           street_id: streetID,
-          mine_only: true,
+          mine_only: false,
         }),
         native.rpc<{ items: Recruitment[] }>("recruitment_list", {
           street_id: streetID,

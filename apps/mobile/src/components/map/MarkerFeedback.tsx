@@ -1,9 +1,5 @@
-import {
-  Animated,
-  Platform,
-  Pressable,
-  type PressableProps,
-} from "react-native";
+import { IconPressable as Pressable } from "../icons/IconMotion";
+import { Animated, Platform, type PressableProps } from "react-native";
 import { requireNativeModule } from "expo-modules-core";
 import { useTapPulse } from "../../hooks/useTapPulse";
 
@@ -11,6 +7,7 @@ import { useTapPulse } from "../../hooks/useTapPulse";
 export function MarkerFeedback({
   children,
   onPress,
+  onPressIn,
   style,
   ...props
 }: PressableProps) {
@@ -21,7 +18,8 @@ export function MarkerFeedback({
         {...props}
         style={style}
         accessibilityRole="button"
-        onPress={(event) => {
+        onPress={onPress}
+        onPressIn={(event) => {
           pulse();
           if (Platform.OS === "ios") {
             try {
@@ -32,7 +30,7 @@ export function MarkerFeedback({
               /* Preview without the native module. */
             }
           }
-          onPress?.(event);
+          onPressIn?.(event);
         }}
       >
         {children}

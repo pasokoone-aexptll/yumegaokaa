@@ -1,3 +1,4 @@
+import { IconMotionProvider } from "../components/icons/IconMotion";
 import { usePushLifecycle } from "../hooks/usePushNotifications";
 import {
   AccountAccessContext,
@@ -45,63 +46,65 @@ export default function Layout() {
     }
   }, [session.ready, session.signed_in, path, access.status]);
   return (
-    <AccountAccessContext.Provider value={access}>
-      <SafeAreaProvider>
-        <Stack
-          key={`${session.revision}:${access.status}`}
-          screenOptions={{ headerShown: false }}
-        >
-          <Stack.Screen name="(tabs)" />
-          <Stack.Screen
-            name="street-entry"
-            options={{
-              presentation: "formSheet",
-              sheetAllowedDetents: [0.57],
-              sheetInitialDetentIndex: 0,
-              sheetGrabberVisible: true,
-              contentStyle: { backgroundColor: "transparent" },
-            }}
-          />
-          <Stack.Screen
-            name="map-event"
-            options={{
-              presentation: "formSheet",
-              sheetAllowedDetents: [0.5, 1],
-              sheetInitialDetentIndex: 0,
-              sheetGrabberVisible: true,
-              sheetExpandsWhenScrolledToEdge: true,
-              sheetLargestUndimmedDetentIndex: 0,
-              contentStyle: { backgroundColor: "#f2f2f7" },
-            }}
-          />
-          <Stack.Screen
-            name="map-recruitment"
-            options={{
-              presentation: "formSheet",
-              sheetAllowedDetents: [0.5, 1],
-              sheetInitialDetentIndex: 0,
-              sheetGrabberVisible: true,
-              sheetExpandsWhenScrolledToEdge: true,
-              sheetLargestUndimmedDetentIndex: 0,
-              contentStyle: { backgroundColor: "#f2f2f7" },
-            }}
-          />
-          <Stack.Screen
-            name="pins/create"
-            options={{
-              presentation: "formSheet",
-              sheetAllowedDetents: [0.57, 0.85],
-              sheetInitialDetentIndex: 0,
-              sheetGrabberVisible: true,
-              contentStyle: { backgroundColor: "white" },
-            }}
-          />
-          <Stack.Screen
-            name="pins/location"
-            options={{ presentation: "fullScreenModal" }}
-          />
-        </Stack>
-      </SafeAreaProvider>
-    </AccountAccessContext.Provider>
+    <IconMotionProvider>
+      <AccountAccessContext.Provider value={access}>
+        <SafeAreaProvider>
+          <Stack
+            key={`${session.revision}:${access.status}`}
+            screenOptions={{ headerShown: false }}
+          >
+            <Stack.Screen name="(tabs)" />
+            <Stack.Screen
+              name="street-entry"
+              options={{
+                presentation: "formSheet",
+                sheetAllowedDetents: [0.57],
+                sheetInitialDetentIndex: 0,
+                sheetGrabberVisible: true,
+                contentStyle: { backgroundColor: "transparent" },
+              }}
+            />
+            <Stack.Screen
+              name="map-event"
+              options={{
+                presentation: "formSheet",
+                sheetAllowedDetents: [0.5, 1],
+                sheetInitialDetentIndex: 0,
+                sheetGrabberVisible: true,
+                sheetExpandsWhenScrolledToEdge: true,
+                sheetLargestUndimmedDetentIndex: 0,
+                contentStyle: { backgroundColor: "#f2f2f7" },
+              }}
+            />
+            <Stack.Screen
+              name="map-recruitment"
+              options={{
+                presentation: "formSheet",
+                sheetAllowedDetents: [0.5, 1],
+                sheetInitialDetentIndex: 0,
+                sheetGrabberVisible: true,
+                sheetExpandsWhenScrolledToEdge: true,
+                sheetLargestUndimmedDetentIndex: 0,
+                contentStyle: { backgroundColor: "#f2f2f7" },
+              }}
+            />
+            <Stack.Screen
+              name="pins/create"
+              options={{
+                presentation: "formSheet",
+                sheetAllowedDetents: [0.57, 0.85],
+                sheetInitialDetentIndex: 0,
+                sheetGrabberVisible: true,
+                contentStyle: { backgroundColor: "white" },
+              }}
+            />
+            <Stack.Screen
+              name="pins/location"
+              options={{ presentation: "fullScreenModal" }}
+            />
+          </Stack>
+        </SafeAreaProvider>
+      </AccountAccessContext.Provider>
+    </IconMotionProvider>
   );
 }

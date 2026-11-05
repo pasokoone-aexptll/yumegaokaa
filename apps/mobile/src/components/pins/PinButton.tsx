@@ -1,4 +1,5 @@
-import { ActivityIndicator, Pressable, StyleSheet, Text } from "react-native";
+import { IconPressable as Pressable } from "../icons/IconMotion";
+import { ActivityIndicator, StyleSheet, Text } from "react-native";
 import { MapAsset } from "../map/MapAsset";
 export function PinButton({
   title,

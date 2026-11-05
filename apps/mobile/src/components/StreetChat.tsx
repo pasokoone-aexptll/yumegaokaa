@@ -1,3 +1,4 @@
+import { IconPressable as Pressable } from "./icons/IconMotion";
 import { ArrivalIcon } from "./map/ArrivalIcon";
 import { ChatTouchRegion } from "./map/ChatTouchRegion";
 import { chatGeometry } from "../lib/chatGeometry";
@@ -24,7 +25,6 @@ import {
   ActivityIndicator,
   StyleSheet,
   useWindowDimensions,
-  Pressable,
   ScrollView,
   Text,
   TextInput,

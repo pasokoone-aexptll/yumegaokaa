@@ -1,3 +1,4 @@
+import { UIIcon } from "./icons/UIIcon";
 import { useEffect, useRef, useState } from "react";
 import { Image, Text, View } from "react-native";
 import { native, key, url } from "../lib/native";
@@ -73,7 +74,13 @@ export function Avatar({
         },
       ]}
     >
-      <Text>{Array.from(name)[0] ?? "●"}</Text>
+      {bucket === "street-icons" ? (
+        <UIIcon name="presence-star" size={size * 0.7} />
+      ) : name ? (
+        <Text>{Array.from(name)[0]}</Text>
+      ) : (
+        <UIIcon name="user" size={size * 0.7} />
+      )}
       {path &&
         image.identity === identity &&
         image.token &&

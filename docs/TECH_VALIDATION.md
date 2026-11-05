@@ -1011,3 +1011,13 @@ RN/Expo組込み・iOS/Android実機・最終UI承認は未確認。アニメー
 ユーザー指定のyoxanoaxioアカウント追加後、既存チーム8RHW9L5LBFで汎用iOS Releaseビルド成功（`/tmp/yumegaoka-ui-20261105-yoxanoaxio.log`）。コードは669b890、開始時からの既存mapAssets素材差分も作業ツリーのまま同梱。main.jsbundle存在、codesign --verify --deep --strict成功。embedded profile期限2026-11-12 09:52:45 JST。
 
 同じ成果物をiPhoneへdevicectlで上書きインストール成功。bundle jp.yumegaoka.development、アプリ削除なし。起動要求はCoreDevice10002/FBS Security（署名/entitlements/未信頼profile）で拒否。Mac上の署名は検証済み。ユーザーがiPhone設定で信頼確認を完了した後、devicectlによる起動成功を確認。最新UIの操作合格はまだ未確認。33タスク・固定残量は変更なし。
+
+## 2026-11-05 アイコン移植・Home一覧・運営資格（R03/R13/R15/R18/R19）
+
+- Homeのevent_listはmine_only=false、joinedで参加予定/未参加一覧を分離。未終了・中止除外等は既存APIと期限失効処理を維持。専用reloadを削除しpull保持。人数取得失敗時は赤badgeを非表示、ロゴ拡幅。マーカーはonPressInでhaptic/scale、onPressで遷移。
+- DetailIcon/汎用MapAssetをyumegaoka-uiへ移植。scripts/build-mobile-icons.mjsが元exporterを一時コピーして26×13フレームを書き出す。原本engine/icons/export不変、LICENSE同梱。IconPressableが親操作の接触を伝播、UIIconで部品変形を再生。OS Reduce Motion時は静止。タブ/ブランド/街固有イラスト/装飾は保持。
+- 型/Lint成功。ui-interactionsのHome分離/接触とreleaseの区別/オフラインbadge、home-expiryのmine_only=false・期限・force競合を確認。生成338 SVGのXML、内部参照、RN対応タグを確認。生成初回はsandbox内ChromeがSIGABRT、許可された再実行成功。
+- ユーザーが対象を明示したiphone-validation@example.testについて、ローカルDBのactiveかつ未退会会員を一意照合し、operators.active=trueをtransactionでupsert、commit成功を確認。資格付与以外の会員/滞在/コンテンツ変更なし。MFA要件は維持。運営実操作は未確認。
+- 既存33タスク/DONE増分0。固定残ローカル4→4・外部3→3。追加UIの総工数は未計測。新しいUI実機合格は未記録。
+
+- アイコン移植をまとめたiPhone Releaseビルド成功（/tmp/yumegaoka-icons-20261105-build.log）、codesign検証成功、devicectl上書きインストール成功。初回起動はiPhoneロックで拒否され、解除を依頼中。新しいアイコンの実機外観/操作感は未確認。DBリセット/チャット削除/pushなし。

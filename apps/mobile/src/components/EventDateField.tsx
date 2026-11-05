@@ -1,3 +1,4 @@
+import { IconPressable as Pressable } from "./icons/IconMotion";
 import { MapAsset } from "./map/MapAsset";
 import { useCallback, useState } from "react";
 import DateTimePicker from "@react-native-community/datetimepicker";
@@ -5,7 +6,6 @@ import {
   Animated,
   Keyboard,
   Modal,
-  Pressable,
   StyleSheet,
   Text,
   View,

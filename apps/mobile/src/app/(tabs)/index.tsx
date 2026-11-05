@@ -1,3 +1,4 @@
+import { IconPressable as Pressable } from "../../components/icons/IconMotion";
 import { PlacementFooter } from "../../components/pins/PlacementFooter";
 import {
   usePinPlacement,
@@ -27,7 +28,6 @@ import {
   Keyboard,
   ActivityIndicator,
   Modal,
-  Pressable,
   StyleSheet,
   Text,
   View,
@@ -79,6 +79,7 @@ export default function Street() {
     snapshot,
     now,
     name,
+    connectionUnavailable,
     error,
     setError,
     busy,
@@ -246,6 +247,7 @@ export default function Street() {
         </View>
         <MapHeader
           name={name}
+          offline={connectionUnavailable}
           count={snapshot?.checked_in_count}
           stale={!!error}
           active={active}

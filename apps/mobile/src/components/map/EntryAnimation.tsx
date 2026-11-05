@@ -1,3 +1,4 @@
+import { UIIcon } from "../icons/UIIcon";
 import { useEffect } from "react";
 import { Image, View } from "react-native";
 import Animated, {
@@ -11,9 +12,8 @@ import Animated, {
   withRepeat,
   withTiming,
 } from "react-native-reanimated";
-import Svg, { Circle, Path } from "react-native-svg";
+import Svg, { Circle } from "react-native-svg";
 const Ring = Animated.createAnimatedComponent(Circle);
-const Check = Animated.createAnimatedComponent(Path);
 const circumference = 2 * Math.PI * 146;
 function Dot({ index }: { index: number }) {
   const phase = useSharedValue(0);
@@ -98,9 +98,7 @@ export function EntryAnimation({
   const complete = useAnimatedProps(() => ({
     strokeDashoffset: circumference * (1 - completion.value),
   }));
-  const checked = useAnimatedProps(() => ({
-    strokeDashoffset: 78 * (1 - check.value),
-  }));
+  const checked = useAnimatedStyle(() => ({ opacity: check.value }));
   const logoStyle = useAnimatedStyle(() => ({
     transform: [{ translateY: -reveal.value * 30 }],
     opacity: 0.6 + reveal.value * 0.4,
@@ -150,20 +148,20 @@ export function EntryAnimation({
               strokeDasharray={`${circumference} ${circumference}`}
               animatedProps={complete}
             />
-            <Check
-              d="M3.4165 23.917L20.4998 41.0003L58.0832 3.41699"
-              transform="translate(129 138)"
-              fill="none"
-              stroke="#00ADF2"
-              strokeWidth={6.83333}
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeDasharray="78 78"
-              animatedProps={checked}
-            />
           </>
         )}
       </Svg>
+      {phase === "success" && (
+        <Animated.View
+          pointerEvents="none"
+          style={[
+            { position: "absolute", left: size * 0.38, top: size * 0.38 },
+            checked,
+          ]}
+        >
+          <UIIcon name="check" size={size * 0.24} animateOnMount delay={650} />
+        </Animated.View>
+      )}
       {phase !== "success" && (
         <View
           pointerEvents="none"

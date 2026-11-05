@@ -1,23 +1,19 @@
+import { IconPressable as Pressable } from "../icons/IconMotion";
 import { ParticipationSwitch } from "./ParticipationSwitch";
-import {
-  Image,
-  Platform,
-  Pressable,
-  StyleSheet,
-  Text,
-  View,
-} from "react-native";
+import { Image, Platform, StyleSheet, Text, View } from "react-native";
 import { MapAsset } from "./MapAsset";
 import { SmoothSurface } from "./SmoothSurface";
 
 export function MapHeader({
   name,
+  offline = false,
   count,
   stale,
   active,
   onToggle,
 }: {
   name: string;
+  offline?: boolean;
   count?: number;
   stale: boolean;
   active: boolean;
@@ -25,7 +21,7 @@ export function MapHeader({
 }) {
   return (
     <View style={styles.row}>
-      {name.startsWith("池袋") ? (
+      {!offline && name.startsWith("池袋") ? (
         <Image
           accessibilityLabel={name}
           source={require("../../../assets/figma-map/ikebukuro.png")}
@@ -36,26 +32,28 @@ export function MapHeader({
         <View accessible accessibilityLabel={name}>
           <MapAsset
             name="DreamCloud Logo"
-            width={112}
+            width={offline ? 172 : 112}
             height={28}
             tint="white"
           />
         </View>
       )}
-      <SmoothSurface color="#ff4b57" radius={24} style={styles.count}>
-        <MapAsset name="usericon" width={18} height={20} />
-        <Text
-          accessibilityLabel={
-            count === undefined
-              ? "チェックイン人数を取得中"
-              : `${count}人がチェックイン中${stale ? "、最終取得時" : ""}`
-          }
-          style={styles.number}
-        >
-          {count ?? "—"}
-          {stale && count !== undefined ? "*" : ""}
-        </Text>
-      </SmoothSurface>
+      {!offline && (
+        <SmoothSurface color="#ff4b57" radius={24} style={styles.count}>
+          <MapAsset name="usericon" width={18} height={20} />
+          <Text
+            accessibilityLabel={
+              count === undefined
+                ? "チェックイン人数を取得中"
+                : `${count}人がチェックイン中${stale ? "、最終取得時" : ""}`
+            }
+            style={styles.number}
+          >
+            {count ?? "—"}
+            {stale && count !== undefined ? "*" : ""}
+          </Text>
+        </SmoothSurface>
+      )}
       <View style={{ flex: 1 }} />
       <Pressable
         disabled

@@ -1,3 +1,4 @@
+import { UIIcon } from "./icons/UIIcon";
 import {
   PinBubble,
   PinCountdown,
@@ -9,7 +10,7 @@ import { MarkerFeedback } from "./map/MarkerFeedback";
 import { Avatar } from "./Avatar";
 import { Marker } from "./map/PlatformMap";
 import { router } from "expo-router";
-import { Text, View } from "react-native";
+import { View } from "react-native";
 import { StreetEvent, countdown } from "../lib/events";
 import { Recruitment } from "../lib/recruitments";
 import { liveCells } from "../lib/presence";
@@ -77,7 +78,7 @@ export function StreetMapMarkers({
                           size={38}
                         />
                       ) : (
-                        <Text style={styles.orbSymbol}>✦</Text>
+                        <UIIcon name="presence-star" size={30} />
                       )}
                     </View>
                   ))}
@@ -106,7 +107,7 @@ export function StreetMapMarkers({
               <PinBubble>
                 <PinGradientText
                   colors={pinRed}
-                >{`▦ ${event.title}`}</PinGradientText>
+                >{event.title}</PinGradientText>
               </PinBubble>
               <View style={{ alignItems: "center" }}>
                 <EventCloudPin />

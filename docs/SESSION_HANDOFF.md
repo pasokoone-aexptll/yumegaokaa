@@ -14,6 +14,12 @@
 
 再インストールは実機ロックと署名アカウント不足を解消後、ユーザー指定のyoxanoaxioアカウントで既存チーム8RHW9L5LBFの署名を更新。Releaseビルド・codesign検証・iPhoneへの上書きインストール成功。profile期限は2026-11-12 09:52:45 JST。初回起動は端末の信頼確認で拒否されたが、ユーザーの信頼確認後にdevicectl起動成功。アプリ削除なし。最新UIの操作合格は別途未確認。API health HTTP200、配信gateway54325は再起動済み。LAN接続先172.30.100.165を継続。
 
+## 11月5日・後続のUI依頼
+
+オフラインの人数badge非表示/ロゴ拡幅、Homeの未参加「街のイベント」追加と専用reload削除、マーカーの接触時hapticを実装。タブ以外の汎用アイコンをicons/yumegaoka-uiから移植し、親項目への接触でも部品アニメーションが始まる。元の素材から生成するscripts/build-mobile-icons.mjs、IconPressable/UIIconで管理。タブ・ブランドロゴ・街固有イラスト・装飾は保持。
+
+ユーザーが指定したローカルiphone-validation@example.testに運営資格を付与済み。MFA要件は維持。型/Lint・Home/接触/オフライン表示の対象試験成功。Releaseビルド・署名検証・上書きインストール成功（/tmp/yumegaoka-icons-20261105-build.log）。iPhoneロックで起動確認は保留、解除を依頼中。新しいUIの操作感/実機描画合格とはまだ扱わない。既定MVP進捗・固定残量は変更なし。
+
 ## 現在のフェーズ
 
 **MVPロジック・ローカル統合の主要部分を実装済み。Figmaを基にしたUI改修と実機での仕上げ、外部サービス接続を残す段階。公開済みでも全機能完成でもない。**

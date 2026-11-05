@@ -1,19 +1,17 @@
+import { homeEvents } from "../../lib/homeEvents";
 import { useState } from "react";
 import {
-  ActivityIndicator,
   ImageBackground,
   RefreshControl,
   ScrollView,
   StyleSheet,
   Text,
   View,
-  Pressable,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { router } from "expo-router";
 import { PinListItem } from "../../components/PinListItem";
 import { MapAsset } from "../../components/map/MapAsset";
-import { DetailIcon } from "../../components/DetailIcon";
 import { useHomePins } from "../../hooks/useHomePins";
 
 export default function Home() {
@@ -29,9 +27,7 @@ export default function Home() {
       setRefreshing(false);
     }
   }
-  const events = [...items].sort(
-    (a, b) => Date.parse(a.starts_at) - Date.parse(b.starts_at),
-  );
+  const events = homeEvents(items);
   return (
     <ScrollView
       style={s.page}
@@ -62,29 +58,16 @@ export default function Home() {
       <View style={s.content}>
         <View style={s.headingRow}>
           <Text style={s.heading}>参加予定</Text>
-          <Pressable
-            accessibilityRole="button"
-            accessibilityLabel="ピン一覧を再読み込み"
-            disabled={refreshing || loading}
-            onPress={() => void refresh()}
-            style={s.refresh}
-          >
-            {refreshing || loading ? (
-              <ActivityIndicator color="#00000088" />
-            ) : (
-              <DetailIcon name="reload" size={21} color="#00000088" />
-            )}
-          </Pressable>
         </View>
         {!!error && (
           <Text accessibilityRole="alert" style={s.error}>
             {error}
           </Text>
         )}
-        {!loading && !error && !events.length && (
+        {!loading && !error && !events.joined.length && (
           <Text style={s.empty}>参加予定のオフ会はありません。</Text>
         )}
-        {events.map((e, index) => {
+        {events.joined.map((e, index, joined) => {
           const date = new Date(e.starts_at);
           const dateLabel = date.toLocaleDateString("ja-JP", {
             month: "long",
@@ -92,7 +75,7 @@ export default function Home() {
             weekday: "short",
           });
           const previous = index
-            ? new Date(events[index - 1].starts_at).toLocaleDateString(
+            ? new Date(joined[index - 1].starts_at).toLocaleDateString(
                 "ja-JP",
                 { month: "long", day: "numeric", weekday: "short" },
               )
@@ -118,6 +101,30 @@ export default function Home() {
             </View>
           );
         })}
+        <Text style={[s.heading, { marginTop: 28, marginBottom: 8 }]}>
+          街のイベント
+        </Text>
+        {!loading && !error && !events.discover.length && (
+          <Text style={s.empty}>未参加のイベントはありません。</Text>
+        )}
+        {events.discover.map((e) => (
+          <PinListItem
+            key={e.id}
+            title={e.title}
+            subtitle={new Date(e.starts_at).toLocaleString("ja-JP", {
+              month: "long",
+              day: "numeric",
+              hour: "2-digit",
+              minute: "2-digit",
+            })}
+            longitude={e.longitude}
+            latitude={e.latitude}
+            detail={{ kind: "event", id: e.id }}
+            onOpen={() =>
+              router.push({ pathname: "/events/[id]", params: { id: e.id } })
+            }
+          />
+        ))}
         <Text style={[s.heading, { marginTop: 28, marginBottom: 8 }]}>
           募集中
         </Text>
@@ -159,12 +166,6 @@ const s = StyleSheet.create({
     justifyContent: "space-between",
   },
   heading: { fontSize: 25, fontWeight: "600", color: "#000000e6" },
-  refresh: {
-    width: 44,
-    height: 44,
-    alignItems: "center",
-    justifyContent: "center",
-  },
   date: {
     fontSize: 17,
     fontWeight: "500",

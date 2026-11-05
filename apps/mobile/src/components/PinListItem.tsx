@@ -1,4 +1,5 @@
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { IconPressable as Pressable } from "./icons/IconMotion";
+import { StyleSheet, Text, View } from "react-native";
 import { openMapAt } from "../lib/mapNavigation";
 import { DetailIcon } from "./DetailIcon";
 
