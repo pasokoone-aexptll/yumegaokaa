@@ -12,7 +12,7 @@
 
 地図移動中の本文減光、タブ/マーカーのタップ反応・haptic、Home pull強制再取得、白いOK、DreamCloudヘッダーロゴ、オフライン時のタブ表示を実装。UIプレビューの描画分離とtapアニメーション共通化も実施。型/Lint・対象回帰試験成功。実機操作の合格は未記録。
 
-再インストールは実機ロックで最初のbuildが停止。ユーザーが解除済み。汎用iOSビルドでXcodeのApple Account未サインインと有効profile不足を確認し、ユーザーがXcode Settings→Apple Accountsへサインインしたが、既存チーム8RHW9L5LBFを持たないため再buildも署名段階で停止。従来アカウントの追加を依頼中。別チームへの切替・アプリ削除は行わず、署名成功・インストール完了とは扱わない。API health HTTP200、配信gateway54325は再起動済み。LAN接続先172.30.100.165を継続。
+再インストールは実機ロックと署名アカウント不足を解消後、ユーザー指定のyoxanoaxioアカウントで既存チーム8RHW9L5LBFの署名を更新。Releaseビルド・codesign検証・iPhoneへの上書きインストール成功。profile期限は2026-11-12 09:52:45 JST。初回起動は端末の信頼確認で拒否されたが、ユーザーの信頼確認後にdevicectl起動成功。アプリ削除なし。最新UIの操作合格は別途未確認。API health HTTP200、配信gateway54325は再起動済み。LAN接続先172.30.100.165を継続。
 
 ## 現在のフェーズ
 
@@ -137,7 +137,9 @@
 
 ## 最新ビルド・ローカル環境
 
-2026-11-04 cp176：`scripts/ios-validation-release.mjs` による検証用Release成功（0 errors/4 warnings）、main.jsbundle存在、署名検証成功。同じ成果物をロック解除後のiPhoneへインストール・起動成功。**起動成功だけで全UI確認済みではない**。Personal Team、実NFC代用、bundle `jp.yumegaoka.development`、表示名「夢ヶ丘 検証用」。
+2026-11-05：669b890のUI修正を含むReleaseを同じ成果物パスへビルドし、署名検証・iPhone上書きインストール・信頼確認後の起動成功。profile期限2026-11-12 09:52:45 JST。最新UIの操作一巡は未確認。
+
+前回記録・2026-11-04 cp176：`scripts/ios-validation-release.mjs` による検証用Release成功（0 errors/4 warnings）、main.jsbundle存在、署名検証成功。同じ成果物をロック解除後のiPhoneへインストール・起動成功。**起動成功だけで全UI確認済みではない**。Personal Team、実NFC代用、bundle `jp.yumegaoka.development`、表示名「夢ヶ丘 検証用」。
 
 成果物：`/Users/kitchenopen/Library/Developer/Xcode/DerivedData/app-bmqyqrnfvctbedgwfdjyrgbgeext/Build/Products/Release-iphoneos/app.app`。一時ログ `/tmp/yumegaoka-release-20261104.log` は消える可能性がある。アンインストールしていない。
 

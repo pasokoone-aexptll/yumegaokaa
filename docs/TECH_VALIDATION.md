@@ -1005,3 +1005,9 @@ RN/Expo組込み・iOS/Android実機・最終UI承認は未確認。アニメー
 - API health HTTP200。既存 `npm run realtime:local` で54325配信gatewayを起動（`/tmp/yumegaoka-gateway-20261105.log`）。DBリセット/チャット削除なし。接続先の現在IP一致を確認。Metroは起動していない。
 
 - 再サインイン後の再試行も `No Account for Team 8RHW9L5LBF` で停止（`/tmp/yumegaoka-ui-20261105-signed.log`）。現在サインインしたPersonal Teamは登録端末0台。旧署名チームを持つアカウントの追加を依頼中。別チーム変更やアプリ削除は行っていない。
+
+## 2026-11-05 署名更新・実機への上書きインストール
+
+ユーザー指定のyoxanoaxioアカウント追加後、既存チーム8RHW9L5LBFで汎用iOS Releaseビルド成功（`/tmp/yumegaoka-ui-20261105-yoxanoaxio.log`）。コードは669b890、開始時からの既存mapAssets素材差分も作業ツリーのまま同梱。main.jsbundle存在、codesign --verify --deep --strict成功。embedded profile期限2026-11-12 09:52:45 JST。
+
+同じ成果物をiPhoneへdevicectlで上書きインストール成功。bundle jp.yumegaoka.development、アプリ削除なし。起動要求はCoreDevice10002/FBS Security（署名/entitlements/未信頼profile）で拒否。Mac上の署名は検証済み。ユーザーがiPhone設定で信頼確認を完了した後、devicectlによる起動成功を確認。最新UIの操作合格はまだ未確認。33タスク・固定残量は変更なし。
