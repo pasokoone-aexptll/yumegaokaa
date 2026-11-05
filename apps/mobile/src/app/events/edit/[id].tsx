@@ -1,7 +1,6 @@
 import { EventDateField } from "../../../components/EventDateField";
-import { useState } from "react";
 import { useLocalSearchParams } from "expo-router";
-import { Alert, Modal, Text, TextInput, View } from "react-native";
+import { Alert, Text, TextInput, View } from "react-native";
 import {
   PrimaryAction as Action,
   DetailPage as Page,
@@ -9,12 +8,10 @@ import {
   Section,
   detail as ui,
 } from "../../../components/DetailUI";
-import { LocationPicker } from "../../../components/LocationPicker";
 import { useEventEditor } from "../../../hooks/useEventEditor";
 export default function Edit() {
   const { id } = useLocalSearchParams<{ id: string }>(),
-    e = useEventEditor(id),
-    [selecting, setSelecting] = useState(false);
+    e = useEventEditor(id);
   return (
     <Page title="イベントを編集">
       {!!e.error && <Text style={ui.error}>{e.error}</Text>}
@@ -100,7 +97,7 @@ export default function Edit() {
               icon="location-outline"
               title="開催場所を変更"
               disabled={e.ongoing || e.busy}
-              onPress={() => setSelecting(true)}
+              onPress={e.selectLocation}
             />
           </Section>
           <Action
@@ -110,20 +107,6 @@ export default function Edit() {
           />
         </>
       )}
-      <Modal
-        visible={selecting}
-        animationType="slide"
-        onRequestClose={() => setSelecting(false)}
-      >
-        <LocationPicker
-          initial={e.point}
-          onCancel={() => setSelecting(false)}
-          onConfirm={(p) => {
-            e.setPoint(p);
-            setSelecting(false);
-          }}
-        />
-      </Modal>
     </Page>
   );
 }

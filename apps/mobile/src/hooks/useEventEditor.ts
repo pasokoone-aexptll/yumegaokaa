@@ -1,20 +1,28 @@
+import {
+  preserveEventEdit,
+  readEventEdit,
+  takeEventEdit,
+} from "../lib/eventEditDraft";
+import { beginPinPlacement } from "../lib/pinPlacement";
+import { openMapAt } from "../lib/mapNavigation";
 import { eventInputError } from "../lib/eventInput";
 import { useCallback, useState } from "react";
 import { useFocusEffect, router } from "expo-router";
 import { native } from "../lib/native";
 import { StreetEvent } from "../lib/events";
 export function useEventEditor(id: string) {
-  const [event, setEvent] = useState<StreetEvent>(),
-    [title, setTitle] = useState(""),
-    [description, setDescription] = useState(""),
-    [start, setStart] = useState(""),
-    [end, setEnd] = useState(""),
-    [capacity, setCapacity] = useState(""),
-    [point, setPoint] = useState<[number, number]>(),
-    [ongoing, setOngoing] = useState(false),
+  const [restored] = useState(() => readEventEdit(id));
+  const [event, setEvent] = useState<StreetEvent | undefined>(restored?.event),
+    [title, setTitle] = useState(restored?.title ?? ""),
+    [description, setDescription] = useState(restored?.description ?? ""),
+    [start, setStart] = useState(restored?.start ?? ""),
+    [end, setEnd] = useState(restored?.end ?? ""),
+    [capacity, setCapacity] = useState(restored?.capacity ?? ""),
+    [point, setPoint] = useState<[number, number] | undefined>(restored?.point),
+    [ongoing, setOngoing] = useState(restored?.ongoing ?? false),
     [busy, setBusy] = useState(false),
     [error, setError] = useState(""),
-    [latest, setLatest] = useState<StreetEvent>();
+    [latest, setLatest] = useState<StreetEvent | undefined>(restored?.latest);
   const load = useCallback(async () => {
     try {
       const [e, clock] = await Promise.all([
@@ -38,9 +46,31 @@ export function useEventEditor(id: string) {
   }, [id]);
   useFocusEffect(
     useCallback(() => {
+      if (restored?.id === id) {
+        takeEventEdit(id);
+        return;
+      }
       void load();
-    }, [load]),
+    }, [load, restored, id]),
   );
+  function selectLocation() {
+    if (!event || ongoing || busy) return;
+    preserveEventEdit({
+      id,
+      event,
+      title,
+      description,
+      start,
+      end,
+      capacity,
+      point,
+      ongoing,
+      latest,
+    });
+    beginPinPlacement(point, id);
+    if (point) openMapAt(point[0], point[1]);
+    else router.dismissTo("/(tabs)");
+  }
   async function save() {
     if (!event || !point) return;
     const invalid = eventInputError(start, end, capacity);
@@ -95,6 +125,7 @@ export function useEventEditor(id: string) {
   }
   return {
     latest,
+    selectLocation,
     useLatest,
     event,
     title,

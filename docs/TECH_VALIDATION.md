@@ -1035,3 +1035,11 @@ Releaseビルド（/tmp/yumegaoka-icon-crash-fix-build.log）・署名検証・i
 UIIconの描画枠を1.35倍（40pt上限、元から大きな図柄は縮小/拡大しない）、TabIconを32→36ptに変更。36単位のSVGキャンバス内の余白で小さく見える問題に対応。型/Lint/diff検査成功。SVGデータ・nativeコード不変のためblend回帰検査や全件テストは反復しない。固定33タスク/残量は不変。実機での外観は未確認。
 
 拡大版Releaseビルド（/tmp/yumegaoka-icon-size-build.log）、署名検証、iPhone上書きインストール、devicectl起動成功。表示サイズ/収まりのユーザー確認は別途未完。
+
+## 2026-11-05 イベント編集位置選択・アイコン再調整（R13/R19）
+
+旧イベント編集のLocationPicker Modalを削除し、共通Map配置へ接続。eventEditDraftでタイトル/説明/日時/定員/座標/旧revision/競合比較を一時保持、配置完了で座標のみ反映してイベント編集へ復帰。復帰時の自動loadで入力を上書きしない。新規pinDraftとは分離し、sessionStateで別アカウントへ持ち越さない。サーバーevent_edit認可・競合・開催中制限は変更なし。
+
+ユーザー訂正でタブを36→32ptへ戻し、汎用アイコンは1.35倍/40pt上限→1.55倍/44pt上限。型/Lint、pin-placement作成/編集の2試験、session-state試験成功。初回型検査で復元値undefinedの型不足を検出し、型明示後成功。全件試験/DB試験は反復せず。実機の編集往復・表示サイズ合格は未確認。既定33タスク・固定残量は変更なし。
+
+Releaseビルド（/tmp/yumegaoka-event-location-build.log）、署名検証、iPhone上書き成功。起動要求は端末ロック（Locked）で拒否されたため、今回の版の起動/実機往復は未確認。DBリセット・チャット削除・pushなし。

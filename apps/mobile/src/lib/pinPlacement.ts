@@ -1,6 +1,12 @@
+import { setEventEditLocation } from "./eventEditDraft";
 import { useSyncExternalStore } from "react";
 import { updateDraft } from "./pinDraft";
-let state: { active: boolean; point?: [number, number]; revision: number } = {
+let state: {
+  active: boolean;
+  eventId?: string;
+  point?: [number, number];
+  revision: number;
+} = {
   active: false,
   revision: 0,
 };
@@ -9,8 +15,8 @@ function set(next: typeof state) {
   state = next;
   listeners.forEach((f) => f());
 }
-export function beginPinPlacement(point?: [number, number]) {
-  set({ active: true, point, revision: state.revision + 1 });
+export function beginPinPlacement(point?: [number, number], eventId?: string) {
+  set({ active: true, point, eventId, revision: state.revision + 1 });
 }
 export function placePin(point: [number, number]) {
   set({ ...state, point, revision: state.revision + 1 });
@@ -19,9 +25,18 @@ export function cancelPinPlacement() {
   set({ ...state, active: false });
 }
 export function finishPinPlacement() {
-  if (!state.point) return;
-  updateDraft({ location: state.point });
+  if (!state.active || !state.point) return;
+  const eventId = state.eventId;
+  if (eventId) {
+    if (!setEventEditLocation(eventId, state.point)) {
+      cancelPinPlacement();
+      return;
+    }
+  } else updateDraft({ location: state.point });
   set({ ...state, active: false });
+  return eventId
+    ? { kind: "edit" as const, id: eventId }
+    : { kind: "create" as const };
 }
 export function usePinPlacement() {
   return useSyncExternalStore(

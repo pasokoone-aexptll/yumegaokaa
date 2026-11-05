@@ -28,8 +28,8 @@ export const UIIcon = memo(function UIIcon({
 }) {
   // Exported artwork includes shadow padding; compensate in the layout box.
   // Leave large illustrations (e.g. entry success) at their existing size.
-  const displayWidth = Math.max(width, Math.min(width * 1.35, 40));
-  const displayHeight = Math.max(height, Math.min(height * 1.35, 40));
+  const displayWidth = Math.max(width, Math.min(width * 1.55, 44));
+  const displayHeight = Math.max(height, Math.min(height * 1.55, 44));
   const activation = useContext(IconActivation);
   const reduced = useContext(ReducedIconMotion);
   const [progress] = useState(() => new Animated.Value(0));

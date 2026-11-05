@@ -1,3 +1,5 @@
+import { clearEventEdit } from "./eventEditDraft";
+import { cancelPinPlacement } from "./pinPlacement";
 import { localBlocks } from "./localBlocks";
 import { clearDraft } from "./pinDraft";
 
@@ -19,6 +21,8 @@ export const sessionState = {
     if (state.ready && !changed) return;
     if (changed) {
       clearDraft();
+      clearEventEdit();
+      cancelPinPlacement();
       localBlocks.clear();
     }
     state = {

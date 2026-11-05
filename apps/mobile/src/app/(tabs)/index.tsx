@@ -333,8 +333,13 @@ export default function Street() {
         <PlacementFooter
           disabled={!placement.point}
           onDone={() => {
-            finishPinPlacement();
-            router.push("/pins/create");
+            const destination = finishPinPlacement();
+            if (destination?.kind === "edit")
+              router.push({
+                pathname: "/events/edit/[id]",
+                params: { id: destination.id },
+              });
+            else if (destination) router.push("/pins/create");
           }}
         />
       )}
