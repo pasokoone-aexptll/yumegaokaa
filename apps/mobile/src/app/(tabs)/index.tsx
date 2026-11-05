@@ -95,8 +95,20 @@ export default function Street() {
     writeTestTag,
     active,
     logout,
-    chooseMode,
+    changeMode,
   } = useStreetMap();
+  const ghost = state.visit.ghost ?? state.ghost_preference ?? false;
+  const mode = state.pending_mode || (ghost ? "ghostActive" : "publicActive");
+  const currentMode = signed && ready ? mode : undefined;
+  const [previousMode, setPreviousMode] = useState(currentMode);
+  const [modeNotice, setModeNotice] = useState("");
+  if (previousMode !== currentMode) {
+    setPreviousMode(currentMode);
+    setModeNotice(!currentMode || (!previousMode && !state.pending_mode) ? "" :
+      mode === "public" ? "公開への切替待ち・新しい位置を確認中" :
+      mode === "ghost" ? "非公開への切替待ち" :
+      ghost ? "ゴーストモードに切り替えました" : "通常モードに切り替えました");
+  }
   function closeAccount() {
     setSettings(false);
     if (params.panel === "account") router.setParams({ panel: "" });
@@ -252,23 +264,15 @@ export default function Street() {
           count={snapshot?.checked_in_count}
           stale={!!error}
           active={active}
-          ghost={state.visit.ghost ?? state.ghost_preference}
+          ghost={state.pending_mode ? state.pending_mode === "ghost" : ghost}
           modeDisabled={busy || state.pending_exit}
-          onModePress={chooseMode}
+          onModeChange={changeMode}
           onToggle={(value) => (value ? setSheet("explain") : void exit())}
         />
-        {(state.pending_mode || state.visit.ghost || state.ghost_preference) && (
-          <Text style={{ color: "white", fontSize: 12, marginTop: 6 }} accessibilityLiveRegion="polite">
-            {state.pending_mode === "ghost"
-              ? "非公開への切替待ち"
-              : state.pending_mode === "public"
-                ? "公開への切替待ち・新しい位置を確認中"
-                : "ゴーストモード"}
-          </Text>
-        )}
         <View style={{ minHeight: 48 }}>
           <PresenceHeader icons={presenceIcons} />
         </View>
+        {!!modeNotice && <MapStatusBanner key={modeNotice} message={modeNotice} />}
         {!!chatRead?.error && (
           <MapStatusBanner
             message={chatRead.error}
@@ -277,7 +281,7 @@ export default function Street() {
             autoDismiss={false}
           />
         )}
-        {!["未参加", "気配を観測中"].includes(state.status) && (
+        {!["未参加", "気配を観測中"].includes(state.status) && !/^(ゴーストモード|公開への切替待ち|非公開への切替待ち)/.test(state.status) && (
           <MapStatusBanner key={state.status} message={state.status}>
             {state.visit.can_update === false &&
               state.visit.state === "active" && (

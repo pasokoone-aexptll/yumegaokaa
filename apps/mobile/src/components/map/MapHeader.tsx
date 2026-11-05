@@ -1,4 +1,4 @@
-import { IconPressable as Pressable } from "../icons/IconMotion";
+import { ModeDropdown } from "./ModeDropdown";
 import { ParticipationSwitch } from "./ParticipationSwitch";
 import { Image, Platform, StyleSheet, Text, View } from "react-native";
 import { MapAsset } from "./MapAsset";
@@ -13,7 +13,7 @@ export function MapHeader({
   onToggle,
   ghost = false,
   modeDisabled = false,
-  onModePress,
+  onModeChange,
 }: {
   name: string;
   offline?: boolean;
@@ -23,7 +23,7 @@ export function MapHeader({
   onToggle: (value: boolean) => void;
   ghost?: boolean;
   modeDisabled?: boolean;
-  onModePress?: () => void;
+  onModeChange?: (ghost: boolean) => void;
 }) {
   return (
     <View style={styles.row}>
@@ -67,30 +67,7 @@ export function MapHeader({
         </SmoothSurface>
       )}
       <View style={{ flex: 1 }} />
-      <Pressable
-        disabled={modeDisabled || !onModePress}
-        onPress={onModePress}
-        accessibilityRole="button"
-        accessibilityLabel={`気配の公開設定：${ghost ? "ゴースト" : "通常"}`}
-        accessibilityState={{ disabled: modeDisabled || !onModePress }}
-      >
-        <SmoothSurface
-          color="#ffffff26"
-          blurIntensity={25}
-          radius={12}
-          style={styles.mode}
-        >
-          <View
-            style={[
-              styles.dot,
-              { backgroundColor: ghost ? "#9a9a9e" : active ? "#00bc83" : "#ffffff66" },
-            ]}
-          />
-          <View style={{ transform: [{ rotate: "90deg" }] }}>
-            <MapAsset name="chevron.right" size={16} />
-          </View>
-        </SmoothSurface>
-      </Pressable>
+      <ModeDropdown ghost={ghost} active={active} disabled={modeDisabled} onChange={onModeChange} />
       <ParticipationSwitch value={active} onChange={onToggle} />
     </View>
   );
@@ -117,14 +94,4 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     fontFamily: Platform.OS === "ios" ? "ui-rounded" : undefined,
   },
-  mode: {
-    height: 38,
-    width: 64,
-    justifyContent: "center",
-    paddingHorizontal: 9,
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 4,
-  },
-  dot: { width: 14, height: 14, borderRadius: 7 },
 });
