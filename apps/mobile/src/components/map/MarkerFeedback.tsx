@@ -1,4 +1,5 @@
 import { IconPressable as Pressable } from "../icons/IconMotion";
+import Svg, { Defs, Ellipse, RadialGradient, Stop } from "react-native-svg";
 import { Animated, Platform, type PressableProps } from "react-native";
 import { requireNativeModule } from "expo-modules-core";
 import { useTapPulse } from "../../hooks/useTapPulse";
@@ -13,7 +14,14 @@ export function MarkerFeedback({
 }: PressableProps) {
   const { scale, pulse } = useTapPulse(false);
   return (
-    <Animated.View style={{ transform: [{ scale }] }}>
+    <Animated.View style={{ paddingBottom: 4, transform: [{ scale }] }}>
+      <Svg pointerEvents="none" width={52} height={12} style={{ position: "absolute", alignSelf: "center", bottom: 0 }}>
+        <Defs><RadialGradient id="groundShadow" cx="50%" cy="50%" rx="50%" ry="50%">
+          <Stop offset="0" stopColor="#101522" stopOpacity={0.38} />
+          <Stop offset="1" stopColor="#101522" stopOpacity={0} />
+        </RadialGradient></Defs>
+        <Ellipse cx={26} cy={6} rx={26} ry={6} fill="url(#groundShadow)" />
+      </Svg>
       <Pressable
         {...props}
         style={style}

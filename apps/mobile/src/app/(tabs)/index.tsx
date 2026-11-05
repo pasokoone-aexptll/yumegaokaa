@@ -1,5 +1,4 @@
 import { initialPitch } from "../../components/map/headerLayout";
-import { mapBlur } from "../../components/map/mapBlur";
 import { IconPressable as Pressable } from "../../components/icons/IconMotion";
 import { PlacementFooter } from "../../components/pins/PlacementFooter";
 import {
@@ -11,7 +10,7 @@ import {
 import { MapStatusBanner } from "../../components/map/MapStatusBanner";
 import { MapErrorDialog } from "../../components/map/MapErrorDialog";
 import { ProgressiveBlur } from "../../components/map/ProgressiveBlur";
-import { BlurView } from "expo-blur";
+import { MapBlurView } from "../../components/map/MapBlurView";
 import { MapHeader } from "../../components/map/MapHeader";
 import { MapAsset } from "../../components/map/MapAsset";
 import { StatusBar } from "expo-status-bar";
@@ -313,7 +312,7 @@ export default function Street() {
               justifyContent: "center",
             }}
           >
-            <BlurView {...mapBlur}
+            <MapBlurView
               pointerEvents="none"
               intensity={25}
               tint="default"
@@ -335,7 +334,7 @@ export default function Street() {
               justifyContent: "center",
             }}
           >
-            <BlurView {...mapBlur}
+            <MapBlurView
               pointerEvents="none"
               intensity={25}
               tint="default"

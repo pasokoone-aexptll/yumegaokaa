@@ -1,9 +1,9 @@
 import { PlacementHandle, type PlacementProjection } from "../pins/PlacementHandle";
 import { requireNativeViewManager } from "expo-modules-core";
 import type { ViewProps } from "react-native";
-import { BlurTargetView } from "expo-blur";
-import { StyleSheet, Animated, useWindowDimensions } from "react-native";
-import { streetMapTarget } from "./streetMapTarget";
+
+import { StyleSheet, View, Animated, useWindowDimensions } from "react-native";
+
 import { useRef, useImperativeHandle, useEffect, useCallback, useMemo, useState } from "react";
 import type { CameraRef as LibreCameraRef, MapRef } from "@maplibre/maplibre-react-native";
 // Android/default implementation. Preserve MapLibre for the future Android build.
@@ -24,7 +24,7 @@ import type {
   ViewState,
 } from "./PlatformMap.types";
 export type { CameraRef } from "./PlatformMap.types";
-const MapPixels = requireNativeViewManager<ViewProps & { blurred: boolean }>("PresenceNative", "MapPixels");
+const MapPixels = requireNativeViewManager<ViewProps & { blurred: boolean; revision: number }>("PresenceNative", "MapPixels");
 export function Map({
   historyBlur = false,
   mapStyle = defaultStyle,
@@ -34,6 +34,7 @@ export function Map({
   ...props
 }: MapProps) {
   const mapRef = useRef<MapRef>(null);
+  const [backdropRevision, refreshBackdrop] = useState(0);
   const [cameraRevision, setCameraRevision] = useState(0);
   const projection = useMemo(() => ({ current: {
     async pointForCoordinate({ longitude, latitude }) {
@@ -52,6 +53,7 @@ export function Map({
   const reveal = useCallback(() => {
     if (revealed.current) return;
     revealed.current = true;
+    refreshBackdrop(n => n + 1);
     Animated.timing(cover, { toValue: 0, duration: 220, useNativeDriver: true }).start();
   }, [cover]);
   useEffect(() => {
@@ -65,20 +67,21 @@ export function Map({
       onDidFinishRenderingFrameFully={reveal}
       onDidFailLoadingMap={reveal}
       contentInset={{ top: 0, left: 0, right: 0, bottom: bottomInset }}
+      preferredFramesPerSecond={30}
       compass={false}
       androidView="texture"
       mapStyle={mapStyle}
       {...props}
       onRegionWillChange={() => onMovingChange?.(true)}
-      onRegionDidChange={() => { onMovingChange?.(false); if (placement) setCameraRevision(r => r + 1); }}
+      onRegionDidChange={() => { refreshBackdrop(n => n + 1); onMovingChange?.(false); if (placement) setCameraRevision(r => r + 1); }}
     />
   );
   return onMovingChange ? (
     <>
-    <BlurTargetView ref={streetMapTarget} style={{ position: "absolute", top: 0, left: 0, right: 0, height }}>
-      <MapPixels blurred={historyBlur} style={StyleSheet.absoluteFill}>{map}</MapPixels>
+    <View style={{ position: "absolute", top: 0, left: 0, right: 0, height }}>
+      <MapPixels revision={backdropRevision} blurred={historyBlur} style={StyleSheet.absoluteFill}>{map}</MapPixels>
       <Animated.View pointerEvents="none" style={[StyleSheet.absoluteFill, { backgroundColor: "#303947", opacity: cover }]} />
-    </BlurTargetView>
+    </View>
     {placement && <PlacementHandle map={projection} point={placement.point} revision={placement.revision}
       onDrop={placement.onDrop} cameraRevision={cameraRevision} />}
     </>

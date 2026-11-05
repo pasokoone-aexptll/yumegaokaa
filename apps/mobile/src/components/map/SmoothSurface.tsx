@@ -1,5 +1,4 @@
-import { mapBlur } from "./mapBlur";
-import { BlurView } from "expo-blur";
+import { MapBlurView } from "./MapBlurView";
 import { useId, useState, type ReactNode } from "react";
 import { StyleSheet, Platform, View, type StyleProp, type ViewStyle } from "react-native";
 import Svg, { Defs, LinearGradient, Stop, Path } from "react-native-svg";
@@ -51,7 +50,7 @@ export function SmoothSurface({
             },
           ]}
         >
-          <BlurView {...mapBlur}
+          <MapBlurView
             intensity={blurIntensity}
             tint="default"
             style={StyleSheet.absoluteFill}

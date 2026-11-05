@@ -1,5 +1,4 @@
 import { SheetChrome } from "../components/SheetChrome";
-import { mapBlur } from "../components/map/mapBlur";
 import { scheduleEntrySuccessDismissal } from "../lib/entrySuccessDismissal";
 import { requireNativeModule } from "expo-modules-core";
 import type { NativeStackNavigationProp } from "expo-router";
@@ -13,7 +12,7 @@ import {
   View,
   useWindowDimensions,
 } from "react-native";
-import { BlurView } from "expo-blur";
+import { MapBlurView } from "../components/map/MapBlurView";
 import { SvgXml } from "react-native-svg";
 import { brandAndTabSvgAssets } from "../components/map/brandAndTabAssets";
 import { EntryAnimation } from "../components/map/EntryAnimation";
@@ -66,7 +65,7 @@ export default function StreetEntry() {
   if (!value || !phase) return null;
   return (
     <View style={{ flex: 1, backgroundColor: Platform.OS === "android" ? "#e0e4ed" : "#ffffff66" }}>
-      {Platform.OS === "ios" && <BlurView {...mapBlur}
+      {Platform.OS === "ios" && <MapBlurView
         pointerEvents="none"
         intensity={45}
         tint="light"

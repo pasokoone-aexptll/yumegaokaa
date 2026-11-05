@@ -14,7 +14,13 @@ class PresenceNativeModule : Module() {
     Events("onChange")
     View(MapPixels::class) {
       Name("MapPixels")
+      Prop("revision") { view: MapPixels, _: Int -> view.refreshSoon() }
       Prop("blurred") { view: MapPixels, blurred: Boolean -> view.showHistory(blurred) }
+    }
+    View(MapBackdrop::class) {
+      Name("MapBackdrop")
+      Prop("tint") { view: MapBackdrop, tint: String? -> view.tint = tint }
+      Prop("intensity") { view: MapBackdrop, value: Int -> view.intensity = value }
     }
     View(SheetHandle::class) {
       Name("SheetHandle")

@@ -1,5 +1,5 @@
-import { BlurView } from "expo-blur";
-import { glassMapSheet, mapBlur } from "./map/mapBlur";
+import { MapBlurView } from "./map/MapBlurView";
+import { glassMapSheet } from "./map/mapBlur";
 import { IconPressable as Pressable } from "./icons/IconMotion";
 import type { ReactNode } from "react";
 import { useState } from "react";
@@ -42,7 +42,7 @@ export function DetailPage({
       }
       style={[detail.page, glass && { backgroundColor: "#f2f2f799" }]}
     >
-      {glass && <BlurView {...mapBlur} pointerEvents="none" tint="light" intensity={55} style={StyleSheet.absoluteFill} />}
+      {glass && <MapBlurView pointerEvents="none" tint="light" intensity={55} style={StyleSheet.absoluteFill} />}
       <ScrollView
         nestedScrollEnabled={glass}
         contentContainerStyle={[detail.content, edgeToEdge && { paddingBottom: detail.content.paddingBottom + insets.bottom }]}

@@ -6,8 +6,7 @@ import { AccountAccessContext } from "../../hooks/useAccountAccess";
 import { usePinPlacement } from "../../lib/pinPlacement";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Keyboard, Platform, useWindowDimensions, View, StyleSheet } from "react-native";
-import { mapBlur } from "../../components/map/mapBlur";
-import { BlurView } from "expo-blur";
+import { MapBlurView } from "../../components/map/MapBlurView";
 import { Tabs, usePathname } from "expo-router";
 import { AnimatedTabButton } from "../../components/AnimatedTabButton";
 import { TabIcon } from "../../components/TabIcon";
@@ -41,7 +40,7 @@ export default function StreetTabs() {
           tabBarInactiveTintColor: dark ? "#ffffff99" : "#00000099",
           tabBarBackground: Platform.OS === "android" && dark ? () => (
             <View pointerEvents="none" style={[StyleSheet.absoluteFill, { overflow: "hidden", backgroundColor: "#151518" }]}>
-              <BlurView {...mapBlur} tint="dark" intensity={40}
+              <MapBlurView tint="dark" intensity={40}
                 style={{ position: "absolute", inset: -16 }} />
               <View style={[StyleSheet.absoluteFill, { backgroundColor: "#18181be6" }]} />
             </View>
@@ -105,7 +104,7 @@ export default function StreetTabs() {
         />
       </Tabs>
       {(Platform.OS === "android" && ((pathname === "/pins/create" && !placement.active) || pathname === "/street-entry")) && (
-        <BlurView {...mapBlur}
+        <MapBlurView
           pointerEvents="none"
           intensity={25}
           tint="default"

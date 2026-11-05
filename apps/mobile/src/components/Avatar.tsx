@@ -1,6 +1,9 @@
 import { UIIcon } from "./icons/UIIcon";
 import { useEffect, useRef, useState } from "react";
-import { Image, Text, View } from "react-native";
+import { SymbolView } from "expo-symbols";
+import type { SFSymbol } from "sf-symbols-typescript";
+import { avatarInitial } from "../lib/avatarInitial";
+import { Image, Platform, Text, View } from "react-native";
 import { native, key, url } from "../lib/native";
 
 export function Avatar({
@@ -61,6 +64,7 @@ export function Avatar({
     }
   }
 
+  const initial = bucket === "avatars" ? avatarInitial(name) : undefined;
   const style = { width: size, height: size, borderRadius: size / 2 };
   return (
     <View
@@ -76,8 +80,11 @@ export function Avatar({
     >
       {bucket === "street-icons" ? (
         <UIIcon name="presence-star" size={size * 0.7} />
-      ) : name ? (
-        <Text allowFontScaling={false} style={{ fontSize: size * 0.65, lineHeight: size * 0.92, fontWeight: "900", includeFontPadding: false, color: "rgba(0,0,0,0.06)" }}>{Array.from(name)[0]}</Text>
+      ) : initial && Platform.OS === "ios" ? (
+        <SymbolView name={initial.toLowerCase() as SFSymbol} tintColor="rgba(0,0,0,0.06)" weight="black"
+          size={size * 0.65} style={{ width: size * 0.72, height: size * 0.72 }} />
+      ) : initial ? (
+        <Text allowFontScaling={false} style={{ fontSize: size * 0.65, lineHeight: size * 0.92, fontWeight: "900", includeFontPadding: false, color: "rgba(0,0,0,0.06)" }}>{initial}</Text>
       ) : (
         <UIIcon name="user" size={size * 0.7} />
       )}

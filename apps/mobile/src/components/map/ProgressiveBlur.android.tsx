@@ -1,5 +1,4 @@
-import { mapBlur } from "./mapBlur";
-import { BlurView } from "expo-blur";
+import { MapBlurView } from "./MapBlurView";
 import NativeMaskedView from "@react-native-masked-view/masked-view";
 import type { ComponentType, ReactElement } from "react";
 import { StyleSheet, type ViewProps } from "react-native";
@@ -23,7 +22,7 @@ export function ProgressiveBlur({
   if (!active) return null;
   if (edge === "solid")
     return (
-      <BlurView {...mapBlur}
+      <MapBlurView
         pointerEvents="none"
         tint="dark"
         intensity={intensity}
@@ -54,7 +53,7 @@ export function ProgressiveBlur({
         </Svg>
       }
     >
-      <BlurView {...mapBlur}
+      <MapBlurView
         tint="default"
         intensity={intensity}
         style={StyleSheet.absoluteFill}
