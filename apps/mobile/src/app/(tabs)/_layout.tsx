@@ -42,7 +42,8 @@ export default function StreetTabs() {
           tabBarBackground: Platform.OS === "android" && dark ? () => (
             <View pointerEvents="none" style={[StyleSheet.absoluteFill, { overflow: "hidden", backgroundColor: "#151518" }]}>
               <BlurView {...mapBlur} tint="dark" intensity={40}
-                style={{ position: "absolute", inset: -16, backgroundColor: "#10101499" }} />
+                style={{ position: "absolute", inset: -16 }} />
+              <View style={[StyleSheet.absoluteFill, { backgroundColor: "#18181be6" }]} />
             </View>
           ) : undefined,
           tabBarStyle: {
@@ -55,7 +56,7 @@ export default function StreetTabs() {
             )
               ? "flex"
               : "none",
-            backgroundColor: dark && Platform.OS === "android" ? "transparent" : dark ? "#000000e6" : "#fafafa",
+            backgroundColor: dark && Platform.OS === "android" ? "#19191c" : dark ? "#000000e6" : "#fafafa",
             borderTopWidth: StyleSheet.hairlineWidth,
             borderTopColor: dark ? "#ffffff26" : "#0000001a",
             ...tabInsets(insets.bottom, width),
@@ -103,7 +104,7 @@ export default function StreetTabs() {
           }}
         />
       </Tabs>
-      {((pathname === "/pins/create" && !placement.active) || (Platform.OS === "android" && pathname === "/street-entry")) && (
+      {(Platform.OS === "android" && ((pathname === "/pins/create" && !placement.active) || pathname === "/street-entry")) && (
         <BlurView {...mapBlur}
           pointerEvents="none"
           intensity={25}

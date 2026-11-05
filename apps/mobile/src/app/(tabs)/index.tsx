@@ -171,7 +171,7 @@ export default function Street() {
   }
   if (!ready)
     return (
-      <View style={styles.center}>
+      <View style={[styles.center, Platform.OS === "android" && { backgroundColor: "#303947" }]}>
         <ActivityIndicator />
       </View>
     );

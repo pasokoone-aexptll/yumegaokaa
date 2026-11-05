@@ -1,3 +1,4 @@
+import { SheetChrome } from "../components/SheetChrome";
 import { mapBlur } from "../components/map/mapBlur";
 import { scheduleEntrySuccessDismissal } from "../lib/entrySuccessDismissal";
 import { requireNativeModule } from "expo-modules-core";
@@ -5,6 +6,7 @@ import type { NativeStackNavigationProp } from "expo-router";
 import { useEffect, useSyncExternalStore } from "react";
 import { useNavigation } from "expo-router";
 import {
+  Platform,
   Pressable,
   ScrollView,
   Text,
@@ -56,13 +58,14 @@ export default function StreetEntry() {
   }, [phase]);
   if (!value || !phase) return null;
   return (
-    <View style={{ flex: 1, backgroundColor: "#ffffff66" }}>
-      <BlurView {...mapBlur}
+    <View style={{ flex: 1, backgroundColor: Platform.OS === "android" ? "#e0e4ed" : "#ffffff66" }}>
+      {Platform.OS === "ios" && <BlurView {...mapBlur}
         pointerEvents="none"
         intensity={45}
         tint="light"
         style={{ position: "absolute", inset: 0 }}
-      />
+      />}
+      <SheetChrome />
       <ScrollView
         bounces={false}
         showsVerticalScrollIndicator={false}

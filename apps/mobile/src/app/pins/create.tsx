@@ -1,3 +1,4 @@
+import { SheetChrome } from "../../components/SheetChrome";
 import { beginPinPlacement } from "../../lib/pinPlacement";
 import { EventDateField } from "../../components/EventDateField";
 import { updateDraft } from "../../lib/pinDraft";
@@ -244,6 +245,7 @@ export default function CreatePin() {
       style={s.root}
       behavior={Platform.OS === "ios" ? "padding" : undefined}
     >
+      <SheetChrome />
       <View collapsable={false} style={s.header}>
         <Text style={s.heading}>ピンを追加します</Text>
       </View>
@@ -340,7 +342,7 @@ export default function CreatePin() {
 const s = StyleSheet.create({
   root: { flex: 1, backgroundColor: "white" },
   header: {
-    paddingTop: 24,
+    paddingTop: Platform.OS === "android" ? 4 : 24,
     paddingBottom: 16,
     alignItems: "center",
     justifyContent: "center",

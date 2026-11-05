@@ -57,3 +57,50 @@ final class StreetBackdrop: ExpoView {
     CATransaction.commit()
   }
 }
+
+// The anchor belongs to the presented sheet. Follow its presentation layer
+// through a drag, cancellation and the final UIKit dismissal animation.
+final class SheetBackdrop: ExpoView {
+  private let blur = UIVisualEffectView(effect: UIBlurEffect(style: .systemMaterialDark))
+  private var clock: CADisplayLink?
+  private var fullHeight: CGFloat = 0
+
+  override func didMoveToWindow() {
+    super.didMoveToWindow()
+    clock?.invalidate()
+    clock = nil
+    blur.removeFromSuperview()
+    fullHeight = 0
+    guard window != nil else { return }
+    blur.isUserInteractionEnabled = false
+    let link = CADisplayLink(target: self, selector: #selector(updateBackdrop))
+    link.add(to: .main, forMode: .common)
+    clock = link
+  }
+
+  @objc private func updateBackdrop() {
+    guard let window else { return }
+    var responder: UIResponder? = self
+    while let current = responder {
+      if let controller = current as? UIViewController,
+         let sheet = controller.sheetPresentationController,
+         let surface = sheet.presentedView,
+         let host = sheet.presentingViewController.viewIfLoaded {
+        if blur.superview !== host {
+          host.addSubview(blur)
+          blur.frame = host.bounds
+          blur.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        }
+        let layer = surface.layer.presentation() ?? surface.layer
+        let top = layer.convert(layer.bounds, to: window.layer.presentation() ?? window.layer).minY
+        let visible = max(0, window.bounds.maxY - top)
+        // Use the resting detent, including the home-indicator area.
+        let resting = max(1, window.bounds.maxY - sheet.frameOfPresentedViewInContainerView.minY)
+        fullHeight = max(resting, fullHeight)
+        blur.alpha = min(1, visible / fullHeight) * 0.82
+        return
+      }
+      responder = current.next
+    }
+  }
+}

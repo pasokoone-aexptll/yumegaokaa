@@ -1,8 +1,8 @@
 import { BlurTargetView } from "expo-blur";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { StyleSheet } from "react-native";
+import { StyleSheet, Animated } from "react-native";
 import { streetMapTarget } from "./streetMapTarget";
-import { useRef, useImperativeHandle } from "react";
+import { useRef, useImperativeHandle, useEffect, useCallback } from "react";
 import type { CameraRef as LibreCameraRef } from "@maplibre/maplibre-react-native";
 // Android/default implementation. Preserve MapLibre for the future Android build.
 import {
@@ -28,8 +28,21 @@ export function Map({
   ...props
 }: MapProps) {
   const insets = useSafeAreaInsets();
+  const cover = useRef(new Animated.Value(1)).current;
+  const revealed = useRef(false);
+  const reveal = useCallback(() => {
+    if (revealed.current) return;
+    revealed.current = true;
+    Animated.timing(cover, { toValue: 0, duration: 220, useNativeDriver: true }).start();
+  }, [cover]);
+  useEffect(() => {
+    const timer = setTimeout(reveal, 3000);
+    return () => clearTimeout(timer);
+  }, [reveal]);
   const map = (
     <LibreMap
+      onDidFinishRenderingFrameFully={reveal}
+      onDidFailLoadingMap={reveal}
       compass={false}
       androidView="texture"
       mapStyle={mapStyle}
@@ -39,7 +52,10 @@ export function Map({
     />
   );
   return onMovingChange ? (
-    <BlurTargetView ref={streetMapTarget} style={[StyleSheet.absoluteFill, { bottom: placement ? 0 : -(48 + insets.bottom) }]}>{map}</BlurTargetView>
+    <BlurTargetView ref={streetMapTarget} style={[StyleSheet.absoluteFill, { bottom: placement ? 0 : -(48 + insets.bottom) }]}>
+      {map}
+      <Animated.View pointerEvents="none" style={[StyleSheet.absoluteFill, { backgroundColor: "#303947", opacity: cover }]} />
+    </BlurTargetView>
   ) : map;
 }
 export function Camera({ ref, ...props }: CameraProps) {

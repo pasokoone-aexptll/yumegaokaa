@@ -53,10 +53,10 @@ export default function Layout() {
       <AccountAccessContext.Provider value={access}>
         <SafeAreaProvider>
           <Stack
-            key={`${session.revision}:${access.status}`}
+            key={Platform.OS === "android" ? session.revision : `${session.revision}:${access.status}`}
             screenOptions={{ headerShown: false }}
           >
-            <Stack.Screen name="(tabs)" />
+            <Stack.Screen name="(tabs)" options={Platform.OS === "android" ? { contentStyle: { backgroundColor: "#303947" } } : undefined} />
             <Stack.Screen
               name="street-entry"
               options={{
@@ -64,6 +64,7 @@ export default function Layout() {
                 sheetAllowedDetents: [0.57],
                 sheetInitialDetentIndex: 0,
                 sheetGrabberVisible: true,
+                sheetCornerRadius: Platform.OS === "android" ? 28 : undefined,
                 contentStyle: { backgroundColor: Platform.OS === "android" ? sheetBackground : "transparent" },
               }}
             />
@@ -74,6 +75,7 @@ export default function Layout() {
                 sheetAllowedDetents: [0.5, 1],
                 sheetInitialDetentIndex: 0,
                 sheetGrabberVisible: true,
+                sheetCornerRadius: Platform.OS === "android" ? 28 : undefined,
                 sheetExpandsWhenScrolledToEdge: true,
                 sheetLargestUndimmedDetentIndex: 0,
                 contentStyle: { backgroundColor: sheetBackground },
@@ -86,6 +88,7 @@ export default function Layout() {
                 sheetAllowedDetents: [0.5, 1],
                 sheetInitialDetentIndex: 0,
                 sheetGrabberVisible: true,
+                sheetCornerRadius: Platform.OS === "android" ? 28 : undefined,
                 sheetExpandsWhenScrolledToEdge: true,
                 sheetLargestUndimmedDetentIndex: 0,
                 contentStyle: { backgroundColor: sheetBackground },
@@ -98,6 +101,7 @@ export default function Layout() {
                 sheetAllowedDetents: [0.57, 0.85],
                 sheetInitialDetentIndex: 0,
                 sheetGrabberVisible: true,
+                sheetCornerRadius: Platform.OS === "android" ? 28 : undefined,
                 contentStyle: { backgroundColor: "white" },
               }}
             />

@@ -48,6 +48,7 @@ export default ({ config }: ConfigContext): ExpoConfig => {
           (Array.isArray(plugin) ? plugin[0] : plugin) !==
             "react-native-nfc-manager",
       ),
+      "./plugins/with-android-launch-background",
       ...(localEntry ? ["./plugins/with-local-entry"] : []),
     ],
     ios: {

@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
 import { useRouter } from "expo-router";
-import { BlurView } from "expo-blur";
+
 import { entrySheetState, type EntrySheetState } from "../lib/entrySheetState";
 /** The route's native detent is configured before presentation, never in onShow. */
 export function StreetEntrySheet(props: EntrySheetState) {
@@ -19,12 +19,5 @@ export function StreetEntrySheet(props: EntrySheetState) {
     },
     [],
   );
-  return props.sheet !== null ? (
-    <BlurView
-      pointerEvents="none"
-      intensity={25}
-      tint="default"
-      style={{ position: "absolute", inset: 0 }}
-    />
-  ) : null;
+  return null;
 }

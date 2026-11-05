@@ -227,7 +227,11 @@ export function StreetChat({
             }}
           >
             <ProgressiveBlur edge="bottom" intensity={24} />
-            <Svg
+            {Platform.OS === "android" ? (
+              <View style={[StyleSheet.absoluteFill, {
+                experimental_backgroundImage: "linear-gradient(180deg, rgba(23,27,35,0) 0%, rgba(23,27,35,0.32) 50%, rgba(23,27,35,0.82) 100%)",
+              }]} />
+            ) : <Svg
               pointerEvents="none"
               style={StyleSheet.absoluteFill}
               width="100%"
@@ -240,7 +244,7 @@ export function StreetChat({
                 </LinearGradient>
               </Defs>
               <Rect width="100%" height="100%" fill="url(#chatShade)" />
-            </Svg>
+            </Svg>}
           </View>
           <Animated.View
             pointerEvents="box-none"
