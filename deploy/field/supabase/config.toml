@@ -1,5 +1,8 @@
 project_id = "yumegaoka-field"
 
+[auth.email]
+otp_length = 6
+
 [auth.email.template.confirmation]
 subject = "夢ヶ丘の確認コード"
 content_path = "./supabase/templates/otp.html"

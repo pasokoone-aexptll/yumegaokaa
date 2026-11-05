@@ -26,3 +26,5 @@ Render Hobbyの512 MB常時稼働を1台$7として算出。SMTPはResend Free�
 現地試験用Freeプロジェクトでメールテンプレート変更を試したところ、標準SMTPでは管理APIがHTTP 400を返した。標準メールはリンク形式。コードを手入力する既存フローにはカスタムSMTPが必要。独自ドメインは一般参加者のメール送信を始める段階で準備する。標準SMTPは時間あたり2通が目安。[Supabase SMTP](https://supabase.com/docs/guides/auth/auth-smtp)
 
 Renderの単一サービス定義は render.yaml、起動入口は scripts/field-gateway.mjs。PostgresにはTLS検証付きのセッション接続を使い、清掃処理を同居させる。実Push workerは別途資格・設定後に接続する。クラウドへの移行、確認コード用メールテンプレートの設定、実際の携帯回線からの受信は配備先で確認する。
+
+現地プロジェクトのOTP桁数はユーザー指定の6桁を適用済み。再比較で該当差分0件。メール本文はカスタムSMTP待ち。Renderのyumegaokaワークスペースへログイン済み。配備先のソースにExisting Imageを使えるため、ゲートウェイだけを含むイメージ定義をdeploy/fieldに用意した。レジストリ・実配備は未設定。

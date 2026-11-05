@@ -1,0 +1,11 @@
+**
+!package.json
+!package-lock.json
+!scripts/
+!scripts/field-gateway.mjs
+!scripts/lib/
+!scripts/lib/gateway-authorize.mjs
+!scripts/lib/gateway-runtime.mjs
+!scripts/lib/realtime-gateway.mjs
+!scripts/lib/maintenance.mjs
+!scripts/lib/notification-delivery.mjs
