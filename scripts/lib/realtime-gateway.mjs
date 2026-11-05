@@ -7,6 +7,10 @@ export function createRealtimeGateway({ authorize, heartbeatMs = 30000 }) {
   const accounts = new Map();
   const clients = new Map();
   const server = createServer((req, res) => {
+    if (req.method === "GET" && req.url === "/healthz") {
+      res.writeHead(closing ? 503 : 200);
+      return res.end();
+    }
     res.writeHead(404);
     res.end();
   });
