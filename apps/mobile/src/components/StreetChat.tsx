@@ -112,6 +112,13 @@ export function StreetChat({
     return () => animation.stop();
   }, [mapMoving, mapOpacity]);
   const scroll = useRef<ComponentRef<typeof ScrollView>>(null);
+  const latestId = items[0]?.id;
+  useEffect(() => {
+    const frame = requestAnimationFrame(() => {
+      if (!readingHistory.current) scroll.current?.scrollToEnd({ animated: false });
+    });
+    return () => cancelAnimationFrame(frame);
+  }, [latestId, readingHistory]);
   const notice: MapNotice | null = busy
     ? null
     : restoreFailed
@@ -297,15 +304,16 @@ export function StreetChat({
                           layoutMeasurement,
                         },
                       }) => {
-                        setAwayFromLatest(
-                          contentSize.height -
-                            layoutMeasurement.height -
-                            contentOffset.y >
-                            48,
-                        );
+                        const away = contentSize.height - layoutMeasurement.height - contentOffset.y > 48;
+                        setAwayFromLatest(away);
+                        if (away && expanded && !readingHistory.current) beginHistory();
+                        if (!away && readingHistory.current) followLatest();
                       }}
                       onScrollBeginDrag={beginHistory}
-                      onScrollEndDrag={endHistoryDrag}
+                      onScrollEndDrag={({ nativeEvent: { contentSize, layoutMeasurement, contentOffset } }) => {
+                        if (contentSize.height - layoutMeasurement.height - contentOffset.y <= 48) followLatest();
+                        endHistoryDrag();
+                      }}
                       onTouchCancel={endHistoryDrag}
                       keyboardShouldPersistTaps="handled"
                       keyboardDismissMode="interactive"

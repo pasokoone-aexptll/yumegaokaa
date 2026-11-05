@@ -83,7 +83,7 @@ export function MapHeader({
           <View
             style={[
               styles.dot,
-              { backgroundColor: ghost ? "#c3a6ff" : active ? "#00bc83" : "#ffffff66" },
+              { backgroundColor: ghost ? "#9a9a9e" : active ? "#00bc83" : "#ffffff66" },
             ]}
           />
           <View style={{ transform: [{ rotate: "90deg" }] }}>
