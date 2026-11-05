@@ -35,6 +35,8 @@ const friendly = (error: unknown) => {
     return "このアカウントはまだ招待登録されていません。開発環境では運営用コマンドで登録してください。";
   if (s.includes("location_permission_required"))
     return "位置情報を許可してから、もう一度入街してください。設定アプリで許可を変更できます。";
+  if (/inside_fix_required|stale_observation/.test(s))
+    return "街の内側で現在地を確認してから、通常モードに戻してください。";
   if (s.includes("operation_in_progress"))
     return "参加状態を確認中です。少し待ってからお試しください。";
   if (s.includes("nfc_off")) return "端末のNFCをオンにしてから、もう一度読み取ってください。";

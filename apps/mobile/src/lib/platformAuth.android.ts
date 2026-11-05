@@ -1,5 +1,6 @@
 import { PermissionsAndroid, Platform } from "react-native";
-import { requireNativeModule } from "expo-modules-core";
+import { insideCell, projectStreetPoint } from "./streetGrid";
+import { uuid, requireNativeModule } from "expo-modules-core";
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 import * as SecureStore from "expo-secure-store";
 import type { NativeState } from "./native";
@@ -205,6 +206,38 @@ export const platformAuth = {
         throw error;
       }
       await SecureStore.deleteItemAsync(key);
+      return platformAuth.resume();
+    });
+  },
+  setGhost(ghost: boolean) {
+    return visitOperation(async () => {
+      const current = await platformAuth.rpc<{
+        visit: NativeState["visit"] | null; mode_revision: string; ghost_preference: boolean;
+      }>("get_my_visit");
+      const visit = current.visit?.state === "active" ? current.visit : null;
+      if (visit && !visit.can_update) throw new Error("wrong_writer");
+      if (current.ghost_preference === ghost && (!visit || visit.ghost === ghost)) return platformAuth.resume();
+      const payload: Record<string, unknown> = { ghost, request_id: uuid.v4(), mode_revision: current.mode_revision };
+      if (visit) payload.visit_id = visit.visit_id;
+      if (visit && !ghost) {
+        const fix = await platformAuth.currentLocation();
+        const before = performance.now();
+        const config = await platformAuth.rpc<{
+          polygon: { type: string; coordinates: number[][][] }; area_version: string; grid_version: string; server_time: string;
+        }>("get_street_config", { street_id: visit.street_id });
+        const rtt = performance.now()-before;
+        const age = Date.now()-fix.observed_at;
+        if (rtt > 2000 || age < 0 || age+rtt/2 > 120000) throw new Error("stale_observation");
+        const cell = config.polygon?.type === "Polygon" &&
+          insideCell(projectStreetPoint(fix.longitude, fix.latitude), config.polygon.coordinates, fix.accuracy);
+        if (!cell) throw new Error("inside_fix_required");
+        Object.assign(payload, {
+          seq: (BigInt(visit.last_seq ?? "0")+1n).toString(), area_version: config.area_version,
+          grid_version: config.grid_version, cell_id: cell, verdict: "inside",
+          horizontal_accuracy_m: fix.accuracy, observed_at: new Date(Date.parse(config.server_time)+rtt/2-age).toISOString(),
+        });
+      }
+      await platformAuth.rpc("set_presence_mode", payload);
       return platformAuth.resume();
     });
   },
