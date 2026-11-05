@@ -1,0 +1,112 @@
+[
+  {
+    "name": "chevron-left",
+    "meaning": "戻る",
+    "file": "chevron-left.svg"
+  },
+  {
+    "name": "chevron-right",
+    "meaning": "次へ",
+    "file": "chevron-right.svg"
+  },
+  {
+    "name": "refresh",
+    "meaning": "再読み込み",
+    "file": "refresh.svg"
+  },
+  {
+    "name": "calendar",
+    "meaning": "カレンダー",
+    "file": "calendar.svg"
+  },
+  {
+    "name": "map-pin",
+    "meaning": "地図上の場所",
+    "file": "map-pin.svg"
+  },
+  {
+    "name": "users",
+    "meaning": "人数・グループ",
+    "file": "users.svg"
+  },
+  {
+    "name": "user",
+    "meaning": "人物・プロフィール",
+    "file": "user.svg"
+  },
+  {
+    "name": "user-plus",
+    "meaning": "人物追加",
+    "file": "user-plus.svg"
+  },
+  {
+    "name": "pencil",
+    "meaning": "編集",
+    "file": "pencil.svg"
+  },
+  {
+    "name": "flag",
+    "meaning": "通報・報告",
+    "file": "flag.svg"
+  },
+  {
+    "name": "image",
+    "meaning": "写真・ギャラリー",
+    "file": "image.svg"
+  },
+  {
+    "name": "bell",
+    "meaning": "通知",
+    "file": "bell.svg"
+  },
+  {
+    "name": "hand",
+    "meaning": "ブロック・制限",
+    "file": "hand.svg"
+  },
+  {
+    "name": "shield-check",
+    "meaning": "アカウント保護",
+    "file": "shield-check.svg"
+  },
+  {
+    "name": "wifi",
+    "meaning": "接続状態",
+    "file": "wifi.svg"
+  },
+  {
+    "name": "wrench",
+    "meaning": "ツール・運営機能",
+    "file": "wrench.svg"
+  },
+  {
+    "name": "clock",
+    "meaning": "時刻",
+    "file": "clock.svg"
+  },
+  {
+    "name": "check",
+    "meaning": "確定",
+    "file": "check.svg"
+  },
+  {
+    "name": "circle-check",
+    "meaning": "選択済み",
+    "file": "circle-check.svg"
+  },
+  {
+    "name": "circle",
+    "meaning": "未選択",
+    "file": "circle.svg"
+  },
+  {
+    "name": "x",
+    "meaning": "閉じる・解除",
+    "file": "x.svg"
+  },
+  {
+    "name": "trash",
+    "meaning": "削除",
+    "file": "trash.svg"
+  }
+]
