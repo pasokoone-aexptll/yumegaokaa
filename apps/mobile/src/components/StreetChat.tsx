@@ -119,6 +119,9 @@ export function StreetChat({
     animation.start();
     return () => animation.stop();
   }, [mapMoving, mapOpacity]);
+  // Android also reports momentum for an animated scrollToEnd. Only a new
+  // finger drag should reopen history after the user chooses the latest post.
+  const jumpingToLatest = useRef(false);
   const scroll = useRef<ComponentRef<typeof ScrollView>>(null);
   const latestId = items[0]?.id;
   useEffect(() => {
@@ -317,16 +320,20 @@ export function StreetChat({
                         },
                       }) => {
                         const away = contentSize.height - layoutMeasurement.height - contentOffset.y > 48;
+                        if (jumpingToLatest.current) return;
                         setAwayFromLatest(away);
                         if (away && expanded && !readingHistory.current) beginHistory();
                         if (!away && readingHistory.current) followLatest();
                       }}
-                      onScrollBeginDrag={beginHistory}
+                      onScrollBeginDrag={() => {
+                        jumpingToLatest.current = false;
+                        beginHistory();
+                      }}
                       onScrollEndDrag={({ nativeEvent: { contentSize, layoutMeasurement, contentOffset } }) => {
                         if (contentSize.height - layoutMeasurement.height - contentOffset.y <= 48) followLatest();
                         endHistoryDrag();
                       }}
-                      onMomentumScrollBegin={beginHistory}
+                      onMomentumScrollBegin={() => { if (!jumpingToLatest.current) beginHistory(); }}
                       onMomentumScrollEnd={endHistoryDrag}
                       keyboardShouldPersistTaps="handled"
                       keyboardDismissMode="interactive"
@@ -471,9 +478,13 @@ export function StreetChat({
                     accessibilityRole="button"
                     onPress={() => {
                       Keyboard.dismiss();
+                      if (Platform.OS === "android") {
+                        jumpingToLatest.current = true;
+                        endHistoryDrag();
+                      }
                       followLatest();
                       setAwayFromLatest(false);
-                      scroll.current?.scrollToEnd({ animated: true });
+                      scroll.current?.scrollToEnd({ animated: Platform.OS !== "android" });
                     }}
                   >
                     <SmoothSurface
