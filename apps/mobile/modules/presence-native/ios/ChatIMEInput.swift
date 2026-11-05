@@ -11,8 +11,9 @@ private final class CompositionField: UITextField {
 
 // UIKit owns marked text and its underline. Never rewrite attributedText or
 // reapply typing attributes on every React render while an IME is composing.
-final class ChatIMEInput: ExpoView, UITextFieldDelegate {
+final class ChatIMEInput: ExpoView, UITextFieldDelegate, UIGestureRecognizerDelegate {
  let onTextChange = EventDispatcher()
+ private var outsideTap: UITapGestureRecognizer?
  private let field = CompositionField()
  private var eventCount = 0
  var maxLength = 500
@@ -56,7 +57,37 @@ final class ChatIMEInput: ExpoView, UITextFieldDelegate {
   eventCount+=1
   onTextChange(["text":field.text ?? "", "eventCount":eventCount, "composing":field.markedTextRange != nil])
  }
- func textFieldDidEndEditing(_ textField:UITextField) { edited() }
+ func textFieldDidBeginEditing(_ textField: UITextField) {
+  removeOutsideTap()
+  let tap = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
+  tap.cancelsTouchesInView = false
+  tap.delaysTouchesEnded = false
+  tap.delegate = self
+  window?.addGestureRecognizer(tap)
+  outsideTap = tap
+ }
+
+ func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool {
+  guard let hit = touch.view else { return false }
+  return !hit.isDescendant(of: self)
+ }
+
+ func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer,
+                        shouldRecognizeSimultaneouslyWith other: UIGestureRecognizer) -> Bool { true }
+
+ @objc private func dismissKeyboard() { field.resignFirstResponder() }
+
+ private func removeOutsideTap() {
+  if let tap = outsideTap { tap.view?.removeGestureRecognizer(tap) }
+  outsideTap = nil
+ }
+
+ override func didMoveToWindow() {
+  super.didMoveToWindow()
+  if window == nil { removeOutsideTap() }
+ }
+
+ func textFieldDidEndEditing(_ textField:UITextField) { removeOutsideTap(); edited() }
  func textFieldShouldReturn(_ textField:UITextField)->Bool {
   if textField.markedTextRange != nil { textField.unmarkText() }
   else { textField.resignFirstResponder() }

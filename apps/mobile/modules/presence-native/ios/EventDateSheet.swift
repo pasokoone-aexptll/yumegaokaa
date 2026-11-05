@@ -2,6 +2,7 @@ import UIKit
 
 @MainActor
 final class EventDateSheet: UIViewController, UISheetPresentationControllerDelegate {
+  private let backdrop = UIVisualEffectView(effect: nil)
   private let picker = UIDatePicker()
   private var completion: ((Double?) -> Void)?
 
@@ -20,7 +21,11 @@ final class EventDateSheet: UIViewController, UISheetPresentationControllerDeleg
   func present(from presenter: UIViewController) {
     let navigation = UINavigationController(rootViewController: self)
     navigation.modalPresentationStyle = .pageSheet
-    navigation.view.backgroundColor = UIColor.systemBackground.withAlphaComponent(0.65)
+    navigation.view.backgroundColor = .systemBackground
+    backdrop.isUserInteractionEnabled = false
+    backdrop.frame = presenter.view.bounds
+    backdrop.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+    presenter.view.addSubview(backdrop)
     if let sheet = navigation.sheetPresentationController {
       sheet.detents = [.custom { min(300, $0.maximumDetentValue) }]
       sheet.prefersGrabberVisible = true
@@ -32,6 +37,7 @@ final class EventDateSheet: UIViewController, UISheetPresentationControllerDeleg
       }
     }
     presenter.present(navigation, animated: true)
+    UIView.animate(withDuration: 0.25) { self.backdrop.effect = UIBlurEffect(style: .systemThinMaterial) }
   }
 
   override func viewDidLoad() {
@@ -52,16 +58,26 @@ final class EventDateSheet: UIViewController, UISheetPresentationControllerDeleg
     ])
   }
 
+  override func viewWillDisappear(_ animated: Bool) {
+    super.viewWillDisappear(animated)
+    guard isBeingDismissed || navigationController?.isBeingDismissed == true else { return }
+    transitionCoordinator?.animate(alongsideTransition: { _ in self.backdrop.effect = nil }, completion: { context in
+      if context.isCancelled { self.backdrop.effect = UIBlurEffect(style: .systemThinMaterial) }
+      else { self.backdrop.removeFromSuperview() }
+    })
+  }
+
   @objc private func cancel() { close(with: nil) }
   @objc private func confirm() { close(with: picker.date.timeIntervalSince1970 * 1000) }
 
   private func close(with value: Double?) {
     let callback = completion
     completion = nil
-    navigationController?.dismiss(animated: true) { callback?(value) }
+    navigationController?.dismiss(animated: true) { self.backdrop.removeFromSuperview(); callback?(value) }
   }
 
   func presentationControllerDidDismiss(_ presentationController: UIPresentationController) {
+    backdrop.removeFromSuperview()
     completion?(nil)
     completion = nil
   }

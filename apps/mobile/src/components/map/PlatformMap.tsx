@@ -1,16 +1,17 @@
+import { PlacementHandle, type PlacementProjection } from "../pins/PlacementHandle";
 import { requireNativeViewManager } from "expo-modules-core";
 import type { ViewProps } from "react-native";
 import { BlurTargetView } from "expo-blur";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { StyleSheet, Animated } from "react-native";
+import { StyleSheet, Animated, useWindowDimensions } from "react-native";
 import { streetMapTarget } from "./streetMapTarget";
-import { useRef, useImperativeHandle, useEffect, useCallback } from "react";
-import type { CameraRef as LibreCameraRef } from "@maplibre/maplibre-react-native";
+import { useRef, useImperativeHandle, useEffect, useCallback, useMemo, useState } from "react";
+import type { CameraRef as LibreCameraRef, MapRef } from "@maplibre/maplibre-react-native";
 // Android/default implementation. Preserve MapLibre for the future Android build.
 import {
   Map as LibreMap,
   Camera as LibreCamera,
   Marker as LibreMarker,
+  ViewAnnotation,
   GeoJSONSource,
   Layer,
 } from "@maplibre/maplibre-react-native";
@@ -20,6 +21,7 @@ import type {
   CameraProps,
   MarkerProps,
   BoundaryProps,
+  ViewState,
 } from "./PlatformMap.types";
 export type { CameraRef } from "./PlatformMap.types";
 const MapPixels = requireNativeViewManager<ViewProps & { blurred: boolean }>("PresenceNative", "MapPixels");
@@ -27,11 +29,24 @@ export function Map({
   historyBlur = false,
   mapStyle = defaultStyle,
   placement,
-  bottomInset: _bottomInset,
+  bottomInset = 0,
   onMovingChange,
   ...props
 }: MapProps) {
-  const insets = useSafeAreaInsets();
+  const mapRef = useRef<MapRef>(null);
+  const [cameraRevision, setCameraRevision] = useState(0);
+  const projection = useMemo(() => ({ current: {
+    async pointForCoordinate({ longitude, latitude }) {
+      const [x, y] = await mapRef.current!.project([longitude, latitude]);
+      return { x, y };
+    },
+    async coordinateForPoint({ x, y }) {
+      const [longitude, latitude] = await mapRef.current!.unproject([x, y]);
+      return { longitude, latitude };
+    },
+    async getCamera() { return await mapRef.current!.getViewState(); },
+  } satisfies PlacementProjection }), []);
+  const { height } = useWindowDimensions();
   const cover = useRef(new Animated.Value(1)).current;
   const revealed = useRef(false);
   const reveal = useCallback(() => {
@@ -45,38 +60,45 @@ export function Map({
   }, [reveal]);
   const map = (
     <LibreMap
+      ref={mapRef}
+      onRegionIsChanging={placement ? () => setCameraRevision(r => r + 1) : undefined}
       onDidFinishRenderingFrameFully={reveal}
       onDidFailLoadingMap={reveal}
+      contentInset={{ top: 0, left: 0, right: 0, bottom: bottomInset }}
       compass={false}
       androidView="texture"
       mapStyle={mapStyle}
       {...props}
       onRegionWillChange={() => onMovingChange?.(true)}
-      onRegionDidChange={() => onMovingChange?.(false)}
+      onRegionDidChange={() => { onMovingChange?.(false); if (placement) setCameraRevision(r => r + 1); }}
     />
   );
   return onMovingChange ? (
-    <BlurTargetView ref={streetMapTarget} style={[StyleSheet.absoluteFill, { bottom: placement ? 0 : -(48 + insets.bottom) }]}>
+    <>
+    <BlurTargetView ref={streetMapTarget} style={{ position: "absolute", top: 0, left: 0, right: 0, height }}>
       <MapPixels blurred={historyBlur} style={StyleSheet.absoluteFill}>{map}</MapPixels>
       <Animated.View pointerEvents="none" style={[StyleSheet.absoluteFill, { backgroundColor: "#303947", opacity: cover }]} />
     </BlurTargetView>
+    {placement && <PlacementHandle map={projection} point={placement.point} revision={placement.revision}
+      onDrop={placement.onDrop} cameraRevision={cameraRevision} />}
+    </>
   ) : map;
 }
 export function Camera({ ref, ...props }: CameraProps) {
   const camera = useRef<LibreCameraRef>(null);
-  useImperativeHandle(
-    ref,
-    () => ({
-      flyTo: (view) => {
-        void camera.current?.flyTo(view);
-      },
-    }),
-    [],
-  );
+  const [destination, setDestination] = useState<ViewState>();
+  useImperativeHandle(ref, () => ({ flyTo: setDestination }), []);
+  useEffect(() => {
+    if (destination) void camera.current?.flyTo(destination);
+  }, [destination]);
   return <LibreCamera maxZoom={18} ref={camera} {...props} />;
 }
-export function Marker({ lngLat, children }: MarkerProps) {
-  // MapLibre Marker does not expose native dragging; retain tap placement on Android.
+export function Marker({ lngLat, children, draggable, onDragEnd }: MarkerProps) {
+  if (draggable) return (
+    <ViewAnnotation lngLat={lngLat} draggable onDragEnd={event => onDragEnd?.(event.nativeEvent.lngLat)}>
+      {children}
+    </ViewAnnotation>
+  );
   return <LibreMarker lngLat={lngLat}>{children}</LibreMarker>;
 }
 export function Boundary({ data }: BoundaryProps) {

@@ -1,6 +1,6 @@
 import { PinButton } from "./pins/PinButton";
 import { useState } from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { Platform, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Camera, Map, Marker } from "./map/PlatformMap";
 import { mapStyle } from "../lib/mapStyle";
@@ -28,7 +28,7 @@ export function LocationPicker({
           initialViewState={{ center: point ?? [139.7109, 35.7295], zoom: 15 }}
         />
         {point && (
-          <Marker lngLat={point}>
+          <Marker lngLat={point} draggable={Platform.OS === "android"} onDragEnd={setPoint}>
             {pinCreation ? (
               <View
                 style={{

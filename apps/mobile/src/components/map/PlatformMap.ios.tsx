@@ -1,5 +1,5 @@
 import { View } from "react-native";
-import { ApplePlacementHandle } from "../pins/ApplePlacementHandle";
+import { PlacementHandle } from "../pins/PlacementHandle";
 import {
   createContext,
   useContext,
@@ -82,7 +82,7 @@ export function Map({
           {children}
         </MapView>
         {ready && placement && (
-          <ApplePlacementHandle
+          <PlacementHandle
             map={map}
             point={placement.point}
             revision={placement.revision}

@@ -104,6 +104,44 @@ export const platformAuth = {
       }),
     );
   },
+  async accountDetails() {
+    const { user } = unwrap(await client.auth.getUser());
+    if (!user) throw new Error("login_required");
+    return { email: user.email ?? "", new_email: user.new_email ?? "" };
+  },
+  async changeEmail(email: string) {
+    unwrap(await client.auth.updateUser({ email }));
+  },
+  async verifyEmailChange(email: string, code: string) {
+    const { session } = unwrap(await client.auth.getSession());
+    if (!session) throw new Error("login_required");
+    const response = await fetch(origin + "/auth/v1/verify", {
+      method: "POST",
+      headers: { apikey: publishableKey, "Content-Type": "application/json" },
+      body: JSON.stringify({ email, token: code, type: "email_change" }),
+    });
+    if (!response.ok) throw new Error("invalid_input");
+    const result = await response.json();
+    if (!result.access_token) return { complete: false };
+    if (result.user?.id !== session.user.id || !result.refresh_token ||
+        unwrap(await client.auth.getSession()).session?.user.id !== session.user.id)
+      throw new Error("unauthorized");
+    unwrap(await client.auth.setSession({ access_token: result.access_token, refresh_token: result.refresh_token }));
+    return { complete: true };
+  },
+  async mfaFactors() {
+    const result = unwrap(await client.auth.mfa.listFactors());
+    if (!result) throw new Error("login_required");
+    return { factors: result.all };
+  },
+  async mfaEnroll() {
+    const result = unwrap(await client.auth.mfa.enroll({ factorType: "totp", friendlyName: "Yumegaoka operator" }));
+    if (!result) throw new Error("invalid_response");
+    return { id: result.id, totp: result.totp };
+  },
+  async mfaVerify(factor: string, code: string) {
+    unwrap(await client.auth.mfa.challengeAndVerify({ factorId: factor, code }));
+  },
   async pushStatus() {
     if (!await push.pushAllowed()) return "denied";
     return registration ? "registered" : "disabled";

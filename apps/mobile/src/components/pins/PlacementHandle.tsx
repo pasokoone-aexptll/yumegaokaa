@@ -1,15 +1,21 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { PanResponder, View } from "react-native";
-import type MapView from "react-native-maps";
+type Coordinate = { longitude: number; latitude: number };
+type Pixel = { x: number; y: number };
+export type PlacementProjection = {
+  pointForCoordinate(coordinate: Coordinate): Promise<Pixel>;
+  coordinateForPoint(point: Pixel): Promise<Coordinate>;
+  getCamera(): Promise<{ pitch: number }>;
+};
 import { PlacementRing } from "./PlacementRing";
-export function ApplePlacementHandle({
+export function PlacementHandle({
   map,
   point,
   revision,
   cameraRevision,
   onDrop,
 }: {
-  map: React.RefObject<MapView | null>;
+  map: React.RefObject<PlacementProjection | null>;
   point: [number, number];
   revision: number;
   cameraRevision: number;

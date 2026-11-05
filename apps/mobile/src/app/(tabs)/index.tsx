@@ -7,7 +7,7 @@ import {
   placePin,
   finishPinPlacement,
 } from "../../lib/pinPlacement";
-import { PlacementRing } from "../../components/pins/PlacementRing";
+
 import { MapStatusBanner } from "../../components/map/MapStatusBanner";
 import { MapErrorDialog } from "../../components/map/MapErrorDialog";
 import { ProgressiveBlur } from "../../components/map/ProgressiveBlur";
@@ -39,7 +39,6 @@ import {
   Camera,
   CameraRef,
   Map,
-  Marker,
 } from "../../components/map/PlatformMap";
 import { native, url } from "../../lib/native";
 import { liveCells } from "../../lib/presence";
@@ -51,6 +50,7 @@ export default function Street() {
   const [historyOpen, setHistoryOpen] = useState(false);
   const [mapMoving, setMapMoving] = useState(false);
   const { height } = useWindowDimensions();
+  const detailSheetHeight = height * (Platform.OS === "android" ? 0.5 : 0.38);
   const [detailInset, setDetailInset] = useState(0);
   useFocusEffect(
     useCallback(() => {
@@ -134,7 +134,7 @@ export default function Street() {
         !!params.detailId &&
         (params.detailKind === "event" || params.detailKind === "recruitment");
       const frame = requestAnimationFrame(() => {
-        setDetailInset(showDetail ? height * 0.38 : 0);
+        setDetailInset(showDetail ? detailSheetHeight : 0);
         camera.current?.flyTo({ center: [lon, lat], zoom: 17, duration: 600 });
         if (showDetail && openedRequest.current !== params.mapRequest) {
           openedRequest.current = params.mapRequest;
@@ -153,7 +153,7 @@ export default function Street() {
     params.mapRequest,
     params.detailId,
     params.detailKind,
-    height,
+    detailSheetHeight,
     ready,
     signed,
   ]);
@@ -228,14 +228,9 @@ export default function Street() {
             pitch: initialPitch,
           }}
         />
-        {Platform.OS !== "ios" && placement.active && placement.point && (
-          <Marker lngLat={placement.point} draggable onDragEnd={placePin}>
-            <PlacementRing revision={placement.revision} />
-          </Marker>
-        )}
         <StreetMapMarkers
           onSelect={(longitude, latitude) => {
-            setDetailInset(height * 0.38);
+            setDetailInset(detailSheetHeight);
             camera.current?.flyTo({
               center: [longitude, latitude],
               zoom: 17,

@@ -89,7 +89,7 @@ const authMethods = {
     return result;
   },
   async verifyEmailChange(email: string, code: string) {
-    const result = await bridge.verifyEmailChange(email, code);
+    const result = await auth.verifyEmailChange(email, code);
     if (result.complete) await session();
     return result;
   },
@@ -118,11 +118,11 @@ export const native: typeof bridge = {
   currentLocation: () => auth.currentLocation(),
   monotonicTime: () => bridge.monotonicTime(),
   realtimeToken: () => auth.realtimeToken(),
-  accountDetails: () => bridge.accountDetails(),
-  changeEmail: (email) => bridge.changeEmail(email),
-  mfaFactors: () => bridge.mfaFactors(),
-  mfaEnroll: () => bridge.mfaEnroll(),
-  mfaVerify: (factor, code) => bridge.mfaVerify(factor, code),
+  accountDetails: () => auth.accountDetails(),
+  changeEmail: (email) => auth.changeEmail(email),
+  mfaFactors: () => auth.mfaFactors(),
+  mfaEnroll: () => auth.mfaEnroll(),
+  mfaVerify: (factor, code) => auth.mfaVerify(factor, code),
   configure,
   sendOTP: (email) => auth.sendOTP(email),
   rpc: (operation, payload) => auth.rpc(operation, payload),
