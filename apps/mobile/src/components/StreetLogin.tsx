@@ -13,7 +13,7 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import type { useStreetMap } from "../hooks/useStreetMap";
-import { fieldTrial, localEntry } from "../lib/development";
+import { localEntry } from "../lib/development";
 
 type Props = Pick<
   ReturnType<typeof useStreetMap>,
@@ -41,6 +41,7 @@ export function StreetLogin({
   login,
 }: Props) {
   const [scroll] = useState(() => new Animated.Value(0));
+  const disabled = busy || !email.trim() || (sent && !/^\d{6}$/.test(code));
   return (
     <View style={{ flex: 1, backgroundColor: "#f2f2f7" }}>
       <Animated.ScrollView
@@ -78,26 +79,26 @@ export function StreetLogin({
           </Text>
           <Text style={s.note}>
             {sent
-              ? `${email} に${fieldTrial ? "確認メールを送りました。メールのリンクを長押ししてコピーし、下に貼り付けてください。" : "確認コードを送りました。"}`
+              ? `${email} に6桁の確認コードを送りました。`
               : "招待されたメールアドレスを入力してください。"}
           </Text>
           <View style={s.card}>
             <Text style={s.label}>
-              {sent ? (fieldTrial ? "メールの確認リンク" : "確認コード") : "メールアドレス"}
+              {sent ? "確認コード" : "メールアドレス"}
             </Text>
             {sent ? (
               <TextInput
-                style={[s.input, { fontSize: fieldTrial ? 15 : 28, letterSpacing: fieldTrial ? 0 : 6 }]}
-                keyboardType={fieldTrial ? "url" : "number-pad"}
+                style={[s.input, { fontSize: 28, letterSpacing: 6 }]}
+                keyboardType="number-pad"
                 autoCapitalize="none"
                 autoCorrect={false}
                 textContentType="oneTimeCode"
                 autoComplete="one-time-code"
-                placeholder={fieldTrial ? "https://…" : "000000"}
+                placeholder="000000"
                 placeholderTextColor="#00000033"
                 value={code}
-                onChangeText={setCode}
-                accessibilityLabel={fieldTrial ? "メールの確認リンク" : "メールの確認コード"}
+                onChangeText={(text) => setCode(text.normalize("NFKC").replace(/\D/g, "").slice(0, 6))}
+                accessibilityLabel="メールの確認コード（6桁）"
               />
             ) : (
               <TextInput
@@ -123,8 +124,8 @@ export function StreetLogin({
           <View style={{ flex: 1, minHeight: 24 }} />
           <Pressable
             accessibilityRole="button"
-            style={[s.button, (busy || !email) && { opacity: 0.5 }]}
-            disabled={busy || !email}
+            style={[s.button, disabled && { opacity: 0.5 }]}
+            disabled={disabled}
             onPress={login}
           >
             {busy ? (
