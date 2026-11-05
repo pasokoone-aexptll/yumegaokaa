@@ -12,14 +12,6 @@ if (apiURL.protocol !== "https:") throw Error("HTTPS required");
 const database = new URL(required("DATABASE_URL"));
 if (database.searchParams.get("sslmode") !== "verify-full")
   throw Error("Use a TLS verified Postgres session connection");
-const runtime = await startGateway({
-  dbURL: database.href,
-  apiURL: apiURL.origin,
-  publishableKey: required("SUPABASE_PUBLISHABLE_KEY"),
-  streetId: required("STREET_ID"),
-  host: "0.0.0.0",
-  port: Number(required("PORT")),
-});
 const tick = maintenanceTick({
   apiURL: apiURL.origin,
   serviceKey: required("SUPABASE_SERVICE_ROLE_KEY"),
@@ -27,6 +19,15 @@ const tick = maintenanceTick({
 const push = process.env.FCM_SERVICE_ACCOUNT_JSON
   ? fieldFcmTick(apiURL.origin, required("SUPABASE_SERVICE_ROLE_KEY"), process.env.FCM_SERVICE_ACCOUNT_JSON)
   : undefined;
+const runtime = await startGateway({
+  dbURL: database.href,
+  apiURL: apiURL.origin,
+  publishableKey: required("SUPABASE_PUBLISHABLE_KEY"),
+  streetId: required("STREET_ID"),
+  rollingDeployment: true,
+  host: "0.0.0.0",
+  port: Number(required("PORT")),
+});
 let timer;
 let closed = false;
 runtime.gateway.server.once("close", () => {

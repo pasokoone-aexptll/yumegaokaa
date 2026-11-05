@@ -7,6 +7,7 @@ export async function startGateway({
   apiURL,
   publishableKey,
   streetId,
+  rollingDeployment = false,
   port = 54325,
   host = "127.0.0.1",
 }) {
@@ -21,7 +22,9 @@ export async function startGateway({
     statement_timeout: 4000,
     connectionTimeoutMillis: 4000,
   });
+  let ownsLock = false;
   const gateway = createRealtimeGateway({
+    accepting: () => ownsLock && !closed,
     authorize: gatewayAuthorizer({ apiURL, publishableKey, db, streetId }),
   });
   let closed = false,
@@ -66,17 +69,25 @@ export async function startGateway({
     await listener.connect();
     // One gateway owns every socket in this DB deployment. Lock dies with the
     // dedicated LISTEN connection; losing it closes all sockets, never fails open.
-    const lock = (
-      await listener.query("select pg_try_advisory_lock(19460831,3) acquired")
-    ).rows[0];
-    if (!lock.acquired)
+    async function acquire() {
+      ownsLock = (await listener.query("select pg_try_advisory_lock(19460831,3) acquired")).rows[0].acquired;
+    }
+    await acquire();
+    if (!ownsLock && !rollingDeployment)
       throw Error("Another gateway already owns this database");
     await listener.query("LISTEN yumegaoka_gateway_changed");
-    listener.on("notification", () => void flush());
+    listener.on("notification", () => { if (ownsLock) void flush(); });
+    // Render drains the previous instance only after its replacement serves HTTP.
+    // During handover, clients retry WebSocket upgrades until the lock transfers.
     await new Promise((resolve, reject) => {
       gateway.server.once("error", reject);
       gateway.server.listen(port, host, resolve);
     });
+    while (!ownsLock && !closed) {
+      await new Promise(resolve => setTimeout(resolve, 500));
+      if (!closed) await acquire();
+    }
+    if (closed) throw Error("Gateway closed during handover");
     timer = setInterval(() => {
       void gateway.revalidate();
     }, 5000);

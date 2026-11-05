@@ -3,7 +3,7 @@ import { WebSocketServer, WebSocket } from "ws";
 
 // Single process owns all accepted sockets. Deployment must not run independent
 // replicas until the account-wide admission lock is shared between them.
-export function createRealtimeGateway({ authorize, heartbeatMs = 30000 }) {
+export function createRealtimeGateway({ authorize, accepting = () => true, heartbeatMs = 30000 }) {
   const accounts = new Map();
   const clients = new Map();
   const server = createServer((req, res) => {
@@ -44,6 +44,7 @@ export function createRealtimeGateway({ authorize, heartbeatMs = 30000 }) {
     };
     try {
       if (req.url !== "/street" || closing) return reject("404 Not Found");
+      if (!accepting()) return reject("503 Service Unavailable");
       const header = req.headers.authorization;
       if (!header?.startsWith("Bearer ") || header.length > 8192)
         return reject("401 Unauthorized");
