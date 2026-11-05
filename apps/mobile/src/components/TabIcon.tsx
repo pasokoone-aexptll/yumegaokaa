@@ -18,7 +18,7 @@ export function TabIcon({
   return (
     <MapAsset
       name={names[kind][focused ? 1 : 0]}
-      size={32}
+      size={36}
       tint={typeof color === "string" ? color : undefined}
     />
   );

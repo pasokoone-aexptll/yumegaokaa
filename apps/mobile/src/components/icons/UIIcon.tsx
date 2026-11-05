@@ -26,6 +26,10 @@ export const UIIcon = memo(function UIIcon({
   animateOnMount?: boolean;
   delay?: number;
 }) {
+  // Exported artwork includes shadow padding; compensate in the layout box.
+  // Leave large illustrations (e.g. entry success) at their existing size.
+  const displayWidth = Math.max(width, Math.min(width * 1.35, 40));
+  const displayHeight = Math.max(height, Math.min(height * 1.35, 40));
   const activation = useContext(IconActivation);
   const reduced = useContext(ReducedIconMotion);
   const [progress] = useState(() => new Animated.Value(0));
@@ -58,10 +62,10 @@ export const UIIcon = memo(function UIIcon({
     };
   }, [activation, name, reduced, progress, animateOnMount, delay]);
   return (
-    <View pointerEvents="none" accessible={false} style={{ width, height }}>
+    <View pointerEvents="none" accessible={false} style={{ width: displayWidth, height: displayHeight }}>
       <SvgAst
         ast={frameAst(name, frame)}
-        override={{ width, height, accessible: false }}
+        override={{ width: displayWidth, height: displayHeight, accessible: false }}
       />
     </View>
   );

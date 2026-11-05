@@ -1029,3 +1029,9 @@ RN/Expo組込み・iOS/Android実機・最終UI承認は未確認。アニメー
 モバイル生成時だけoverlay→screenへ変換し、原本の形・動きは維持。光沢の合成結果は元overlayと完全同一ではない。全フレームのmodeがinstalled native型の対応値であることを検査するmobile-icon-filters.testを追加。修正前失敗→修正後成功、型/Lint、生成script構文、diff検査成功。
 
 Releaseビルド（/tmp/yumegaoka-icon-crash-fix-build.log）・署名検証・iPhoneへの上書きインストール成功。修正版の最初の起動確認は端末ロックで拒否されたが、ユーザー解除後にdevicectl consoleで30秒の起動維持を確認（/tmp/yumegaoka-crash-fix-confirm.log）。コマンドのexit2は指定した30秒監視期限による終了で、アプリのsignal終了なし。その後のdevice info processesでapp PID3451の生存を確認。今回の起動直後クラッシュは解消、全画面の外観/操作感は別途未確認。33タスク/DONEと固定残量は不変。
+
+## 2026-11-05 アイコン拡大（R19）
+
+UIIconの描画枠を1.35倍（40pt上限、元から大きな図柄は縮小/拡大しない）、TabIconを32→36ptに変更。36単位のSVGキャンバス内の余白で小さく見える問題に対応。型/Lint/diff検査成功。SVGデータ・nativeコード不変のためblend回帰検査や全件テストは反復しない。固定33タスク/残量は不変。実機での外観は未確認。
+
+拡大版Releaseビルド（/tmp/yumegaoka-icon-size-build.log）、署名検証、iPhone上書きインストール、devicectl起動成功。表示サイズ/収まりのユーザー確認は別途未完。
