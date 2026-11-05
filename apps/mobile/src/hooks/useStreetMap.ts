@@ -282,7 +282,7 @@ export function useStreetMap() {
     }));
     void NfcManager.cancelTechnologyRequest().catch(() => {});
     try {
-      setState(await native.stop());
+      setState(await native.stop(state.visit.can_update ? state.visit.visit_id : undefined));
       await refresh();
     } catch {
       setError("端末の観測は停止しました。退出は通信回復後に反映します。");

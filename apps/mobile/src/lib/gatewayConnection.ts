@@ -37,7 +37,7 @@ export function gatewayConnection(options: {
           const message = JSON.parse(String(event.data));
           if (message.type === "ready" || message.type === "changed") {
             if (message.type === "ready") {
-              if (connectedBefore) options.reconnected?.();
+              if (connectedBefore || failures > 0) options.reconnected?.();
               connectedBefore = true;
             }
             failures = 0;

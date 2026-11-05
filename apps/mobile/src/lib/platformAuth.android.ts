@@ -38,11 +38,35 @@ function sendStoredMode(key: string, payload: Record<string, unknown>) {
   return deliverMode(payload, p => platformAuth.rpc("set_presence_mode", p), () => SecureStore.deleteItemAsync(key));
 }
 
+let lastWritableVisit: { key: string; id: string } | undefined;
+type ExitIntent = { visit: string | null; attempt: string | null };
+
+async function flushExit(key: string) {
+  const saved = await SecureStore.getItemAsync(key + ".exit");
+  if (!saved) return;
+  const intent: ExitIntent = JSON.parse(saved);
+  await SecureStore.deleteItemAsync(key + ".mode");
+  if (intent.attempt) {
+    await platformAuth.rpc("cancel_checkin", { attempt_id: intent.attempt }).catch(error => {
+      if (!/\bnot_found\b/.test(String(error))) throw error;
+    });
+    if (await SecureStore.getItemAsync(key) === intent.attempt) await SecureStore.deleteItemAsync(key);
+  }
+  if (intent.visit) {
+    await platformAuth.rpc("end_visit", { visit_id: intent.visit, reason: "manual" }).catch(error => {
+      if (!/\b(not_found|wrong_writer|inactive_visit)\b/.test(String(error))) throw error;
+    });
+  }
+  await SecureStore.deleteItemAsync(key + ".exit");
+}
+
 async function readVisitState(): Promise<NativeState> {
+  const key = await attemptKey();
   const { visit, ghost_preference } = await platformAuth.rpc<{
     visit: NativeState["visit"] | null;
     ghost_preference: boolean;
   }>("get_my_visit");
+  lastWritableVisit = visit?.can_update && visit.visit_id ? { key, id: visit.visit_id } : undefined;
   return {
     visit: visit ?? {},
     ghost_preference,
@@ -199,6 +223,7 @@ export const platformAuth = {
   checkin(tag: string) {
     return visitOperation(async () => {
       const key = await attemptKey();
+      await flushExit(key);
       let attempt = await SecureStore.getItemAsync(key);
       if (attempt) {
         try {
@@ -228,13 +253,15 @@ export const platformAuth = {
           await SecureStore.deleteItemAsync(key);
         throw error;
       }
+      const state = await readVisitState();
       await SecureStore.deleteItemAsync(key);
-      return readVisitState();
+      return state;
     });
   },
   setGhost(ghost: boolean) {
     return visitOperation(async () => {
       // A newer explicit choice supersedes a pending retry, even if already at the desired state.
+      await flushExit(await attemptKey());
       const key = await modeKey();
       const saved = await SecureStore.getItemAsync(key);
       if (saved) {
@@ -276,25 +303,28 @@ export const platformAuth = {
       return readVisitState();
     });
   },
-  stop() {
+  stop(visitId?: string) {
     return visitOperation(async () => {
-      await SecureStore.deleteItemAsync(await modeKey());
       const key = await attemptKey();
-      const attempt = await SecureStore.getItemAsync(key);
-      if (attempt) {
-        await platformAuth.rpc("cancel_checkin", { attempt_id: attempt }).catch(error => {
-          if (!String(error).includes("not_found")) throw error;
-        });
-        await SecureStore.deleteItemAsync(key);
+      if (!await SecureStore.getItemAsync(key + ".exit")) {
+        const intent: ExitIntent = {
+          visit: visitId ?? (lastWritableVisit?.key === key ? lastWritableVisit.id : null),
+          attempt: await SecureStore.getItemAsync(key),
+        };
+        await SecureStore.setItemAsync(key + ".exit", JSON.stringify(intent));
       }
-      const { visit } = await readVisitState();
-      if (visit.state === "active" && visit.can_update)
-        await platformAuth.rpc("end_visit", { visit_id: visit.visit_id, reason: "manual" });
+      await flushExit(key);
       return readVisitState();
     });
   },
   async resume(): Promise<NativeState> {
     return visitOperation(async () => {
+      const accountKey = await attemptKey();
+      try { await flushExit(accountKey); }
+      catch (error) {
+        if (!await SecureStore.getItemAsync(accountKey + ".exit")) throw error;
+        return { visit: {}, pending_exit: true, observing: false, status: "退出を反映中" };
+      }
       const key = await modeKey();
       const saved = await SecureStore.getItemAsync(key);
       if (saved) {

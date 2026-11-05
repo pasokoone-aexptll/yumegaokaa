@@ -65,7 +65,7 @@ const bridge = requireNativeModule("PresenceNative") as {
   rpc<T>(operation: string, payload: Record<string, unknown>): Promise<T>;
   checkin(tag: string): Promise<NativeState>;
   setGhost(ghost: boolean): Promise<NativeState>;
-  stop(): Promise<NativeState>;
+  stop(visitId?: string): Promise<NativeState>;
   resume(): Promise<NativeState>;
   logout(): Promise<void>;
   addListener(
@@ -128,7 +128,7 @@ export const native: typeof bridge = {
   rpc: (operation, payload) => auth.rpc(operation, payload),
   checkin: (tag) => platformAuth ? platformAuth.checkin(tag) : bridge.checkin(tag),
   setGhost: (ghost) => platformAuth ? platformAuth.setGhost(ghost) : bridge.setGhost(ghost),
-  stop: () => platformAuth ? platformAuth.stop() : bridge.stop(),
+  stop: (visitId) => platformAuth ? platformAuth.stop(visitId) : bridge.stop(),
   resume: () => auth.resume(),
   addListener: (event, listener) => bridge.addListener(event, listener),
 };
