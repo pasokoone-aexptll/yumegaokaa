@@ -51,8 +51,7 @@ export default function StreetTabs() {
             backgroundColor: dark ? "#000000e6" : "#fafafa",
             borderTopWidth: StyleSheet.hairlineWidth,
             borderTopColor: dark ? "#ffffff26" : "#0000001a",
-            ...tabInsets(insets.bottom),
-            paddingHorizontal: width * 0.085,
+            ...tabInsets(insets.bottom, width),
           },
         }}
       >
