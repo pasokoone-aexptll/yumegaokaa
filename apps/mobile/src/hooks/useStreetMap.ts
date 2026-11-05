@@ -276,20 +276,20 @@ export function useStreetMap() {
       }
     }
   }
-  async function scan() {
+  async function scan(source: "default" | "tag" = "default") {
     if (entryInFlight.current) {
       setError(friendly("operation_in_progress"));
       return;
     }
     entryInFlight.current = true;
     try {
-      await performScan();
+      await performScan(source);
     } finally {
       entryInFlight.current = false;
     }
   }
-  async function performScan() {
-    if (fieldTrial) {
+  async function performScan(source: "default" | "tag") {
+    if (fieldTrial && source === "default") {
       await enterFixture("14fdc906-3ff4-4576-a212-35c42642dd49");
       return;
     }
@@ -310,7 +310,7 @@ export function useStreetMap() {
     try {
       await NfcManager.start();
       await NfcManager.requestTechnology(NfcTech.Ndef, {
-        alertMessage: "夢ヶ丘のステッカーにiPhoneの上部を近づけてください",
+        alertMessage: "夢ヶ丘のステッカーに端末を近づけてください",
       });
       const tag = await NfcManager.getTag();
       const record = tag?.ndefMessage?.find((r) =>

@@ -4,6 +4,7 @@ import type { NativeStackNavigationProp } from "expo-router";
 import { useEffect, useSyncExternalStore } from "react";
 import { router, useNavigation } from "expo-router";
 import {
+  Platform,
   Pressable,
   ScrollView,
   Text,
@@ -16,7 +17,7 @@ import { brandAndTabSvgAssets } from "../components/map/brandAndTabAssets";
 import { EntryAnimation } from "../components/map/EntryAnimation";
 import { entrySheetState } from "../lib/entrySheetState";
 import { useEntryPresentation } from "../hooks/useEntryPresentation";
-import { fieldTrial, localEntry } from "../lib/development";
+import { fieldTrial, localEntry, nfcDisabled } from "../lib/development";
 const header = brandAndTabSvgAssets["DreamCloud Logo"]
   .replaceAll('fill="white"', 'fill="black"')
   .replaceAll('fill="#FFFFFF"', 'fill="#000000"');
@@ -78,7 +79,7 @@ export default function StreetEntry() {
           {phase === "explain" && (
             <Pressable
               accessibilityRole="button"
-              onPress={value.scan}
+              onPress={() => void value.scan()}
               style={{
                 position: "absolute",
                 left: 0,
@@ -114,6 +115,11 @@ export default function StreetEntry() {
             <Text style={{ color: "#00000080", textAlign: "center", fontSize: 13.44 }}>
               名前や正確な現在地は地図には出ません
             </Text>
+          )}
+          {phase === "explain" && Platform.OS === "android" && fieldTrial && !nfcDisabled && (
+            <Pressable accessibilityRole="button" onPress={() => void value.scan("tag")} style={{ padding: 12 }}>
+              <Text style={{ color: "#007DAE" }}>NFCステッカーを読み取る</Text>
+            </Pressable>
           )}
           {phase === "checking" && (
             <Text style={{ color: "#00000080", textAlign: "center", fontSize: 13.44 }}>
