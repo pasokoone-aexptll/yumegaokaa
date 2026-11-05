@@ -1,3 +1,4 @@
+import { fieldFcmTick } from "./lib/fcm.mjs";
 import { startGateway } from "./lib/gateway-runtime.mjs";
 import { maintenanceTick } from "./lib/maintenance.mjs";
 
@@ -23,6 +24,9 @@ const tick = maintenanceTick({
   apiURL: apiURL.origin,
   serviceKey: required("SUPABASE_SERVICE_ROLE_KEY"),
 });
+const push = process.env.FCM_SERVICE_ACCOUNT_JSON
+  ? fieldFcmTick(apiURL.origin, required("SUPABASE_SERVICE_ROLE_KEY"), process.env.FCM_SERVICE_ACCOUNT_JSON)
+  : undefined;
 let timer;
 let closed = false;
 runtime.gateway.server.once("close", () => {
@@ -32,6 +36,7 @@ runtime.gateway.server.once("close", () => {
 async function maintain() {
   try {
     await tick();
+    await push?.();
   } catch {
     console.error("Field maintenance failed; retrying in one minute");
   }
