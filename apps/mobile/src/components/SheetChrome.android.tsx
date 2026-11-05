@@ -1,7 +1,7 @@
 import { requireNativeViewManager } from "expo-modules-core";
 import type { ViewProps } from "react-native";
-const Handle = requireNativeViewManager<ViewProps>("PresenceNative", "SheetHandle");
+const Handle = requireNativeViewManager<ViewProps & { expanded?: boolean }>("PresenceNative", "SheetHandle");
 
-export function SheetChrome() {
-  return <Handle style={{ height: 28, width: "100%" }} />;
+export function SheetChrome({ expanded }: { expanded?: boolean }) {
+  return <Handle expanded={expanded} style={{ height: 28, width: "100%" }} />;
 }

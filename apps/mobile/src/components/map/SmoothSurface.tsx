@@ -1,7 +1,7 @@
 import { mapBlur } from "./mapBlur";
 import { BlurView } from "expo-blur";
 import { useId, useState, type ReactNode } from "react";
-import { StyleSheet, View, type StyleProp, type ViewStyle } from "react-native";
+import { StyleSheet, Platform, View, type StyleProp, type ViewStyle } from "react-native";
 import Svg, { Defs, LinearGradient, Stop, Path } from "react-native-svg";
 import { getSvgPath } from "figma-squircle";
 
@@ -27,6 +27,7 @@ export function SmoothSurface({
 }) {
   const id = useId().replace(/:/g, "");
   const [size, setSize] = useState({ width: 0, height: 0 });
+  const bleed = Platform.OS === "android" && borderGradient ? 2 : 0;
   return (
     <View
       style={style}
@@ -76,9 +77,10 @@ export function SmoothSurface({
         <Svg
           pointerEvents="none"
           accessible={false}
-          style={[StyleSheet.absoluteFill, { left: 0, top: 0 }]}
-          width={size.width}
-          height={size.height}
+          style={[StyleSheet.absoluteFill, { left: -bleed, top: -bleed, overflow: "visible" }]}
+          width={size.width + 2 * bleed}
+          height={size.height + 2 * bleed}
+          viewBox={[-bleed, -bleed, size.width + 2 * bleed, size.height + 2 * bleed].join(" ")}
         >
           <Defs>
             {gradient && (

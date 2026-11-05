@@ -59,7 +59,7 @@ export default function CreatePin() {
   const disabled = busy || locked || switching;
   useLayoutEffect(() => {
     navigation.setOptions({
-      sheetAllowedDetents: [kind === "event" ? 0.75 : 0.57],
+      sheetAllowedDetents: Platform.OS === "android" ? [0.57, 0.75] : [kind === "event" ? 0.75 : 0.57],
       sheetLargestUndimmedDetentIndex: "none",
     });
   }, [kind, navigation]);
@@ -245,7 +245,7 @@ export default function CreatePin() {
       style={s.root}
       behavior={Platform.OS === "ios" ? "padding" : undefined}
     >
-      <SheetChrome />
+      <SheetChrome expanded={kind === "event"} />
       <View collapsable={false} style={s.header}>
         <Text style={s.heading}>ピンを追加します</Text>
       </View>

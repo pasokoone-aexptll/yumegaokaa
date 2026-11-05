@@ -203,7 +203,7 @@ export function StreetChat({
         measure();
       }}
     >
-      <ProgressiveBlur edge="solid" active={expanded} />
+      <ProgressiveBlur edge="solid" intensity={Platform.OS === "android" ? 85 : 30} active={expanded} />
       <Animated.View
         style={[
           StyleSheet.absoluteFill,

@@ -12,7 +12,10 @@ class PresenceNativeModule : Module() {
   override fun definition() = ModuleDefinition {
     Name("PresenceNative")
     Events("onChange")
-    View(SheetHandle::class) { Name("SheetHandle") }
+    View(SheetHandle::class) {
+      Name("SheetHandle")
+      Prop("expanded") { view: SheetHandle, expanded: Boolean? -> view.setExpanded(expanded) }
+    }
     View(ChatTouchRegion::class) {
       Name("ChatTouchRegion")
       Prop("surface") { view: ChatTouchRegion, surface: Boolean -> view.surface = surface }
