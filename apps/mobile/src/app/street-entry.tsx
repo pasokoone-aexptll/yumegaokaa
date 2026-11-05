@@ -80,9 +80,10 @@ export default function StreetEntry() {
       <SheetChrome />
       <ScrollView
         bounces={false}
+        overScrollMode="never"
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{
-          paddingTop: 24,
+          paddingTop: Platform.OS === "android" ? 0 : 24,
           paddingHorizontal: 20,
           paddingBottom: 12,
           alignItems: "center",
