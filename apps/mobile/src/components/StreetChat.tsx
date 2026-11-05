@@ -36,7 +36,9 @@ export function StreetChat({
   mapError = "",
   mapMoving = false,
   onReadStatus,
+  onHistoryChange,
 }: {
+  onHistoryChange?: (expanded: boolean) => void;
   mapError?: string;
   mapMoving?: boolean;
   onReadStatus?: (status: {
@@ -74,6 +76,10 @@ export function StreetChat({
     loadMore,
     reload,
   } = useStreetChat();
+  useEffect(() => {
+    onHistoryChange?.(expanded);
+    return () => onHistoryChange?.(false);
+  }, [expanded, onHistoryChange]);
   useEffect(() => {
     onReadStatus?.({ error: readError, reload });
   }, [readError, reload, onReadStatus]);
@@ -203,7 +209,7 @@ export function StreetChat({
         measure();
       }}
     >
-      <ProgressiveBlur edge="solid" intensity={Platform.OS === "android" ? 85 : 30} active={expanded} />
+      <ProgressiveBlur edge="solid" intensity={Platform.OS === "android" ? 85 : 30} active={expanded && Platform.OS !== "android"} />
       <Animated.View
         style={[
           StyleSheet.absoluteFill,
@@ -319,7 +325,8 @@ export function StreetChat({
                         if (contentSize.height - layoutMeasurement.height - contentOffset.y <= 48) followLatest();
                         endHistoryDrag();
                       }}
-                      onTouchCancel={endHistoryDrag}
+                      onMomentumScrollBegin={beginHistory}
+                      onMomentumScrollEnd={endHistoryDrag}
                       keyboardShouldPersistTaps="handled"
                       keyboardDismissMode="interactive"
                       contentContainerStyle={{

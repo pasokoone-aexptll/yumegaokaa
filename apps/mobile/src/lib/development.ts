@@ -1,3 +1,4 @@
+import { Platform } from "react-native";
 import Constants from "expo-constants";
 import { url } from "./native";
 // Fixture entry requires an explicit local configuration, including in validation Release builds.
@@ -22,11 +23,12 @@ export const localHost = (() => {
     return false;
   }
 })();
-export const nfcDisabled = Constants.expoConfig?.extra?.localEntry === true;
+const localEntryConfigured = Constants.expoConfig?.extra?.localEntry === true;
+export const nfcDisabled = Platform.OS === "ios" && localEntryConfigured;
 const validationRelease =
   Constants.expoConfig?.extra?.validationRelease === true;
 export const localEntry =
-  (__DEV__ || validationRelease) && nfcDisabled && localHost;
+  (__DEV__ || validationRelease) && localEntryConfigured && localHost;
 
 // Only this project's server provisions the account-bound trial tag.
 export const fieldTrial = url === "https://kchsbjayfdwjjbevqlop.supabase.co" &&

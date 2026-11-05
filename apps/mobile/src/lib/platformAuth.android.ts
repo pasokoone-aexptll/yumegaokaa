@@ -6,6 +6,17 @@ import type { NativeState } from "./native";
 
 const push = requireNativeModule<{ pushAllowed(): Promise<boolean>; pushToken(): Promise<string> }>("PresenceNative");
 let registration = "";
+let visitQueue: Promise<unknown> = Promise.resolve();
+function visitOperation<T>(operation: () => Promise<T>): Promise<T> {
+  const next = visitQueue.then(operation, operation);
+  visitQueue = next.catch(() => {});
+  return next;
+}
+async function attemptKey() {
+  const { session } = unwrap(await client.auth.getSession());
+  if (!session) throw new Error("login_required");
+  return "yumegaoka.attempt." + new URL(origin).hostname + "." + session.user.id;
+}
 let client: SupabaseClient;
 let origin: string;
 let publishableKey: string;
@@ -122,6 +133,58 @@ export const platformAuth = {
     payload: Record<string, unknown> = {},
   ): Promise<T> {
     return unwrap(await client.rpc("street_api", { operation, payload })) as T;
+  },
+  checkin(tag: string) {
+    return visitOperation(async () => {
+      const key = await attemptKey();
+      let attempt = await SecureStore.getItemAsync(key);
+      if (attempt) {
+        try {
+          const previous = await platformAuth.rpc<{ result: string; visit?: { state?: string; can_update?: boolean } }>("get_checkin_result", { attempt_id: attempt });
+          if (previous.result !== "pending") {
+            await SecureStore.deleteItemAsync(key);
+            attempt = null;
+            if (previous.visit?.state === "active" && previous.visit.can_update)
+              return platformAuth.resume();
+          }
+        } catch (error) {
+          if (!String(error).includes("not_found")) throw error;
+          await SecureStore.deleteItemAsync(key);
+          attempt = null;
+        }
+      }
+      if (!attempt) {
+        const prepared = await platformAuth.rpc<{ attempt_id: string }>("prepare_checkin", { tag_id: tag, payload_version: 1 });
+        attempt = prepared.attempt_id;
+        await SecureStore.setItemAsync(key, attempt);
+      }
+      try {
+        const result = await platformAuth.rpc<{ visit?: { state?: string; can_update?: boolean } }>("commit_checkin", { attempt_id: attempt });
+        if (result.visit?.state !== "active" || !result.visit.can_update) throw new Error("attempt_expired");
+      } catch (error) {
+        if (/attempt_expired|tag_changed|conflict|inactive_tag|not_found/.test(String(error)))
+          await SecureStore.deleteItemAsync(key);
+        throw error;
+      }
+      await SecureStore.deleteItemAsync(key);
+      return platformAuth.resume();
+    });
+  },
+  stop() {
+    return visitOperation(async () => {
+      const key = await attemptKey();
+      const attempt = await SecureStore.getItemAsync(key);
+      if (attempt) {
+        await platformAuth.rpc("cancel_checkin", { attempt_id: attempt }).catch(error => {
+          if (!String(error).includes("not_found")) throw error;
+        });
+        await SecureStore.deleteItemAsync(key);
+      }
+      const { visit } = await platformAuth.resume();
+      if (visit.state === "active" && visit.can_update)
+        await platformAuth.rpc("end_visit", { visit_id: visit.visit_id, reason: "manual" });
+      return platformAuth.resume();
+    });
   },
   async resume(): Promise<NativeState> {
     const { visit, ghost_preference } = await platformAuth.rpc<{

@@ -1,7 +1,7 @@
 import type { useStreetMap } from "../hooks/useStreetMap";
 export type EntrySheetState = Pick<
   ReturnType<typeof useStreetMap>,
-  "sheet" | "setSheet" | "scan" | "exit"
+  "sheet" | "entryError" | "setSheet" | "scan" | "exit"
 >;
 let current: EntrySheetState | null = null;
 const listeners = new Set<() => void>();

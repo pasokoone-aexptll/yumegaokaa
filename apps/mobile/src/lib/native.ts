@@ -126,9 +126,9 @@ export const native: typeof bridge = {
   configure,
   sendOTP: (email) => auth.sendOTP(email),
   rpc: (operation, payload) => auth.rpc(operation, payload),
-  checkin: (tag) => bridge.checkin(tag),
+  checkin: (tag) => platformAuth ? platformAuth.checkin(tag) : bridge.checkin(tag),
   setGhost: (ghost) => bridge.setGhost(ghost),
-  stop: () => bridge.stop(),
+  stop: () => platformAuth ? platformAuth.stop() : bridge.stop(),
   resume: () => auth.resume(),
   addListener: (event, listener) => bridge.addListener(event, listener),
 };

@@ -30,6 +30,7 @@ function appleCamera(view: ViewState) {
   };
 }
 export function Map({
+  historyBlur: _historyBlur,
   children,
   style,
   onPress,

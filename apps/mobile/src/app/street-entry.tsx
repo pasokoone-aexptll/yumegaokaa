@@ -25,6 +25,7 @@ const header = brandAndTabSvgAssets["DreamCloud Logo"]
   .replaceAll('fill="white"', 'fill="black"')
   .replaceAll('fill="#FFFFFF"', 'fill="#000000"');
 export default function StreetEntry() {
+  const fieldTagChoice = offerTagDuringTrial && fieldTrial && !nfcDisabled;
   const value = useSyncExternalStore(
     entrySheetState.subscribe,
     entrySheetState.get,
@@ -37,6 +38,12 @@ export default function StreetEntry() {
   const { width } = useWindowDimensions();
   // Figma: circle background spans 82% of screen width (SVG has 2.5% inset).
   const diameter = width * (0.82 / 0.975);
+  useEffect(() => {
+    // Android's Material sheet can be removed without delivering transitionEnd
+    // to the route being dismissed. Release the entry state on native removal.
+    if (Platform.OS !== "android") return;
+    return () => entrySheetState.close();
+  }, []);
   useEffect(
     () =>
       navigation.addListener("transitionEnd", (event) => {
@@ -78,9 +85,22 @@ export default function StreetEntry() {
         }}
       >
         <SvgXml xml={header} width={147} height={22} />
+        {phase === "explain" && fieldTagChoice && (
+          <View style={{ alignItems: "center", gap: 4 }}>
+            <View style={{ flexDirection: "row", gap: 12 }}>
+              <Pressable accessibilityRole="button" onPress={() => void value.scan("tag")} style={{ paddingVertical: 10 }}>
+                <Text style={{ color: "#007DAE", fontWeight: "600" }}>NFCステッカーを読み取る</Text>
+              </Pressable>
+              <Pressable accessibilityRole="button" onPress={() => void value.scan()} style={{ paddingVertical: 10 }}>
+                <Text style={{ color: "#007DAE" }}>現地試験で入街</Text>
+              </Pressable>
+            </View>
+            {!!value.entryError && <Text accessibilityLiveRegion="polite" style={{ color: "#a62d35" }}>{value.entryError}</Text>}
+          </View>
+        )}
         <View style={{ marginTop: 8 }}>
           <EntryAnimation phase={phase} size={diameter} />
-          {phase === "explain" && (
+          {phase === "explain" && !fieldTagChoice && (
             <Pressable
               accessibilityRole="button"
               onPress={() => void value.scan()}
@@ -115,15 +135,11 @@ export default function StreetEntry() {
                   ? "ステッカーにタッチしてください"
                   : "街への参加を記録しています"}
           </Text>
+          {phase === "explain" && !fieldTagChoice && !!value.entryError && <Text accessibilityLiveRegion="polite" style={{ color: "#a62d35", textAlign: "center" }}>{value.entryError}</Text>}
           {phase === "explain" && (
             <Text style={{ color: "#00000080", textAlign: "center", fontSize: 13.44 }}>
               名前や正確な現在地は地図には出ません
             </Text>
-          )}
-          {phase === "explain" && offerTagDuringTrial && fieldTrial && !nfcDisabled && (
-            <Pressable accessibilityRole="button" onPress={() => void value.scan("tag")} style={{ padding: 12 }}>
-              <Text style={{ color: "#007DAE" }}>NFCステッカーを読み取る</Text>
-            </Pressable>
           )}
           {phase === "checking" && (
             <Text style={{ color: "#00000080", textAlign: "center", fontSize: 13.44 }}>

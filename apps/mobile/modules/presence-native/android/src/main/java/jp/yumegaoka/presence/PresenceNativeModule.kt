@@ -12,6 +12,10 @@ class PresenceNativeModule : Module() {
   override fun definition() = ModuleDefinition {
     Name("PresenceNative")
     Events("onChange")
+    View(MapPixels::class) {
+      Name("MapPixels")
+      Prop("blurred") { view: MapPixels, blurred: Boolean -> view.showHistory(blurred) }
+    }
     View(SheetHandle::class) {
       Name("SheetHandle")
       Prop("expanded") { view: SheetHandle, expanded: Boolean? -> view.setExpanded(expanded) }

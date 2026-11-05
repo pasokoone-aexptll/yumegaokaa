@@ -48,6 +48,7 @@ import { useStreetMap } from "../../hooks/useStreetMap";
 export default function Street() {
   const router = useRouter();
   const placement = usePinPlacement();
+  const [historyOpen, setHistoryOpen] = useState(false);
   const [mapMoving, setMapMoving] = useState(false);
   const { height } = useWindowDimensions();
   const [detailInset, setDetailInset] = useState(0);
@@ -86,6 +87,7 @@ export default function Street() {
     error,
     setError,
     busy,
+    entryError,
     sheet,
     setSheet,
     settings,
@@ -199,6 +201,7 @@ export default function Street() {
     <View style={styles.root}>
       <StatusBar style="light" />
       <Map
+        historyBlur={historyOpen}
         bottomInset={detailInset}
         onMovingChange={setMapMoving}
         style={StyleSheet.absoluteFill}
@@ -348,7 +351,7 @@ export default function Street() {
         </View>
       </SafeAreaView>
       {!placement.active && (
-        <StreetChat mapMoving={mapMoving} onReadStatus={setChatRead} />
+        <StreetChat onHistoryChange={setHistoryOpen} mapMoving={mapMoving} onReadStatus={setChatRead} />
       )}
       {placement.active && (
         <PlacementFooter
@@ -366,6 +369,7 @@ export default function Street() {
       )}
       {!!error && <MapErrorDialog key={error} message={error} />}
       <StreetEntrySheet
+        entryError={entryError}
         sheet={sheet}
         setSheet={setSheet}
         exit={exit}

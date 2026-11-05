@@ -1,3 +1,5 @@
+import { requireNativeViewManager } from "expo-modules-core";
+import type { ViewProps } from "react-native";
 import { BlurTargetView } from "expo-blur";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { StyleSheet, Animated } from "react-native";
@@ -20,7 +22,9 @@ import type {
   BoundaryProps,
 } from "./PlatformMap.types";
 export type { CameraRef } from "./PlatformMap.types";
+const MapPixels = requireNativeViewManager<ViewProps & { blurred: boolean }>("PresenceNative", "MapPixels");
 export function Map({
+  historyBlur = false,
   mapStyle = defaultStyle,
   placement,
   bottomInset: _bottomInset,
@@ -53,7 +57,7 @@ export function Map({
   );
   return onMovingChange ? (
     <BlurTargetView ref={streetMapTarget} style={[StyleSheet.absoluteFill, { bottom: placement ? 0 : -(48 + insets.bottom) }]}>
-      {map}
+      <MapPixels blurred={historyBlur} style={StyleSheet.absoluteFill}>{map}</MapPixels>
       <Animated.View pointerEvents="none" style={[StyleSheet.absoluteFill, { backgroundColor: "#303947", opacity: cover }]} />
     </BlurTargetView>
   ) : map;

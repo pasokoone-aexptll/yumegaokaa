@@ -37,6 +37,8 @@ const friendly = (error: unknown) => {
     return "位置情報を許可してから、もう一度入街してください。設定アプリで許可を変更できます。";
   if (s.includes("operation_in_progress"))
     return "参加状態を確認中です。少し待ってからお試しください。";
+  if (s.includes("nfc_off")) return "端末のNFCをオンにしてから、もう一度読み取ってください。";
+  if (/invalid_tag|SyntaxError/.test(s)) return "夢ヶ丘のNFCステッカーを読み取ってください。";
   if (s.includes("inactive_tag")) return "このステッカーは現在使えません。";
   if (s.includes("wrong_writer"))
     return "別の端末で参加しています。この端末で参加するにはNFCにタッチしてください。";
@@ -65,6 +67,8 @@ export function useStreetMap() {
       "explain" | "scanning" | "checking" | "success" | null
     >(null),
     [settings, setSettings] = useState(false);
+  const [entryError, setEntryError] = useState("");
+  useEffect(() => { if (!sheet) setEntryError(""); }, [sheet]);
   const entryInFlight = useRef(false);
   const canceled = useRef(false),
     fetching = useRef(false),
@@ -292,8 +296,10 @@ export function useStreetMap() {
       }
     } catch (e) {
       if (!canceled.current) {
-        setError(friendly(e));
-        setSheet(null);
+        setEntryError(fieldTrial && tagId === "14fdc906-3ff4-4576-a212-35c42642dd49" && String(e).includes("inactive_tag")
+          ? "このアカウントには有効な現地試験の入街許可がありません。登録済みのNFCステッカーで入街してください。"
+          : friendly(e));
+        setSheet("explain");
       }
     }
   }
@@ -302,6 +308,7 @@ export function useStreetMap() {
       setError(friendly("operation_in_progress"));
       return;
     }
+    setEntryError("");
     entryInFlight.current = true;
     try {
       await performScan(source);
@@ -330,6 +337,7 @@ export function useStreetMap() {
     setError("");
     try {
       await NfcManager.start();
+      if (!await NfcManager.isEnabled()) throw new Error("nfc_off");
       await NfcManager.requestTechnology(NfcTech.Ndef, {
         alertMessage: scanPrompt,
       });
@@ -357,8 +365,8 @@ export function useStreetMap() {
       }
     } catch (e) {
       if (!canceled.current) {
-        setError(friendly(e));
-        setSheet(null);
+        setEntryError(friendly(e));
+        setSheet("explain");
       }
     } finally {
       await NfcManager.cancelTechnologyRequest().catch(() => {});
@@ -459,6 +467,7 @@ export function useStreetMap() {
     setError,
     busy,
     sheet,
+    entryError,
     setSheet,
     settings,
     setSettings,
