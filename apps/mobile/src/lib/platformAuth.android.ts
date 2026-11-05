@@ -39,6 +39,17 @@ export const platformAuth = {
     const { session } = unwrap(await client.auth.getSession());
     return { signed_in: !!session, email: session?.user.email ?? "" };
   },
+  async currentLocation() {
+    const fine = PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION;
+    const coarse = PermissionsAndroid.PERMISSIONS.ACCESS_COARSE_LOCATION;
+    const permissions = await PermissionsAndroid.requestMultiple([fine, coarse]);
+    if (permissions[fine] !== "granted" && permissions[coarse] !== "granted") {
+      throw new Error("location_permission_required");
+    }
+    return requireNativeModule<{
+      currentLocation(): Promise<{ longitude: number; latitude: number; accuracy: number; observed_at: number }>;
+    }>("PresenceNative").currentLocation();
+  },
   async sendOTP(email: string) {
     const { error } = await client.auth.signInWithOtp({ email });
     if (error) throw new Error(error.code ?? error.message);

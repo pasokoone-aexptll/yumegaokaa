@@ -31,6 +31,11 @@ class PresenceNativeModule : Module() {
       if (opened) intent?.removeExtra("yumegaoka_open")
       opened
     }
+    AsyncFunction("currentLocation") { promise: Promise ->
+      val activity = appContext.currentActivity
+      if (activity == null) promise.reject("location_unavailable", "位置情報を取得できません", null)
+      else activity.runOnUiThread { readForegroundLocation(activity, promise) }
+    }
     Function("monotonicTime") { SystemClock.elapsedRealtime().toDouble() }
     AsyncFunction("selectionHaptic") { haptic(HapticFeedbackConstants.CLOCK_TICK) }
     AsyncFunction("entrySuccessHaptic") { haptic(HapticFeedbackConstants.LONG_PRESS) }
