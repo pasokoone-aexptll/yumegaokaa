@@ -200,3 +200,7 @@ ReleaseはMetro不要だが**ローカルAPI・配信サーバーは必要**。�
 ## 11月5日 伸縮背景の暗色overlay（R19）
 
 ユーザー指摘の上端で暗色overlayが切れる問題を修正。Home/Accountの固定overlayをStretchySunsetの背景専用Animated.View内へ移し、画像と同じ変換を共有する。既存の濃さ（Home #00000020、Account #00000026）は維持。型/Lint・関連4試験成功（overlayが画像と同じ伸縮枠内にあることを追加確認）。実機外観合格は未確認。MVP進捗不変。
+
+## 11月5日 池袋ロゴ素材差し替え（R19）
+
+ユーザー指定Downloads/assets/ikebukuro.png（224×166）をapps/mobile/assets/brand/ikebukuro.pngへそのままコピー。MapHeaderは既存参照とcontain表示を維持し、新しい縦横比を保持。他のDownloads素材は対象外。実機外観合格は未確認。
