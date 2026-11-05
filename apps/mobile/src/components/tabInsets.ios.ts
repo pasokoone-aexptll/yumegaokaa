@@ -3,8 +3,8 @@ export const tabIconStyle = { width: 32, height: 32, alignSelf: "center" } as co
 export function tabInsets(bottom: number, width: number) {
   return {
     height: 48 + bottom,
-    paddingTop: 7,
-    paddingBottom: bottom + 3,
+    paddingTop: 9,
+    paddingBottom: bottom + 1,
     paddingHorizontal: width * 0.105,
   };
 }
