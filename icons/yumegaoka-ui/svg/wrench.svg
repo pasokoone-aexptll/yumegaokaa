@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-2.5 -5.5 36 36" width="24" height="24" fill="none"><defs><linearGradient id="ki-wrench-loS-i15" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#67BCB4"></stop><stop offset="1" stop-color="#4BAFA6"></stop></linearGradient><linearGradient id="ki-wrench-upS-i15" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#B7DFDC"></stop><stop offset="1" stop-color="#8CCBC6"></stop></linearGradient>
+  <filter id="ki-wrench-sh-i15" x="-40%" y="-40%" width="180%" height="190%" color-interpolation-filters="sRGB">
+    <feGaussianBlur in="SourceAlpha" stdDeviation="2"></feGaussianBlur><feOffset dy="2" result="o"></feOffset>
+    <feColorMatrix in="o" type="matrix" values="0 0 0 0 0.353 0 0 0 0 0.718 0 0 0 0 0.682 0 0 0 0.21 0"></feColorMatrix>
+    <feMerge><feMergeNode></feMergeNode><feMergeNode in="SourceGraphic"></feMergeNode></feMerge>
+  </filter>
+  <filter id="ki-wrench-hi-i15" x="-10%" y="-10%" width="120%" height="130%" color-interpolation-filters="sRGB">
+    <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="a"></feColorMatrix>
+    <feOffset in="a" dy="0.7"></feOffset><feGaussianBlur stdDeviation="0.35"></feGaussianBlur>
+    <feComposite in2="a" operator="arithmetic" k2="-1" k3="1"></feComposite>
+    <feColorMatrix type="matrix" values="0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0.5 0"></feColorMatrix>
+    <feBlend in2="SourceGraphic" mode="overlay"></feBlend>
+  </filter><mask id="ki-wrench-ol-i15-0" maskUnits="userSpaceOnUse" x="-40" y="-40" width="111" height="109"><rect x="-40" y="-40" width="111" height="109" fill="#fff"></rect><path fill="#000" fill-rule="nonzero" d="M20 1.3C15 1.3 11.8 5.3 13.2 10.4L4.4 19.2Q2.8 20.8 4.6 22.6Q6.4 24.4 8 22.8L16.8 14C22 15.4 26 12.2 26 7.2L21 10L17 6Z"></path></mask></defs><g filter="url(#ki-wrench-sh-i15)"><g filter="url(#ki-wrench-hi-i15)"><g transform="translate(15.5 12.5) rotate(0) scale(1) translate(-15.5 -12.5)"><path d="M20 1.3C15 1.3 11.8 5.3 13.2 10.4L4.4 19.2Q2.8 20.8 4.6 22.6Q6.4 24.4 8 22.8L16.8 14C22 15.4 26 12.2 26 7.2L21 10L17 6Z" fill="url(#ki-wrench-loS-i15)"></path><path d="M6.107 20.907Q5.4 20.2 6.107 19.493L13.693 11.907Q14.4 11.2 15.107 11.907L15.893 12.693Q16.6 13.4 15.893 14.107L8.307 21.693Q7.6 22.4 6.893 21.693Z" fill="url(#ki-wrench-upS-i15)"></path></g></g></g><g transform="translate(15.5 12.5) rotate(0) scale(1) translate(-15.5 -12.5)"><path d="M20 1.3C15 1.3 11.8 5.3 13.2 10.4L4.4 19.2Q2.8 20.8 4.6 22.6Q6.4 24.4 8 22.8L16.8 14C22 15.4 26 12.2 26 7.2L21 10L17 6Z" mask="url(#ki-wrench-ol-i15-0)" stroke="#0D9488" fill="none" stroke-width="2"></path></g></svg>

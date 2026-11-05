@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-2.5 -5.5 36 36" width="24" height="24" fill="none"><defs><linearGradient id="ki-navi-loS-i23" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FBA76D"></stop><stop offset="1" stop-color="#FB9652"></stop></linearGradient><linearGradient id="ki-navi-upS-i23" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FDD6BA"></stop><stop offset="1" stop-color="#FCBC90"></stop></linearGradient>
+  <filter id="ki-navi-sh-i23" x="-40%" y="-40%" width="180%" height="190%" color-interpolation-filters="sRGB">
+    <feGaussianBlur in="SourceAlpha" stdDeviation="2"></feGaussianBlur><feOffset dy="2" result="o"></feOffset>
+    <feColorMatrix in="o" type="matrix" values="0 0 0 0 0.984 0 0 0 0 0.627 0 0 0 0 0.38 0 0 0 0.21 0"></feColorMatrix>
+    <feMerge><feMergeNode></feMergeNode><feMergeNode in="SourceGraphic"></feMergeNode></feMerge>
+  </filter>
+  <filter id="ki-navi-hi-i23" x="-10%" y="-10%" width="120%" height="130%" color-interpolation-filters="sRGB">
+    <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="a"></feColorMatrix>
+    <feOffset in="a" dy="0.7"></feOffset><feGaussianBlur stdDeviation="0.35"></feGaussianBlur>
+    <feComposite in2="a" operator="arithmetic" k2="-1" k3="1"></feComposite>
+    <feColorMatrix type="matrix" values="0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0.5 0"></feColorMatrix>
+    <feBlend in2="SourceGraphic" mode="overlay"></feBlend>
+  </filter><mask id="ki-navi-ol-i23-0" maskUnits="userSpaceOnUse" x="-40" y="-40" width="111" height="109"><rect x="-40" y="-40" width="111" height="109" fill="#fff"></rect><path fill="#000" fill-rule="nonzero" d="M5.054 11.316Q4 11 5.009 10.561L25.991 1.439Q27 1 26.561 2.009L17.439 22.991Q17 24 16.684 22.946L14.316 15.054Q14 14 12.946 13.684Z"></path></mask></defs><g filter="url(#ki-navi-sh-i23)"><g filter="url(#ki-navi-hi-i23)"><g transform="translate(15.5 12.5) rotate(0) scale(1) translate(-15.5 -12.5)"><path d="M5.054 11.316Q4 11 5.009 10.561L25.991 1.439Q27 1 26.561 2.009L17.439 22.991Q17 24 16.684 22.946L14.316 15.054Q14 14 12.946 13.684Z" fill="url(#ki-navi-loS-i23)"></path><path d="M26.364 1.636Q27 1 26.641 1.825L17.359 23.175Q17 24 16.741 23.138L14.259 14.862Q14 14 14.636 13.364Z" fill="url(#ki-navi-upS-i23)"></path></g></g></g><g transform="translate(15.5 12.5) rotate(0) scale(1) translate(-15.5 -12.5)"><path d="M5.054 11.316Q4 11 5.009 10.561L25.991 1.439Q27 1 26.561 2.009L17.439 22.991Q17 24 16.684 22.946L14.316 15.054Q14 14 12.946 13.684Z" mask="url(#ki-navi-ol-i23-0)" stroke="#F97316" fill="none" stroke-width="2"></path></g></svg>

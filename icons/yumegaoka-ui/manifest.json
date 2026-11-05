@@ -1,0 +1,184 @@
+[
+  {
+    "name": "chevron-left",
+    "file": "chevron-left.svg",
+    "meaning": "戻る",
+    "motion": "左向きの立体シェブロンが左にスライド",
+    "source": "new"
+  },
+  {
+    "name": "chevron-right",
+    "file": "chevron-right.svg",
+    "meaning": "次へ",
+    "motion": "右向きの立体シェブロンが右にスライド",
+    "source": "new"
+  },
+  {
+    "name": "refresh",
+    "file": "refresh.svg",
+    "meaning": "再読み込み",
+    "motion": "ダイヤルの矢印が時計回りに半回転",
+    "source": "new"
+  },
+  {
+    "name": "calendar",
+    "file": "calendar.svg",
+    "meaning": "カレンダー",
+    "motion": "紙のカレンダーが翌日にめくれる",
+    "source": "日历"
+  },
+  {
+    "name": "map-pin",
+    "file": "map-pin.svg",
+    "meaning": "地図上の場所",
+    "motion": "場所ピンが持ち上がる",
+    "source": "定位"
+  },
+  {
+    "name": "users",
+    "file": "users.svg",
+    "meaning": "人数・グループ",
+    "motion": "二人の人物模型が左右に開く",
+    "source": "new"
+  },
+  {
+    "name": "user",
+    "file": "user.svg",
+    "meaning": "人物・プロフィール",
+    "motion": "人物が顔を上げる",
+    "source": "用户"
+  },
+  {
+    "name": "user-plus",
+    "file": "user-plus.svg",
+    "meaning": "人物追加",
+    "motion": "人物追加の＋部品が押し込まれる",
+    "source": "new"
+  },
+  {
+    "name": "pencil",
+    "file": "pencil.svg",
+    "meaning": "編集",
+    "motion": "鉛筆が線を書く",
+    "source": "编辑"
+  },
+  {
+    "name": "flag",
+    "file": "flag.svg",
+    "meaning": "通報・報告",
+    "motion": "旗の布が風ではためく",
+    "source": "new"
+  },
+  {
+    "name": "image",
+    "file": "image.svg",
+    "meaning": "写真・ギャラリー",
+    "motion": "写真を扇状に開く",
+    "source": "照片"
+  },
+  {
+    "name": "bell",
+    "file": "bell.svg",
+    "meaning": "通知",
+    "motion": "ベルが揺れ、舌が遅れて動く",
+    "source": "通知"
+  },
+  {
+    "name": "hand",
+    "file": "hand.svg",
+    "meaning": "ブロック・制限",
+    "motion": "手のひらをこちらに向けて制止する",
+    "source": "new"
+  },
+  {
+    "name": "shield-check",
+    "file": "shield-check.svg",
+    "meaning": "アカウント保護",
+    "motion": "盾が手前に出る",
+    "source": "盾牌"
+  },
+  {
+    "name": "wifi",
+    "file": "wifi.svg",
+    "meaning": "接続状態",
+    "motion": "電波の弧が外側へ広がる",
+    "source": "new"
+  },
+  {
+    "name": "wrench",
+    "file": "wrench.svg",
+    "meaning": "ツール・運営機能",
+    "motion": "レンチを回す",
+    "source": "new"
+  },
+  {
+    "name": "clock",
+    "file": "clock.svg",
+    "meaning": "時刻",
+    "motion": "時計が25分進む",
+    "source": "时钟"
+  },
+  {
+    "name": "check",
+    "file": "check.svg",
+    "meaning": "確定",
+    "motion": "チェック形の立体部品を押す",
+    "source": "new"
+  },
+  {
+    "name": "circle-check",
+    "file": "circle-check.svg",
+    "meaning": "選択済み",
+    "motion": "選択円内のチェックを押す",
+    "source": "new"
+  },
+  {
+    "name": "circle",
+    "file": "circle.svg",
+    "meaning": "未選択",
+    "motion": "空の円形部品を押す",
+    "source": "new"
+  },
+  {
+    "name": "x",
+    "file": "x.svg",
+    "meaning": "閉じる・解除",
+    "motion": "X形の立体部品を押す",
+    "source": "new"
+  },
+  {
+    "name": "trash",
+    "file": "trash.svg",
+    "meaning": "削除",
+    "motion": "ごみ箱の蓋が開く",
+    "source": "回收站"
+  },
+  {
+    "name": "create-pin",
+    "file": "create-pin.svg",
+    "meaning": "CreatePIN",
+    "motion": "画鋲を押し込む",
+    "source": "new"
+  },
+  {
+    "name": "navi",
+    "file": "navi.svg",
+    "meaning": "Navi",
+    "motion": "方向針が揺れて元の方向に収束",
+    "source": "new"
+  },
+  {
+    "name": "arrival-plug",
+    "file": "arrival-plug.svg",
+    "meaning": "到着",
+    "motion": "二極端子が接続先へ差し込まれる",
+    "source": "new"
+  },
+  {
+    "name": "presence-star",
+    "file": "presence-star.svg",
+    "meaning": "気配",
+    "motion": "四尖の星が輝きながら四分の一回転",
+    "source": "new"
+  }
+]

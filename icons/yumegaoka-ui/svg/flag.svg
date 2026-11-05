@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-2.5 -5.5 36 36" width="24" height="24" fill="none"><defs><linearGradient id="ki-flag-loS-i9" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#60B2DC"></stop><stop offset="1" stop-color="#43A3D5"></stop></linearGradient><linearGradient id="ki-flag-upS-i9" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#B4DBEE"></stop><stop offset="1" stop-color="#86C4E4"></stop></linearGradient>
+  <filter id="ki-flag-sh-i9" x="-40%" y="-40%" width="180%" height="190%" color-interpolation-filters="sRGB">
+    <feGaussianBlur in="SourceAlpha" stdDeviation="2"></feGaussianBlur><feOffset dy="2" result="o"></feOffset>
+    <feColorMatrix in="o" type="matrix" values="0 0 0 0 0.325 0 0 0 0 0.675 0 0 0 0 0.851 0 0 0 0.21 0"></feColorMatrix>
+    <feMerge><feMergeNode></feMergeNode><feMergeNode in="SourceGraphic"></feMergeNode></feMerge>
+  </filter>
+  <filter id="ki-flag-hi-i9" x="-10%" y="-10%" width="120%" height="130%" color-interpolation-filters="sRGB">
+    <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="a"></feColorMatrix>
+    <feOffset in="a" dy="0.7"></feOffset><feGaussianBlur stdDeviation="0.35"></feGaussianBlur>
+    <feComposite in2="a" operator="arithmetic" k2="-1" k3="1"></feComposite>
+    <feColorMatrix type="matrix" values="0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0.5 0"></feColorMatrix>
+    <feBlend in2="SourceGraphic" mode="overlay"></feBlend>
+  </filter><mask id="ki-flag-ol-i9-0" maskUnits="userSpaceOnUse" x="-40" y="-40" width="111" height="109"><rect x="-40" y="-40" width="111" height="109" fill="#fff"></rect><path fill="#000" fill-rule="nonzero" d="M7.8 2.8C13 1 19 4.6 26 2.8V17.4C19 19.2 13 15.6 7.8 17.4Z"></path></mask></defs><path d="M6.8 1.2V24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" stroke="#02589D"></path><g filter="url(#ki-flag-sh-i9)"><g filter="url(#ki-flag-hi-i9)"><path fill="url(#ki-flag-loS-i9)" d="M7.8 2.8C13 1 19 4.6 26 2.8V17.4C19 19.2 13 15.6 7.8 17.4Z"></path></g></g><g filter="url(#ki-flag-hi-i9)"><path fill="url(#ki-flag-upS-i9)" d="M7.8 10C13 8.2 19 11.8 26 10V17.4C19 19.2 13 15.6 7.8 17.4Z"></path></g><path mask="url(#ki-flag-ol-i9-0)" d="M7.8 2.8C13 1 19 4.6 26 2.8V17.4C19 19.2 13 15.6 7.8 17.4Z" stroke="#0284C7" fill="none" stroke-width="2"></path></svg>
