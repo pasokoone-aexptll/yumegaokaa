@@ -7,6 +7,7 @@ import {
 import { streetID } from "../lib/native";
 
 export function useChatComposer(onSent: () => void, restricted: boolean) {
+  const [mentions, setMentions] = useState<{ id: string; name: string }[]>([]);
   const [text, setText] = useState("");
   const [pendingText, setPendingText] = useState<string | null>(null);
   const [confirmedEchoes, setConfirmedEchoes] = useState<
@@ -26,6 +27,8 @@ export function useChatComposer(onSent: () => void, restricted: boolean) {
       if (gen !== generation.current) return;
       if (pending) {
         const body = String(pending.body.body ?? "");
+        const ids = pending.body.mention_ids;
+        setMentions(Array.isArray(ids) ? ids.map(id => ({ id: String(id), name: "" })) : []);
         setPendingText(body);
         setText(body);
       }
@@ -68,6 +71,7 @@ export function useChatComposer(onSent: () => void, restricted: boolean) {
       const result = await submitCommand<{ id: string }>("chat_send", {
         street_id: streetID,
         body,
+        ...(mentions.length ? { mention_ids: mentions.map(m => m.id) } : {}),
       });
       if (gen !== generation.current) return;
       if (!result?.id) throw Error("missing_message_identity");
@@ -75,6 +79,7 @@ export function useChatComposer(onSent: () => void, restricted: boolean) {
         ...old.filter((e) => e.id !== result.id),
         { id: result.id, body },
       ]);
+      setMentions([]);
       setText("");
       setPendingText(null);
       onSent();
@@ -103,6 +108,7 @@ export function useChatComposer(onSent: () => void, restricted: boolean) {
             ...old.filter((e) => e.id !== completed.id),
             { id: completed.id, body: pendingText ?? text },
           ]);
+        setMentions([]);
         setText("");
         setError("送信済みでした。削除する場合は投稿を長押ししてください。");
         onSent();
@@ -121,6 +127,11 @@ export function useChatComposer(onSent: () => void, restricted: boolean) {
     setConfirmedEchoes((old) => old.filter((e) => !ids.includes(e.id)));
   }, []);
   return {
+    mentions,
+    toggleMention(id: string, name: string) {
+      if (pendingText !== null || writing.current || restoring) return;
+      setMentions(old => old.some(m => m.id === id) ? old.filter(m => m.id !== id) : old.length < 5 ? [...old, { id, name }] : old);
+    },
     pendingText,
     confirmedEchoes,
     reconcileEchoes,

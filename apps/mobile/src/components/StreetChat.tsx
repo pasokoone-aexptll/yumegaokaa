@@ -49,6 +49,8 @@ export function StreetChat({
     pending,
     pendingText,
     confirmedEchoes,
+    mentions,
+    toggleMention,
     revise,
     restoring,
     restoreFailed,
@@ -349,7 +351,9 @@ export function StreetChat({
                             >
                               <Text style={styles.author}>
                                 {m.kind !== "arrival" && (
-                                  <Text style={styles.authorName}>
+                                  <Text style={styles.authorName}
+                                    accessibilityHint="タップしてメンションの宛先に追加"
+                                    onPress={!m.mine && !m.deleted && m.author_id ? () => toggleMention(m.author_id!, m.display_name) : undefined}>
                                     {m.display_name}{" "}
                                     {m.stay_level ? `Lv${m.stay_level} ` : ""}
                                   </Text>
@@ -376,7 +380,7 @@ export function StreetChat({
                                     が街に参加しました
                                   </>
                                 ) : (
-                                  m.body
+                                  <>{m.mentions?.length ? <Text style={{ color: "#81bdff" }}>{m.mentions.map(name => "@" + name).join(" ")} </Text> : null}{m.body}</>
                                 )}
                               </Text>
                             </ChatTouchRegion>
@@ -482,6 +486,15 @@ export function StreetChat({
                   key={notice.title + notice.message}
                   notice={notice}
                 />
+              )}
+              {mentions.length > 0 && (
+                <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 8 }}>
+                  {mentions.map(m => <Text key={m.id} accessibilityRole="button"
+                    accessibilityLabel={`${m.name}を宛先から外す`}
+                    onPress={() => toggleMention(m.id, m.name)} style={{ color: "#81bdff" }}>
+                    @{m.name || items.find(item => item.author_id === m.id)?.display_name || "選択済み"} ×
+                  </Text>)}
+                </View>
               )}
               <View style={styles.composer} onTouchStart={Keyboard.dismiss}>
                 <SmoothSurface

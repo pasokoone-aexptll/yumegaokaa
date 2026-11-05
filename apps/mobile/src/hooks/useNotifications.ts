@@ -8,7 +8,7 @@ export type Notice = {
   id: string;
   event_id: string;
   title: string;
-  kind: "changed" | "canceled";
+  kind: "changed" | "canceled" | "mention";
   created_at: string;
   read: boolean;
 };

@@ -148,7 +148,7 @@ export function apnsSender({
         req.end(
           JSON.stringify({
             aps: {
-              alert: { title: "夢ヶ丘", body: "オフ会のお知らせがあります。" },
+              alert: { title: "夢ヶ丘", body: item.kind === "mention" ? "街のチャットにメンションがあります。" : "オフ会のお知らせがあります。" },
               sound: "default",
             },
             notification_id: item.id,

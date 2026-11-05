@@ -10,6 +10,7 @@ export type Message = {
   id: string;
   author_id: string | null;
   display_name: string;
+  mentions?: string[];
   stay_level?: number | null;
   avatar_path?: string;
   avatar_updated_at?: string;
