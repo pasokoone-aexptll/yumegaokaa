@@ -6,6 +6,7 @@ import { DetailIcon } from "./DetailIcon";
 export function PinListItem({
   title,
   subtitle,
+  thumbnail,
   longitude,
   latitude,
   onOpen,
@@ -13,6 +14,7 @@ export function PinListItem({
 }: {
   title: string;
   subtitle: string;
+  thumbnail?: React.ReactNode;
   longitude: number;
   latitude: number;
   onOpen: () => void;
@@ -27,7 +29,7 @@ export function PinListItem({
         style={s.details}
       >
         <View style={s.thumbnail}>
-          <DetailIcon
+          {thumbnail ?? <DetailIcon
             name={
               detail?.kind === "recruitment"
                 ? "people-outline"
@@ -35,7 +37,7 @@ export function PinListItem({
             }
             size={30}
             color="#00000077"
-          />
+          />}
         </View>
         <View style={s.copy}>
           <Text numberOfLines={3} style={s.title}>

@@ -1,3 +1,4 @@
+import { RecruitmentIcon } from "../../components/RecruitmentIcon";
 import { openMapAt } from "../../lib/mapNavigation";
 import { Alert, Text, TextInput } from "react-native";
 import { router, useLocalSearchParams } from "expo-router";
@@ -31,7 +32,7 @@ export default function Detail() {
         <>
           <Section>
             <DetailRow
-              icon="person-circle-outline"
+              leading={<RecruitmentIcon pin={pin} />}
               title={`${pin.display_name} が募集中`}
             />
             <DetailRow

@@ -1,3 +1,4 @@
+import { RecruitmentIcon } from "../../components/RecruitmentIcon";
 import { StretchySunset } from "../../components/StretchySunset";
 import { homeEvents } from "../../lib/homeEvents";
 import { useState } from "react";
@@ -136,6 +137,7 @@ export default function Home() {
         {recruitments.map((p) => (
           <PinListItem
             key={p.id}
+            thumbnail={<RecruitmentIcon pin={p} />}
             title={p.title}
             subtitle={`${p.display_name} が募集中`}
             longitude={p.longitude}

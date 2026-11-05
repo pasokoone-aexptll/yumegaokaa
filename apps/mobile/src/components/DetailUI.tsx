@@ -99,6 +99,7 @@ export function Section({
   );
 }
 export function DetailRow({
+  leading,
   title,
   subtitle,
   icon,
@@ -109,6 +110,7 @@ export function DetailRow({
 }: {
   title: string;
   subtitle?: string;
+  leading?: React.ReactNode;
   icon?: React.ComponentProps<typeof DetailIcon>["name"];
   onPress?: () => void;
   danger?: boolean;
@@ -117,6 +119,7 @@ export function DetailRow({
 }) {
   const content = (
     <>
+      {leading}
       {icon && (
         <DetailIcon
           name={icon}

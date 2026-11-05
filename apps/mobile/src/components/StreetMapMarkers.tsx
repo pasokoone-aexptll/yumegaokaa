@@ -1,3 +1,4 @@
+import { RecruitmentIcon } from "./RecruitmentIcon";
 import { UIIcon } from "./icons/UIIcon";
 import {
   PinBubble,
@@ -132,6 +133,7 @@ export function StreetMapMarkers({
               <PinBubble>
                 <PinGradientText>{`${pin.display_name}が募集中`}</PinGradientText>
               </PinBubble>
+              <RecruitmentIcon pin={pin} />
             </MarkerFeedback>
           </Marker>
         ))}

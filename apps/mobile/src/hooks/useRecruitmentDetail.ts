@@ -39,7 +39,7 @@ export function useRecruitmentDetail(id: string) {
           setPin(result);
           setTitle(result.title);
         } else {
-          setPin(baseline.current);
+          if (baseline.current) setPin({ ...baseline.current, icon_path: result.icon_path, icon_until: result.icon_until });
         }
         setError("");
       } catch (cause) {
