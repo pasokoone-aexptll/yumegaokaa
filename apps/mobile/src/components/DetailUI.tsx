@@ -5,12 +5,13 @@ import type { ReactNode } from "react";
 import { useState } from "react";
 import {
   ActivityIndicator,
+  Platform,
   ScrollView,
   StyleSheet,
   Text,
   View,
 } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
 import { DetailIcon } from "./DetailIcon";
 
@@ -31,18 +32,20 @@ export function DetailPage({
 }) {
   const router = useRouter();
   const [reloading, setReloading] = useState(false);
+  const insets = useSafeAreaInsets();
+  const edgeToEdge = Platform.OS === "ios" && !root;
   const glass = mapSheet && glassMapSheet;
   return (
     <SafeAreaView
       edges={
-        root ? ["top", "left", "right"] : ["top", "bottom", "left", "right"]
+        root || edgeToEdge ? ["top", "left", "right"] : ["top", "bottom", "left", "right"]
       }
       style={[detail.page, glass && { backgroundColor: "#f2f2f799" }]}
     >
       {glass && <BlurView {...mapBlur} pointerEvents="none" tint="light" intensity={55} style={StyleSheet.absoluteFill} />}
       <ScrollView
         nestedScrollEnabled={glass}
-        contentContainerStyle={detail.content}
+        contentContainerStyle={[detail.content, edgeToEdge && { paddingBottom: detail.content.paddingBottom + insets.bottom }]}
         keyboardShouldPersistTaps="handled"
         automaticallyAdjustKeyboardInsets
         keyboardDismissMode="interactive"
