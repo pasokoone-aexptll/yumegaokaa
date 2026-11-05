@@ -25,6 +25,7 @@ test("after restart an uncertain Android exit retries only the original visit", 
   async function boot() {
     const exports = {};
     new Function("exports", "require", outputText)(exports, name => ({
+      "./visitObservation.android": { stopObservation: async () => {}, watchVisit: async () => false },
       "@supabase/supabase-js": { createClient: () => client },
       "expo-secure-store": storage,
       "expo-modules-core": { requireNativeModule: () => ({}) },

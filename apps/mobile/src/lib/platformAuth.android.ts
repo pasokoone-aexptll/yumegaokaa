@@ -1,4 +1,5 @@
 import { PermissionsAndroid, Platform } from "react-native";
+import { observeFix, observationFailed, stopObservation, watchVisit } from "./visitObservation.android";
 import { observationTime } from "./observationTime";
 import { deliverMode } from "./modeDelivery";
 import { insideCell, projectStreetPoint } from "./streetGrid";
@@ -63,16 +64,29 @@ async function flushExit(key: string) {
 
 async function readVisitState(): Promise<NativeState> {
   const key = await attemptKey();
-  const { visit, ghost_preference } = await platformAuth.rpc<{
+  const { visit, ghost_preference, server_time } = await platformAuth.rpc<{
     visit: NativeState["visit"] | null;
     ghost_preference: boolean;
+    server_time: string;
   }>("get_my_visit");
   lastWritableVisit = visit?.can_update && visit.visit_id ? { key, id: visit.visit_id } : undefined;
+  const observing = await watchVisit(visit ?? {}, server_time, fix => {
+    void visitOperation(async () => {
+      try {
+        if (lastWritableVisit?.key !== key || lastWritableVisit.id !== fix.visit) return;
+        if (await SecureStore.getItemAsync(key + ".exit") || await SecureStore.getItemAsync(key + ".mode")) return;
+        await observeFix(fix, platformAuth.rpc);
+      } catch (error) {
+        observationFailed();
+        if (/inactive_visit|unauthorized|membership_required|wrong_writer/.test(String(error))) await stopObservation();
+      }
+    });
+  });
   return {
     visit: visit ?? {},
     ghost_preference,
     pending_exit: false,
-    observing: false,
+    observing,
     status: visit?.state === "active" ? "参加中" : "未参加",
   };
 }
@@ -223,6 +237,7 @@ export const platformAuth = {
   },
   checkin(tag: string) {
     return visitOperation(async () => {
+      await PermissionsAndroid.requestMultiple([PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION, PermissionsAndroid.PERMISSIONS.ACCESS_COARSE_LOCATION]);
       const key = await attemptKey();
       await flushExit(key);
       let attempt = await SecureStore.getItemAsync(key);
@@ -305,6 +320,7 @@ export const platformAuth = {
   },
   stop(visitId?: string) {
     return visitOperation(async () => {
+      await stopObservation();
       const key = await attemptKey();
       if (!await SecureStore.getItemAsync(key + ".exit")) {
         const intent: ExitIntent = {
@@ -338,8 +354,9 @@ export const platformAuth = {
     });
   },
   async logout() {
+    await stopObservation();
     await visitOperation(async () => SecureStore.deleteItemAsync(await modeKey()));
-    const current = await readVisitState().catch(() => null);
+    const current = await platformAuth.rpc<NativeState>("get_my_visit").catch(() => null);
     const visit = current?.visit;
     if (visit?.state === "active" && visit.can_update) {
       await platformAuth.rpc("end_visit", {

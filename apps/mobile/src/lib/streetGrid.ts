@@ -17,9 +17,10 @@ export function projectStreetPoint(lon: number, lat: number): [number, number] {
   return [cm(x), cm(y)];
 }
 
-export function insideCell(point: [number, number], rings: number[][][], accuracy: number) {
+export function classifyStreetPoint(point: [number, number], rings: number[][][], accuracy: number) {
   if (!Number.isFinite(accuracy) || accuracy < 0 || accuracy > 50 || !rings?.length) return;
   const [x, y] = point;
+  let outside = false;
   for (const [index, ring] of rings.entries()) {
     let inside = false;
     if (ring.length < 3) return;
@@ -31,7 +32,14 @@ export function insideCell(point: [number, number], rings: number[][][], accurac
       if (Math.hypot(x-ax-u*dx, y-ay-u*dy) <= accuracy) return;
       if ((ay > y) !== (by > y) && x < ax+(y-ay)*dx/dy) inside = !inside;
     }
-    if (inside !== (index === 0)) return;
+    if (inside !== (index === 0)) outside = true;
   }
+  if (outside) return "outside";
   return Math.floor(x/100) + ":" + Math.floor(y/100);
+}
+
+
+export function insideCell(point: [number, number], rings: number[][][], accuracy: number) {
+  const result = classifyStreetPoint(point, rings, accuracy);
+  return result === "outside" ? undefined : result;
 }

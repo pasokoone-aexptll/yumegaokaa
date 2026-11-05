@@ -11,7 +11,33 @@ import expo.modules.kotlin.modules.ModuleDefinition
 class PresenceNativeModule : Module() {
   override fun definition() = ModuleDefinition {
     Name("PresenceNative")
-    Events("onChange")
+    Events("onChange", "onVisitFix")
+    OnCreate {
+      VisitLocationService.onFix = { visit, location ->
+        sendEvent("onVisitFix", mapOf("visit" to visit, "longitude" to location.longitude,
+          "latitude" to location.latitude, "accuracy" to location.accuracy.toDouble(),
+          "elapsed" to location.elapsedRealtimeNanos / 1_000_000.0))
+      }
+    }
+    OnDestroy {
+      VisitLocationService.onFix = null
+      appContext.reactContext?.let { it.stopService(android.content.Intent(it, VisitLocationService::class.java)) }
+    }
+    AsyncFunction("observeVisit") { visit: String, remainingMs: Double ->
+      val context = appContext.reactContext ?: return@AsyncFunction false
+      if (remainingMs <= 0) return@AsyncFunction false
+      if (VisitLocationService.activeVisit != visit && appContext.currentActivity?.hasWindowFocus() != true)
+        return@AsyncFunction false
+      if (androidx.core.content.ContextCompat.checkSelfPermission(context, android.Manifest.permission.ACCESS_FINE_LOCATION)
+          != android.content.pm.PackageManager.PERMISSION_GRANTED) return@AsyncFunction false
+      androidx.core.content.ContextCompat.startForegroundService(context, android.content.Intent(context, VisitLocationService::class.java)
+        .putExtra("visit", visit).putExtra("deadline", SystemClock.elapsedRealtime() + remainingMs.toLong().coerceAtMost(10800000L)))
+      true
+    }
+    AsyncFunction("stopObserving") {
+      appContext.reactContext?.let { it.stopService(android.content.Intent(it, VisitLocationService::class.java)) }
+      Unit
+    }
     View(HistoryBlur::class) { Name("HistoryBlur") }
     View(SheetHandle::class) {
       Name("SheetHandle")
