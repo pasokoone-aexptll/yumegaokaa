@@ -1,4 +1,4 @@
-import { PermissionsAndroid, Platform } from "react-native";
+import { DeviceEventEmitter, PermissionsAndroid, Platform } from "react-native";
 import { observeFix, observationFailed, stopObservation, watchVisit } from "./visitObservation.android";
 import { observationTime } from "./observationTime";
 import { deliverMode } from "./modeDelivery";
@@ -75,7 +75,13 @@ async function readVisitState(): Promise<NativeState> {
       try {
         if (lastWritableVisit?.key !== key || lastWritableVisit.id !== fix.visit) return;
         if (await SecureStore.getItemAsync(key + ".exit") || await SecureStore.getItemAsync(key + ".mode")) return;
-        await observeFix(fix, platformAuth.rpc);
+        const ended = await observeFix(fix, platformAuth.rpc);
+        if (ended) {
+          lastWritableVisit = undefined;
+          DeviceEventEmitter.emit("yumegaokaAndroidVisitEnded", {
+            visit: ended, ghost_preference, pending_exit: false, observing: false, status: "未参加",
+          } satisfies NativeState);
+        }
       } catch (error) {
         observationFailed();
         if (/inactive_visit|unauthorized|membership_required|wrong_writer/.test(String(error))) await stopObservation();

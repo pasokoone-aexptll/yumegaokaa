@@ -3,7 +3,7 @@ import { localBlocks } from "../lib/localBlocks";
 import { streetChanges } from "../lib/streetChanges";
 import "react-native-url-polyfill/auto";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { Alert, AppState, Platform } from "react-native";
+import { Alert, DeviceEventEmitter, AppState, Platform } from "react-native";
 import { closeMenu, setToolsButtonVisible } from "expo-dev-client";
 import { gatewayConnection } from "../lib/gatewayConnection";
 import NfcManager, { NfcTech, Ndef } from "react-native-nfc-manager";
@@ -155,8 +155,10 @@ export function useStreetMap() {
         setError(friendly(e));
         setReady(true);
       });
+    const outsideExit = Platform.OS === "android"
+      ? DeviceEventEmitter.addListener("yumegaokaAndroidVisitEnded", setState) : undefined;
     const listener = native.addListener("onChange", (s) => setState(s));
-    return () => listener.remove();
+    return () => { outsideExit?.remove(); listener.remove(); };
   }, []);
   useEffect(() => {
     if (!signed) return;

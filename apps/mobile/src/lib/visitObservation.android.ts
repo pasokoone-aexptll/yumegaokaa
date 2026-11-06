@@ -78,7 +78,10 @@ export async function observeFix(fix: Fix, rpc: RPC) {
     horizontal_accuracy_m: fix.accuracy, observed_at: observed, verdict: outside ? "outside" : "inside",
     ...(!outside && !visit.ghost ? { cell_id: cell, grid_version: config.grid_version } : {}),
   });
-  if (result.result === "ended") return stopObservation();
+  if (result.result === "ended") {
+    await stopObservation();
+    return result.visit;
+  }
   active = result.visit;
   if (result.result === "accepted") {
     lastSent = fix.elapsed;

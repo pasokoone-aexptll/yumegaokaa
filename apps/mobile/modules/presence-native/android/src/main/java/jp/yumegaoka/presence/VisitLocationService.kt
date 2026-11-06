@@ -38,10 +38,23 @@ class VisitLocationService : Service(), LocationListener {
     if (owningVisit == visit) return START_NOT_STICKY
     owningVisit = visit
     try {
-      val providers = listOf(LocationManager.GPS_PROVIDER, LocationManager.NETWORK_PROVIDER)
-        .filter { manager.isProviderEnabled(it) }
+      // Consume one stream so a coarse network fix cannot repeatedly interrupt
+      // the two-fix outside confirmation between accurate GPS samples.
+      val providers = if (Build.VERSION.SDK_INT >= 31 &&
+        manager.isProviderEnabled(LocationManager.FUSED_PROVIDER)) {
+        listOf(LocationManager.FUSED_PROVIDER)
+      } else {
+        listOf(LocationManager.GPS_PROVIDER, LocationManager.NETWORK_PROVIDER)
+          .filter { manager.isProviderEnabled(it) }.take(1)
+      }
       if (providers.isEmpty()) { stopSelf(); return START_NOT_STICKY }
-      for (provider in providers) manager.requestLocationUpdates(provider, 30000, 0f, this)
+      for (provider in providers) {
+        if (Build.VERSION.SDK_INT >= 31) {
+          val request = LocationRequest.Builder(30000)
+            .setQuality(LocationRequest.QUALITY_HIGH_ACCURACY).build()
+          manager.requestLocationUpdates(provider, request, mainExecutor, this)
+        } else manager.requestLocationUpdates(provider, 30000, 0f, this)
+      }
       activeVisit = visit
     } catch (_: SecurityException) { stopSelf() }
     return START_NOT_STICKY
