@@ -1,3 +1,4 @@
+import { resolveMentions, type Recipient } from "../lib/chatMentions";
 import { useCallback, useEffect, useRef, useState } from "react";
 import {
   cancelPendingCommand,
@@ -6,7 +7,7 @@ import {
 } from "../lib/commands";
 import { streetID } from "../lib/native";
 
-export function useChatComposer(onSent: () => void, restricted: boolean) {
+export function useChatComposer(onSent: () => void, restricted: boolean, authors: Recipient[]) {
   const [mentions, setMentions] = useState<{ id: string; name: string }[]>([]);
   const [text, setText] = useState("");
   const [pendingText, setPendingText] = useState<string | null>(null);
@@ -61,17 +62,22 @@ export function useChatComposer(onSent: () => void, restricted: boolean) {
       !text.trim()
     )
       return;
+    let recipients = mentions;
+    try {
+      if (pendingText === null) recipients = resolveMentions(text, mentions, authors);
+    } catch (e) { setError(String((e as Error).message)); return; }
     writing.current = true;
     setBusy(true);
     setError("");
     const gen = generation.current;
     const body = pendingText ?? text.trim();
+    setMentions(recipients);
     setPendingText(body);
     try {
       const result = await submitCommand<{ id: string }>("chat_send", {
         street_id: streetID,
         body,
-        ...(mentions.length ? { mention_ids: mentions.map(m => m.id) } : {}),
+        ...(recipients.length ? { mention_ids: recipients.map(m => m.id) } : {}),
       });
       if (gen !== generation.current) return;
       if (!result?.id) throw Error("missing_message_identity");

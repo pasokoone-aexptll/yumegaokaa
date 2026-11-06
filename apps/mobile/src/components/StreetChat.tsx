@@ -1,3 +1,4 @@
+import { mentionParts } from "../lib/chatMentions";
 import { ComposerSurface } from "./ComposerSurface";
 import { ChatInput } from "./ChatInput";
 import { IconPressable as Pressable } from "./icons/IconMotion";
@@ -32,6 +33,14 @@ import {
   View,
 } from "react-native";
 import { useStreetChat, type Message } from "../hooks/useStreetChat";
+
+function MentionBody({ message }: { message: Message }) {
+  const names = message.mentions ?? [];
+  const parts = mentionParts(message.body ?? "", names);
+  const prefix = names.filter(name => !parts.some(p => p.name === name));
+  return <>{prefix.length > 0 && <Text style={{ color: "#39A3FF" }}>{prefix.map(n => "@"+n).join(" ")} </Text>}
+    {parts.map((p,i) => p.name ? <Text key={i} style={{ color: "#39A3FF" }}>{p.text}</Text> : p.text)}</>;
+}
 
 export function StreetChat({
   mapError = "",
@@ -408,7 +417,7 @@ export function StreetChat({
                                     が街に参加しました
                                   </>
                                 ) : (
-                                  <>{m.mentions?.length ? <Text style={{ color: "#39A3FF" }}>{m.mentions.map(name => "@" + name).join(" ")} </Text> : null}{m.body}</>
+                                  <MentionBody message={m} />
                                 )}
                               </Text>
                             </ChatTouchRegion>

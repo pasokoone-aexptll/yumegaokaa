@@ -1,3 +1,4 @@
+import { chatAuthors } from "../lib/chatMentions";
 import { readSpacingMs, refreshIntervalMs, showReadFailure } from "./chatReadPolicy";
 import { localBlocks } from "../lib/localBlocks";
 import { readChatWindow, ChatCursor } from "../lib/chatWindow";
@@ -136,7 +137,7 @@ export function useStreetChat() {
   const composer = useChatComposer(() => {
     older.current = false;
     void loadRef.current();
-  }, !!chatRestrictedUntil);
+  }, !!chatRestrictedUntil, chatAuthors(items));
   useEffect(() => {
     reconcileEchoes.current = composer.reconcileEchoes;
   }, [composer.reconcileEchoes]);
