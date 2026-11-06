@@ -23,10 +23,10 @@
       }
     },
     "android": {
-      "icon": "./assets/icon.png",
+      "icon": "./assets/ios/yumegaoka-iOS-Default-1024@1x.png",
       "package": "jp.yumegaoka.development",
       "adaptiveIcon": {
-        "backgroundColor": "#E6F4FE",
+        "backgroundColor": "#BBDCF6",
         "foregroundImage": "./assets/android-icon-foreground.png",
         "backgroundImage": "./assets/android-icon-background.png",
         "monochromeImage": "./assets/android-icon-monochrome.png"
