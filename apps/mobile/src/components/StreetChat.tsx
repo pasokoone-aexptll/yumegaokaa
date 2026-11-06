@@ -499,7 +499,7 @@ export function StreetChat({
                     <SmoothSurface
                       color="#ffffff01"
                       blurIntensity={35}
-                      radius={18}
+                      radius={26}
                       style={{
                         paddingHorizontal: 14,
                         paddingVertical: 10,
