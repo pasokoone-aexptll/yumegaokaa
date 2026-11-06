@@ -11,6 +11,7 @@ import { MapStatusBanner } from "../../components/map/MapStatusBanner";
 import { MapErrorDialog } from "../../components/map/MapErrorDialog";
 import { ProgressiveBlur } from "../../components/map/ProgressiveBlur";
 import { MapBlurView } from "../../components/map/MapBlurView";
+import { useEntryPlacesPreference } from "../../hooks/useEntryPlacesPreference";
 import { EntryPlaces } from "../../components/map/EntryPlaces";
 import { MapHeader } from "../../components/map/MapHeader";
 import { MapAsset } from "../../components/map/MapAsset";
@@ -105,8 +106,7 @@ export default function Street() {
     logout,
     changeMode,
   } = useStreetMap();
-  const [showPlaces, setShowPlaces] = useState(false);
-  useEffect(() => { if (!active) setShowPlaces(false); }, [active]);
+  const { visible: showPlaces, toggle: togglePlaces } = useEntryPlacesPreference();
   const ghost = state.visit.ghost ?? state.ghost_preference ?? false;
   const mode = state.pending_mode || (ghost ? "ghostActive" : "publicActive");
   const currentMode = signed && ready ? mode : undefined;
@@ -281,7 +281,7 @@ export default function Street() {
         <MapHeader
           active={active}
           placesVisible={showPlaces}
-          onTogglePlaces={() => setShowPlaces(shown => !shown)}
+          onTogglePlaces={togglePlaces}
           ghost={state.pending_mode ? state.pending_mode === "ghost" : ghost}
           modeDisabled={busy || state.pending_exit}
           onModeChange={changeMode}
