@@ -9,7 +9,10 @@ export function MapHeader({
   ghost = false,
   modeDisabled = false,
   onModeChange,
+  placesVisible, onTogglePlaces,
 }: {
+  placesVisible?: boolean;
+  onTogglePlaces?: () => void;
   active: boolean;
   onToggle: (value: boolean) => void;
   ghost?: boolean;
@@ -21,7 +24,7 @@ export function MapHeader({
       <View accessible accessibilityLabel="DreamCloud" style={{ flex: 1, minWidth: 0, alignItems: "flex-start" }}>
         <MapAsset name="DreamCloud Logo" width={164} height={32} tint="white" fillOpacity={0.6} />
       </View>
-      <ModeDropdown ghost={ghost} active={active} disabled={modeDisabled} onChange={onModeChange} />
+      <ModeDropdown placesVisible={placesVisible} onTogglePlaces={onTogglePlaces} ghost={ghost} active={active} disabled={modeDisabled} onChange={onModeChange} />
       <ParticipationSwitch value={active} onChange={onToggle} />
     </View>
   );

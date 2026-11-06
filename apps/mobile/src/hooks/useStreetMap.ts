@@ -1,3 +1,4 @@
+import type { EntryMap } from "../components/map/EntryPlaces";
 import { localBlocks } from "../lib/localBlocks";
 import { streetChanges } from "../lib/streetChanges";
 import "react-native-url-polyfill/auto";
@@ -47,6 +48,7 @@ const friendly = (error: unknown) => {
   return "接続または参加状態を確認できませんでした。もう一度お試しください。";
 };
 export function useStreetMap() {
+  const [entryMap, setEntryMap] = useState<EntryMap>();
   const [events, setEvents] = useState<StreetEvent[]>([]);
   const [recruitments, setRecruitments] = useState<Recruitment[]>([]);
   const [ready, setReady] = useState(!url || !key),
@@ -98,11 +100,12 @@ export function useStreetMap() {
       clock.current = synced;
       setNow(synced.server + native.monotonicTime() - synced.local);
       setSnapshot(s);
-      const config = await native.rpc<{ name: string }>("get_street_config", {
+      const config = await native.rpc<EntryMap>("get_entry_map", {
         street_id: streetID,
       });
       if (generation !== snapshotGeneration.current) return;
       setName(config.name);
+      setEntryMap(config);
       const pins = await native.rpc<{ items: StreetEvent[] }>("event_list", {
         street_id: streetID,
       });
@@ -125,7 +128,7 @@ export function useStreetMap() {
           String(e).includes(x),
         )
       )
-        setSnapshot(undefined);
+        { setSnapshot(undefined); setEntryMap(undefined); }
     } finally {
       fetching.current = false;
       if (refreshQueued.current && generation === snapshotGeneration.current) {
@@ -445,7 +448,7 @@ export function useStreetMap() {
     snapshotGeneration.current++;
     refreshQueued.current = false;
     await native.logout();
-    setSnapshot(undefined);
+    { setSnapshot(undefined); setEntryMap(undefined); }
     setEvents([]);
     setRecruitments([]);
     setState(initial);
@@ -456,6 +459,7 @@ export function useStreetMap() {
     setEmail("");
   }
   return {
+    entryMap,
     ready,
     signed,
     email,

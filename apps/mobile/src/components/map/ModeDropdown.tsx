@@ -3,7 +3,9 @@ import { Animated, Easing, Modal, Pressable, StyleSheet, Text, useWindowDimensio
 import { MapAsset } from "./MapAsset";
 import { SmoothSurface } from "./SmoothSurface";
 
-export function ModeDropdown({ ghost, active, disabled, onChange }: {
+export function ModeDropdown({ ghost, active, disabled, onChange, placesVisible, onTogglePlaces }: {
+  placesVisible?: boolean;
+  onTogglePlaces?: () => void;
   ghost: boolean;
   active: boolean;
   disabled: boolean;
@@ -52,6 +54,11 @@ export function ModeDropdown({ ghost, active, disabled, onChange }: {
               </Pressable>
             ))}
             <Text style={styles.note}>ゴースト中は人数に含まれ、気配を隠して募集を終了します。投稿やイベントには名前が表示されます。設定は次の入街にも引き継ぎます。</Text>
+            {active && onTogglePlaces && <Pressable accessibilityRole="switch" accessibilityState={{ checked: !!placesVisible }}
+              onPress={() => { onTogglePlaces(); close(); }} style={styles.option}>
+              <Text style={styles.label}>ログイン場所・街の範囲</Text>
+              <Text style={styles.label}>{placesVisible ? "✓" : "○"}</Text>
+            </Pressable>}
           </SmoothSurface>
         </Animated.View>
       </Modal>}

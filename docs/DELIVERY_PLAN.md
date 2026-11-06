@@ -132,3 +132,5 @@ C07（R05/R06/R07）：Androidで書込可能な滞在の間、位置更新通�
 T033 Android：Google Play内部テスト準備用AAB（jp.yumegaoka.development、versionCode 1）を4 ABIでReleaseビルド。専用アップロード鍵はMacの ~/.android/yumegaoka-internal-upload に所有者限定で保存。scripts/build-play-internal.sh は試験タグを無効化し、署名と証明書の一致を検査。成果物は apps/mobile/android/app/build/outputs/bundle/release/app-release.aab。Play Consoleへの登録・アップロード・テスター配布は未実施。
 
 11月6日 現地試験準備：ユーザーが確認したPixelの centrumhaus@gmail.com にoperators.activeを付与しDBで確認。MFA要件は既存どおり。背景測位・NFC余白修正を含むクラウド現地試験Releaseを両OSでビルドし、Pixel 6a/iPhone 17へ上書き・起動成功。Androidは実NFC、iOSはADP未加入のためリングによる試験入街構成。実タグの書込→照合→設置→公開→入街、ロック中のDB観測は現地確認待ち。タグは公開時の街範囲も確認する（非一直線の3地点以上が必要）。
+
+C10 / T007：会員の未入街地図には現行の街境界と有効な公開設置地点を表示し、入街中は地図メニューで切り替える。専用ピンから設置名とNFC案内を表示する。048を現地DBに適用し、会員RPCからPolygonと4地点を取得、タグ認証IDを含めないことを確認。型確認・両OSのReleaseビルドと実機転送成功。Pixelは起動成功、iPhoneはロック中。各画面での描画・タップの目視確認は未実施。

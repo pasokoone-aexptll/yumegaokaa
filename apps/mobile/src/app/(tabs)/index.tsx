@@ -11,6 +11,7 @@ import { MapStatusBanner } from "../../components/map/MapStatusBanner";
 import { MapErrorDialog } from "../../components/map/MapErrorDialog";
 import { ProgressiveBlur } from "../../components/map/ProgressiveBlur";
 import { MapBlurView } from "../../components/map/MapBlurView";
+import { EntryPlaces } from "../../components/map/EntryPlaces";
 import { MapHeader } from "../../components/map/MapHeader";
 import { MapAsset } from "../../components/map/MapAsset";
 import { StatusBar } from "expo-status-bar";
@@ -84,7 +85,7 @@ export default function Street() {
     sent,
     setSent,
     state,
-    snapshot,
+    snapshot, entryMap,
     now,
     error,
     setError,
@@ -104,6 +105,8 @@ export default function Street() {
     logout,
     changeMode,
   } = useStreetMap();
+  const [showPlaces, setShowPlaces] = useState(false);
+  useEffect(() => { if (!active) setShowPlaces(false); }, [active]);
   const ghost = state.visit.ghost ?? state.ghost_preference ?? false;
   const mode = state.pending_mode || (ghost ? "ghostActive" : "publicActive");
   const currentMode = signed && ready ? mode : undefined;
@@ -241,6 +244,7 @@ export default function Street() {
             pitch: initialPitch,
           }}
         />
+        {entryMap && (!active || showPlaces) && !placement.active && <EntryPlaces map={entryMap} />}
         <StreetMapMarkers
           onSelect={(longitude, latitude) => {
             setDetailInset(detailSheetHeight);
@@ -276,6 +280,8 @@ export default function Street() {
         </View>
         <MapHeader
           active={active}
+          placesVisible={showPlaces}
+          onTogglePlaces={() => setShowPlaces(shown => !shown)}
           ghost={state.pending_mode ? state.pending_mode === "ghost" : ghost}
           modeDisabled={busy || state.pending_exit}
           onModeChange={changeMode}

@@ -126,11 +126,13 @@ export function Marker({
   children,
   draggable,
   onDragEnd,
+  onPress,
 }: MarkerProps) {
   const scale = useContext(MarkerScale);
   return (
     <AppleMarker
       coordinate={{ longitude: lngLat[0], latitude: lngLat[1] }}
+      onPress={onPress}
       draggable={draggable}
       onDragEnd={(e) =>
         onDragEnd?.([
