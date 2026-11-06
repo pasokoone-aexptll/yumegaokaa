@@ -13,6 +13,7 @@ class PresenceNativeModule : Module() {
     Name("PresenceNative")
     Events("onChange", "onVisitFix")
     OnCreate {
+      appContext.reactContext?.let(::ensureStreetNotificationChannel)
       VisitLocationService.onFix = { visit, location ->
         sendEvent("onVisitFix", mapOf("visit" to visit, "longitude" to location.longitude,
           "latitude" to location.latitude, "accuracy" to location.accuracy.toDouble(),

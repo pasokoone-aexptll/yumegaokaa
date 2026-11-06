@@ -5,6 +5,7 @@
   <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
   <uses-permission android:name="android.permission.FOREGROUND_SERVICE_LOCATION" />
   <application>
+    <meta-data android:name="com.google.firebase.messaging.default_notification_channel_id" android:value="street_notices" />
     <service android:name=".StreetMessagingService" android:exported="false">
       <intent-filter android:priority="1"><action android:name="com.google.firebase.MESSAGING_EVENT" /></intent-filter>
     </service>

@@ -145,7 +145,9 @@ C10：現地版Androidの街境界を同梱地図スタイルのラベル層の�
 
 11月6日 C05/C08：11:00のiPhone投稿は本文中の@に対して宛先0、お知らせ0だった。読み込み済みの街チャット投稿者と手入力名を照合し、同名時は明示選択を要求、5人制限を維持。確定した宛先をIDで送り本文中の名前だけを青で表示。後ろに日本語の本文が続く例、メール・英字名の部分一致、同名拒否を確認。修正後のiPhone→Pixelメンション実受信は未確認。
 
-11月6日 公開準備：アプリDBは東京Supabase、画像は同プロジェクトのStorage。DBバックアップが保持するのは画像メタデータのみ（https://supabase.com/docs/guides/platform/backups）。毎日1回DBと画像を同じ世代にまとめて暗号化し、Cloudflare R2 Standardを採用。専用非公開バケット yumegaoka-private-backups を作成し、daily/ の7日後削除ルールを確認。鍵は別管理。バックアップ失敗を検知し、月1回隔離先で認証・投稿・画像実体と参照を復元確認。現状DB 24,082,099 bytes・画像2件131,812 bytes。7世代の単純試算は約170 MB。無料枠はアカウント合算10 GB-month（https://developers.cloudflare.com/r2/pricing/）。初回保存・定期実行・本番世代の隔離復元は未実施。鍵保管と復旧担当は未決。
+11月6日 公開準備：アプリDBは東京Supabase、画像は同プロジェクトのStorage。DBバックアップが保持するのは画像メタデータのみ（https://supabase.com/docs/guides/platform/backups）。毎日1回DBと画像を同じ世代にまとめて暗号化し、Cloudflare R2 Standardを採用。専用非公開バケット yumegaoka-private-backups を作成し、daily/ の7日後削除ルールを確認。鍵は別管理。バックアップ失敗を検知し、月1回隔離先で認証・投稿・画像実体と参照を復元確認。現状DB 24,082,099 bytes・画像2件131,812 bytes。7世代の単純試算は約170 MB。無料枠はアカウント合算10 GB-month（https://developers.cloudflare.com/r2/pricing/）。11月6日、専用資格を発行し本番初回保存と隔離復元を確認。Macの毎日03:15ジョブも手動起動して別世代を保存・復元し、2アカウント、22投稿、画像2件の参照・ハッシュを確認。復旧方法はFIELD_BACKUP.md。鍵の別媒体への保管は利用者作業。
 対応はまずiPhone 17とPixel 6aで検証。ビルド下限iOS 16.4、Android API 24は動作保証とは別。地図はiOS MapKitとAndroid OpenFreeMapの現構成を提案。商用可・帰属表示必須・SLAなし（https://openfreemap.org/）。配布前に地図上の帰属表示がチャットやタブで隠れないことを実機で確認する。
 
 11月6日 C08：Pixel宛てメンション（11:14 JST）はDB通知生成・配信試行1回acceptedを確認。Android前景で未処理だった通知を端末の「街のお知らせ」に表示。両OSの街境界線を白65%・幅2に変更し両Releaseを実機に転送・起動。前景Pixelへの確認通知についてFCM 200と同一タグ・専用チャネルの端末記録を照合。実メンションからタップ遷移は別。メンション候補・通知履歴に依存するためチャットはリセットしない。
+
+C08：11:30のメンションと11:36の中止はPixel上で予備チャネルへの投稿・alert記録あり。標準FCMチャネルを起動時に作成する高重要度の街のお知らせへ変更しReleaseを転送。ホーム画面からの確認通知で専用チャネルの実記録を確認。
