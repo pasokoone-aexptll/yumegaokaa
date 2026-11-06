@@ -130,3 +130,5 @@ C10 Android（R04）：NFC入街シートのコンテンツ上余白を24dpか�
 C07（R05/R06/R07）：Androidで書込可能な滞在の間、位置更新通知付きのサービスが観測を受け、端末内で区画化して既存RPCに送る。ゴースト時は区画を送らず、退出または有効期限で停止する。Release Kotlinコンパイル、TypeScript型検査、退出再送の回帰試験成功。Pixelでのロック中の継続・DB反映・電池消費は未検証。
 
 T033 Android：Google Play内部テスト準備用AAB（jp.yumegaoka.development、versionCode 1）を4 ABIでReleaseビルド。専用アップロード鍵はMacの ~/.android/yumegaoka-internal-upload に所有者限定で保存。scripts/build-play-internal.sh は試験タグを無効化し、署名と証明書の一致を検査。成果物は apps/mobile/android/app/build/outputs/bundle/release/app-release.aab。Play Consoleへの登録・アップロード・テスター配布は未実施。
+
+11月6日 現地試験準備：ユーザーが確認したPixelの centrumhaus@gmail.com にoperators.activeを付与しDBで確認。MFA要件は既存どおり。背景測位・NFC余白修正を含むクラウド現地試験Releaseを両OSでビルドし、Pixel 6a/iPhone 17へ上書き・起動成功。Androidは実NFC、iOSはADP未加入のためリングによる試験入街構成。実タグの書込→照合→設置→公開→入街、ロック中のDB観測は現地確認待ち。タグは公開時の街範囲も確認する（非一直線の3地点以上が必要）。
