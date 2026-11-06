@@ -147,11 +147,13 @@ export function Boundary({ data }: BoundaryProps) {
   return (
     <GeoJSONSource id="area-preview" data={data}>
       <Layer
+        beforeId={process.env.EXPO_PUBLIC_MAP_STYLE_URL ? undefined : "place_country_major"}
         id="area-fill"
         type="fill"
         paint={{ "fill-color": "#008cff", "fill-opacity": 0.2 }}
       />
       <Layer
+        beforeId={process.env.EXPO_PUBLIC_MAP_STYLE_URL ? undefined : "place_country_major"}
         id="area-border"
         type="line"
         paint={{ "line-color": "#008cff", "line-width": 3 }}

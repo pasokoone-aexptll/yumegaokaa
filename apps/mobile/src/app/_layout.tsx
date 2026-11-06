@@ -1,3 +1,4 @@
+import { LaunchSplash } from "../components/LaunchSplash";
 import { sheetBackground } from "../components/map/mapBlur";
 import { IconMotionProvider } from "../components/icons/IconMotion";
 import { usePushLifecycle } from "../hooks/usePushNotifications";
@@ -110,6 +111,7 @@ export default function Layout() {
               options={{ presentation: "fullScreenModal" }}
             />
           </Stack>
+          <LaunchSplash />
         </SafeAreaProvider>
       </AccountAccessContext.Provider>
     </IconMotionProvider>
