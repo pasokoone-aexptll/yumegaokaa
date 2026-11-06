@@ -156,7 +156,7 @@ export function Boundary({ data }: BoundaryProps) {
         beforeId={process.env.EXPO_PUBLIC_MAP_STYLE_URL ? undefined : "place_country_major"}
         id="area-border"
         type="line"
-        paint={{ "line-color": "#008cff", "line-width": 3 }}
+        paint={{ "line-color": "#ffffff", "line-opacity": 0.65, "line-width": 2 }}
       />
     </GeoJSONSource>
   );

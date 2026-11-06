@@ -154,8 +154,8 @@ export function Boundary({ data }: BoundaryProps) {
       coordinates={coordinates(data.coordinates[0])}
       holes={data.coordinates.slice(1).map(coordinates)}
       fillColor="#008cff33"
-      strokeColor="#008cff"
-      strokeWidth={3}
+      strokeColor="#ffffffa6"
+      strokeWidth={2}
     />
   );
 }
