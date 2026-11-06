@@ -1,8 +1,10 @@
 # 現地DBと画像のバックアップ
 
-Macのログインユーザーの LaunchAgent `jp.yumegaoka.field-backup` が毎日03:15（Macの現地時間）に実行する。Docker Desktop、Supabase CLIのログイン、ネットワーク接続が必要。ジョブのコピー、資格情報、公開証明書・復号鍵、実行ログは `~/Library/Application Support/yumegaoka-backup/`。スクリプトの変更時は同フォルダの `runner/scripts/` にも反映する。復号鍵と証明書は利用者の安全なオフライン保管先にも控える。R2に復号鍵は置かない。
+非公開リポジトリ [yumegaoka の Actions](https://github.com/pasokoone-aexptll/yumegaoka/actions/workflows/field-backup.yml) が毎日03:17（日本時間、開始時刻はGitHubのキューに依存）に実行する。手動再実行は Run workflow。ソースは同リポジトリの ops/backup と .github/workflows/field-backup.yml。ジョブは読み取り用DBログイン・画像専用ログイン・バケット限定R2資格、暗号化用の公開証明書を使用する。
 
-R2の専用バケットの `daily/` にCMS暗号化した世代を保存する。DBはpublic、app_private、auth、storage、supabase_migrationsを一度のpg_dumpで取得。画像はStorage APIから取得し、DB取得の前後で一覧・バージョン・サイズを比較する。アップロード後に同じオブジェクトを再取得し、ネットワークのない一時PostgreSQLで復元、認証ユーザー・投稿数と画像参照・ハッシュを確認する。実行結果はdaily.log、エラーはdaily-errors.log。Supabaseのサービス設定や外部サービスの鍵は別管理。
+R2の専用バケットの daily/ にCMS暗号化した世代を7日保管する。DBはpublic、app_private、auth、storage、supabase_migrationsを一度のpg_dumpで取得。画像はStorage APIから取得し、DB取得前後の一覧・バージョン・サイズを比較する。クラウドではアップロード後に同じオブジェクトをダウンロードして暗号文の一致を確認する。実際の復号・DB復元は下記の手順で独立して検証する。Supabaseのサービス設定や外部サービスの鍵は別管理。
+
+復号鍵 recovery.key と証明書 backup.crt の保管場所は Mac の `~/Library/Application Support/yumegaoka-backup/`。別媒体にも安全に控える。CLIで復元するMacではDocker Desktopを起動する。
 
 特定世代を取り出すにはリポジトリから次のように実行する。出力先は新規ディレクトリに限る。
 

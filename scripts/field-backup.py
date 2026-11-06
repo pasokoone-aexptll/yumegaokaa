@@ -1,6 +1,7 @@
 """Encrypted field DB + Storage backup. Restore only into an isolated disposable DB."""
 import argparse
 import datetime
+import filecmp
 import hashlib
 import json
 import os
@@ -42,14 +43,17 @@ def transfer(key, file, upload):
 
 def inventory():
     sql = "select bucket_id,name,version,metadata->>'size' as size from storage.objects order by bucket_id,name"
+    if os.environ.get("YUME_CLOUD_BACKUP") == "1":
+        db_args = [x for k in ("PGHOST","PGPORT","PGDATABASE","PGUSER","PGPASSWORD","PGSSLMODE") for x in ("-e", k)]
+        query = "select coalesce(json_agg(items),'[]') from (" + sql + ") items"
+        return json.loads(output("docker","run","--rm",*db_args,IMAGE,"psql","-XAtq","-v","ON_ERROR_STOP=1","-c",query))
     result = json.loads(output(CLI, "db", "query", "--linked", "--output", "json", sql))
     return result if isinstance(result, list) else result["rows"]
 
 
-def backup(work):
+def local_connection():
     if (ROOT / "supabase/.temp/project-ref").read_text().strip() != PROJECT:
         raise RuntimeError("Unexpected linked project")
-    objects = inventory()
     dry = output(CLI, "db", "dump", "--linked", "--dry-run").decode()
     pg = {}
     for line in dry.splitlines():
@@ -58,17 +62,32 @@ def backup(work):
             pg[k] = value
     if not {"PGHOST", "PGPASSWORD", "PGDATABASE", "PGUSER", "PGPORT"} <= pg.keys():
         raise RuntimeError("Missing PostgreSQL connection settings")
+    return pg
+
+
+def backup(work):
+    cloud = os.environ.get("YUME_CLOUD_BACKUP") == "1"
+    pg = {k: os.environ[k] for k in ("PGHOST","PGPORT","PGDATABASE","PGUSER","PGPASSWORD")} if cloud else local_connection()
+    objects = inventory()
     schema_args = [arg for schema in SCHEMAS for arg in ("--schema", schema)]
     with (work / "db.dump").open("wb") as f:
         run("docker", "run", "--rm", *(x for k in pg for x in ("-e", k)), "-e", "PGSSLMODE=require",
-            IMAGE, "pg_dump", "--role=postgres", "-Fc", *schema_args,
+            IMAGE, "pg_dump", *([] if cloud else ["--role=postgres"]), "-Fc", *schema_args,
             env={**os.environ, **pg}, stdout=f)
-    keys = json.loads(output(CLI, "projects", "api-keys", "--project-ref", PROJECT, "-o", "json"))
-    token = next(row["api_key"] for row in keys if row["name"] == "service_role")
+    if cloud:
+        apikey = os.environ["YUME_PUBLIC_KEY"]
+        login = urllib.request.Request(f"https://{PROJECT}.supabase.co/auth/v1/token?grant_type=password",
+            data=os.environ["YUME_IMAGE_LOGIN"].encode(), headers={"apikey":apikey,"Content-Type":"application/json"})
+        with urllib.request.urlopen(login,timeout=30) as response:
+            token = json.load(response)["access_token"]
+    else:
+        keys = json.loads(output(CLI, "projects", "api-keys", "--project-ref", PROJECT, "-o", "json"))
+        token = next(row["api_key"] for row in keys if row["name"] == "service_role")
+        apikey = token
     for i, obj in enumerate(objects):
         path = "/".join(urllib.parse.quote(obj[k], safe="/") for k in ("bucket_id", "name"))
         req = urllib.request.Request(f"https://{PROJECT}.supabase.co/storage/v1/object/{path}",
-                                     headers={"apikey": token, "Authorization": "Bearer " + token})
+                                     headers={"apikey": apikey, "Authorization": "Bearer " + token})
         with urllib.request.urlopen(req, timeout=60) as response:
             data = response.read()
         if len(data) != int(obj["size"]):
@@ -87,6 +106,11 @@ def backup(work):
     run("openssl","cms","-encrypt","-binary","-aes-256-gcm","-outform","DER","-in",archive,"-out",sealed,CFG/"backup.crt")
     key = datetime.datetime.now(datetime.timezone.utc).strftime("daily/%Y%m%dT%H%M%SZ-") + uuid.uuid4().hex + ".cms"
     transfer(key, sealed, True)
+    if os.environ.get("YUMEGAOKA_VERIFY_UPLOAD") == "1":
+        downloaded = work / "read-back.cms"
+        transfer(key, downloaded, False)
+        if not filecmp.cmp(sealed, downloaded, shallow=False):
+            raise RuntimeError("R2 backup differs from encrypted archive")
     print(key, flush=True)
     return key
 
@@ -135,10 +159,17 @@ if __name__ == "__main__":
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--restore",metavar="R2_KEY")
     parser.add_argument("--recover-to", type=Path, help="Keep verified DB dump, images and manifest in a new private directory")
+    parser.add_argument("--backup-only", action="store_true", help="Upload and verify ciphertext without a recovery key")
     args=parser.parse_args()
+    if args.backup_only and (args.restore or args.recover_to):
+        parser.error("--backup-only cannot be combined with restore options")
     if args.recover_to and (not args.restore or args.recover_to.exists()):
         parser.error("--recover-to requires --restore and a new directory")
     os.umask(0o077)
     with tempfile.TemporaryDirectory() as folder:
         work=Path(folder)
-        restore(work,args.restore or backup(work),args.recover_to)
+        if args.backup_only:
+            os.environ["YUMEGAOKA_VERIFY_UPLOAD"] = "1"
+            backup(work)
+        else:
+            restore(work,args.restore or backup(work),args.recover_to)
