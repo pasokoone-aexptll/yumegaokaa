@@ -1109,3 +1109,7 @@ RN FabricのCJK marked text問題（https://github.com/react/react-native/issues
 ユーザー指定のiPhone (139) / iPhone 13へクラウドReleaseをインストール。既存profileは対象端末を含まず0xe8008012で拒否されたため、既存チームの自動署名・端末登録を伴うReleaseビルドで解消。初回再ビルドでローカルAPI設定を検出し、クラウド設定を明示して再ビルド・上書きした。最終成果物はcodesign検証成功、クラウド公開キー/API・gatewayを確認、旧LAN API文字列なし。ビルドログは /tmp/yumegaoka-iphone13-cloud-20261108.log。コード・仕様変更なし。
 
 インストール成功後の起動要求は端末のSecurity判定（署名/entitlement/開発者信頼）で拒否。Mac側署名検証とインストールは成功しており、端末の開発者信頼確認が次の作業。起動・ログイン・画面操作は未確認。既存MVP達成率・残量は変更しない。
+
+## 2026-11-08 iPhone SEへのインストール（T032 / R19）
+
+iPhone SE（第3世代、iOS 18.7.8）の開発者モードEnabledを確認。ユーザー依頼により既存チームの自動署名・端末登録付きクラウドReleaseをビルドし、codesign検証と実機インストール成功。バンドルにクラウド公開キー・gatewayを確認し、旧LAN API文字列がないことを確認。ログ：/tmp/yumegaoka-iphonese-cloud-20261108.log。起動はSecurity判定（署名/entitlement/開発者信頼）で拒否され、端末での開発者信頼確認待ち。起動・ログイン・SE画面での操作は未確認。コード・仕様・MVP達成率・残量は変更なし。
