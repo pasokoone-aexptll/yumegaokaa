@@ -1103,3 +1103,9 @@ bootstrap-local-operator.mjsでiphone-validation@example.testをAuth Admin API�
 ## 2026-11-05 C02 日本語変換中の下線
 
 RN FabricのCJK marked text問題（https://github.com/react/react-native/issues/56463）と、導入済みRCTTextInputComponentViewの属性更新経路を確認。iOSチャット入力のみ、ExpoView内のUIKit UITextFieldへ分離。markedTextRange中はJSのtext更新を反映せず、eventCountで古いJS応答を無視し、markedTextStyleに下線を指定。未確定中は送信不可、確定後に解除。Androidは従来TextInputを維持。全入力欄やnode_modulesの改変なし。型/Lint成功、nativeビルド/実機日本語入力は後続変更とまとめて確認。これは実機で下線が直った証拠ではない。
+
+## 2026-11-08 iPhone 13への追加インストール（T032 / R19）
+
+ユーザー指定のiPhone (139) / iPhone 13へクラウドReleaseをインストール。既存profileは対象端末を含まず0xe8008012で拒否されたため、既存チームの自動署名・端末登録を伴うReleaseビルドで解消。初回再ビルドでローカルAPI設定を検出し、クラウド設定を明示して再ビルド・上書きした。最終成果物はcodesign検証成功、クラウド公開キー/API・gatewayを確認、旧LAN API文字列なし。ビルドログは /tmp/yumegaoka-iphone13-cloud-20261108.log。コード・仕様変更なし。
+
+インストール成功後の起動要求は端末のSecurity判定（署名/entitlement/開発者信頼）で拒否。Mac側署名検証とインストールは成功しており、端末の開発者信頼確認が次の作業。起動・ログイン・画面操作は未確認。既存MVP達成率・残量は変更しない。
