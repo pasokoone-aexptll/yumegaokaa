@@ -18,7 +18,11 @@ export function useInvitations() {
   const [pending, setPending] = useState(false);
   const [items, setItems] = useState<Invite[]>([]),
     [code, setCode] = useState(""),
-    [issued, setIssued] = useState<{ id: string; code: string } | null>(null),
+    [issued, setIssued] = useState<{
+      id: string;
+      code: string;
+      issued_at?: string;
+    } | null>(null),
     [status, setStatus] = useState(""),
     [busy, setBusy] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -32,13 +36,37 @@ export function useInvitations() {
     const seq = ++request.current;
     setLoading(true);
     try {
+      let issuanceFailed = false;
       const pending = !!(await pendingCommand("invite_create"));
-      const result = await native.rpc<{
+      let result = await native.rpc<{
         items: Invite[];
         issuer_name?: string;
+        remaining?: number;
+        current?: { id: string; code: string; issued_at?: string };
       }>("invite_list", {});
       if (gen !== generation.current || seq !== request.current) return;
-      setPending(pending);
+      if (
+        (result.remaining ?? 0) > 0 &&
+        !result.current &&
+        !result.items.some((item) => !item.used && !item.revoked) &&
+        !pending &&
+        !writing.current
+      ) {
+        writing.current = true;
+        try {
+          await submitCommand("invite_create", { mode: "ensure" });
+          result = await native.rpc<typeof result>("invite_list", {});
+        } catch {
+          // Keep redeemed history visible even if issuance fails or its result is unknown.
+          issuanceFailed = true;
+        } finally {
+          writing.current = false;
+        }
+        if (gen !== generation.current || seq !== request.current) return;
+      }
+      const latestPending = !!(await pendingCommand("invite_create"));
+      if (gen !== generation.current || seq !== request.current) return;
+      setPending(latestPending);
       setIssuerName(result.issuer_name ?? "");
       setItems(
         result.items.map((item) => ({
@@ -46,16 +74,8 @@ export function useInvitations() {
           expired: Date.parse(item.expires_at) <= Date.now(),
         })),
       );
-      setStatus("");
-      setIssued((current) => {
-        const item = result.items.find((invite) => invite.id === current?.id);
-        return !item ||
-          item.used ||
-          item.revoked ||
-          Date.parse(item.expires_at) <= Date.now()
-          ? null
-          : current;
-      });
+      setStatus(issuanceFailed ? "QRの発行を確認できませんでした。もう一度確認してください。" : "");
+      setIssued(result.current ?? null);
     } catch {
       if (gen === generation.current && seq === request.current) {
         setItems([]);
@@ -85,11 +105,13 @@ export function useInvitations() {
     const gen = generation.current;
     setBusy(true);
     try {
+      const saved =
+        op === "invite_create" ? await pendingCommand("invite_create") : null;
       const r =
         op === "invite_create"
           ? await submitCommand<{ id?: string; code?: string }>(
               "invite_create",
-              {},
+              saved?.body ?? p,
             )
           : await native.rpc<{ id?: string; code?: string }>(op, p);
       if (gen !== generation.current) return;
@@ -108,7 +130,7 @@ export function useInvitations() {
           () => null,
         ));
         if (gen !== generation.current) return;
-        setPending(pending);
+        setPending(!!(await pendingCommand("invite_create")));
       }
       if (op === "invite_revoke") await refresh();
       if (gen !== generation.current) return;

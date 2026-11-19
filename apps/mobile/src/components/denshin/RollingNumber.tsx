@@ -62,24 +62,57 @@ export function RollingNumber({
         },
       ]}
     >
-      {reduced ? (
-        <Text style={textStyle}>{value}</Text>
-      ) : (
-        <>
-          <Animated.Text
-            accessible={false}
-            style={[textStyle, s.layer, layer(false)]}
-          >
-            {transition.from}
-          </Animated.Text>
-          <Animated.Text
-            accessible={false}
-            style={[textStyle, s.layer, layer(true)]}
-          >
-            {transition.to}
-          </Animated.Text>
-        </>
-      )}
+      <View
+        style={{
+          flexDirection: "row",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
+        {Array.from(
+          {
+            length: Math.max(
+              String(transition.from).length,
+              String(transition.to).length,
+            ),
+          },
+          (_, index) => {
+            const length = Math.max(
+              String(transition.from).length,
+              String(transition.to).length,
+            );
+            const from = String(transition.from).padStart(length, " ")[index];
+            const to = String(transition.to).padStart(length, " ")[index];
+            return (
+              <View
+                key={length - index}
+                style={{ width: 26, height: 52, justifyContent: "center" }}
+              >
+                {reduced || from === to ? (
+                  <Text accessible={false} style={textStyle}>
+                    {to}
+                  </Text>
+                ) : (
+                  <>
+                    <Animated.Text
+                      accessible={false}
+                      style={[textStyle, s.layer, layer(false)]}
+                    >
+                      {from}
+                    </Animated.Text>
+                    <Animated.Text
+                      accessible={false}
+                      style={[textStyle, s.layer, layer(true)]}
+                    >
+                      {to}
+                    </Animated.Text>
+                  </>
+                )}
+              </View>
+            );
+          },
+        )}
+      </View>
     </View>
   );
 }

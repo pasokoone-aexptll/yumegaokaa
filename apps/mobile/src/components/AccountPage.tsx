@@ -1,5 +1,5 @@
-import { type ReactNode, useSyncExternalStore } from "react";
-import { ScrollView, StyleSheet, Text, View } from "react-native";
+import { type ReactNode, useSyncExternalStore, useRef } from "react";
+import { Animated, StyleSheet, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Avatar } from "./Avatar";
 import { sessionState } from "../lib/sessionState";
@@ -15,22 +15,41 @@ export function AccountPage({
   version?: string;
 }) {
   const insets = useSafeAreaInsets();
+  const scroll = useRef(new Animated.Value(0)).current;
+  const pull = scroll.interpolate({
+    inputRange: [-1, 0, 1],
+    outputRange: [1, 0, 0],
+    extrapolateRight: "clamp",
+  });
   const session = useSyncExternalStore(
     sessionState.subscribe,
     sessionState.get,
   );
   return (
-    <ScrollView
+    <Animated.ScrollView
       style={s.page}
+      scrollEventThrottle={16}
+      onScroll={Animated.event(
+        [{ nativeEvent: { contentOffset: { y: scroll } } }],
+        { useNativeDriver: true },
+      )}
       contentContainerStyle={{ paddingBottom: insets.bottom + 25 }}
     >
-      <View
-        style={{
-          height: 200,
-          backgroundColor: "rgba(255,45,85,0.2)",
-          paddingTop: insets.top,
-        }}
-      />
+      <View style={{ height: 200 }}>
+        <Animated.View
+          pointerEvents="none"
+          style={[
+            StyleSheet.absoluteFill,
+            {
+              backgroundColor: "rgba(255,45,85,0.2)",
+              transform: [
+                { translateY: Animated.multiply(pull, -0.5) },
+                { scaleY: Animated.add(1, Animated.divide(pull, 200)) },
+              ],
+            },
+          ]}
+        />
+      </View>
       <View style={s.identity}>
         <View style={s.avatar}>
           <Avatar
@@ -45,7 +64,7 @@ export function AccountPage({
       </View>
       <Text style={s.name}>@{name}</Text>
       <View style={s.content}>{children}</View>
-    </ScrollView>
+    </Animated.ScrollView>
   );
 }
 const s = StyleSheet.create({

@@ -9,7 +9,10 @@ export function openMapAt(
   latitude: number,
   detail?: { kind: "event" | "recruitment" | "denshin"; id: string },
 ) {
-  const open = Platform.OS === "android" ? router.navigate : router.dismissTo;
+  // Dismiss the detail stack first, then explicitly select the Map tab.
+  // dismissTo alone retains the selected Home tab when the root already exists.
+  if (Platform.OS === "ios" && router.canDismiss()) router.dismissAll();
+  const open = router.navigate;
   open({
     pathname: Platform.OS === "android" ? "/(tabs)" : "/",
     params: {

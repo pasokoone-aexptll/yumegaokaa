@@ -32,7 +32,8 @@ export default function Invitations() {
         Math.min(
           1,
           (Date.parse(current.expires_at) - now) /
-            (Date.parse(current.expires_at) - Date.parse(current.created_at)),
+            (Date.parse(current.expires_at) -
+              Date.parse(d.issued?.issued_at ?? current.created_at)),
         ),
       )
     : 0;
@@ -116,7 +117,7 @@ export default function Invitations() {
         <>
           <View style={s.qr}>
             {svg && remaining > 0 ? (
-              <SvgXml xml={svg} width={270} height={270} />
+              <SvgXml xml={svg} width={220} height={220} />
             ) : (
               <SuperAsset
                 name="非常口から人が出るrounded"
@@ -136,7 +137,7 @@ export default function Invitations() {
             </View>
           )}
           <NativeAction
-            title={d.pending ? "前回の招待を確認" : "招待を発行"}
+            title={d.pending ? "前回の招待を確認" : "招待を再発行"}
             disabled={d.busy}
             onPress={() => void d.act("invite_create")}
           />
@@ -147,27 +148,29 @@ export default function Invitations() {
             </Text>
           )}
           <Text style={[s.title, s.history]}>History</Text>
-          {d.items.map((i) => (
-            <View key={i.id} style={s.row}>
-              <SuperAsset name="inviteFriends" size={30} />
-              <Text style={s.name}>
-                {d.issuerName ? `${d.issuerName} → ` : ""}
-                {i.recipient_name ?? (i.used ? "登録済み" : "未使用")}
-              </Text>
-              <Switch
-                key={`${i.id}:${d.loading}`}
-                accessibilityLabel={`${i.recipient_name ?? "招待"}を有効にする`}
-                value={!i.revoked && (i.used || !i.expired)}
-                disabled={d.busy || i.revoked || (!i.used && i.expired)}
-                onValueChange={() =>
-                  router.push({
-                    pathname: "/settings/invitations",
-                    params: { revoke: i.id },
-                  })
-                }
-              />
-            </View>
-          ))}
+          <View style={s.historyGroup}>
+            {d.items.map((i, index) => (
+              <View key={i.id} style={[s.row, index > 0 && s.separator]}>
+                <SuperAsset name="inviteFriends" size={30} />
+                <Text style={s.name}>
+                  {d.issuerName ? `${d.issuerName} → ` : ""}
+                  {i.recipient_name ?? (i.used ? "登録済み" : "未使用")}
+                </Text>
+                <Switch
+                  key={`${i.id}:${d.loading}`}
+                  accessibilityLabel={`${i.recipient_name ?? "未使用の招待"}の招待を削除する`}
+                  value={!i.revoked && (i.used || !i.expired)}
+                  disabled={d.busy || i.revoked || (!i.used && i.expired)}
+                  onValueChange={() =>
+                    router.push({
+                      pathname: "/settings/invitations",
+                      params: { revoke: i.id },
+                    })
+                  }
+                />
+              </View>
+            ))}
+          </View>
         </>
       )}
       {(d.busy || d.loading) && <ActivityIndicator />}
@@ -181,10 +184,10 @@ export default function Invitations() {
 }
 const s = StyleSheet.create({
   qr: {
-    height: 300,
+    height: 260,
     alignItems: "center",
     justifyContent: "center",
-    marginTop: 35,
+    marginTop: 40,
   },
   scan: {
     height: 330,
@@ -197,7 +200,9 @@ const s = StyleSheet.create({
     flexDirection: "row",
     alignSelf: "center",
     gap: 2,
-    padding: 7,
+    padding: 6,
+    borderWidth: 1,
+    borderColor: "rgba(0,175,107,0.12)",
     borderRadius: 10,
     marginBottom: 20,
   },
@@ -207,9 +212,16 @@ const s = StyleSheet.create({
     alignItems: "center",
     gap: 12,
     padding: 18,
-    borderRadius: 26,
     backgroundColor: "white",
-    marginBottom: 2,
+  },
+  historyGroup: {
+    borderRadius: 26,
+    overflow: "hidden",
+    backgroundColor: "white",
+  },
+  separator: {
+    borderTopWidth: StyleSheet.hairlineWidth,
+    borderTopColor: "rgba(0,0,0,0.08)",
   },
   name: { flex: 1, fontFamily: "ui-rounded", fontWeight: "600", fontSize: 17 },
   secondary: {

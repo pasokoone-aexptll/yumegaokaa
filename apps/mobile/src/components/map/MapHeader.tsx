@@ -6,6 +6,7 @@ import { DenshinLogo, SuperAsset } from "../icons/SuperAsset";
 export function MapHeader({
   active,
   count,
+  stale = false,
   onToggle,
   ghost = false,
   modeDisabled = false,
@@ -17,6 +18,7 @@ export function MapHeader({
   onTogglePlaces?: () => void;
   active: boolean;
   count?: number;
+  stale?: boolean;
   onToggle: (value: boolean) => void;
   ghost?: boolean;
   modeDisabled?: boolean;
@@ -27,14 +29,18 @@ export function MapHeader({
       <View
         accessible
         accessibilityLabel="電信"
-        style={{ flex: 1, minWidth: 0, alignItems: "flex-start" }}
+        style={{ minWidth: 0, alignItems: "flex-start" }}
       >
         <DenshinLogo dark />
       </View>
-      {count !== undefined && (
+      {
         <View
           accessible
-          accessibilityLabel={`街にログイン中 ${count}人`}
+          accessibilityLabel={
+            count === undefined
+              ? "街の人数を取得中"
+              : `街にログイン中 ${count}人${stale ? "、最終取得時" : ""}`
+          }
           style={{
             flexDirection: "row",
             alignItems: "center",
@@ -49,10 +55,11 @@ export function MapHeader({
           <Text
             style={{ fontFamily: "ui-rounded", color: "white", fontSize: 20 }}
           >
-            {count}
+            {count ?? "—"}
           </Text>
         </View>
-      )}
+      }
+      <View style={{ flex: 1 }} />
       <ModeDropdown
         placesVisible={placesVisible}
         onTogglePlaces={onTogglePlaces}

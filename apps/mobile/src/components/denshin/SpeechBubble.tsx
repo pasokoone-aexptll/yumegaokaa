@@ -1,8 +1,8 @@
-import type { ReactNode } from "react";
+import { useState, type ReactNode } from "react";
 import { View, StyleSheet, type ViewStyle } from "react-native";
 import Svg, { Path } from "react-native-svg";
 
-/** The original Figma tail curve, attached to a content-sized capsule. */
+/** Size the bubble around its content; the tail never participates in text alignment. */
 export function SpeechBubble({
   children,
   color = "white",
@@ -14,47 +14,52 @@ export function SpeechBubble({
   style?: ViewStyle;
   tail?: "top" | "bottom";
 }) {
+  const [size, setSize] = useState({ width: 0, height: 0 });
+  const { width: w, height: h } = size;
+  const r = Math.min(h / 2, w / 2);
+  const top = tail === "top" ? 14 : 0;
+  const outline =
+    tail === "top"
+      ? `M${r} 14H25L10 0Q7 -2 7 3V15Q0 18 0 ${14 + r}V${14 + h - r}Q0 ${14 + h} ${r} ${14 + h}H${w - r}Q${w} ${14 + h} ${w} ${14 + h - r}V${14 + r}Q${w} 14 ${w - r} 14Z`
+      : `M${r} 0H${w - r}A${r} ${r} 0 0 1 ${w} ${r}V${h - r}A${r} ${r} 0 0 1 ${w - r} ${h}H26.5C23 ${h} 20 ${h + 1.86} 17 ${h + 4}C10 ${h + 9} 8 ${h + 9} 7.5 ${h + 8.5}C7 ${h + 8} 7 ${h + 7.18} 7.5 ${h + 6.5}C11.9 ${h + 0.5} 8.5 ${h - 2.29} 5.69 ${h - 5}Q0 ${h - 10} 0 ${r}A${r} ${r} 0 0 1 ${r} 0Z`;
   return (
     <View
       style={[
         s.root,
-        tail === "top" && { paddingBottom: 0, paddingTop: 14 },
+        { paddingTop: top, paddingBottom: tail === "bottom" ? 10 : 0 },
         style,
       ]}
     >
-      <View style={[s.body, { backgroundColor: color }]}>{children}</View>
-      <Svg
-        width={28}
-        height={16}
-        viewBox="0 30 28 16"
-        style={[
-          s.tail,
-          tail === "top" && {
-            bottom: undefined,
-            top: 0,
-            left: 15,
-            transform: [{ scaleY: -1 }],
-          },
-        ]}
-        pointerEvents="none"
+      {w > 0 && (
+        <Svg
+          pointerEvents="none"
+          width={w}
+          height={h + top + 10}
+          style={StyleSheet.absoluteFill}
+        >
+          <Path d={outline} fill={color} />
+        </Svg>
+      )}
+      <View
+        onLayout={({ nativeEvent: { layout } }) =>
+          setSize({ width: layout.width, height: layout.height })
+        }
+        style={s.body}
       >
-        <Path
-          fill={color}
-          d="M18.5 36.867C13.1143 36.867 8.82275 34.8862 5.69086 31.867C8.5 34.5751 11.9 37.367 7.5 43.367C7 44.0488 7 44.867 7.5 45.367C8 45.867 10 45.867 17 40.867C20 38.7241 23 36.867 26.5 36.867H18.5Z"
-        />
-      </Svg>
+        {children}
+      </View>
     </View>
   );
 }
 const s = StyleSheet.create({
-  root: { alignSelf: "flex-start", paddingBottom: 8 },
+  root: { alignSelf: "flex-start" },
   body: {
     flexDirection: "row",
     alignItems: "center",
+    justifyContent: "center",
     gap: 9,
     paddingHorizontal: 15,
     paddingVertical: 9,
-    borderRadius: 40,
+    minHeight: 36,
   },
-  tail: { position: "absolute", bottom: 0, left: 2 },
 });

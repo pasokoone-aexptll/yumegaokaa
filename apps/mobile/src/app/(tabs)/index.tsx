@@ -315,7 +315,8 @@ export default function Street() {
           <ProgressiveBlur edge="top" intensity={30} />
         </View>
         <MapHeader
-          count={error ? undefined : snapshot?.checked_in_count}
+          count={snapshot?.checked_in_count}
+          stale={!!error}
           active={active}
           placesVisible={showPlaces}
           onTogglePlaces={togglePlaces}

@@ -127,9 +127,9 @@ export default function Home() {
                   <Pressable
                     style={s.main}
                     onPress={() =>
-                      router.push({
-                        pathname: "/map-pin",
-                        params: { id: p.id },
+                      openMapAt(router, p.longitude, p.latitude, {
+                        kind: "denshin",
+                        id: p.id,
                       })
                     }
                     accessibilityRole="button"

@@ -55,10 +55,16 @@ export function inviteSvg(code: string): string {
   parts.push(
     `<rect x="${left - 0.5}" y="${left - 0.5}" width="${size + 1}" height="${size + 1}" rx="1" fill="white"/>`,
   );
-  const figure = assets["非常口の人物"].replace(
-    /<svg[^>]*>/,
-    `<svg x="${left}" y="${left}" width="${size}" height="${size}" viewBox="24 10 65 79">`,
+  // Explicit group transform also works in react-native-svg, where nested SVG
+  // viewport x/y placement differs from browser rendering.
+  const scale = size / 79;
+  const figure = assets["非常口の人物"]
+    .replace(/<svg[^>]*>/, "")
+    .replace(/<\/svg>$/, "");
+  const x = left + (size - 65 * scale) / 2;
+  parts.push(
+    `<g transform="translate(${x} ${left}) scale(${scale}) translate(-24 -10)">${figure}</g>`,
+    "</svg>",
   );
-  parts.push(figure, "</svg>");
   return parts.join("");
 }

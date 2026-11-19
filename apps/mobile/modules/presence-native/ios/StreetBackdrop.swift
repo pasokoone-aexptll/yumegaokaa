@@ -109,13 +109,36 @@ final class SheetBackdrop: ExpoView {
 final class NativeSheetAppearance: ExpoView {
   override func didMoveToWindow() {
     super.didMoveToWindow()
+    applyAppearance()
+  }
+
+  override func layoutSubviews() {
+    super.layoutSubviews()
+    applyAppearance()
+  }
+
+  private func applyAppearance() {
     guard window != nil else { return }
     DispatchQueue.main.async { [weak self] in
       var responder: UIResponder? = self
       while let current = responder {
-        if let controller = current as? UIViewController, controller.sheetPresentationController != nil {
-          controller.overrideUserInterfaceStyle = .dark
-          return
+        if let child = current as? UIViewController {
+          var candidate: UIViewController? = child
+          while let controller = candidate {
+            if controller.presentingViewController != nil,
+               let sheet = controller.sheetPresentationController {
+              controller.overrideUserInterfaceStyle = .dark
+              child.overrideUserInterfaceStyle = .dark
+              sheet.overrideTraitCollection = UITraitCollection(userInterfaceStyle: .dark)
+              if #available(iOS 26.1, *) {
+                for detent in sheet.detents {
+                  detent.backgroundEffect = UIBlurEffect(style: .systemMaterialDark)
+                }
+              }
+              return
+            }
+            candidate = controller.parent
+          }
         }
         responder = current.next
       }

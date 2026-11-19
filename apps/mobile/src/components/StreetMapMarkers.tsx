@@ -16,7 +16,8 @@ import { EventCloudPin } from "./EventCloudPin";
 import { MarkerFeedback } from "./map/MarkerFeedback";
 import { Avatar } from "./Avatar";
 import { Marker } from "./map/PlatformMap";
-import { useRouter } from "expo-router";
+import { useRouter, usePathname, useGlobalSearchParams } from "expo-router";
+import { useRef } from "react";
 import { requireNativeModule } from "expo-modules-core";
 import { Platform, View, Text } from "react-native";
 import { StreetEvent, countdown } from "../lib/events";
@@ -40,26 +41,40 @@ export function StreetMapMarkers({
   onSelect: (longitude: number, latitude: number) => void;
 }) {
   const router = useRouter();
+  const pathname = usePathname();
+  const params = useGlobalSearchParams<{ id?: string }>();
+  const lastTap = useRef(0);
   function openDetail(
     kind: "event" | "recruitment" | "denshin",
     id: string,
     longitude: number,
     latitude: number,
   ) {
+    const now = Date.now();
+    if (now - lastTap.current < 300) return;
+    lastTap.current = now;
+    const target =
+      kind === "denshin"
+        ? "/map-pin"
+        : kind === "event"
+          ? "/map-event"
+          : "/map-recruitment";
+    if (pathname === target && params.id === id) {
+      if (router.canDismiss()) router.dismiss();
+      return;
+    }
     if (Platform.OS === "android")
       void requireNativeModule("PresenceNative")
         .selectionHaptic()
         .catch(() => {});
     onSelect(longitude, latitude);
-    router.push({
-      pathname:
-        kind === "denshin"
-          ? "/map-pin"
-          : kind === "event"
-            ? "/map-event"
-            : "/map-recruitment",
+    const destination = {
+      pathname: target,
       params: { id, fromMap: "1" },
-    });
+    } as const;
+    if (["/map-pin", "/map-event", "/map-recruitment"].includes(pathname))
+      router.replace(destination);
+    else router.push(destination);
   }
   return (
     <>

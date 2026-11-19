@@ -1176,3 +1176,13 @@ iPhone SE（第3世代、iOS 18.7.8）の開発者モードEnabledを確認。�
 移行050〜052を含むクラウドへ接続したReleaseのxcodebuild成功。iPhone 18 Pro / iOS27.0へログイン状態を保持して上書きし、起動成功。Mapの提供SVGロゴ、人数のアクセシビリティ表示、SwiftUIメニュー・スイッチ・追加/現在地ボタン、4タブを確認。追加操作はDevice Hub操作ツールがユーザー変更を繰り返し検出して中断したため、最新のQR残数/通知/運営Formを操作合格にはしていない。前回のPIN重なり解消・12→13定員操作、設定→プロフィール→編集の証拠は維持。
 
 変更TS/TSXのLintはエラー0、Map画面の既存effect依存警告1件。TypeScript成功、git diff --check成功。全体Lintの既存違反と全画面一致・実機確認は別の未完。全Figma/動画の再現完了を意味しない。
+
+## 2026-11-19 Figma再照合・招待053（R03/R19）
+
+053はROLLBACK試験で、再表示、ensureの二重発行防止、再発行時の残数保持、旧token無効、別発行者からの非表示、使用済み履歴/受取人の保持を確認。フロントの遅延応答・二重タップ・一覧失敗時のQR消去3試験も成功。ローカル・クラウド053適用成功。
+型検査・変更ファイルLint（エラー0、既存Map effect依存警告1）・Releaseビルド成功。Simulatorでロゴ横の0人表示とHomeの一体化した吹き出し・招待残数を確認。タブ操作の遷移先も確認したがアニメーションの全フレーム照合は未実施。
+検証中、全画面PINで背景が白く本文が読めなくなる不具合を観測。NativeSheetAppearanceが提示中ではない子controllerを選んでいたため、提示される親controllerとsheet trait、iOS26.1以降の標準detent backgroundEffectへ修正。再ビルド後、Map上の半画面→全画面で標準systemMaterialDarkの背景と白文字の可読性を確認。UIGlassEffectをsheet全面へ使うと全画面で背面の文字まで透けるため、シート自体はUIKit標準material、操作はGlassと分離した。実アカウントの招待再発行/削除は検証として実行していない。
+
+追確認（R03/R12〜R14/R19）：最新ReleaseでHomeのPIN→Map対象位置の半画面詳細、同一PIN再タップで詳細が閉じ暗色タブが維持されることをSimulatorで確認。招待画面往復でQR再表示を確認。招待hookの追加2件を含む5試験成功。Accountの通常表示/ドラッグ後を確認、引っ張り途中の画像照合は未完。QR人物が左上に表示されるRN固有のnested SVG配置差を発見し、明示的group transformに変更。専用scheme/UUID試験成功。
+
+QR group transform修正版もReleaseビルド成功、Simulatorへ上書き・起動成功（PID66340）。Map起動を確認後、Device Hubのユーザー操作で入街Sheetへ変わったため追加操作を停止。修正後のQR人物中央配置の実画面確認は未完。最終TypeScript検査成功。

@@ -74,7 +74,7 @@ test("duplicate invite taps issue once and blurred results do not reveal codes",
   let finish,
     count = 0;
   const h = harness(
-    async () => ({ items: [] }),
+    async () => ({ items: [{ id: "existing", used: false, revoked: false }] }),
     () => {
       count++;
       return new Promise((r) => (finish = r));
@@ -84,6 +84,7 @@ test("duplicate invite taps issue once and blurred results do not reveal codes",
   await tick();
   const pending = h.hook.act("invite_create");
   await h.hook.act("invite_create");
+  await tick();
   assert.equal(count, 1);
   blur();
   finish({ id: "secret", code: "private-code" });
@@ -96,7 +97,7 @@ test("failed list clears shared codes and can be retried", async () => {
   const h = harness(
     async () => {
       if (fail) throw Error("offline");
-      return { items: [{ id: "new", expires_at: "2099-01-01" }] };
+      return { items: [{ id: "new", expires_at: "2099-01-01" }], current: {id: "new", code: "secret"} };
     },
     async () => ({ id: "new", code: "secret" }),
   );
@@ -112,4 +113,15 @@ test("failed list clears shared codes and can be retried", async () => {
   await h.hook.refresh();
   assert.equal(h.state[1][0].id, "new");
   assert.equal(h.state[4], "");
+});
+test("redeemed history remains visible when automatic QR issuance fails", async () => {
+  const h = harness(async () => ({items:[{id:"redeemed",used:true,expires_at:"2099-01-01"}],remaining:1}),async()=>{throw Error("offline");});
+  h.focus();await tick();
+  assert.equal(h.state[1][0].id,"redeemed");
+  assert.match(h.state[4],/発行を確認できません/);
+});
+test("zero quota does not issue on entry and preserves history", async () => {
+  let created=0;
+  const h=harness(async()=>({items:[{id:"redeemed",used:true}],remaining:0}),async()=>{created++;});
+  h.focus();await tick();assert.equal(created,0);assert.equal(h.state[1][0].id,"redeemed");
 });

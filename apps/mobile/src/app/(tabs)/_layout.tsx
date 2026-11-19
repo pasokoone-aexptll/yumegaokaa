@@ -7,6 +7,7 @@ import { AccountAccessContext } from "../../hooks/useAccountAccess";
 import { usePinPlacement } from "../../lib/pinPlacement";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import {
+  Easing,
   Keyboard,
   Platform,
   useWindowDimensions,
@@ -29,6 +30,8 @@ export default function StreetTabs() {
   const dark = [
     "/",
     "/map-event",
+    "/map-pin",
+    "/pin-confirmed",
     "/map-recruitment",
     "/pins/create",
     "/street-entry",
@@ -41,7 +44,28 @@ export default function StreetTabs() {
         screenListeners={{ tabPress: Keyboard.dismiss }}
         screenOptions={{
           headerShown: false,
+          sceneStyle: { backgroundColor: "white" },
           animation: reducedMotion ? "none" : "shift",
+          transitionSpec: {
+            animation: "timing",
+            config: {
+              duration: reducedMotion ? 0 : 320,
+              easing: Easing.inOut(Easing.cubic),
+            },
+          },
+          sceneStyleInterpolator: ({ current }) => ({
+            sceneStyle: {
+              opacity: 1,
+              transform: [
+                {
+                  translateX: current.progress.interpolate({
+                    inputRange: [-1, 0, 1],
+                    outputRange: [-width, 0, width],
+                  }),
+                },
+              ],
+            },
+          }),
           tabBarButton: (props) => <AnimatedTabButton {...props} />,
           tabBarShowLabel: false,
           tabBarIconStyle: tabIconStyle,

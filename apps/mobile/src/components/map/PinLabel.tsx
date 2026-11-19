@@ -119,11 +119,8 @@ export function PinBubble({ children }: { children: ReactNode }) {
     <LabelShadow bubble>
       <View style={s.bubbleWrapper}>
         <View style={s.bubble}>{children}</View>
-        <Svg width={20.8} height={13.6} viewBox="0 30 28 16" style={s.tail}>
-          <Path
-            d="M18.5 36.867C13.1143 36.867 8.82275 34.8862 5.69086 31.867C8.5 34.5751 11.9 37.367 7.5 43.367C7 44.0488 7 44.867 7.5 45.367C8 45.867 10 45.867 17 40.867C20 38.7241 23 36.867 26.5 36.867H18.5Z"
-            fill="white"
-          />
+        <Svg width={24} height={15} viewBox="0 0 24 15" style={s.tail}>
+          <Path d="M0 0H24L3.4 14.1Q0 16.1 0 12.6Z" fill="white" />
         </Svg>
       </View>
     </LabelShadow>
@@ -158,6 +155,8 @@ const s = StyleSheet.create({
   text: {
     fontFamily: Platform.OS === "ios" ? "ui-rounded" : undefined,
     fontSize: 14.4,
+    textAlign: "center",
+    includeFontPadding: false,
     fontWeight: "600",
   },
   shadowFrame: {
@@ -172,7 +171,9 @@ const s = StyleSheet.create({
     borderRadius: 22,
     borderCurve: "continuous",
     paddingHorizontal: 12,
-    paddingVertical: 8,
+    paddingVertical: 7,
+    alignItems: "center",
+    justifyContent: "center",
     maxWidth: "100%",
   },
   tail: { marginTop: -1 },
