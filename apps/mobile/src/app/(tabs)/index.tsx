@@ -1,3 +1,5 @@
+import { useContext } from "react";
+import { SplashPlayingContext } from "../../components/LaunchSplash";
 import { initialPitch } from "../../components/map/headerLayout";
 import { IconPressable as Pressable } from "../../components/icons/IconMotion";
 import { PlacementFooter } from "../../components/pins/PlacementFooter";
@@ -214,6 +216,8 @@ export default function Street() {
       );
     }
   }
+  const splashPlaying = useContext(SplashPlayingContext);
+  if (splashPlaying) return <View style={styles.root} />;
   if (!ready)
     return (
       <View

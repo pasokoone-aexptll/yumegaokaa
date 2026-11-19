@@ -3,7 +3,7 @@ import { useEffect, useMemo, useState } from "react";
 import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
 import { CameraView, useCameraPermissions } from "expo-camera";
 import { SvgXml } from "react-native-svg";
-import { useLocalSearchParams, useRouter } from "expo-router";
+import { useLocalSearchParams, usePathname, useRouter } from "expo-router";
 import { DetailPage } from "../components/DetailUI";
 import { NativeAction } from "../components/denshin/NativeAction";
 import { SuperAsset } from "../components/icons/SuperAsset";
@@ -16,6 +16,10 @@ export default function Invitations() {
   const [scanning, setScanning] = useState(false);
   const [now, setNow] = useState(() => Date.now());
   const router = useRouter();
+  const pathname = usePathname();
+  const inviteRoute = pathname.startsWith("/home/")
+    ? "/home/invitations"
+    : "/settings/invitations";
   const { revoke } = useLocalSearchParams<{ revoke?: string }>();
   useEffect(() => {
     const timer = setInterval(() => setNow(Date.now()), 1000);
@@ -163,7 +167,7 @@ export default function Invitations() {
                   disabled={d.busy || i.revoked || (!i.used && i.expired)}
                   onValueChange={() =>
                     router.push({
-                      pathname: "/settings/invitations",
+                      pathname: inviteRoute,
                       params: { revoke: i.id },
                     })
                   }
@@ -184,10 +188,10 @@ export default function Invitations() {
 }
 const s = StyleSheet.create({
   qr: {
-    height: 260,
+    height: 220,
     alignItems: "center",
     justifyContent: "center",
-    marginTop: 40,
+    marginTop: 10,
   },
   scan: {
     height: 330,
@@ -204,7 +208,7 @@ const s = StyleSheet.create({
     borderWidth: 1,
     borderColor: "rgba(0,175,107,0.12)",
     borderRadius: 10,
-    marginBottom: 20,
+    marginBottom: 8,
   },
   tick: { width: 4, height: 18, borderRadius: 4, backgroundColor: "#00AF6B" },
   row: {
@@ -236,6 +240,6 @@ const s = StyleSheet.create({
     fontSize: 28,
     textAlign: "center",
   },
-  history: { color: "rgba(0,0,0,0.2)", marginTop: 70, marginBottom: 18 },
+  history: { color: "rgba(0,0,0,0.2)", marginTop: 45, marginBottom: 18 },
   confirm: { gap: 35, paddingTop: 60 },
 });

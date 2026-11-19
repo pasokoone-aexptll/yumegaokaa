@@ -1,4 +1,4 @@
-import { LaunchSplash } from "../components/LaunchSplash";
+import { LaunchSplash, SplashPlayingContext } from "../components/LaunchSplash";
 import { sheetBackground } from "../components/map/mapBlur";
 import { IconMotionProvider } from "../components/icons/IconMotion";
 import { usePushLifecycle } from "../hooks/usePushNotifications";
@@ -6,12 +6,20 @@ import {
   AccountAccessContext,
   useAccountAccess,
 } from "../hooks/useAccountAccess";
-import { useEffect, useRef, useSyncExternalStore } from "react";
+import {
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  useSyncExternalStore,
+} from "react";
 import { sessionState } from "../lib/sessionState";
 import { Stack, useRouter, usePathname } from "expo-router";
 import { Platform } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 export default function Layout() {
+  const [splashPlaying, setSplashPlaying] = useState(true);
+  const finishSplash = useCallback(() => setSplashPlaying(false), []);
   const session = useSyncExternalStore(
     sessionState.subscribe,
     sessionState.get,
@@ -53,100 +61,104 @@ export default function Layout() {
     <IconMotionProvider>
       <AccountAccessContext.Provider value={access}>
         <SafeAreaProvider>
-          <Stack
-            key={
-              Platform.OS === "android"
-                ? session.revision
-                : `${session.revision}:${access.status}`
-            }
-            screenOptions={{ headerShown: false }}
-          >
-            <Stack.Screen
-              name="(tabs)"
-              options={
+          <SplashPlayingContext.Provider value={splashPlaying}>
+            <Stack
+              key={
                 Platform.OS === "android"
-                  ? { contentStyle: { backgroundColor: "#303947" } }
-                  : undefined
+                  ? session.revision
+                  : `${session.revision}:${access.status}`
               }
-            />
-            <Stack.Screen
-              name="street-entry"
-              options={{
-                presentation: "formSheet",
-                sheetAllowedDetents: [0.57],
-                sheetInitialDetentIndex: 0,
-                sheetGrabberVisible: true,
-                sheetCornerRadius: Platform.OS === "android" ? 28 : undefined,
-                contentStyle: {
-                  backgroundColor:
-                    Platform.OS === "android" ? sheetBackground : "transparent",
-                },
-              }}
-            />
-            <Stack.Screen
-              name="map-event"
-              options={{
-                presentation: "formSheet",
-                sheetAllowedDetents: [0.5, 1],
-                sheetInitialDetentIndex: 0,
-                sheetGrabberVisible: true,
-                sheetCornerRadius: Platform.OS === "android" ? 28 : undefined,
-                sheetExpandsWhenScrolledToEdge: true,
-                sheetLargestUndimmedDetentIndex: 0,
-                contentStyle: { backgroundColor: sheetBackground },
-              }}
-            />
-            <Stack.Screen
-              name="map-recruitment"
-              options={{
-                presentation: "formSheet",
-                sheetAllowedDetents: [0.5, 1],
-                sheetInitialDetentIndex: 0,
-                sheetGrabberVisible: true,
-                sheetCornerRadius: Platform.OS === "android" ? 28 : undefined,
-                sheetExpandsWhenScrolledToEdge: true,
-                sheetLargestUndimmedDetentIndex: 0,
-                contentStyle: { backgroundColor: sheetBackground },
-              }}
-            />
-            <Stack.Screen
-              name="map-pin"
-              options={{
-                presentation: "formSheet",
-                sheetAllowedDetents: [0.5, 1],
-                sheetInitialDetentIndex: 0,
-                sheetGrabberVisible: true,
-                sheetExpandsWhenScrolledToEdge: true,
-                sheetLargestUndimmedDetentIndex: 0,
-                contentStyle: { backgroundColor: "transparent" },
-              }}
-            />
-            <Stack.Screen
-              name="pins/create"
-              options={{
-                presentation: "formSheet",
-                sheetAllowedDetents: [0.57, 0.85],
-                sheetInitialDetentIndex: 0,
-                sheetGrabberVisible: true,
-                sheetCornerRadius: Platform.OS === "android" ? 28 : undefined,
-                contentStyle: { backgroundColor: "transparent" },
-              }}
-            />
-            <Stack.Screen
-              name="pin-confirmed"
-              options={{
-                presentation: "formSheet",
-                sheetAllowedDetents: [1],
-                sheetGrabberVisible: true,
-                contentStyle: { backgroundColor: "transparent" },
-              }}
-            />
-            <Stack.Screen
-              name="pins/location"
-              options={{ presentation: "fullScreenModal" }}
-            />
-          </Stack>
-          <LaunchSplash />
+              screenOptions={{ headerShown: false }}
+            >
+              <Stack.Screen
+                name="(tabs)"
+                options={
+                  Platform.OS === "android"
+                    ? { contentStyle: { backgroundColor: "#303947" } }
+                    : undefined
+                }
+              />
+              <Stack.Screen
+                name="street-entry"
+                options={{
+                  presentation: "formSheet",
+                  sheetAllowedDetents: [0.57],
+                  sheetInitialDetentIndex: 0,
+                  sheetGrabberVisible: true,
+                  sheetCornerRadius: Platform.OS === "android" ? 28 : undefined,
+                  contentStyle: {
+                    backgroundColor:
+                      Platform.OS === "android"
+                        ? sheetBackground
+                        : "transparent",
+                  },
+                }}
+              />
+              <Stack.Screen
+                name="map-event"
+                options={{
+                  presentation: "formSheet",
+                  sheetAllowedDetents: [0.5, 1],
+                  sheetInitialDetentIndex: 0,
+                  sheetGrabberVisible: true,
+                  sheetCornerRadius: Platform.OS === "android" ? 28 : undefined,
+                  sheetExpandsWhenScrolledToEdge: true,
+                  sheetLargestUndimmedDetentIndex: 0,
+                  contentStyle: { backgroundColor: sheetBackground },
+                }}
+              />
+              <Stack.Screen
+                name="map-recruitment"
+                options={{
+                  presentation: "formSheet",
+                  sheetAllowedDetents: [0.5, 1],
+                  sheetInitialDetentIndex: 0,
+                  sheetGrabberVisible: true,
+                  sheetCornerRadius: Platform.OS === "android" ? 28 : undefined,
+                  sheetExpandsWhenScrolledToEdge: true,
+                  sheetLargestUndimmedDetentIndex: 0,
+                  contentStyle: { backgroundColor: sheetBackground },
+                }}
+              />
+              <Stack.Screen
+                name="map-pin"
+                options={{
+                  presentation: "formSheet",
+                  sheetAllowedDetents: [0.5, 1],
+                  sheetInitialDetentIndex: 0,
+                  sheetGrabberVisible: true,
+                  sheetExpandsWhenScrolledToEdge: true,
+                  sheetLargestUndimmedDetentIndex: 0,
+                  contentStyle: { backgroundColor: "transparent" },
+                }}
+              />
+              <Stack.Screen
+                name="pins/create"
+                options={{
+                  presentation: "formSheet",
+                  sheetAllowedDetents: [0.57, 0.85],
+                  sheetInitialDetentIndex: 0,
+                  sheetGrabberVisible: true,
+                  sheetCornerRadius: Platform.OS === "android" ? 28 : undefined,
+                  contentStyle: { backgroundColor: "transparent" },
+                }}
+              />
+              <Stack.Screen
+                name="pin-confirmed"
+                options={{
+                  presentation: "formSheet",
+                  sheetAllowedDetents: [1],
+                  sheetGrabberVisible: true,
+                  contentStyle: { backgroundColor: "transparent" },
+                }}
+              />
+              <Stack.Screen
+                name="pins/location"
+                options={{ presentation: "fullScreenModal" }}
+              />
+            </Stack>
+            <LaunchSplash onComplete={finishSplash} />
+          </SplashPlayingContext.Provider>
         </SafeAreaProvider>
       </AccountAccessContext.Provider>
     </IconMotionProvider>

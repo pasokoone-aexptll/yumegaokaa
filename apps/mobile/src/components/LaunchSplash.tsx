@@ -1,49 +1,83 @@
-import { useContext, useEffect, useState } from "react";
+import { createContext, memo, useEffect, useState } from "react";
 import {
+  AccessibilityInfo,
   Animated,
   Easing,
   StyleSheet,
   useWindowDimensions,
   View,
 } from "react-native";
-import Svg, { Defs, LinearGradient, Path, Rect, Stop } from "react-native-svg";
+import Svg, {
+  Defs,
+  LinearGradient,
+  Path,
+  Rect,
+  Stop,
+  SvgXml,
+} from "react-native-svg";
 import assets from "./icons/superassets.json";
-import { SvgXml } from "react-native-svg";
-import { SuperAsset } from "./icons/SuperAsset";
-import { ReducedIconMotion } from "./icons/IconMotion";
+import { MapAsset } from "./map/MapAsset";
 
 // Reuse the supplied running figure, including its original silhouette.
 const figure = assets["非常口の人物"].replace(/fill="#[^"]*"/g, 'fill="white"');
-export function LaunchSplash() {
-  const reduced = useContext(ReducedIconMotion);
+export const SplashPlayingContext = createContext(false);
+export const LaunchSplash = memo(function LaunchSplash({
+  onComplete,
+}: {
+  onComplete: () => void;
+}) {
+  const [reduced, setReduced] = useState<boolean | null>(null);
+  useEffect(() => {
+    let alive = true;
+    void AccessibilityInfo.isReduceMotionEnabled().then((value) => {
+      if (alive) setReduced(value);
+    });
+    return () => {
+      alive = false;
+    };
+  }, []);
   const { width, height } = useWindowDimensions();
   const [progress] = useState(() => new Animated.Value(0));
   const [finished, setFinished] = useState(false);
   useEffect(() => {
-    const motion = Animated.timing(progress, {
-      toValue: 1,
-      duration: reduced ? 200 : 1850,
-      easing: Easing.linear,
-      useNativeDriver: true,
-    });
-    motion.start(({ finished: done }) => {
-      if (done) setFinished(true);
-    });
-    return () => motion.stop();
-  }, [progress, reduced]);
+    if (reduced === null) return;
+    progress.setValue(0);
+    const motion = Animated.sequence([
+      Animated.delay(reduced ? 0 : 100),
+      Animated.timing(progress, {
+        toValue: 1,
+        duration: reduced ? 200 : 1800,
+        easing: Easing.linear,
+        useNativeDriver: true,
+      }),
+    ]);
+    // Start only after the initial SVG/layout commit and accessibility preference resolve.
+    const frame = requestAnimationFrame(() =>
+      motion.start(({ finished: done }) => {
+        if (done) {
+          setFinished(true);
+          onComplete();
+        }
+      }),
+    );
+    return () => {
+      cancelAnimationFrame(frame);
+      motion.stop();
+    };
+  }, [progress, reduced, onComplete]);
   if (finished) return null;
   const doorWidth = width * 0.244;
   const doorHeight = doorWidth * 1.49;
   const zoom = Math.max(width / doorWidth, height / doorHeight) * 1.15;
   const opacity = progress.interpolate({
-    inputRange: [0, 0.82, 1],
+    inputRange: [0, 0.95, 1],
     outputRange: [1, 1, 0],
   });
   const scale = reduced
     ? 1
     : progress.interpolate({
-        inputRange: [0, 0.51, 0.76, 1],
-        outputRange: [1, 1, zoom, zoom],
+        inputRange: [0, 0.528, 0.56, 0.59, 0.62, 0.65, 0.68, 0.72, 0.78, 1],
+        outputRange: [1, 1, 1.13, 1.57, 2.2, 2.89, 3.87, 4.76, zoom, zoom],
       });
   return (
     <Animated.View
@@ -59,16 +93,6 @@ export function LaunchSplash() {
             position: "absolute",
             width: doorWidth,
             height: doorHeight,
-            transform: [
-              {
-                scaleX: reduced
-                  ? 1
-                  : progress.interpolate({
-                      inputRange: [0, 0.16, 1],
-                      outputRange: [0.01, 1, 1],
-                    }),
-              },
-            ],
           }}
         >
           <Svg
@@ -115,15 +139,15 @@ export function LaunchSplash() {
               opacity: reduced
                 ? 1
                 : progress.interpolate({
-                    inputRange: [0, 0.13, 0.51, 0.65, 1],
-                    outputRange: [0, 1, 1, 0, 0],
+                    inputRange: [0, 0.472, 0.61, 1],
+                    outputRange: [1, 1, 0, 0],
                   }),
               transform: [
                 {
                   translateX: reduced
                     ? 0
                     : progress.interpolate({
-                        inputRange: [0, 0.51, 0.65, 1],
+                        inputRange: [0, 0.472, 0.61, 1],
                         outputRange: [
                           0,
                           0,
@@ -141,14 +165,73 @@ export function LaunchSplash() {
               height={doorHeight * 0.95}
             />
           </Animated.View>
+          <View
+            pointerEvents="none"
+            style={{
+              position: "absolute",
+              top: 0,
+              left: 0,
+              width: doorWidth * 2.8,
+              height: doorHeight * 2.2,
+              overflow: "hidden",
+            }}
+          >
+            <Animated.View
+              style={{
+                width: "100%",
+                height: "100%",
+                backgroundColor: "white",
+                transform: [
+                  {
+                    translateX: reduced
+                      ? doorWidth * 2.8
+                      : progress.interpolate({
+                          inputRange: [0, 0.15, 1],
+                          outputRange: [0, doorWidth * 2.8, doorWidth * 2.8],
+                        }),
+                  },
+                ],
+              }}
+            />
+          </View>
         </Animated.View>
       </Animated.View>
-      <View style={{ position: "absolute", bottom: 25 }}>
-        <SuperAsset name="s3logo" width={145} height={28} opacity={0.2} />
-      </View>
+      <Animated.View
+        pointerEvents="none"
+        style={[
+          StyleSheet.absoluteFill,
+          {
+            backgroundColor: "white",
+            opacity: reduced
+              ? 0
+              : progress.interpolate({
+                  inputRange: [0, 0.78, 0.95, 1],
+                  outputRange: [0, 0, 1, 1],
+                }),
+          },
+        ]}
+      />
+      <Animated.View
+        style={{
+          position: "absolute",
+          bottom: 25,
+          opacity: progress.interpolate({
+            inputRange: [0, 0.01, 1],
+            outputRange: [0, 1, 1],
+          }),
+        }}
+      >
+        <MapAsset
+          name="DreamCloud Logo"
+          width={145}
+          height={28}
+          tint="black"
+          fillOpacity={0.2}
+        />
+      </Animated.View>
     </Animated.View>
   );
-}
+});
 const styles = StyleSheet.create({
   cover: {
     position: "absolute",

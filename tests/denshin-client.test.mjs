@@ -230,3 +230,13 @@ test("送信結果の取消確認が失敗したら本文を残し、保存済�
   await (await complete.ready()).revise();
   assert.equal(complete.routes[0].params.id, "existing");
 });
+
+test("主催者の旧到着フラグが残っていても現地列には参加者だけ表示する", () => {
+  const { onsitePeople, pinCount } = module("apps/mobile/src/lib/denshin.ts", () => ({}));
+  const pin = { author_id: "host", host_arrived: true, count: 2, capacity: 10,
+    people: [{ account_id: "host", state: "arrived" },
+      { account_id: "guest", state: "arrived" }, { account_id: "planned", state: "planned" }] };
+  assert.deepEqual(onsitePeople(pin).map(p => p.account_id), ["guest"]);
+  assert.equal(pinCount(pin), "2/10人");
+  assert.deepEqual(onsitePeople({ ...pin, people: [] }), []);
+});

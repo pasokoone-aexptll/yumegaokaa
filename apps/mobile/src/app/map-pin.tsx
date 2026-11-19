@@ -191,24 +191,18 @@ export default function PinDetail() {
                 )}
                 {p.recruiting && (
                   <>
+                    <Text style={s.section}>主催者</Text>
+                    {person({
+                      account_id: p.author_id,
+                      display_name: p.display_name,
+                      avatar_path: p.avatar_path,
+                      state: "planned",
+                    })}
                     <Text style={s.section}>現地にいる人</Text>
-                    {p.host_arrived &&
-                      person(
-                        {
-                          account_id: p.author_id,
-                          display_name: p.display_name,
-                          avatar_path: p.avatar_path,
-                          state: "arrived",
-                        },
-                        true,
-                      )}
-                    {p.people
-                      .filter((x) => x.state === "arrived")
-                      .map((x) => person(x))}
-                    {!p.host_arrived &&
-                      !p.people.some((x) => x.state === "arrived") && (
-                        <Text style={s.muted}>まだいません</Text>
-                      )}
+                    {onsitePeople(p).map((x) => person(x))}
+                    {onsitePeople(p).length === 0 && (
+                      <Text style={s.muted}>まだいません</Text>
+                    )}
                     <Text style={s.section}>参加予定</Text>
                     {p.people
                       .filter((x) => x.state === "planned")
@@ -304,7 +298,7 @@ export default function PinDetail() {
               </>
             )}
           </ScrollView>
-          {p?.recruiting && !d.ended && (
+          {p?.recruiting && !p.mine && !d.ended && (
             <View
               style={{
                 position: "absolute",
@@ -317,17 +311,13 @@ export default function PinDetail() {
               <NativeAction
                 tone={!p.mine && p.attendance === "left" ? "neutral" : "green"}
                 title={
-                  p.mine
-                    ? p.host_arrived
+                  p.attendance === "planned"
+                    ? "現地につきました"
+                    : p.attendance === "arrived"
                       ? "現地を離れる"
-                      : "現地につきました"
-                    : p.attendance === "planned"
-                      ? "現地につきました"
-                      : p.attendance === "arrived"
-                        ? "現地を離れる"
-                        : p.capacity !== null && p.count >= p.capacity
-                          ? "満員です"
-                          : "参加する！"
+                      : p.capacity !== null && p.count >= p.capacity
+                        ? "満員です"
+                        : "参加する！"
                 }
                 disabled={
                   disabled ||
@@ -337,15 +327,13 @@ export default function PinDetail() {
                     p.count >= p.capacity)
                 }
                 onPress={() => {
-                  if (p.mine) void d.host();
-                  else
-                    void d.attend(
-                      p.attendance === "left"
-                        ? "planned"
-                        : p.attendance === "planned"
-                          ? "arrived"
-                          : "left",
-                    );
+                  void d.attend(
+                    p.attendance === "left"
+                      ? "planned"
+                      : p.attendance === "planned"
+                        ? "arrived"
+                        : "left",
+                  );
                 }}
               />
             </View>

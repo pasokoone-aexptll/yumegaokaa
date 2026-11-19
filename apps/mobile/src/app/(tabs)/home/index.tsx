@@ -1,4 +1,4 @@
-import { useInviteQuota } from "../../hooks/useInviteQuota";
+import { useInviteQuota } from "../../../hooks/useInviteQuota";
 import { useState } from "react";
 import {
   ActivityIndicator,
@@ -12,23 +12,23 @@ import {
 } from "react-native";
 import { useRouter } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { useDenshinPins } from "../../hooks/useDenshinPins";
-import { Avatar } from "../../components/Avatar";
-import { PeopleStack, green } from "../../components/denshin/PinParts";
+import { useDenshinPins } from "../../../hooks/useDenshinPins";
+import { Avatar } from "../../../components/Avatar";
+import { PeopleStack, green } from "../../../components/denshin/PinParts";
 import {
   onsitePeople,
   pinCount,
   denshinError,
   HiddenAttendance,
-} from "../../lib/denshin";
-import { openMapAt } from "../../lib/mapNavigation";
+} from "../../../lib/denshin";
+import { openMapAt } from "../../../lib/mapNavigation";
 import {
   cancelPendingCommand,
   pendingCommand,
   submitCommand,
-} from "../../lib/commands";
-import { DenshinLogo, SuperAsset } from "../../components/icons/SuperAsset";
-import { SpeechBubble } from "../../components/denshin/SpeechBubble";
+} from "../../../lib/commands";
+import { DenshinLogo, SuperAsset } from "../../../components/icons/SuperAsset";
+import { SpeechBubble } from "../../../components/denshin/SpeechBubble";
 export default function Home() {
   const router = useRouter(),
     insets = useSafeAreaInsets();
@@ -204,7 +204,7 @@ export default function Home() {
       <Pressable
         accessibilityRole="button"
         accessibilityLabel="招待QRで友達を招待"
-        onPress={() => router.push("/settings/invitations")}
+        onPress={() => router.push("/home/invitations")}
         style={{
           margin: 16,
           marginTop: 12,

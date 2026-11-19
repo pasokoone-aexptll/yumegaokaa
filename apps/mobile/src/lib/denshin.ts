@@ -71,15 +71,5 @@ export function onsitePeople(pin: DenshinPin): PinPerson[] {
     (person) =>
       person.state === "arrived" && person.account_id !== pin.author_id,
   );
-  return pin.host_arrived
-    ? [
-        {
-          account_id: pin.author_id,
-          display_name: pin.display_name,
-          avatar_path: pin.avatar_path,
-          state: "arrived",
-        },
-        ...people,
-      ]
-    : people;
+  return people;
 }
