@@ -128,3 +128,13 @@ Releaseビルド成功・Simulator上書き後、Map起動とMap↔通知の切�
 HomeチケットはHome内のネイティブStackへ招待画面を開く。戻るとHome、Settingsタブはアカウント画面となる。Settingsから開いた招待はSettingsへ戻る。招待の再発行・失効・履歴の意味は変更しない。
 
 起動アニメーションはSimulator録画で段階比較済み。影と開口の形状、全画面Figma一致、実機確認は未完。既存33タスクの完了数は変更しない。
+
+## 2026-11-20 Figma差分・初回遷移・シート背景（R12〜R14/R19）
+
+- PINの未確定送信は「通信を確認」に集約し、再試行/送信をやめる/閉じるを標準Alertへ移した。保存済みの変更は取消されない旨を操作時に表示。再送・command_cancelの意味と保存状態は変更しない。SimulatorでAlertの選択肢を確認し閉じた。実送信の再試行/取消は行っていない。
+- 標準sheetの各detentとpresentationにsystemThinMaterialDarkを一度だけ設定。レイアウトのたびの材質置換を止め、拡大detentも暗転させない。拡大→半画面で背面の地図の色が透過することを確認。UIGlassEffectを全面sheetへ直接設定する試みは文字と地図が重なったため不採用。操作ボタン/MenuにはOS標準Liquid Glassを継続。
+- Tabsのlazyをfalseにして初回生成と遷移を分離。Simulator起動後初回のMap→通知→Settingsの中間フレームを録画確認（/tmp/splash-timing/first-tabs.mp4）。
+- 戻るchevronのSVG内余白を考慮し、図柄の実寸9×18相当、Host49×49へ調整。Mapのロゴ/人数/モード間隔、モードラベル幅、標準Toggleのintrinsic sizeと外周枠を調整。未入街表示を確認、入街ON中の縁は実操作未確認。
+- スプラッシュの投影を足元基点の上下反転＋斜め投影へ修正。開口が完了するまでの時間を延ばし、投影白の濃度を原本に寄せた。geometry.mp4で元動画との形状差を照合。全フレームのピクセル完全一致を保証しない。
+
+型チェック、関連クライアント5試験、Releaseビルド成功。実機未確認。MVP33タスクの完了率は据え置き。全29画面の余白/radiusの完全一致は未完であり、今回の局所確認を全画面合格と扱わない。

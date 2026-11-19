@@ -87,10 +87,10 @@ export function DetailPage({
               }
             />
           ) : (
-            <View style={{ width: 44 }} />
+            <View style={{ width: 49 }} />
           )}
           <Text style={detail.title}>{title}</Text>
-          <View style={{ width: 44 }} />
+          <View style={{ width: 49 }} />
         </View>
         {children}
       </ScrollView>

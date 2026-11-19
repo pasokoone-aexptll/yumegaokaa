@@ -103,7 +103,7 @@ export default function Layout() {
                   sheetGrabberVisible: true,
                   sheetCornerRadius: Platform.OS === "android" ? 28 : undefined,
                   sheetExpandsWhenScrolledToEdge: true,
-                  sheetLargestUndimmedDetentIndex: 0,
+                  sheetLargestUndimmedDetentIndex: 1,
                   contentStyle: { backgroundColor: sheetBackground },
                 }}
               />
@@ -116,7 +116,7 @@ export default function Layout() {
                   sheetGrabberVisible: true,
                   sheetCornerRadius: Platform.OS === "android" ? 28 : undefined,
                   sheetExpandsWhenScrolledToEdge: true,
-                  sheetLargestUndimmedDetentIndex: 0,
+                  sheetLargestUndimmedDetentIndex: 1,
                   contentStyle: { backgroundColor: sheetBackground },
                 }}
               />
@@ -128,7 +128,7 @@ export default function Layout() {
                   sheetInitialDetentIndex: 0,
                   sheetGrabberVisible: true,
                   sheetExpandsWhenScrolledToEdge: true,
-                  sheetLargestUndimmedDetentIndex: 0,
+                  sheetLargestUndimmedDetentIndex: 1,
                   contentStyle: { backgroundColor: "transparent" },
                 }}
               />

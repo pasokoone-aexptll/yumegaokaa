@@ -56,6 +56,7 @@ export default function StreetTabs() {
         screenListeners={{ tabPress: Keyboard.dismiss }}
         screenOptions={{
           headerShown: false,
+          lazy: false,
           sceneStyle: { backgroundColor: "white" },
           animation: reducedMotion ? "none" : "shift",
           transitionSpec: {

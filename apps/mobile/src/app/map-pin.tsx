@@ -138,23 +138,20 @@ export default function PinDetail() {
               </Text>
             )}
             {d.pending && (
-              <View style={s.group}>
-                <Text style={s.muted}>
-                  未確認の送信があります。結果を確認してから次の操作を行えます。
-                </Text>
-                <Pressable
-                  disabled={d.busy}
-                  onPress={() => void d.recover(false)}
-                >
-                  <Text style={s.link}>同じ内容で再試行</Text>
-                </Pressable>
-                <Pressable
-                  disabled={d.busy}
-                  onPress={() => void d.recover(true)}
-                >
-                  <Text style={s.link}>送信結果を確認して取り消す</Text>
-                </Pressable>
-              </View>
+              <NativeAction
+                tone="neutral"
+                title={d.busy ? "通信を確認中…" : "通信を確認"}
+                disabled={d.busy}
+                onPress={() => Alert.alert(
+                  "変更が保存されたか確認できません",
+                  "再試行しても同じ変更が二重に保存されることはありません。送信をやめる場合も、すでに保存された変更は残ります。",
+                  [
+                    { text: "閉じる", style: "cancel" },
+                    { text: "送信をやめる", onPress: () => void d.recover(true) },
+                    { text: "再試行", onPress: () => void d.recover(false) },
+                  ],
+                )}
+              />
             )}
             {p && !d.ended && (
               <>

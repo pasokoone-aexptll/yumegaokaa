@@ -15,8 +15,8 @@ export function ParticipationSwitch({
           ? "rgba(52,199,89,0.5)"
           : "rgba(255,255,255,0.15)",
         borderRadius: 26,
-        width: 76,
-        height: 46,
+        width: 74,
+        height: 40,
         alignItems: "center",
         justifyContent: "center",
       }}

@@ -5,6 +5,7 @@ import {
   labelsHidden,
   disabled as disabledModifier,
   tint,
+  fixedSize,
 } from "@expo/ui/swift-ui/modifiers";
 export function NativeToggle({
   value,
@@ -14,7 +15,7 @@ export function NativeToggle({
 }: SwitchProps) {
   return (
     <Host
-      style={{ width: 58, height: 36 }}
+      style={{ width: 64, height: 36 }}
       alignment="center"
       ignoreSafeArea="all"
     >
@@ -23,6 +24,7 @@ export function NativeToggle({
         onIsOnChange={onValueChange}
         modifiers={[
           labelsHidden(),
+          fixedSize(),
           accessibilityLabel(label),
           disabledModifier(!!disabled),
           tint("#34C759"),

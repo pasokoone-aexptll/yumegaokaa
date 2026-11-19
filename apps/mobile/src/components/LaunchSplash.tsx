@@ -129,7 +129,7 @@ export const LaunchSplash = memo(function LaunchSplash({
             <SvgXml
               width={doorWidth * 2.8}
               height={doorHeight}
-              xml={`<svg viewBox="0 0 280 149" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="shadowFade" x1="0" y1="0" x2="0" y2="1"><stop stop-color="white" stop-opacity="0.6"/><stop offset="1" stop-color="white" stop-opacity="0"/></linearGradient><mask id="shadowMask"><rect width="280" height="149" fill="url(#shadowFade)"/></mask></defs><g mask="url(#shadowMask)"><g transform="matrix(1 0 1 1 0 0) scale(1 1.4) translate(-24 -10)">${figure.replace(/<svg[^>]*>/, "").replace(/<\/svg>$/, "")}</g></g></svg>`}
+              xml={`<svg viewBox="0 0 280 149" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="shadowFade" x1="0" y1="0" x2="0" y2="1"><stop stop-color="white" stop-opacity="1"/><stop offset="1" stop-color="white" stop-opacity="0"/></linearGradient><mask id="shadowMask"><rect width="280" height="149" fill="url(#shadowFade)"/></mask></defs><g mask="url(#shadowMask)"><g transform="matrix(1 0 -1 -1 149 149) scale(1.77 1.77) translate(-24 -10)">${figure.replace(/<svg[^>]*>/, "").replace(/<\/svg>$/, "")}</g></g></svg>`}
             />
           </View>
           <Animated.View
@@ -186,7 +186,7 @@ export const LaunchSplash = memo(function LaunchSplash({
                     translateX: reduced
                       ? doorWidth * 2.8
                       : progress.interpolate({
-                          inputRange: [0, 0.15, 1],
+                          inputRange: [0, 0.28, 1],
                           outputRange: [0, doorWidth * 2.8, doorWidth * 2.8],
                         }),
                   },

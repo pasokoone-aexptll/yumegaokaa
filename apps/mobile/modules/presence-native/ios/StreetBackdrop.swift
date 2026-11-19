@@ -107,6 +107,7 @@ final class SheetBackdrop: ExpoView {
 
 // Configure the system presentation only; UIKit owns its material and drag behavior.
 final class NativeSheetAppearance: ExpoView {
+  private weak var configuredSheet: UISheetPresentationController?
   override func didMoveToWindow() {
     super.didMoveToWindow()
     applyAppearance()
@@ -127,12 +128,16 @@ final class NativeSheetAppearance: ExpoView {
           while let controller = candidate {
             if controller.presentingViewController != nil,
                let sheet = controller.sheetPresentationController {
+              guard self?.configuredSheet !== sheet else { return }
+              self?.configuredSheet = sheet
               controller.overrideUserInterfaceStyle = .dark
               child.overrideUserInterfaceStyle = .dark
               sheet.overrideTraitCollection = UITraitCollection(userInterfaceStyle: .dark)
               if #available(iOS 26.1, *) {
+                let material = UIBlurEffect(style: .systemThinMaterialDark)
+                sheet.backgroundEffect = material
                 for detent in sheet.detents {
-                  detent.backgroundEffect = UIBlurEffect(style: .systemMaterialDark)
+                  detent.backgroundEffect = material
                 }
               }
               return

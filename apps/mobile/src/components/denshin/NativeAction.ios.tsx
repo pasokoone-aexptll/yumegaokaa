@@ -34,7 +34,7 @@ export function NativeAction({
           modifiers={[
             buttonStyle(
               Number(Platform.Version) >= 26
-                ? "glassProminent"
+                ? tone === "neutral" ? "glass" : "glassProminent"
                 : "borderedProminent",
             ),
             buttonBorderShape("capsule"),

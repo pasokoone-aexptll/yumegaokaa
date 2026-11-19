@@ -23,7 +23,7 @@ export function ModeDropdown({
 }) {
   return (
     <Host
-      style={{ width: 64, height: 38 }}
+      style={{ width: 52, height: 34 }}
       colorScheme="dark"
       ignoreSafeArea="all"
       alignment="center"
@@ -38,7 +38,7 @@ export function ModeDropdown({
           <RNHostView matchContents>
             <View
               style={{
-                width: 42,
+                width: 32,
                 height: 22,
                 flexDirection: "row",
                 alignItems: "center",
@@ -58,7 +58,7 @@ export function ModeDropdown({
                   name="chevron-base"
                   tint="white"
                   opacity={0.7}
-                  size={18}
+                  size={24}
                 />
               </View>
             </View>

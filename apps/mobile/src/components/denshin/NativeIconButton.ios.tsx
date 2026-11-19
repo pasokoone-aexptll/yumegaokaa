@@ -29,20 +29,20 @@ export function NativeIconButton({
   const artwork = (
     <View
       style={{
-        width: 28,
-        height: 28,
+        width: icon === "chevron-base" ? 36 : 28,
+        height: icon === "chevron-base" ? 36 : 28,
         transform: [{ rotate: `${rotation}deg` }],
         alignItems: "center",
         justifyContent: "center",
       }}
     >
-      <SuperAsset name={icon} size={22} tint={dark ? "white" : "black"} />
+      <SuperAsset name={icon} size={icon === "chevron-base" ? 36 : 22} tint={dark ? "white" : "black"} />
     </View>
   );
   if (Platform.OS === "ios")
     return (
       <Host
-        style={{ width: 44, height: 44 }}
+        style={{ width: 49, height: 49 }}
         colorScheme={dark ? "dark" : "light"}
         alignment="center"
         ignoreSafeArea="all"

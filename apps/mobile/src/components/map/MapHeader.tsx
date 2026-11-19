@@ -46,7 +46,7 @@ export function MapHeader({
             alignItems: "center",
             gap: 3,
             backgroundColor: "#FF3B30",
-            paddingHorizontal: 8,
+            paddingHorizontal: 10,
             paddingVertical: 7,
             borderRadius: 24,
           }}
@@ -76,7 +76,7 @@ const styles = StyleSheet.create({
   row: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 7,
+    gap: 10,
     marginTop: 10,
     marginBottom: 10,
   },
