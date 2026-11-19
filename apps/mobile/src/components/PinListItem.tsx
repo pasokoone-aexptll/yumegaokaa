@@ -19,7 +19,7 @@ export function PinListItem({
   longitude: number;
   latitude: number;
   onOpen: () => void;
-  detail?: { kind: "event" | "recruitment"; id: string };
+  detail?: { kind: "event" | "recruitment" | "denshin"; id: string };
 }) {
   const router = useRouter();
   return (

@@ -1,187 +1,212 @@
-import { RecruitmentIcon } from "../../components/RecruitmentIcon";
-import { StretchySunset } from "../../components/StretchySunset";
-import { homeEvents } from "../../lib/homeEvents";
 import { useState } from "react";
-import { Animated, RefreshControl, StyleSheet, Text, View } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
+import {
+  ActivityIndicator,
+  Alert,
+  Pressable,
+  RefreshControl,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
 import { useRouter } from "expo-router";
-import { PinListItem } from "../../components/PinListItem";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useDenshinPins } from "../../hooks/useDenshinPins";
+import { Avatar } from "../../components/Avatar";
+import { PeopleStack, green } from "../../components/denshin/PinParts";
+import { pinCount, denshinError, HiddenAttendance } from "../../lib/denshin";
+import { openMapAt } from "../../lib/mapNavigation";
+import {
+  cancelPendingCommand,
+  pendingCommand,
+  submitCommand,
+} from "../../lib/commands";
 import { MapAsset } from "../../components/map/MapAsset";
-import { useHomePins } from "../../hooks/useHomePins";
-
 export default function Home() {
-  const router = useRouter();
-  const { items, recruitments, error, loading, load } = useHomePins();
-  const insets = useSafeAreaInsets();
-  const [scroll] = useState(() => new Animated.Value(0));
-  const [refreshing, setRefreshing] = useState(false);
+  const router = useRouter(),
+    insets = useSafeAreaInsets();
+  const pins = useDenshinPins();
+  const [refreshing, setRefreshing] = useState(false),
+    [leaving, setLeaving] = useState(false);
   async function refresh() {
-    if (refreshing) return;
     setRefreshing(true);
     try {
-      await load(true);
+      await pins.load(true);
     } finally {
       setRefreshing(false);
     }
   }
-  const events = homeEvents(items);
+  async function leave(p: HiddenAttendance) {
+    if (leaving) return;
+    setLeaving(true);
+    try {
+      const old = await pendingCommand("denshin_attend");
+      if (old) {
+        await cancelPendingCommand("denshin_attend");
+        await pins.load(true);
+        Alert.alert(
+          "前回の送信結果を確認しました",
+          "最新の参加状態を確認して、もう一度取り消してください。",
+        );
+        return;
+      }
+      await submitCommand("denshin_attend", {
+        id: p.id,
+        revision: p.revision,
+        attendance_revision: p.attendance_revision,
+        state: "left",
+      });
+      await pins.load(true);
+    } catch (e) {
+      Alert.alert("参加取消を確認できません", denshinError(e));
+    } finally {
+      setLeaving(false);
+    }
+  }
   return (
-    <Animated.ScrollView
+    <ScrollView
       style={s.page}
-      alwaysBounceVertical
-      removeClippedSubviews={false}
-      scrollEventThrottle={16}
-      onScroll={Animated.event(
-        [{ nativeEvent: { contentOffset: { y: scroll } } }],
-        { useNativeDriver: true },
-      )}
-      contentInsetAdjustmentBehavior="never"
-      contentContainerStyle={{ paddingBottom: 32 }}
+      contentContainerStyle={{ paddingTop: insets.top + 25, paddingBottom: 40 }}
       refreshControl={
         <RefreshControl
-          tintColor="#000000"
-          progressViewOffset={insets.top}
           refreshing={refreshing}
           onRefresh={() => void refresh()}
         />
       }
     >
-      <StretchySunset
-        scroll={scroll}
-        overlayColor="#00000020"
-        height={insets.top + 150}
-        style={[s.hero, { height: insets.top + 150, paddingTop: insets.top }]}
-      >
-        <MapAsset
-          name="DreamCloud Logo"
-          width={210}
-          height={32}
-          tint="#ffffffcc"
-        />
-      </StretchySunset>
+      <View style={s.header}>
+        <MapAsset name="DreamCloud Logo" width={175} height={32} tint={green} />
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel="電信PINを作成"
+          onPress={() => router.push("/pins/create")}
+          style={s.add}
+        >
+          <Text style={{ fontSize: 30 }}>＋</Text>
+        </Pressable>
+      </View>
       <View style={s.content}>
-        <View style={s.headingRow}>
-          <Text style={s.heading}>参加予定</Text>
-        </View>
-        {!!error && (
+        {!!pins.error && (
           <Text accessibilityRole="alert" style={s.error}>
-            {error}
+            {pins.error}
           </Text>
         )}
-        {!loading && !error && !events.joined.length && (
-          <Text style={s.empty}>参加予定のオフ会はありません。</Text>
-        )}
-        {events.joined.map((e, index, joined) => {
-          const date = new Date(e.starts_at);
-          const dateLabel = date.toLocaleDateString("ja-JP", {
-            month: "long",
-            day: "numeric",
-            weekday: "short",
-          });
-          const previous = index
-            ? new Date(joined[index - 1].starts_at).toLocaleDateString(
-                "ja-JP",
-                { month: "long", day: "numeric", weekday: "short" },
-              )
-            : null;
-          return (
-            <View key={e.id}>
-              {dateLabel !== previous && (
-                <Text style={s.date}>{dateLabel}</Text>
+        {pins.loading && <ActivityIndicator />}
+        {[true, false].map((recruiting) => (
+          <View key={String(recruiting)} style={s.section}>
+            <Text style={[s.sectionTitle, recruiting && { color: green }]}>
+              {recruiting ? "募集中" : "PIN"}
+            </Text>
+            {!pins.loading &&
+              !pins.error &&
+              !pins.items.some((p) => p.recruiting === recruiting) && (
+                <Text style={s.muted}>まだありません</Text>
               )}
-              <PinListItem
-                title={e.title}
-                subtitle={`${date.toLocaleTimeString("ja-JP", { hour: "2-digit", minute: "2-digit" })} — ${new Date(e.ends_at).toLocaleTimeString("ja-JP", { hour: "2-digit", minute: "2-digit" })}`}
-                longitude={e.longitude}
-                latitude={e.latitude}
-                detail={{ kind: "event", id: e.id }}
-                onOpen={() =>
-                  router.push({
-                    pathname: "/events/[id]",
-                    params: { id: e.id },
-                  })
-                }
-              />
-            </View>
-          );
-        })}
-        <Text style={[s.heading, { marginTop: 28, marginBottom: 8 }]}>
-          街のイベント
-        </Text>
-        {!loading && !error && !events.discover.length && (
-          <Text style={s.empty}>未参加のイベントはありません。</Text>
-        )}
-        {events.discover.map((e) => (
-          <PinListItem
-            key={e.id}
-            title={e.title}
-            subtitle={new Date(e.starts_at).toLocaleString("ja-JP", {
-              month: "long",
-              day: "numeric",
-              hour: "2-digit",
-              minute: "2-digit",
-            })}
-            longitude={e.longitude}
-            latitude={e.latitude}
-            detail={{ kind: "event", id: e.id }}
-            onOpen={() =>
-              router.push({ pathname: "/events/[id]", params: { id: e.id } })
-            }
-          />
+            {pins.items
+              .filter((p) => p.recruiting === recruiting)
+              .map((p) => (
+                <View key={p.id} style={s.row}>
+                  <Pressable
+                    style={s.main}
+                    onPress={() =>
+                      router.push({
+                        pathname: "/map-pin",
+                        params: { id: p.id },
+                      })
+                    }
+                    accessibilityRole="button"
+                    accessibilityLabel={`${p.body}の詳細`}
+                  >
+                    <Avatar
+                      shape="square"
+                      path={p.avatar_path}
+                      name={p.display_name}
+                      size={48}
+                    />
+                    <View style={{ flex: 1, gap: 4 }}>
+                      <Text style={s.muted}>
+                        {p.mine ? "自分" : p.display_name}
+                        {p.recruiting ? ` ・ ${pinCount(p)}` : ""}
+                        {p.attendance === "planned"
+                          ? " ・ 参加予定"
+                          : p.attendance === "arrived"
+                            ? " ・ 現地にいます"
+                            : ""}
+                      </Text>
+                      <Text style={s.body} numberOfLines={2}>
+                        {p.body}
+                      </Text>
+                    </View>
+                    <PeopleStack people={p.people} />
+                  </Pressable>
+                  <Pressable
+                    style={s.location}
+                    accessibilityRole="button"
+                    onPress={() =>
+                      openMapAt(router, p.longitude, p.latitude, {
+                        kind: "denshin",
+                        id: p.id,
+                      })
+                    }
+                  >
+                    <Text style={s.muted}>⌖ 位置を確認する</Text>
+                  </Pressable>
+                </View>
+              ))}
+          </View>
         ))}
-        <Text style={[s.heading, { marginTop: 28, marginBottom: 8 }]}>
-          募集中
-        </Text>
-        {!loading && !error && !recruitments.length && (
-          <Text style={s.empty}>募集中のピンはありません。</Text>
-        )}
-        {recruitments.map((p) => (
-          <PinListItem
-            key={p.id}
-            thumbnail={<RecruitmentIcon pin={p} />}
-            title={p.title}
-            subtitle={`${p.display_name} が募集中`}
-            longitude={p.longitude}
-            latitude={p.latitude}
-            detail={{ kind: "recruitment", id: p.id }}
-            onOpen={() =>
-              router.push({
-                pathname: "/recruitments/[id]",
-                params: { id: p.id },
-              })
-            }
-          />
+        {pins.hidden_attendance.map((p) => (
+          <View key={p.id} style={s.row}>
+            <Text style={s.muted}>非表示の電信PINに参加中</Text>
+            <Pressable disabled={leaving} onPress={() => void leave(p)}>
+              <Text style={s.body}>
+                {p.attendance === "arrived"
+                  ? "現地を離れる"
+                  : "参加予定を取り消す"}
+              </Text>
+            </Pressable>
+          </View>
         ))}
       </View>
-    </Animated.ScrollView>
+    </ScrollView>
   );
 }
 const s = StyleSheet.create({
-  page: { flex: 1, backgroundColor: "white" },
-  hero: {
-    justifyContent: "flex-end",
-    paddingHorizontal: 20,
-    paddingBottom: 24,
-  },
-  content: { paddingHorizontal: 20, paddingTop: 24 },
-  headingRow: {
+  page: { flex: 1, backgroundColor: "#f4f4f4" },
+  header: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
+    paddingHorizontal: 22,
+    marginBottom: 46,
   },
-  heading: { fontSize: 25, fontWeight: "600", color: "#000000e6" },
-  date: {
-    fontSize: 17,
-    fontWeight: "500",
-    color: "#00000088",
-    marginTop: 22,
-    marginBottom: 4,
+  add: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: "white",
+    alignItems: "center",
+    justifyContent: "center",
   },
-  empty: {
+  content: { paddingHorizontal: 20 },
+  section: { marginBottom: 30, gap: 8 },
+  sectionTitle: {
     fontSize: 16,
-    lineHeight: 24,
-    color: "#00000066",
-    paddingVertical: 20,
+    fontWeight: "600",
+    color: "#666",
+    backgroundColor: "white",
+    borderRadius: 20,
+    padding: 10,
+    alignSelf: "flex-start",
   },
-  error: { fontSize: 15, color: "#c22", paddingVertical: 12 },
+  row: {
+    paddingVertical: 12,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderColor: "#00000018",
+  },
+  main: { flexDirection: "row", alignItems: "center", gap: 12 },
+  body: { fontSize: 16, color: "#111", lineHeight: 23 },
+  muted: { fontSize: 12, color: "#999", lineHeight: 17 },
+  location: { marginLeft: 60, minHeight: 32, justifyContent: "center" },
+  error: { color: "#b22", paddingVertical: 12 },
 });

@@ -111,7 +111,7 @@ export function NotificationsScreen() {
           {!loading && !error && !items.length && (
             <Text style={detail.secondary}>お知らせはありません。</Text>
           )}
-          {(["mention", "changed", "canceled"] as const).map((kind) => {
+          {(["mention", "pin_changed", "pin_closed", "changed", "canceled"] as const).map((kind) => {
             const notices = items.filter((n) => n.kind === kind);
             if (!notices.length) return null;
             return (
@@ -123,7 +123,7 @@ export function NotificationsScreen() {
                     color: "#00000099",
                   }}
                 >
-                  {kind === "mention" ? "メンション" : kind === "changed"
+                  {kind === "pin_changed" ? "変更された電信PIN" : kind === "pin_closed" ? "終了した募集" : kind === "mention" ? "メンション" : kind === "changed"
                     ? "変更されたイベント"
                     : "中止されたイベント"}
                 </Text>
@@ -146,7 +146,7 @@ export function NotificationsScreen() {
                       {n.title}
                     </Text>
                     <Text style={detail.secondary}>
-                      {kind === "mention" ? "街のチャットでメンションされました" : kind === "canceled"
+                      {kind === "pin_changed" ? "参加中の電信PINに変更があります" : kind === "pin_closed" ? "電信PINの募集が終了しました" : kind === "mention" ? "街のチャットでメンションされました" : kind === "canceled"
                         ? "参加予定のイベントが中止されました"
                         : "参加予定のイベントに変更があります"}
                     </Text>
@@ -161,6 +161,7 @@ export function NotificationsScreen() {
                       style={{ paddingVertical: 12, alignSelf: "flex-start" }}
                       onPress={async () => {
                         if (!(await markRead(n))) return;
+                        if (kind === "pin_changed" && n.pin_id) router.push({ pathname: "/map-pin", params: { id: n.pin_id } });
                         if (kind === "mention") router.push("/(tabs)");
                         if (kind === "changed")
                           router.push({
@@ -182,7 +183,7 @@ export function NotificationsScreen() {
                             fontWeight: "600",
                           }}
                         >
-                          {kind === "mention" ? "街のチャットを開く" : kind === "changed"
+                          {kind === "mention" ? "街のチャットを開く" : (kind === "changed" || kind === "pin_changed")
                             ? "詳細を確認"
                             : n.read
                               ? "確認済み"

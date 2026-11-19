@@ -97,6 +97,7 @@ export default function Street() {
     settings,
     setSettings,
     events,
+    denshinPins,
     recruitments,
     login, nextSendAt,
     exit,
@@ -137,7 +138,7 @@ export default function Street() {
     ) {
       const showDetail =
         !!params.detailId &&
-        (params.detailKind === "event" || params.detailKind === "recruitment");
+        (["event", "recruitment", "denshin"].includes(params.detailKind ?? ""));
       if (Platform.OS === "android" && (!mapFocused || !androidMapReady)) return;
       if (params.mapRequest && openedRequest.current === params.mapRequest) return;
       let cancelled = false;
@@ -154,7 +155,7 @@ export default function Street() {
         if (cancelled) return;
         openedRequest.current = params.mapRequest;
         if (showDetail) router.push({
-          pathname: params.detailKind === "event" ? "/map-event" : "/map-recruitment",
+          pathname: params.detailKind === "denshin" ? "/map-pin" : params.detailKind === "event" ? "/map-event" : "/map-recruitment",
           params: { id: params.detailId!, fromMap: "1" },
         });
       });
@@ -256,6 +257,7 @@ export default function Street() {
             });
           }}
           cells={cells}
+          pins={denshinPins}
           events={events}
           recruitments={recruitments}
           now={now}

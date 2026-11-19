@@ -1,8 +1,10 @@
+import { updateDenshinDraft } from "./denshinDraft";
 import { setEventEditLocation } from "./eventEditDraft";
 import { useSyncExternalStore } from "react";
 import { updateDraft } from "./pinDraft";
 let state: {
   active: boolean;
+  denshin?: boolean;
   eventId?: string;
   point?: [number, number];
   revision: number;
@@ -18,6 +20,9 @@ function set(next: typeof state) {
 export function beginPinPlacement(point?: [number, number], eventId?: string) {
   set({ active: true, point, eventId, revision: state.revision + 1 });
 }
+export function beginDenshinPlacement(point?: [number, number]) {
+  set({ active: true, denshin: true, point, revision: state.revision + 1 });
+}
 export function placePin(point: [number, number]) {
   set({ ...state, point, revision: state.revision + 1 });
 }
@@ -26,6 +31,11 @@ export function cancelPinPlacement() {
 }
 export function finishPinPlacement() {
   if (!state.active || !state.point) return;
+  if (state.denshin) {
+    updateDenshinDraft({ location: state.point });
+    set({ ...state, active: false });
+    return { kind: "denshin" as const };
+  }
   const eventId = state.eventId;
   if (eventId) {
     if (!setEventEditLocation(eventId, state.point)) {

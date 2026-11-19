@@ -1,3 +1,4 @@
+import type { DenshinPin } from "../lib/denshin";
 import type { EntryMap } from "../components/map/EntryPlaces";
 import { localBlocks } from "../lib/localBlocks";
 import { streetChanges } from "../lib/streetChanges";
@@ -49,6 +50,7 @@ const friendly = (error: unknown) => {
 };
 export function useStreetMap() {
   const [entryMap, setEntryMap] = useState<EntryMap>();
+  const [denshinPins, setDenshinPins] = useState<DenshinPin[]>([]);
   const [events, setEvents] = useState<StreetEvent[]>([]);
   const [recruitments, setRecruitments] = useState<Recruitment[]>([]);
   const [ready, setReady] = useState(!url || !key),
@@ -106,6 +108,13 @@ export function useStreetMap() {
       if (generation !== snapshotGeneration.current) return;
       setName(config.name);
       setEntryMap(config);
+      const denshin = await native.rpc<{ items: DenshinPin[] }>(
+        "denshin_list", { street_id: streetID },
+      );
+      if (generation !== snapshotGeneration.current) return;
+      setDenshinPins(
+        denshin.items.filter(p => !localBlocks.hidden(p.author_id)),
+      );
       const pins = await native.rpc<{ items: StreetEvent[] }>("event_list", {
         street_id: streetID,
       });
@@ -205,6 +214,7 @@ export function useStreetMap() {
     });
     gateway.setActive(AppState.currentState === "active");
     const unsubscribeBlocks = localBlocks.subscribe(() => {
+      setDenshinPins(items => items.filter(p => !localBlocks.hidden(p.author_id)));
       setRecruitments((items) =>
         items.filter((p) => !localBlocks.hidden(p.author_id)),
       );
@@ -451,6 +461,7 @@ export function useStreetMap() {
     refreshQueued.current = false;
     await native.logout();
     { setSnapshot(undefined); setEntryMap(undefined); }
+    setDenshinPins([]);
     setEvents([]);
     setRecruitments([]);
     setState(initial);
@@ -483,6 +494,7 @@ export function useStreetMap() {
     setSheet,
     settings,
     setSettings,
+    denshinPins,
     events,
     recruitments,
     login,

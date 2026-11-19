@@ -7,7 +7,7 @@ export function openMapAt(
   router: ReturnType<typeof useRouter>,
   longitude: number,
   latitude: number,
-  detail?: { kind: "event" | "recruitment"; id: string },
+  detail?: { kind: "event" | "recruitment" | "denshin"; id: string },
 ) {
   const open = Platform.OS === "android" ? router.navigate : router.dismissTo;
   open({

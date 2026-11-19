@@ -13,12 +13,14 @@ export function Avatar({
   name,
   size = 40,
   bucket = "avatars",
+  shape = "circle",
 }: {
   path?: string;
   version?: string;
   name: string;
   size?: number;
   bucket?: "avatars" | "street-icons";
+  shape?: "circle" | "square";
 }) {
   const refreshMarker = useContext(RefreshMarker);
   const identity = JSON.stringify([bucket, path, version]);
@@ -67,7 +69,7 @@ export function Avatar({
   }
 
   const initial = bucket === "avatars" ? avatarInitial(name) : undefined;
-  const style = { width: size, height: size, borderRadius: size / 2 };
+  const style = { width: size, height: size, borderRadius: shape === "square" ? size * 0.22 : size / 2 };
   return (
     <View
       style={[

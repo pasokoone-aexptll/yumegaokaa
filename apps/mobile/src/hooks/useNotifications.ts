@@ -7,8 +7,9 @@ import { streetChanges } from "../lib/streetChanges";
 export type Notice = {
   id: string;
   event_id: string;
+  pin_id?: string;
   title: string;
-  kind: "changed" | "canceled" | "mention";
+  kind: "changed" | "canceled" | "mention" | "pin_changed" | "pin_closed";
   created_at: string;
   read: boolean;
 };

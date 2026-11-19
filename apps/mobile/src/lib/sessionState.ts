@@ -1,3 +1,4 @@
+import { clearDenshinDraft } from "./denshinDraft";
 import { clearEventEdit } from "./eventEditDraft";
 import { cancelPinPlacement } from "./pinPlacement";
 import { localBlocks } from "./localBlocks";
@@ -21,6 +22,7 @@ export const sessionState = {
     if (state.ready && !changed) return;
     if (changed) {
       clearDraft();
+      clearDenshinDraft();
       clearEventEdit();
       cancelPinPlacement();
       localBlocks.clear();

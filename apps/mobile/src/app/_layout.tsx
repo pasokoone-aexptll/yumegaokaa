@@ -96,6 +96,18 @@ export default function Layout() {
               }}
             />
             <Stack.Screen
+              name="map-pin"
+              options={{
+                presentation: "formSheet",
+                sheetAllowedDetents: [0.5, 1],
+                sheetInitialDetentIndex: 0,
+                sheetGrabberVisible: true,
+                sheetExpandsWhenScrolledToEdge: true,
+                sheetLargestUndimmedDetentIndex: 0,
+                contentStyle: { backgroundColor: "transparent" },
+              }}
+            />
+            <Stack.Screen
               name="pins/create"
               options={{
                 presentation: "formSheet",
@@ -103,7 +115,7 @@ export default function Layout() {
                 sheetInitialDetentIndex: 0,
                 sheetGrabberVisible: true,
                 sheetCornerRadius: Platform.OS === "android" ? 28 : undefined,
-                contentStyle: { backgroundColor: "white" },
+                contentStyle: { backgroundColor: "transparent" },
               }}
             />
             <Stack.Screen

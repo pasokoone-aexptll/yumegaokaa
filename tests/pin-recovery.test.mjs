@@ -78,7 +78,7 @@ test("restore uncertain event and resend the identical body after a restart", as
     }
     if (id === "react") return react;
     if (id === "expo-router")
-      return { router: { replace: (r) => routes.push(r) } };
+      return { useRouter: () => ({ replace: (r) => routes.push(r) }) };
     if (id.includes("pinDraft"))
       return {
         usePinDraft: () => draft,
@@ -142,10 +142,10 @@ for (const scenario of ["empty", "completed", "offline"]) {
         };
       if (id === "expo-router")
         return {
-          router: {
+          useRouter: () => ({
             back: () => routes.push("back"),
             replace: (r) => routes.push(r),
-          },
+          }),
         };
       if (id.includes("pinDraft"))
         return {

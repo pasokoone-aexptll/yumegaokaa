@@ -1,426 +1,237 @@
-import { SheetChrome } from "../../components/SheetChrome";
-import { beginPinPlacement } from "../../lib/pinPlacement";
-import { EventDateField } from "../../components/EventDateField";
-import { updateDraft } from "../../lib/pinDraft";
-import { usePinCreation } from "../../hooks/usePinCreation";
-import { useProfile } from "../../hooks/useProfile";
 import {
-  Animated,
-  Keyboard,
-  useWindowDimensions,
-  ActivityIndicator,
   Alert,
-  KeyboardAvoidingView,
-  Platform,
+  Keyboard,
   Pressable,
   ScrollView,
   StyleSheet,
+  Switch,
   Text,
   TextInput,
   View,
 } from "react-native";
-import {
-  useRouter,
-  useNavigation,
-  type NativeStackNavigationProp,
-} from "expo-router";
-import { useLayoutEffect, useState } from "react";
+import { useRouter } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { PinButton } from "../../components/pins/PinButton";
+import { useDenshinEditor } from "../../hooks/useDenshinEditor";
+import { updateDenshinDraft, clearDenshinDraft } from "../../lib/denshinDraft";
+import { beginDenshinPlacement } from "../../lib/pinPlacement";
+import { PinSheet } from "../../components/denshin/PinSheet";
+import {
+  PinHeading,
+  RoundAction,
+  green,
+} from "../../components/denshin/PinParts";
 export default function CreatePin() {
-  const router = useRouter();
-  const {
-    draft,
-    busy,
-    error,
-    recruitBody,
-    publish,
-    revise,
-    locate,
-    discard,
-    locked,
-    restoring,
-  } = usePinCreation();
-  const navigation =
-    useNavigation<
-      NativeStackNavigationProp<Record<string, object | undefined>>
-    >();
-  const { width } = useWindowDimensions();
-  const [slide] = useState(
-    () => new Animated.Value(draft.kind === "event" ? -width : 0),
-  );
-  const [bar] = useState(
-    () => new Animated.Value(draft.kind === "event" ? 1 : 0),
-  );
-  const [switching, setSwitching] = useState(false);
-  const { profile } = useProfile();
-  const insets = useSafeAreaInsets();
-  const { kind, title, description, starts, ends, location, capacity } = draft;
-  const disabled = busy || locked || switching;
-  useLayoutEffect(() => {
-    navigation.setOptions({
-      sheetAllowedDetents: Platform.OS === "android" ? [0.57, 0.75] : [kind === "event" ? 0.75 : 0.57],
-      sheetLargestUndimmedDetentIndex: "none",
-    });
-  }, [kind, navigation]);
-
-  function switchKind(value: "event" | "recruitment") {
-    if (disabled || value === kind) return;
-    Keyboard.dismiss();
-    setSwitching(true);
-    updateDraft({ kind: value });
-    Animated.parallel([
-      Animated.timing(bar, {
-        toValue: value === "event" ? 1 : 0,
-        duration: 220,
-        useNativeDriver: true,
-      }),
-      Animated.timing(slide, {
-        toValue: value === "event" ? -width : 0,
-        duration: 220,
-        useNativeDriver: true,
-      }),
-    ]).start(() => setSwitching(false));
-  }
-  function confirmDiscard() {
-    Alert.alert(
-      "下書きを破棄しますか？",
-      "送信済みの場合は作成結果を確認します。",
-      [
-        { text: "戻る", style: "cancel" },
-        {
-          text: "破棄",
-          style: "destructive",
-          onPress: () => {
-            void discard();
-          },
+  const router = useRouter(),
+    insets = useSafeAreaInsets();
+  const { draft, busy, locked, error, save, revise } = useDenshinEditor();
+  const disabled = busy || locked;
+  function close() {
+    if (busy) return;
+    if (locked) {
+      void revise();
+      return;
+    }
+    Alert.alert("編集を閉じますか？", "保存していない内容を破棄します。", [
+      { text: "戻る", style: "cancel" },
+      {
+        text: "破棄",
+        style: "destructive",
+        onPress: () => {
+          clearDenshinDraft();
+          router.back();
         },
-      ],
-    );
+      },
+    ]);
   }
-  function renderForm(kind: "event" | "recruitment") {
-    return (
-      <ScrollView
-        style={{ flex: 1 }}
-        contentInsetAdjustmentBehavior="never"
-        keyboardShouldPersistTaps="handled"
-        keyboardDismissMode="interactive"
-        contentContainerStyle={s.content}
-      >
-        {restoring ? (
-          <ActivityIndicator />
-        ) : (
-          <View style={s.form}>
-            <View style={s.preview}>
-              <View style={s.bubble}>
-                <Text numberOfLines={1} style={s.name}>
-                  {profile?.display_name ?? "…"}
-                </Text>
-              </View>
-              <View style={s.tail} />
-            </View>
-            <View style={s.fields}>
-              <TextInput
-                accessibilityLabel="ピンの題名"
-                editable={!disabled}
-                style={s.input}
-                placeholderTextColor="#00000033"
-                placeholder={
-                  kind === "event" ? "オフ会名を入力" : "募集ピン名を入力"
-                }
-                maxLength={50}
-                value={title}
-                onChangeText={(title) => updateDraft({ title })}
-              />
-              {kind === "event" ? (
-                <>
-                  <View
-                    style={{
-                      backgroundColor: "#00000008",
-                      borderRadius: 10,
-                      overflow: "hidden",
-                    }}
-                  >
-                    <EventDateField
-                      compact
-                      label="開始"
-                      value={starts}
-                      disabled={disabled}
-                      onChange={(starts) => updateDraft({ starts })}
-                    />
-                    <EventDateField
-                      compact
-                      label="終了"
-                      value={ends}
-                      disabled={disabled}
-                      suggested={
-                        Number.isFinite(Date.parse(starts))
-                          ? new Date(Date.parse(starts) + 3600000).toISOString()
-                          : undefined
-                      }
-                      onChange={(ends) => updateDraft({ ends })}
-                    />
-                  </View>
-                  <TextInput
-                    accessibilityLabel="説明"
-                    editable={!disabled}
-                    style={[s.input, s.description]}
-                    multiline
-                    value={description}
-                    onChangeText={(description) => updateDraft({ description })}
-                    placeholder="説明を追加"
-                    placeholderTextColor="#00000033"
-                    maxLength={1000}
-                  />
-                  <View style={s.capacity}>
-                    <Text style={s.hint}>定員</Text>
-                    <TextInput
-                      accessibilityLabel="定員（1〜100人）"
-                      editable={!disabled}
-                      style={[s.input, { flex: 1 }]}
-                      keyboardType="number-pad"
-                      value={capacity}
-                      onChangeText={(capacity) => updateDraft({ capacity })}
-                    />
-                    <Text style={s.hint}>人</Text>
-                  </View>
-                  <Text style={s.hint}>
-                    {location
-                      ? `開催場所 ${location[1].toFixed(5)}, ${location[0].toFixed(5)}`
-                      : "開催場所を選択してください"}
-                  </Text>
-                </>
-              ) : (
-                <>
-                  <Text style={s.hint}>今のあなたの位置情報</Text>
-                  <Text style={s.hint}>
-                    現在地を公開します。募集は20分または退出で終了します。
-                  </Text>
-                  <Pressable
-                    disabled={busy}
-                    onPress={() => {
-                      void locate();
-                    }}
-                  >
-                    <Text style={s.link}>
-                      {busy
-                        ? "現在地を確認中…"
-                        : recruitBody
-                          ? "現在地を再確認"
-                          : "公開する現在地を確認"}
-                    </Text>
-                  </Pressable>
-                  {recruitBody && (
-                    <Text style={s.hint}>
-                      {Number(recruitBody.latitude).toFixed(5)},{" "}
-                      {Number(recruitBody.longitude).toFixed(5)}
-                    </Text>
-                  )}
-                </>
-              )}
-              {!!error && (
-                <Text accessibilityRole="alert" style={s.error}>
-                  {error}
-                </Text>
-              )}
-              {locked && (
-                <Pressable
-                  disabled={busy}
-                  onPress={() => {
-                    void revise();
-                  }}
-                >
-                  <Text style={s.link}>前回の送信を確認して入力し直す</Text>
-                </Pressable>
-              )}
-            </View>
-          </View>
-        )}
-      </ScrollView>
-    );
+  function publish() {
+    if (
+      draft.original?.recruiting &&
+      !draft.recruiting &&
+      draft.original.count > 0 &&
+      !locked
+    )
+      Alert.alert(
+        "募集を終了しますか？",
+        "参加予定・現地にいる人を解除し、終了を通知します。メッセージは残ります。",
+        [
+          { text: "戻る", style: "cancel" },
+          { text: "終了して保存", onPress: () => void save(true) },
+        ],
+      );
+    else void save();
   }
   return (
-    <KeyboardAvoidingView
-      collapsable={false}
-      style={s.root}
-      behavior={Platform.OS === "ios" ? "padding" : undefined}
-    >
-      <SheetChrome expanded={kind === "event"} />
-      <View collapsable={false} style={s.header}>
-        <Text style={s.heading}>ピンを追加します</Text>
-      </View>
-      <View collapsable={false} style={s.tabs}>
-        <Animated.View
-          style={{
-            position: "absolute",
-            bottom: 0,
-            left: 20,
-            width: (width - 40) / 2,
-            height: 2,
-            backgroundColor: "#008cff",
-            transform: [
-              {
-                translateX: bar.interpolate({
-                  inputRange: [0, 1],
-                  outputRange: [0, (width - 40) / 2],
-                }),
-              },
-            ],
-          }}
-        />
-        {(
-          [
-            ["recruitment", "募集ピンを作る"],
-            ["event", "オフ会通知"],
-          ] as const
-        ).map(([value, label]) => (
-          <Pressable
-            key={value}
-            accessibilityRole="tab"
-            accessibilityState={{ selected: kind === value, disabled }}
-            disabled={disabled}
-            onPress={() => switchKind(value)}
-            style={s.tab}
-          >
-            <Text style={[s.tabText, kind === value && { color: "#008cff" }]}>
-              {label}
-            </Text>
-          </Pressable>
-        ))}
-      </View>
-      <View
-        collapsable={false}
-        style={{ flex: 1, minHeight: 0, overflow: "hidden" }}
-      >
-        <Animated.View
-          style={{
-            flex: 1,
-            width: width * 2,
-            flexDirection: "row",
-            transform: [{ translateX: slide }],
-          }}
-        >
-          <View style={{ width }}>{renderForm("recruitment")}</View>
-          <View style={{ width }}>{renderForm("event")}</View>
-        </Animated.View>
-      </View>
-      <View style={[s.footer, { paddingBottom: Math.max(12, insets.bottom) }]}>
-        {kind === "event" && (
-          <PinButton
-            secondary
-            title="場所を選択"
-            disabled={disabled}
-            onPress={() => {
-              beginPinPlacement(location);
-              router.dismissTo("/(tabs)");
-              Keyboard.dismiss();
-            }}
-          />
-        )}
+    <PinSheet>
+      <View style={s.header}>
+        <PinHeading suffix={draft.id ? "PINを編集" : "PINを作成"} />
         <View style={s.actions}>
-          <View style={{ flex: 1 }}>
-            <PinButton
-              title="作成"
-              loading={busy}
-              disabled={busy || !title.trim()}
-              onPress={publish}
+          <RoundAction
+            label="閉じる"
+            glyph="×"
+            onPress={close}
+            disabled={busy}
+          />
+          <RoundAction
+            label="保存"
+            glyph="✓"
+            onPress={publish}
+            disabled={busy}
+            active={!!draft.body.trim() && !!draft.location}
+          />
+        </View>
+      </View>
+      <ScrollView
+        keyboardShouldPersistTaps="handled"
+        keyboardDismissMode="interactive"
+        contentContainerStyle={[
+          s.content,
+          { paddingBottom: insets.bottom + 28 },
+        ]}
+      >
+        <TextInput
+          accessibilityLabel="ステータスメッセージ"
+          placeholder="ステータスメッセージ"
+          placeholderTextColor="#ffffff55"
+          multiline
+          maxLength={500}
+          editable={!disabled}
+          value={draft.body}
+          onChangeText={(body) => updateDenshinDraft({ body })}
+          style={s.input}
+        />
+        <View style={s.group}>
+          <View style={s.row}>
+            <Text style={s.label}>最大募集人数</Text>
+            <Switch
+              accessibilityLabel="最大募集人数を設定"
+              disabled={disabled}
+              value={draft.limited}
+              onValueChange={(limited) => updateDenshinDraft({ limited })}
+              trackColor={{ true: green }}
             />
           </View>
-          <View style={{ flex: 1 }}>
-            <PinButton
-              title="破棄"
-              destructive
-              disabled={busy}
-              onPress={confirmDiscard}
+          {draft.limited && (
+            <View style={s.counter}>
+              <RoundAction
+                label="人数を減らす"
+                glyph="−"
+                disabled={
+                  disabled ||
+                  draft.capacity <= Math.max(1, draft.original?.count ?? 0)
+                }
+                onPress={() =>
+                  updateDenshinDraft({ capacity: draft.capacity - 1 })
+                }
+              />
+              <Text
+                accessibilityLabel={`上限${draft.capacity}人`}
+                style={s.number}
+              >
+                {draft.capacity}
+              </Text>
+              <RoundAction
+                label="人数を増やす"
+                glyph="＋"
+                disabled={disabled || draft.capacity >= 100}
+                onPress={() =>
+                  updateDenshinDraft({ capacity: draft.capacity + 1 })
+                }
+              />
+            </View>
+          )}
+          <View style={s.row}>
+            <Text style={s.label}>募集モード</Text>
+            <Switch
+              accessibilityLabel="募集モード"
+              disabled={disabled}
+              value={draft.recruiting}
+              onValueChange={(recruiting) => updateDenshinDraft({ recruiting })}
+              trackColor={{ true: green }}
             />
           </View>
         </View>
-      </View>
-    </KeyboardAvoidingView>
+        <Pressable
+          accessibilityRole="button"
+          disabled={disabled || !!draft.original?.count}
+          style={[
+            s.group,
+            { padding: 20, opacity: draft.original?.count ? 0.45 : 1 },
+          ]}
+          onPress={() => {
+            Keyboard.dismiss();
+            beginDenshinPlacement(draft.location);
+            router.dismissTo("/(tabs)");
+          }}
+        >
+          <Text style={s.label}>
+            ⌖ {draft.location ? "マップを変更する" : "マップを挿入"}
+          </Text>
+          {draft.location && <Text style={s.hint}>場所を選択済み</Text>}
+        </Pressable>
+        {!!draft.original?.count && (
+          <Text style={s.hint}>参加者がいる間は場所を変更できません。</Text>
+        )}
+        <Text style={s.hint}>作成から24時間で消えます。1日3個まで。</Text>
+        {!!error && (
+          <Text accessibilityRole="alert" style={s.error}>
+            {error}
+          </Text>
+        )}
+        {locked && (
+          <Pressable disabled={busy} onPress={() => void revise()}>
+            <Text style={s.label}>送信結果を確認して編集に戻る</Text>
+          </Pressable>
+        )}
+      </ScrollView>
+    </PinSheet>
   );
 }
 const s = StyleSheet.create({
-  root: { flex: 1, backgroundColor: "white" },
   header: {
-    paddingTop: Platform.OS === "android" ? 4 : 24,
-    paddingBottom: 16,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  heading: { fontSize: 20, fontWeight: "600", color: "#00000099" },
-  trash: {
-    position: "absolute",
-    right: 18,
-    top: 19,
-    backgroundColor: "#ff354b29",
-    borderRadius: 20,
-    padding: 8,
-  },
-  tabs: {
     flexDirection: "row",
-    borderBottomWidth: 1,
-    borderColor: "#0000000a",
-    paddingHorizontal: 20,
-  },
-  tab: {
-    flex: 1,
     alignItems: "center",
-    paddingVertical: 12,
-    borderBottomWidth: 2,
-    borderColor: "transparent",
+    justifyContent: "space-between",
+    padding: 20,
+    paddingTop: 24,
   },
-  selected: { borderColor: "#008cff" },
-  tabText: { fontSize: 18, fontWeight: "600", color: "#00000033" },
-  content: {
-    flexGrow: 1,
-    padding: 18,
-    paddingBottom: 28,
-    gap: 14,
-    paddingTop: 26,
-  },
-  form: { flexDirection: "row", gap: 16 },
-  preview: {
-    width: 78,
-    height: 80,
-    backgroundColor: "#00000008",
-    borderRadius: 18,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  bubble: {
-    backgroundColor: "white",
-    padding: 7,
-    borderRadius: 24,
-    borderCurve: "continuous",
-    shadowColor: "#000",
-    shadowOpacity: 0.12,
-    shadowRadius: 6,
-    shadowOffset: { width: 0, height: 4 },
-    maxWidth: 76,
-  },
-  tail: {
-    width: 10,
-    height: 10,
-    backgroundColor: "white",
-    transform: [{ rotate: "45deg" }],
-    marginTop: -5,
-  },
-  name: { color: "#609aff", fontSize: 14 },
-  fields: { flex: 1, gap: 7 },
-  input: {
-    backgroundColor: "#00000008",
-    borderRadius: 10,
-    borderCurve: "continuous",
-    paddingHorizontal: 10,
-    paddingVertical: 8,
-    color: "#000000aa",
-    fontSize: 18,
-  },
-  description: { minHeight: 48, textAlignVertical: "top" },
-  capacity: { flexDirection: "row", gap: 8, alignItems: "center" },
-  hint: { color: "#00000066", fontSize: 14 },
-  link: { color: "#008cff", fontSize: 14, paddingVertical: 6 },
-  error: { color: "#cf3044", fontSize: 14 },
-  footer: { paddingHorizontal: 24, paddingTop: 8, gap: 10 },
   actions: { flexDirection: "row", gap: 10 },
+  content: { padding: 22, gap: 24 },
+  input: {
+    borderRadius: 26,
+    backgroundColor: "#ffffff22",
+    padding: 20,
+    fontSize: 21,
+    color: "white",
+    minHeight: 66,
+    maxHeight: 190,
+    textAlignVertical: "top",
+  },
+  group: { borderRadius: 28, backgroundColor: "#ffffff22", overflow: "hidden" },
+  row: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    padding: 18,
+    gap: 12,
+  },
+  label: { color: "#ffffffdd", fontSize: 18 },
+  hint: { fontSize: 13, color: "#ffffff88", marginTop: 5 },
+  counter: {
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    gap: 24,
+    padding: 16,
+    borderTopWidth: StyleSheet.hairlineWidth,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderColor: "#ffffff33",
+  },
+  number: {
+    color: "white",
+    fontSize: 40,
+    fontWeight: "600",
+    minWidth: 70,
+    textAlign: "center",
+  },
+  error: { color: "#ffd0d0", fontSize: 15 },
 });

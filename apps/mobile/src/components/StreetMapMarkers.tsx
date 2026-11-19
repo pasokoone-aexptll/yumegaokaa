@@ -1,3 +1,9 @@
+import { DenshinPin, pinCount } from "../lib/denshin";
+import {
+  PeopleStack,
+  RecruitmentSign,
+  RecruitmentGlyph,
+} from "./denshin/PinParts";
 import { RecruitmentIcon } from "./RecruitmentIcon";
 import { UIIcon } from "./icons/UIIcon";
 import {
@@ -12,7 +18,7 @@ import { Avatar } from "./Avatar";
 import { Marker } from "./map/PlatformMap";
 import { useRouter } from "expo-router";
 import { requireNativeModule } from "expo-modules-core";
-import { Platform, View } from "react-native";
+import { Platform, View, Text } from "react-native";
 import { StreetEvent, countdown } from "../lib/events";
 import { Recruitment } from "../lib/recruitments";
 import { liveCells } from "../lib/presence";
@@ -20,22 +26,40 @@ import { streetMapStyles as styles } from "./streetMapStyles";
 
 export function StreetMapMarkers({
   cells,
+  pins = [],
   events,
   recruitments,
   now,
   onSelect,
 }: {
   cells: ReturnType<typeof liveCells>;
+  pins?: DenshinPin[];
   events: StreetEvent[];
   recruitments: Recruitment[];
   now: number;
   onSelect: (longitude: number, latitude: number) => void;
 }) {
   const router = useRouter();
-  function openDetail(kind: "event" | "recruitment", id: string, longitude: number, latitude: number) {
-    if (Platform.OS === "android") void requireNativeModule("PresenceNative").selectionHaptic().catch(() => {});
+  function openDetail(
+    kind: "event" | "recruitment" | "denshin",
+    id: string,
+    longitude: number,
+    latitude: number,
+  ) {
+    if (Platform.OS === "android")
+      void requireNativeModule("PresenceNative")
+        .selectionHaptic()
+        .catch(() => {});
     onSelect(longitude, latitude);
-    router.push({ pathname: kind === "event" ? "/map-event" : "/map-recruitment", params: { id, fromMap: "1" } });
+    router.push({
+      pathname:
+        kind === "denshin"
+          ? "/map-pin"
+          : kind === "event"
+            ? "/map-event"
+            : "/map-recruitment",
+      params: { id, fromMap: "1" },
+    });
   }
   return (
     <>
@@ -97,22 +121,107 @@ export function StreetMapMarkers({
           </View>
         </Marker>
       ))}
-      {events
-        .filter((e) => Date.parse(e.ends_at) > now)
-        .map((event) => (
-          <Marker key={event.id} snapshotKey={event.title + countdown(event, now)} lngLat={[event.longitude, event.latitude]}
-            onPress={Platform.OS === "android" ? () => openDetail("event", event.id, event.longitude, event.latitude) : undefined}>
+      {pins
+        .filter((p) => Date.parse(p.expires_at) > now)
+        .map((pin) => (
+          <Marker
+            key={pin.id}
+            snapshotKey={JSON.stringify(pin)}
+            lngLat={[pin.longitude, pin.latitude]}
+            onPress={
+              Platform.OS === "android"
+                ? () =>
+                    openDetail("denshin", pin.id, pin.longitude, pin.latitude)
+                : undefined
+            }
+          >
             <MarkerFeedback
               pointerEvents={Platform.OS === "android" ? "none" : "auto"}
               accessibilityRole="button"
-              onPress={Platform.OS === "android" ? undefined : () => openDetail("event", event.id, event.longitude, event.latitude)}
+              accessibilityLabel={pin.body}
+              onPress={
+                Platform.OS === "android"
+                  ? undefined
+                  : () =>
+                      openDetail("denshin", pin.id, pin.longitude, pin.latitude)
+              }
+              style={{ alignItems: "center", maxWidth: 210, padding: 8 }}
+            >
+              {pin.recruiting && (
+                <Text style={{ color: "white", fontSize: 11 }}>
+                  {pin.display_name} ・ {pinCount(pin)}
+                </Text>
+              )}
+              <PinBubble>
+                <View
+                  style={{ flexDirection: "row", alignItems: "center", gap: 4 }}
+                >
+                  {pin.recruiting && <RecruitmentGlyph />}
+                  <View style={{ flexShrink: 1 }}>
+                    <PinGradientText
+                      colors={
+                        pin.recruiting ? undefined : ["#858990", "#a5a7ac"]
+                      }
+                    >
+                      {pin.body}
+                    </PinGradientText>
+                  </View>
+                </View>
+              </PinBubble>
+              {pin.recruiting ? (
+                <View style={{ alignItems: "center" }}>
+                  <PeopleStack people={pin.people} />
+                  <RecruitmentSign />
+                </View>
+              ) : (
+                <Avatar
+                  shape="square"
+                  path={pin.avatar_path}
+                  name={pin.display_name}
+                  size={54}
+                />
+              )}
+            </MarkerFeedback>
+          </Marker>
+        ))}
+      {events
+        .filter((e) => Date.parse(e.ends_at) > now)
+        .map((event) => (
+          <Marker
+            key={event.id}
+            snapshotKey={event.title + countdown(event, now)}
+            lngLat={[event.longitude, event.latitude]}
+            onPress={
+              Platform.OS === "android"
+                ? () =>
+                    openDetail(
+                      "event",
+                      event.id,
+                      event.longitude,
+                      event.latitude,
+                    )
+                : undefined
+            }
+          >
+            <MarkerFeedback
+              pointerEvents={Platform.OS === "android" ? "none" : "auto"}
+              accessibilityRole="button"
+              onPress={
+                Platform.OS === "android"
+                  ? undefined
+                  : () =>
+                      openDetail(
+                        "event",
+                        event.id,
+                        event.longitude,
+                        event.latitude,
+                      )
+              }
               style={{ alignItems: "center", maxWidth: 180 }}
             >
               <PinCountdown>{countdown(event, now)}</PinCountdown>
               <PinBubble>
-                <PinGradientText
-                  colors={pinRed}
-                >{event.title}</PinGradientText>
+                <PinGradientText colors={pinRed}>{event.title}</PinGradientText>
               </PinBubble>
               <View style={{ alignItems: "center" }}>
                 <EventCloudPin />
@@ -123,11 +232,35 @@ export function StreetMapMarkers({
       {recruitments
         .filter((p) => Date.parse(p.expires_at) > now)
         .map((pin) => (
-          <Marker key={pin.id} snapshotKey={pin.display_name + pin.icon_path} lngLat={[pin.longitude, pin.latitude]}
-            onPress={Platform.OS === "android" ? () => openDetail("recruitment", pin.id, pin.longitude, pin.latitude) : undefined}>
+          <Marker
+            key={pin.id}
+            snapshotKey={pin.display_name + pin.icon_path}
+            lngLat={[pin.longitude, pin.latitude]}
+            onPress={
+              Platform.OS === "android"
+                ? () =>
+                    openDetail(
+                      "recruitment",
+                      pin.id,
+                      pin.longitude,
+                      pin.latitude,
+                    )
+                : undefined
+            }
+          >
             <MarkerFeedback
               pointerEvents={Platform.OS === "android" ? "none" : "auto"}
-              onPress={Platform.OS === "android" ? undefined : () => openDetail("recruitment", pin.id, pin.longitude, pin.latitude)}
+              onPress={
+                Platform.OS === "android"
+                  ? undefined
+                  : () =>
+                      openDetail(
+                        "recruitment",
+                        pin.id,
+                        pin.longitude,
+                        pin.latitude,
+                      )
+              }
               accessibilityRole="button"
             >
               <PinBubble>
