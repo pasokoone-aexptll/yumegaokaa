@@ -1,5 +1,33 @@
 # 技術検証と実装状況
 
+## 2026-11-20 夜間のFigma全画面・登録動画照合（R03/R04/R10〜R14/R19）
+
+- 最新合意を反映：未使用QR削除で発行枠を戻す、登録済みは枠を戻さず停止。移行055をローカル/クラウドへ適用済み。専用DBトランザクションで再発行は同じID/新トークン、削除後残数回復、新規発行、登録後削除は残数維持＋recipient停止、上限/停止方針/内部関数権限を確認してrollback。既存会員を実停止していない。Simulatorで実招待発行に成功し「残り4招待」、再表示可能QRとHistoryを確認。
+- 移行056はヘッダー用の全入街者匿名画像を追加。観測のない通常/ゴーストを含む2人が列に入り、地図セル0件のまま、終了で1人、停止利用者は拒否、ID/座標/モード非公開を専用DB試験で確認。ローカル/クラウド適用済み。地図セルの10分鮮度条件は維持。Simulatorの常設吹き出しで1人分のPool画像を確認。
+- Home/Map：ロゴ/モード/見出し/本文/画像/チケット/雲の位置と寸法、チャットgradient/画像/入力高/送信矢印/最新chevronを修正。HomeとMapで公開モード切替待ちの表示が不一致だったため、両方ともpending_modeを優先して整合。toastは単一の予約領域へ集約し、native glassの親opacityを動かさず中身だけfadeして「文字だけ」の描画を防ぐ。NFC地点はpassive marker・onPress無操作へ。地図の地点や境界は変更しない。マーカーの直接タップ前後のカメラ比較は未取得（AXクリック先が上部overlayに隠れたため合格証拠にしない）。
+- PIN：編集をrouter.replaceして詳細と重ねない。実PINでHome→Map詳細→編集→×→Mapを確認。赤いnative glass削除を編集内に表示、削除実行なし。上/右16ptの閉じる余白と右/下28ptの固定編集、編集52pt（実円は約49pt）へ。募集行52pt/16pt文字/21pt素材を維持。募集バッジ本文17pt・PeopleStack33pt/重なり20pt・+人数のnative blurで画像の透け過ぎを修正。Map背景のfixture半高→全高→半高を実操作し、背景色が灰色に固定されないことを確認。
+- 画面照合：通知一覧/実ドラッグの日付固定/詳細、Block候補/一覧、Account6桁入力→自動成功、運営Formをfixtureで確認。運営Toggle内RNHostViewの提供SVGが消える問題を、外側HStackへの配置で修正し実描画を確認。Profile編集の戻る位置、Pool見出し、薄色説明、QR/History間隔を修正。QR中央人物を拡大し、H訂正/白い保護領域/quiet zoneを維持。サンプルUUIDのQRはApple Visionで一致したpayloadへ復号できた。実カメラ読取の代用にはしない。
+- 登録：Swift/AndroidのOTP送信へcreateAccountを渡し、既存ログインではfalse。6桁の実認証後だけ成功演出を表示し、1100ms後にセッション変化を通知。本人写真必須・Pool必須を保持し、定期account_access取得で写真未選択を飛ばさない。新規/既存の文言と操作を分ける。実メール/実アカウント作成は今回未実行。
+- 元動画：原本56.627秒/60fps。ドット書体は端末原本KH-Dot-Kodenmachou-16-Kiと動画の字形を比較して採用。配布元の付属README/SIL OFL1.1を同梱しexpo-fontへ登録。開始の人物/開口/影は提供SVGを変形・透過、メールのGIFと招待こたつは提供素材の拡大/切取りを修正。名前/写真登録の@/雲/ドット見出しを再配置。完了の録画116〜128秒を元動画48〜54秒等と並べ、扉→中央→画像拡大→名前の6.5秒とホームゲージを照合。登録コード下のゲージの意味はQ-UI01回答待ち、独断で認証期限を設定しない。
+- 検証：TypeScript成功（最後のHomeMode/こたつ位置変更後も再確認）、Lint0 errors/既存2 warnings（PlacementHandle import/first、usePushNotifications router依存）。login-auth/profile-setup-access/account-onboarding/account-access-offline/invite-qr/presence-headerの14試験成功。055/056のDB試験各1件成功。既存6桁自動認証/メール状態試験結果も再利用。Swiftを含むSimulator Releaseビルド成功。diff --check成功。
+- 通常版：確認フラグを外してSimulatorへ上書き・起動（PID65624）。Homeチケット→招待QR→戻る→Home→Settings、確認メニュー非表示、Home/Mapでpending_mode優先の表示整合、Home PIN→Map詳細→閉じるを確認。地図ドラッグも動作。現在地取得はSimulatorで失敗し標準Alertを表示。NFC地点の直接タップによるカメラ不動はDevice HubのnoWindowsAvailable/cgWindowNotFoundで未確認のまま。`normal-map-final.png`を保存し、端末の既存セッション/データは保持。
+- 証拠：`/tmp/yumegaoka-final-figma-20261120/` のHome/Map/PIN/通知/Profile/Pool/Invite/Block/メール/運営画像、`onboarding-review.mp4`、`30-onboarding-email.png`、`30-invite-receive.png`。実招待QR画像は実トークンを含むためGitへ格納しない。29状態の対応はUI_REVIEW_STATUS。
+- 限界：実データ/ネイティブmaterial/OSのsafe areaによる差、実メール/QRカメラ/NFC/運営MFA/別会員参加/全体アクセシビリティは別途。fixtureを実API/実機合格と混同しない。今回追加変更はiPhoneへ転送しない。全29画面のピクセル完全一致は未宣言。
+- MVP進捗は実装29/33（87.9%）、統合27/33（81.8%）、実機11/33（33.3%）、DONE27/33（81.8%）、BLOCKED3/33（9.1%）。固定残量ローカル4→4・外部3→3。既存Figma必須範囲の調整で分母追加なし、総工数は未再計測。
+
+## 2026-11-20 iPhone再署名・PINの情報階層とFigma余白（R03/R12/R19・T032）
+
+- 実機を先行：期限切れの開発署名を更新。最初のgeneric destinationで生成されたprofileには今回のiPhoneが含まれず、インストールが0xe8008012で失敗。接続先をiPhone 17のUDIDへ指定して再ビルドし、登録済み端末を含むprofileで上書き成功。既存アプリやデータは削除していない。ユーザーが署名を信頼し「開けた」と回答、PID17198を確認。
+- 同じ署名でUI修正版もReleaseビルド・上書き・起動成功。最終実機PID17248の生存を再読確認。bundleは`jp.yumegaoka.development`、teamは既存`8RHW9L5LBF`、profile期限は**2026-11-27 04:24:37 JST**。クラウド接続・FIELD_TRIALを維持し、UI_REVIEWフラグは付けていない。実NFC資格や全機能の実機合格を意味しない。
+- 比較対象：Downloads/figmaaaaaaaa内の139（本人PIN）、137/143（半高/全高）、141/142（人数欄）、155（設定）、160（招待）と最新のユーザー添付2枚。募集モードを本文見出しの22ptから16pt/mediumへ分離し、提供素材のrounded非常口21ptを追加。行高52pt・radius26・白15%へ。PIN本文と人数の間隔、現在人数と最大人数の大小、名簿見出しの濃さを調整。主催者別枠・現地人数から除外する承認済み仕様は維持。
+- PIN見出しはロゴの下辺へPINを合わせ、編集時はロゴ60pt/PIN14pt、詳細は72pt/16pt。閉じる等のHostを44ptに揃え、右端余白を調整。募集吹き出しは尾を除いた本体がアバターの中央に並ぶよう補正。全高時は標準sheetが確保する上端余白に追加paddingを重ねない。実ガラス背景・標準Sheetは維持。
+- 作成/編集：メッセージ欄52pt/18pt、設定行52pt/16pt、グループradius26。人数の初期値を64×32ptカプセルと提供chevronの上下表示へ、区切り線をラベル位置から開始。展開時の標準detentを0.77へ合わせ、地図欄までの距離を調整。「マップを変更する」と重複する「場所を選択済み」だけ除去。期限・人数による場所制限・編集内削除・即破棄は維持。
+- 設定はアバター下の名前と一覧を6pt上へ、Logout前の間隔をさらに6pt短縮。招待Historyは54pt行へ、区切り線をアイコン右から開始。招待の再表示/再発行/利用停止条件には変更なし。
+- Simulator最終通常版：iPhone 18 Pro/iOS27、PID38098。本人PIN半高→全高→半高の背景維持、募集モードのアイコン/文字/行高、固定編集ボタン、人数編集の初期値→展開→×、設定トップ、実QR/Historyの読み込みを目視確認。保存・削除・再発行は実行していない。画像は`/tmp/yumegaoka-figma-refinement-20261120/`の`pin-half.png`、`pin-full.png`、`pin-editor.png`、`pin-editor-expanded.png`、`settings.png`、`invite.png`（招待画像は実トークンを含むためGitへ格納しない）。
+- 検証：TypeScript成功、Lint0 errors/既存3 warnings（PlacementHandle、useInvitations、usePushNotifications）、diff --check成功。Simulator/iphoneosのReleaseビルドとcodesign検証成功。ビルドログは`/tmp/yumegaoka-native-ui-build.log`と`/tmp/yumegaoka-iphone-20261120-build.log`。表示のみの変更でDB/認証ロジックは無変更、前段の対象ロジック試験を再利用。
+- 未確認：最新UIの全29状態の実機操作、実メールOTP、他会員の参加/到着・通知、運営MFA、実カメラQR、実NFC、全画面Dynamic Type/Reduce Transparency。実機インストール/起動と各機能の実機確認を分ける。全29画面の完全一致とは扱わない。
+- MVP進捗は実装29/33（87.9%）、統合27/33（81.8%）、実機11/33（33.3%）、DONE27/33（81.8%）、BLOCKED3/33（9.1%）のまま。固定残量ローカル4→4・外部3→3。既存必須Figma調整の継続で分母追加なし、総残工数は未再計測。
+
 ## 2026-11-20 Toggle実寸・全画面照合の継続・6桁自動認証（R03/R04/R12〜R14/R19）
 
 - Map参加スイッチ：SwiftUI Hostの測定値と画面上のcontrol外形に差があったため、UIKit標準UISwitchをExpoViewで接続。`sizeThatFits`の実寸から四辺4ptの外周を配置し、不透明な明るい緑を使用。3x Simulator画像ではON外周の上下左右がすべて12px。標準thumb/操作/アクセシビリティを維持し、NFC待機を開いただけで参加確定にはしない。

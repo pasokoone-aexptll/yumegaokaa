@@ -39,7 +39,6 @@ export function Notice({
   return (
     <Animated.View
       style={{
-        opacity: appearance,
         transform: [
           {
             translateY: appearance.interpolate({
@@ -61,8 +60,9 @@ export function Notice({
           borderCurve: "continuous",
         }}
       >
-        <View
+        <Animated.View
           style={{
+            opacity: appearance,
             paddingVertical: 8,
             paddingLeft: 16,
             paddingRight: 8,
@@ -124,7 +124,7 @@ export function Notice({
               </Text>
             )}
           </Pressable>
-        </View>
+        </Animated.View>
       </GlassView>
     </Animated.View>
   );

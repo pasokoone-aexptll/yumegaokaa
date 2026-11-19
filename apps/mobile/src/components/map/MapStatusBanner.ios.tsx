@@ -22,7 +22,18 @@ export function MapStatusBanner(props: BannerProps) {
     return () => motion.stop();
   }, [props.message, displayed, exit]);
   return displayed ? (
-    <Animated.View style={{ opacity: exit }}>
+    <Animated.View
+      style={{
+        transform: [
+          {
+            translateY: exit.interpolate({
+              inputRange: [0, 1],
+              outputRange: [-12, 0],
+            }),
+          },
+        ],
+      }}
+    >
       <Notice key={displayed} {...props} message={displayed} />
     </Animated.View>
   ) : null;

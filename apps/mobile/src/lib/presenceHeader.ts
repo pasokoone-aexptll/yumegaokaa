@@ -15,3 +15,13 @@ export function visiblePresenceIcons(
     Math.min(total, Math.floor((width - badgeWidth) / (iconSize + gap))),
   );
 }
+
+/** Only the visit-based header expires here; map cells keep their ten-minute rule. */
+export function liveHeaderIcons(
+  groups: { expires_at: string; icons: (string | null)[] }[] | undefined,
+  now: number,
+) {
+  return (groups ?? [])
+    .filter((group) => Date.parse(group.expires_at) > now)
+    .flatMap((group) => group.icons);
+}

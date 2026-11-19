@@ -20,7 +20,7 @@ export function parseInviteQR(value: string): string | null {
     return null;
   }
 }
-/** Four-module quiet zone; H correction; small central white backing, no finder coverage. */
+/** Four-module quiet zone; H correction; central white backing, no finder coverage. */
 export function inviteSvg(code: string): string {
   const { modules } = QRCode.create(invitePayload(code), {
     errorCorrectionLevel: "H",
@@ -59,7 +59,7 @@ export function inviteSvg(code: string): string {
       `<rect x="${x}" y="${y}" width="7" height="7" rx="1.5" fill="#00AF6B"/><rect x="${x + 1}" y="${y + 1}" width="5" height="5" rx="1" fill="white"/><rect x="${x + 2}" y="${y + 2}" width="3" height="3" rx="0.6" fill="#00AF6B"/>`,
     );
   }
-  const size = Math.floor(n * 0.19),
+  const size = Math.floor(n * 0.28),
     left = (side - size) / 2;
   parts.push(
     `<rect x="${left - 0.5}" y="${left - 0.5}" width="${size + 1}" height="${size + 1}" rx="1" fill="white"/>`,

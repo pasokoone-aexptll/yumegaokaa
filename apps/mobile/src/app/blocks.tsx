@@ -108,7 +108,7 @@ export function BlocksView({
               {user.display_name}
             </Text>
             <View
-              style={{ width: name ? "100%" : 66, marginTop: name ? 62 : 0 }}
+              style={{ width: name ? "100%" : 66, marginTop: name ? 70 : 0 }}
             >
               <NativeAction
                 compact={!name}
@@ -180,10 +180,13 @@ export function BlocksView({
             style={{
               color: "rgba(0,0,0,0.25)",
               textAlign: "center",
-              lineHeight: 22,
+              fontFamily: "ui-rounded",
+              fontSize: 12,
+              lineHeight: 18,
             }}
           >
-            ブロックすると相手のチャット・入街ログ・募集を表示しません。街の人数や匿名の気配は変わりません。
+            ブロックすると相手のチャット・入街ログ・募集を表示しません{"\n"}
+            街の人数や匿名の気配は変わりません
           </Text>
         </>
       )}

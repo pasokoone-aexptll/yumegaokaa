@@ -45,7 +45,7 @@ actor APIClient {
   }
   return json
  }
- func sendOTP(email:String) async throws { _ = try await request(path:"/auth/v1/otp",body:["email":email,"create_user":true]) }
+ func sendOTP(email:String,createAccount:Bool = true) async throws { _ = try await request(path:"/auth/v1/otp",body:["email":email,"create_user":createAccount]) }
  func verifyOTP(email:String,code:String) async throws -> [String:Any] {
   authGeneration+=1;let generation=authGeneration
   var body:[String:Any]=["email":email,"token":code,"type":"email"]

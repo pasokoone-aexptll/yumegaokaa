@@ -24,3 +24,15 @@ test("header follows available width and reserves overflow text without a seven-
     assert.equal(n + (50 - n), 50);
   }
 });
+
+test("checked-in header keeps all live visits and expires independently of observations", () => {
+  const now = Date.parse("2026-11-20T00:00:00Z");
+  const groups = [
+    { expires_at: "2026-11-20T00:01:00Z", icons: ["pool-a", null] },
+    { expires_at: "2026-11-20T00:00:00Z", icons: ["expired"] },
+    { expires_at: "2026-11-20T02:00:00Z", icons: ["pool-b"] },
+  ];
+  assert.deepEqual(exports.liveHeaderIcons(groups, now), ["pool-a", null, "pool-b"]);
+  assert.deepEqual(exports.liveHeaderIcons(undefined, now), []);
+  assert.deepEqual(exports.liveHeaderIcons(groups, now + 3 * 3600000), []);
+});

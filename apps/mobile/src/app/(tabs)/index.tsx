@@ -1,3 +1,4 @@
+import { liveHeaderIcons } from "../../lib/presenceHeader";
 import { SplashPlayingContext } from "../../components/LaunchSplash";
 import { initialPitch } from "../../components/map/headerLayout";
 import { IconPressable as Pressable } from "../../components/icons/IconMotion";
@@ -98,6 +99,7 @@ export default function Street() {
     recruitments,
     login,
     nextSendAt,
+    authSuccess,
     exit,
     scan,
     active,
@@ -124,6 +126,11 @@ export default function Street() {
               : "通常モードに切り替えました",
     );
   }
+  useEffect(() => {
+    if (!modeNotice) return;
+    const timer = setTimeout(() => setModeNotice(""), 7440);
+    return () => clearTimeout(timer);
+  }, [modeNotice]);
   const openedRequest = useRef<string | undefined>(undefined);
   useEffect(() => {
     if (
@@ -254,12 +261,11 @@ export default function Street() {
         busy={busy}
         login={login}
         nextSendAt={nextSendAt}
+        authSuccess={authSuccess}
       />
     );
   const cells = snapshot ? liveCells(snapshot, now) : [];
-  const presenceIcons = cells.flatMap((cell) =>
-    cell.clusters.flatMap((cluster) => cluster.icons),
-  );
+  const presenceIcons = liveHeaderIcons(snapshot?.checked_in_icon_groups, now);
   return (
     <View style={styles.root}>
       <StatusBar style="light" />
@@ -340,7 +346,7 @@ export default function Street() {
           onModeChange={changeMode}
           onToggle={(value) => (value ? setSheet("explain") : void exit())}
         />
-        <View style={{ minHeight: 48 }}>
+        <View style={{ height: 72 }}>
           <PresenceHeader icons={presenceIcons} />
         </View>
         <View pointerEvents="box-none" style={{ height: 48 }}>
@@ -354,43 +360,39 @@ export default function Street() {
               zIndex: 2,
             }}
           >
-            <MapStatusBanner message={modeNotice} />
-            {chatRead && (
-              <MapStatusBanner
-                message={chatRead.error}
-                actionLabel="再読み込み"
-                onAction={chatRead.reload}
-                autoDismiss={false}
-              />
-            )}
-            {
-              <MapStatusBanner
-                message={
-                  ["未参加", "気配を観測中"].includes(state.status) ||
-                  /^(ゴーストモード|公開への切替待ち|非公開への切替待ち)/.test(
-                    state.status,
-                  )
-                    ? ""
-                    : state.status
-                }
-              >
-                {state.visit.can_update === false &&
-                  state.visit.state === "active" && (
-                    <Pressable
-                      accessibilityRole="button"
-                      onPress={() => setSheet("explain")}
-                    >
-                      <Text style={styles.link}>
-                        {fieldTrial
-                          ? "現地試験で入街"
-                          : localEntry
-                            ? "開発用の入街を開始"
-                            : "この端末でNFCを読む"}
-                      </Text>
-                    </Pressable>
-                  )}
-              </MapStatusBanner>
-            }
+            <MapStatusBanner
+              message={
+                chatRead?.error ||
+                modeNotice ||
+                (["未参加", "気配を観測中"].includes(state.status) ||
+                /^(ゴーストモード|公開への切替待ち|非公開への切替待ち)/.test(
+                  state.status,
+                )
+                  ? ""
+                  : state.status)
+              }
+              actionLabel={chatRead ? "再読み込み" : undefined}
+              onAction={chatRead?.reload}
+              autoDismiss={!chatRead}
+            >
+              {!chatRead &&
+                !modeNotice &&
+                state.visit.can_update === false &&
+                state.visit.state === "active" && (
+                  <Pressable
+                    accessibilityRole="button"
+                    onPress={() => setSheet("explain")}
+                  >
+                    <Text style={styles.link}>
+                      {fieldTrial
+                        ? "現地試験で入街"
+                        : localEntry
+                          ? "開発用の入街を開始"
+                          : "この端末でNFCを読む"}
+                    </Text>
+                  </Pressable>
+                )}
+            </MapStatusBanner>
           </View>
         </View>
         <View style={{ alignSelf: "flex-end", gap: 10, marginTop: 14 }}>

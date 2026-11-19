@@ -74,7 +74,11 @@ export function useInvitations() {
           expired: Date.parse(item.expires_at) <= Date.now(),
         })),
       );
-      setStatus(issuanceFailed ? "QRの発行を確認できませんでした。もう一度確認してください。" : "");
+      setStatus(
+        issuanceFailed
+          ? "QRの発行を確認できませんでした。もう一度確認してください。"
+          : "",
+      );
       setIssued(result.current ?? null);
     } catch {
       if (gen === generation.current && seq === request.current) {
@@ -130,7 +134,7 @@ export function useInvitations() {
           () => null,
         ));
         if (gen !== generation.current) return;
-        setPending(!!(await pendingCommand("invite_create")));
+        setPending(pending);
       }
       if (op === "invite_revoke") await refresh();
       if (gen !== generation.current) return;

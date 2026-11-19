@@ -101,6 +101,12 @@ function Scenes() {
     <SafeAreaView style={{ flex: 1, backgroundColor: "white" }}>
       <ScrollView contentContainerStyle={{ padding: 26, gap: 16 }}>
         <Text>Simulator視覚確認 · 実データの変更なし</Text>
+        <Pressable
+          onPress={() => router.push("/review-onboarding")}
+          style={{ padding: 16 }}
+        >
+          <Text>30 オンボーディング動画</Text>
+        </Pressable>
         {scenarios.map(([key, label]) => (
           <Pressable
             key={key}
@@ -122,9 +128,14 @@ function Scenes() {
         {["half", "full", "planned", "confirmed", "normal"].map((scene) => (
           <Pressable
             key={scene}
-            onPress={() =>
-              router.push({ pathname: "/review-pin", params: { scene } })
-            }
+            onPress={() => {
+              router.navigate("/(tabs)");
+              setTimeout(
+                () =>
+                  router.push({ pathname: "/review-pin", params: { scene } }),
+                350,
+              );
+            }}
             style={{ padding: 16 }}
           >
             <Text>PIN {scene}</Text>

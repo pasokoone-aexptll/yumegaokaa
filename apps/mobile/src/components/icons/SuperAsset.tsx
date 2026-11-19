@@ -10,6 +10,7 @@ export function SuperAsset({
   height = size,
   tint,
   opacity = 1,
+  rotation = 0,
 }: {
   name: SuperAssetName;
   size?: number;
@@ -17,6 +18,7 @@ export function SuperAsset({
   height?: number;
   tint?: string;
   opacity?: number;
+  rotation?: number;
 }) {
   const source = assets[name];
   const xml = tint
@@ -30,6 +32,9 @@ export function SuperAsset({
       width={width}
       height={height}
       opacity={opacity}
+      style={
+        rotation ? { transform: [{ rotate: `${rotation}deg` }] } : undefined
+      }
       accessible={false}
     />
   );

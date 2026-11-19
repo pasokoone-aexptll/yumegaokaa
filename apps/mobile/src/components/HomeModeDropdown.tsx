@@ -42,7 +42,11 @@ export function HomeModeDropdown() {
   return (
     <ModeDropdown
       dark={false}
-      ghost={state?.visit.ghost ?? state?.ghost_preference ?? false}
+      ghost={
+        state?.pending_mode
+          ? state.pending_mode === "ghost"
+          : (state?.visit.ghost ?? state?.ghost_preference ?? false)
+      }
       active={state?.visit.state === "active"}
       disabled={!state || busy}
       onChange={(value) => void change(value)}

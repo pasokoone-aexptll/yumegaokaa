@@ -1,5 +1,12 @@
 import { SuperAsset, type SuperAssetName } from "../icons/SuperAsset";
-import { Platform, Pressable, Text, View } from "react-native";
+import {
+  Platform,
+  Pressable,
+  Text,
+  View,
+  type StyleProp,
+  type TextStyle,
+} from "react-native";
 import { Host, Button, RNHostView } from "@expo/ui/swift-ui";
 import {
   buttonStyle,
@@ -19,16 +26,24 @@ export function NativeAction({
   compact = false,
   onDark = false,
   leadingIcon,
+  trailingIcon,
+  trailingRotation = 0,
+  contentAlign = "center",
+  labelStyle,
 }: {
   title: string;
   onPress: () => void;
   disabled?: boolean;
   destructive?: boolean;
-  tone?: "green" | "blue" | "neutral";
+  tone?: "green" | "blue" | "neutral" | "black";
   contentWidth?: number;
   compact?: boolean;
   onDark?: boolean;
   leadingIcon?: SuperAssetName;
+  trailingIcon?: SuperAssetName;
+  trailingRotation?: number;
+  contentAlign?: "center" | "start";
+  labelStyle?: StyleProp<TextStyle>;
 }) {
   if (Platform.OS === "ios")
     return (
@@ -56,11 +71,13 @@ export function NativeAction({
             tint(
               destructive
                 ? "#FF3B30"
-                : tone === "blue"
-                  ? "#008CFF"
-                  : tone === "neutral"
-                    ? "rgba(255,255,255,0.75)"
-                    : "#34C759",
+                : tone === "black"
+                  ? "black"
+                  : tone === "blue"
+                    ? "#008CFF"
+                    : tone === "neutral"
+                      ? "rgba(255,255,255,0.75)"
+                      : "#34C759",
             ),
           ]}
         >
@@ -70,7 +87,8 @@ export function NativeAction({
                 width: contentWidth,
                 flexDirection: "row",
                 alignItems: "center",
-                justifyContent: "center",
+                justifyContent:
+                  contentAlign === "start" ? "flex-start" : "center",
                 gap: 6,
               }}
             >
@@ -82,18 +100,29 @@ export function NativeAction({
                 />
               )}
               <Text
-                style={{
-                  flexShrink: 1,
-                  textAlign: "center",
-                  fontFamily: "ui-rounded",
-                  fontSize: compact ? 16 : 18,
-                  fontWeight: "600",
-                  color: tone === "neutral" && !onDark ? "black" : "white",
-                  paddingVertical: 0,
-                }}
+                style={[
+                  {
+                    flexShrink: 1,
+                    textAlign: "center",
+                    fontFamily: "ui-rounded",
+                    fontSize: compact ? 16 : 18,
+                    fontWeight: "600",
+                    color: tone === "neutral" && !onDark ? "black" : "white",
+                    paddingVertical: 0,
+                  },
+                  labelStyle,
+                ]}
               >
                 {title}
               </Text>
+              {trailingIcon && (
+                <SuperAsset
+                  name={trailingIcon}
+                  rotation={trailingRotation}
+                  size={18}
+                  tint={tone === "neutral" && !onDark ? "black" : "white"}
+                />
+              )}
             </View>
           </RNHostView>
         </Button>
@@ -110,11 +139,13 @@ export function NativeAction({
         alignItems: "center",
         backgroundColor: destructive
           ? "#FF3B30"
-          : tone === "blue"
-            ? "#008CFF"
-            : tone === "neutral"
-              ? "rgba(255,255,255,0.75)"
-              : "#34C759",
+          : tone === "black"
+            ? "black"
+            : tone === "blue"
+              ? "#008CFF"
+              : tone === "neutral"
+                ? "rgba(255,255,255,0.75)"
+                : "#34C759",
         opacity: disabled ? 0.4 : 1,
       }}
     >

@@ -1,6 +1,7 @@
-import { Alert, Text } from "react-native";
+import { Alert, Text, View } from "react-native";
 import { native } from "../../../lib/native";
 import { SuperAsset } from "../../../components/icons/SuperAsset";
+import { reviewEnabled } from "../../../components/debug/reviewEnabled";
 import { AccountPage } from "../../../components/AccountPage";
 import { useRouter } from "expo-router";
 import { DetailRow, Section, detail } from "../../../components/DetailUI";
@@ -62,25 +63,33 @@ export default function Settings() {
           />
         </Section>
       )}
-      <Section>
+      {reviewEnabled && (
         <DetailRow
-          title="Logout"
-          leading={<SuperAsset name="logout" size={30} />}
-          onPress={() =>
-            Alert.alert("ログアウトしますか？", "", [
-              { text: "戻る", style: "cancel" },
-              {
-                text: "ログアウト",
-                onPress: () => {
-                  void native
-                    .logout()
-                    .catch(() => Alert.alert("ログアウトできませんでした"));
-                },
-              },
-            ])
-          }
+          title="Simulator視覚確認"
+          onPress={() => router.push("/settings/review")}
         />
-      </Section>
+      )}
+      <View style={{ marginTop: -6 }}>
+        <Section>
+          <DetailRow
+            title="Logout"
+            leading={<SuperAsset name="logout" size={30} />}
+            onPress={() =>
+              Alert.alert("ログアウトしますか？", "", [
+                { text: "戻る", style: "cancel" },
+                {
+                  text: "ログアウト",
+                  onPress: () => {
+                    void native
+                      .logout()
+                      .catch(() => Alert.alert("ログアウトできませんでした"));
+                  },
+                },
+              ])
+            }
+          />
+        </Section>
+      </View>
     </AccountPage>
   );
 }

@@ -16,6 +16,7 @@ import {
   Snapshot,
   streetID,
   url,
+  verifyLoginOTP,
 } from "../lib/native";
 import { Recruitment } from "../lib/recruitments";
 import { StreetEvent } from "../lib/events";
@@ -273,8 +274,9 @@ export function useStreetMap() {
     };
   }, [signed, refresh, invalidateSnapshot]);
   const authInFlight = useRef(false);
+  const [authSuccess, setAuthSuccess] = useState(false);
   const [nextSendAt, setNextSendAt] = useState(0);
-  async function login(resend = false) {
+  async function login(resend = false, createAccount = true) {
     if (authInFlight.current) return;
     const sending = resend || !sent;
     if (sending && Date.now() < nextSendAt) {
@@ -285,17 +287,22 @@ export function useStreetMap() {
     authInFlight.current = true;
     setBusy(true);
     setError("");
+    setAuthSuccess(false);
     try {
       if (sending) {
-        await native.sendOTP(email.trim());
+        await native.sendOTP(email.trim(), createAccount);
         setNextSendAt(Date.now() + 60000);
         setCode("");
         setSent(true);
       } else {
-        await native.verifyOTP(email.trim(), code.trim());
+        await verifyLoginOTP(email.trim(), code.trim(), async () => {
+          setAuthSuccess(true);
+          await new Promise((resolve) => setTimeout(resolve, 1100));
+        });
         setSigned(true);
       }
     } catch (e) {
+      setAuthSuccess(false);
       const message = String(e);
       if (
         sending &&
@@ -307,6 +314,16 @@ export function useStreetMap() {
         setNextSendAt(Date.now() + 60000);
         setError(
           "メールの送信上限に達しました。届いている最新のコードを入力するか、時間をおいて再送してください。",
+        );
+      } else if (
+        !createAccount &&
+        /signup_disabled|user_not_found|not allowed.*signups|signups.*not allowed/i.test(
+          message,
+        )
+      ) {
+        setSent(false);
+        setError(
+          "このメールアドレスではログインできません。アカウントを作成する場合は新規登録へ進んでください。",
         );
       } else {
         setError(friendly(e));
@@ -554,6 +571,7 @@ export function useStreetMap() {
     recruitments,
     login,
     nextSendAt,
+    authSuccess,
     exit,
     scan,
     writeTestTag,

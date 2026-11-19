@@ -1,3 +1,4 @@
+import { SuperAsset } from "./icons/SuperAsset";
 import { mentionParts } from "../lib/chatMentions";
 import { ComposerSurface } from "./ComposerSurface";
 import { ChatInput } from "./ChatInput";
@@ -15,7 +16,6 @@ import {
 } from "react-native-safe-area-context";
 import { Avatar } from "./Avatar";
 import { ProgressiveBlur } from "./map/ProgressiveBlur";
-import { MapAsset } from "./map/MapAsset";
 import { MapFeedback, type MapNotice } from "./map/MapFeedback";
 import { SmoothSurface } from "./map/SmoothSurface";
 import { useRouter } from "expo-router";
@@ -263,7 +263,7 @@ export function StreetChat({
               left: 0,
               right: 0,
               bottom: 0,
-              height: Math.min(height * 0.55, availableHeight - overlap),
+              height: Math.min(height * 0.45, availableHeight - overlap),
             }}
           >
             {Platform.OS !== "android" && (
@@ -289,7 +289,8 @@ export function StreetChat({
                 <Defs>
                   <LinearGradient id="chatShade" x1="0" y1="0" x2="0" y2="100%">
                     <Stop offset="0" stopColor="black" stopOpacity={0} />
-                    <Stop offset="1" stopColor="black" stopOpacity={0.46} />
+                    <Stop offset="0.45" stopColor="black" stopOpacity={0.5} />
+                    <Stop offset="1" stopColor="black" stopOpacity={0.88} />
                   </LinearGradient>
                 </Defs>
                 <Rect width="100%" height="100%" fill="url(#chatShade)" />
@@ -312,9 +313,6 @@ export function StreetChat({
               style={styles.history}
               onTouchStart={Keyboard.dismiss}
             >
-              <View pointerEvents="none" style={styles.watermark}>
-                <MapAsset name="DreamCloud Logo" width={147} height={22} />
-              </View>
               <Animated.View
                 pointerEvents="box-none"
                 style={[StyleSheet.absoluteFill, { opacity: mapOpacity }]}
@@ -587,10 +585,22 @@ export function StreetChat({
                         gap: 8,
                       }}
                     >
-                      <Text style={{ color: "#ffffffde" }}>最新へ</Text>
-                      <View style={{ transform: [{ rotate: "90deg" }] }}>
-                        <MapAsset name="chevron.right" size={12} />
-                      </View>
+                      <Text
+                        style={{
+                          color: "rgba(255,255,255,0.85)",
+                          fontFamily: "ui-rounded",
+                          fontSize: 14,
+                        }}
+                      >
+                        最新へ
+                      </Text>
+                      <SuperAsset
+                        name="chevron-base"
+                        size={22}
+                        rotation={90}
+                        tint="white"
+                        opacity={0.85}
+                      />
                     </SmoothSurface>
                   </Pressable>
                 </View>
@@ -653,7 +663,12 @@ export function StreetChat({
                     <View pointerEvents="none" style={styles.inputHint}>
                       <Text style={styles.hint}>街ローカルチャット</Text>
                       <View style={{ opacity: 0.47 }}>
-                        <MapAsset name="chevron.right" size={12} />
+                        <SuperAsset
+                          name="chevron-base"
+                          size={18}
+                          tint="white"
+                          opacity={0.4}
+                        />
                       </View>
                     </View>
                   )}
@@ -678,7 +693,12 @@ export function StreetChat({
                     {busy || restoring ? (
                       <ActivityIndicator color="white" />
                     ) : (
-                      <Text style={styles.arrow}>↑</Text>
+                      <SuperAsset
+                        name="上矢印"
+                        size={28}
+                        tint="black"
+                        opacity={0.55}
+                      />
                     )}
                   </Pressable>
                 </ComposerSurface>
@@ -692,7 +712,7 @@ export function StreetChat({
 }
 const styles = StyleSheet.create({
   history: { flex: 1, backgroundColor: "transparent", overflow: "hidden" },
-  message: { paddingVertical: 7, flexDirection: "row", gap: 8 },
+  message: { paddingVertical: 4, flexDirection: "row", gap: 8 },
   author: {
     color: "#ffffff61",
     fontFamily: Platform.OS === "ios" ? "ui-rounded" : undefined,
@@ -728,12 +748,12 @@ const styles = StyleSheet.create({
   },
   composer: {
     backgroundColor: "transparent",
-    paddingHorizontal: 10,
-    paddingVertical: 10,
+    paddingHorizontal: 14,
+    paddingVertical: 14,
   },
   inputRow: {
     flexDirection: "row",
-    minHeight: 46,
+    minHeight: 42,
     alignItems: "center",
     borderRadius: 16,
     borderCurve: "continuous",
@@ -749,14 +769,14 @@ const styles = StyleSheet.create({
   },
   inputHint: {
     position: "absolute",
-    right: 73,
+    right: 68,
     flexDirection: "row",
     alignItems: "center",
     gap: 4,
   },
   hint: { color: "#ffffff66", fontSize: 14 },
   send: {
-    width: 63,
+    width: 59,
     backgroundColor: "#ffffff26",
     alignItems: "center",
     justifyContent: "center",

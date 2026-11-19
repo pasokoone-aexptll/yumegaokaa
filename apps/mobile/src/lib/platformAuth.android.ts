@@ -130,8 +130,8 @@ export const platformAuth = {
       currentLocation(): Promise<{ longitude: number; latitude: number; accuracy: number; observed_at: number; elapsed_ms: number }>;
     }>("PresenceNative").currentLocation();
   },
-  async sendOTP(email: string) {
-    const { error } = await client.auth.signInWithOtp({ email });
+  async sendOTP(email: string, createAccount = true) {
+    const { error } = await client.auth.signInWithOtp({ email, options: { shouldCreateUser: createAccount } });
     if (error) throw new Error(error.code ?? error.message);
   },
   async verifyOTP(email: string, code: string) {

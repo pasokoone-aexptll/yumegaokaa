@@ -28,6 +28,7 @@ export type MarkerProps = {
   lngLat: [number, number];
   children: ReactElement;
   snapshotKey?: string;
+  passive?: boolean;
   onPress?: () => void;
   draggable?: boolean;
   onDragEnd?: (point: [number, number]) => void;

@@ -22,6 +22,7 @@ export type NativeState = {
 export type Snapshot = {
   server_time: string;
   checked_in_count: number;
+  checked_in_icon_groups?: { expires_at: string; icons: (string | null)[] }[];
   presence_count: number;
   cells: {
     cell_id: string;
@@ -61,7 +62,7 @@ const bridge = requireNativeModule("PresenceNative") as {
   mfaVerify(factor: string, code: string): Promise<void>;
   configure(url: string, key: string): Promise<void>;
   session(): Promise<{ signed_in: boolean; email: string }>;
-  sendOTP(email: string): Promise<void>;
+  sendOTP(email: string, createAccount?: boolean): Promise<void>;
   verifyOTP(email: string, code: string): Promise<unknown>;
   rpc<T>(operation: string, payload: Record<string, unknown>): Promise<T>;
   checkin(tag: string): Promise<NativeState>;
@@ -75,6 +76,16 @@ const bridge = requireNativeModule("PresenceNative") as {
   ): { remove(): void };
 };
 const auth = platformAuth ?? bridge;
+/** A real verified session may finish its success presentation before routing. */
+export async function verifyLoginOTP(
+  email: string,
+  code: string,
+  onVerified: () => Promise<void>,
+) {
+  await auth.verifyOTP(email, code);
+  await onVerified();
+  await session();
+}
 // Reset mounted screens when the local identity changes. Same-account OTP
 // reauthentication (for withdrawal) must keep its current operation alive.
 const session = async () => {
@@ -126,7 +137,7 @@ export const native: typeof bridge = {
   mfaEnroll: () => auth.mfaEnroll(),
   mfaVerify: (factor, code) => auth.mfaVerify(factor, code),
   configure,
-  sendOTP: (email) => auth.sendOTP(email),
+  sendOTP: (email, createAccount = true) => auth.sendOTP(email, createAccount),
   rpc: (operation, payload) => auth.rpc(operation, payload),
   checkin: (tag) =>
     platformAuth ? platformAuth.checkin(tag) : bridge.checkin(tag),

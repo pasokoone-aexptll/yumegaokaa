@@ -92,7 +92,7 @@ const s = StyleSheet.create({
     fontWeight: "800",
     fontSize: 28,
     marginHorizontal: 30,
-    marginTop: 12,
+    marginTop: 6,
     marginBottom: 32,
   },
   content: { paddingHorizontal: 26, gap: 26 },

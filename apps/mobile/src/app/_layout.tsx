@@ -1,3 +1,4 @@
+import { useFonts } from "expo-font";
 import { LaunchSplash, SplashPlayingContext } from "../components/LaunchSplash";
 import { sheetBackground } from "../components/map/mapBlur";
 import { IconMotionProvider } from "../components/icons/IconMotion";
@@ -18,6 +19,9 @@ import { Stack, useRouter, usePathname } from "expo-router";
 import { Platform } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 export default function Layout() {
+  useFonts({
+    OnboardingDot: require("../../assets/fonts/KH-Dot-Kodenmachou-16-Ki.ttf"),
+  });
   const [splashPlaying, setSplashPlaying] = useState(true);
   const finishSplash = useCallback(() => setSplashPlaying(false), []);
   const session = useSyncExternalStore(

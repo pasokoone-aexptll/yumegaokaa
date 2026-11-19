@@ -18,6 +18,7 @@ export function NativeIconButton({
   dark = true,
   rotation = 0,
   accent = "#34C759",
+  size = 49,
 }: {
   icon: SuperAssetName;
   label: string;
@@ -27,12 +28,13 @@ export function NativeIconButton({
   dark?: boolean;
   rotation?: number;
   accent?: string;
+  size?: number;
 }) {
   const artwork = (
     <View
       style={{
-        width: icon === "chevron-base" ? 36 : 28,
-        height: icon === "chevron-base" ? 36 : 28,
+        width: icon === "chevron-base" ? 36 : Math.max(28, size - 16),
+        height: icon === "chevron-base" ? 36 : Math.max(28, size - 16),
         transform: [{ rotate: `${rotation}deg` }],
         alignItems: "center",
         justifyContent: "center",
@@ -40,7 +42,9 @@ export function NativeIconButton({
     >
       <SuperAsset
         name={icon}
-        size={icon === "chevron-base" ? 36 : icon === "x" ? 16 : 22}
+        size={
+          icon === "chevron-base" ? 36 : icon === "x" ? 16 : size > 49 ? 26 : 22
+        }
         tint={dark ? "white" : "black"}
       />
     </View>
@@ -48,7 +52,7 @@ export function NativeIconButton({
   if (Platform.OS === "ios")
     return (
       <Host
-        style={{ width: 49, height: 49 }}
+        style={{ width: size, height: size }}
         colorScheme={dark ? "dark" : "light"}
         alignment="center"
         ignoreSafeArea="all"

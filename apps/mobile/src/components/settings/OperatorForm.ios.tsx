@@ -98,48 +98,53 @@ export function OperatorForm({ data, open }: OperatorFormProps) {
         <Section>
           {data.invites.length === 0 && <Text>招待はありません</Text>}
           {data.invites.map((invite) => (
-            <Toggle
-              key={`${invite.id}:${revision}`}
-              isOn={!invite.revoked_at}
+            <HStack
+              key={invite.id}
+              spacing={12}
               modifiers={[
-                tint("#34C759"),
                 listRowInsets({
                   top: 12,
                   bottom: 12,
                   leading: 18,
                   trailing: 14,
                 }),
-                disabled(data.busy || !!invite.revoked_at),
               ]}
-              onIsOnChange={() => {
-                setRevision((value) => value + 1);
-                Alert.alert(
-                  "招待を無効化しますか？",
-                  "この招待から新たに参加できなくなります。",
-                  [
-                    { text: "戻る", style: "cancel" },
-                    {
-                      text: "無効化",
-                      style: "destructive",
-                      onPress: () => void data.revoke(invite.id),
-                    },
-                  ],
-                );
-              }}
             >
-              <HStack spacing={12}>
-                <RNHostView matchContents>
-                  <View style={{ width: 30, height: 30 }}>
-                    <SuperAsset name="inviteFriends" size={30} />
-                  </View>
-                </RNHostView>
+              <RNHostView matchContents>
+                <View collapsable={false} style={{ width: 30, height: 30 }}>
+                  <SuperAsset name="inviteFriends" size={30} />
+                </View>
+              </RNHostView>
+              <Toggle
+                key={`${invite.id}:${revision}`}
+                isOn={!invite.revoked_at}
+                modifiers={[
+                  tint("#34C759"),
+                  disabled(data.busy || !!invite.revoked_at),
+                ]}
+                onIsOnChange={() => {
+                  setRevision((value) => value + 1);
+                  Alert.alert(
+                    "招待を無効化しますか？",
+                    "この招待から新たに参加できなくなります。",
+                    [
+                      { text: "戻る", style: "cancel" },
+                      {
+                        text: "無効化",
+                        style: "destructive",
+                        onPress: () => void data.revoke(invite.id),
+                      },
+                    ],
+                  );
+                }}
+              >
                 <Text
                   modifiers={[
                     font({ design: "rounded", weight: "semibold", size: 16 }),
                   ]}
                 >{`${invite.issuer_name ?? "名前未設定"} → ${invite.recipient_name ?? (invite.used_at ? "参加済み" : "未使用")}`}</Text>
-              </HStack>
-            </Toggle>
+              </Toggle>
+            </HStack>
           ))}
           {data.more && (
             <Button

@@ -36,11 +36,12 @@ export function useAccountAccess(signed: boolean, revision: number) {
       }>("account_access", {});
       let status = result.status;
       if (status === "active") {
-        const profile = await native.rpc<{ display_name: string }>(
-          "profile_get",
-          {},
-        );
-        if (!profile.display_name.trim()) status = "profile_required";
+        const profile = await native.rpc<{
+          display_name: string;
+          avatar_path?: string;
+        }>("profile_get", {});
+        if (!profile.display_name.trim() || !profile.avatar_path)
+          status = "profile_required";
         else {
           const pool = await native.rpc<{ contributed: boolean }>(
             "street_icon_get",

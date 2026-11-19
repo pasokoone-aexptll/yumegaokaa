@@ -42,63 +42,66 @@ export function Map({
   const { width } = useWindowDimensions();
   const [scale, updateZoom] = useMarkerScale();
   const regionZoom = (longitudeDelta: number) => {
-    if (longitudeDelta > 0) updateZoom(Math.log2(360 * width / (256 * longitudeDelta)));
+    if (longitudeDelta > 0)
+      updateZoom(Math.log2((360 * width) / (256 * longitudeDelta)));
   };
   const [ready, setReady] = useState(false);
   const [cameraRevision, setCameraRevision] = useState(0);
   return (
-    <MarkerScale.Provider value={scale}><Context.Provider value={{ map, ready }}>
-      <View style={style}>
-        <MapView
-          mapPadding={{ top: 0, right: 0, bottom: bottomInset, left: 0 }}
-          ref={map}
-          style={{ flex: 1 }}
-          userInterfaceStyle="dark"
-          mapType="standard"
-          showsBuildings
-          pitchEnabled
-          rotateEnabled
-          showsUserLocation={false}
-          initialCamera={appleCamera({
-            center: [139.7109, 35.7295],
-            zoom: 17,
-            pitch: 55,
-          })}
-          onRegionChange={region => {
-            regionZoom(region.longitudeDelta);
-            onMovingChange?.(true);
-            if (placement) setCameraRevision((r) => r + 1);
-          }}
-          onRegionChangeComplete={region => {
-            regionZoom(region.longitudeDelta);
-            onMovingChange?.(false);
-            if (placement) setCameraRevision((r) => r + 1);
-          }}
-          onMapReady={() => setReady(true)}
-          onPress={(event) =>
-            onPress?.({
-              nativeEvent: {
-                lngLat: [
-                  event.nativeEvent.coordinate.longitude,
-                  event.nativeEvent.coordinate.latitude,
-                ],
-              },
-            })
-          }
-        >
-          {children}
-        </MapView>
-        {ready && placement && (
-          <PlacementHandle
-            map={map}
-            point={placement.point}
-            revision={placement.revision}
-            onDrop={placement.onDrop}
-            cameraRevision={cameraRevision}
-          />
-        )}
-      </View>
-    </Context.Provider></MarkerScale.Provider>
+    <MarkerScale.Provider value={scale}>
+      <Context.Provider value={{ map, ready }}>
+        <View style={style}>
+          <MapView
+            mapPadding={{ top: 0, right: 0, bottom: bottomInset, left: 0 }}
+            ref={map}
+            style={{ flex: 1 }}
+            userInterfaceStyle="dark"
+            mapType="standard"
+            showsBuildings
+            pitchEnabled
+            rotateEnabled
+            showsUserLocation={false}
+            initialCamera={appleCamera({
+              center: [139.7109, 35.7295],
+              zoom: 17,
+              pitch: 55,
+            })}
+            onRegionChange={(region) => {
+              regionZoom(region.longitudeDelta);
+              onMovingChange?.(true);
+              if (placement) setCameraRevision((r) => r + 1);
+            }}
+            onRegionChangeComplete={(region) => {
+              regionZoom(region.longitudeDelta);
+              onMovingChange?.(false);
+              if (placement) setCameraRevision((r) => r + 1);
+            }}
+            onMapReady={() => setReady(true)}
+            onPress={(event) =>
+              onPress?.({
+                nativeEvent: {
+                  lngLat: [
+                    event.nativeEvent.coordinate.longitude,
+                    event.nativeEvent.coordinate.latitude,
+                  ],
+                },
+              })
+            }
+          >
+            {children}
+          </MapView>
+          {ready && placement && (
+            <PlacementHandle
+              map={map}
+              point={placement.point}
+              revision={placement.revision}
+              onDrop={placement.onDrop}
+              cameraRevision={cameraRevision}
+            />
+          )}
+        </View>
+      </Context.Provider>
+    </MarkerScale.Provider>
   );
 }
 export function Camera({ initialViewState, ref }: CameraProps) {
@@ -125,6 +128,7 @@ export function Marker({
   lngLat,
   children,
   draggable,
+  passive = false,
   onDragEnd,
   onPress,
 }: MarkerProps) {
@@ -132,7 +136,8 @@ export function Marker({
   return (
     <AppleMarker
       coordinate={{ longitude: lngLat[0], latitude: lngLat[1] }}
-      onPress={onPress}
+      stopPropagation={passive}
+      onPress={passive ? () => {} : onPress}
       draggable={draggable}
       onDragEnd={(e) =>
         onDragEnd?.([

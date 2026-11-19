@@ -28,7 +28,7 @@ test("failed access lookup exposes offline navigation without granting access or
       rpc: async (operation) => {
         if (response === "offline") throw new Error("network unavailable");
         if (operation === "account_access") return { status: response };
-        if (operation === "profile_get") return { display_name: "test" };
+        if (operation === "profile_get") return { display_name: "test", avatar_path: "test/avatar.jpg" };
         return { contributed: true };
       },
       stop: async () => {},

@@ -13,7 +13,15 @@ import { green } from "../denshin/PinParts";
 const AnimatedCircle = Animated.createAnimatedComponent(Circle);
 const circumference = 2 * Math.PI * 20;
 /** The ring acknowledges actual success; it never advances the entry state. */
-export function EntryProgress({ success }: { success: boolean }) {
+export function EntryProgress({
+  success,
+  light = false,
+  label,
+}: {
+  success: boolean;
+  light?: boolean;
+  label?: string;
+}) {
   const [turn] = useState(() => new Animated.Value(0));
   const [completion] = useState(() => new Animated.Value(0));
   const [check] = useState(() => new Animated.Value(0));
@@ -62,7 +70,7 @@ export function EntryProgress({ success }: { success: boolean }) {
   return (
     <View
       accessibilityRole="progressbar"
-      accessibilityLabel={success ? "ログイン成功" : "NFCを待機中"}
+      accessibilityLabel={label ?? (success ? "ログイン成功" : "NFCを待機中")}
       style={{ width: 44, height: 44 }}
     >
       <Svg width={44} height={44} style={StyleSheet.absoluteFill}>
@@ -71,7 +79,7 @@ export function EntryProgress({ success }: { success: boolean }) {
           cy={22}
           r={20}
           fill="none"
-          stroke="rgba(255,255,255,0.18)"
+          stroke={light ? "rgba(0,0,0,0.12)" : "rgba(255,255,255,0.18)"}
           strokeWidth={2}
         />
       </Svg>
@@ -137,7 +145,7 @@ export function EntryProgress({ success }: { success: boolean }) {
               cy={22}
               r={20}
               fill="none"
-              stroke="rgba(255,255,255,0.7)"
+              stroke={light ? "rgba(0,0,0,0.4)" : "rgba(255,255,255,0.7)"}
               strokeWidth={2}
               strokeLinecap="round"
               strokeDasharray={`32 ${circumference - 32}`}

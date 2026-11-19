@@ -24,7 +24,7 @@ import {
   green,
 } from "../components/denshin/PinParts";
 import { editDenshin } from "../lib/denshinDraft";
-import { onsitePeople, pinCount, PinPerson } from "../lib/denshin";
+import { onsitePeople, PinPerson } from "../lib/denshin";
 import { native } from "../lib/native";
 import { localBlocks } from "../lib/localBlocks";
 import { openMapAt } from "../lib/mapNavigation";
@@ -98,7 +98,7 @@ export function PinDetailView({
       Alert.alert("ブロックできませんでした");
     }
   }
-  const person = (x: PinPerson, host = false) => (
+  const person = (x: PinPerson) => (
     <View key={x.account_id} style={s.person}>
       <Avatar
         path={x.avatar_path}
@@ -106,10 +106,7 @@ export function PinDetailView({
         size={36}
         shape="square"
       />
-      <Text style={s.name}>
-        {x.display_name}
-        {host ? "\n（ホスト）" : ""}
-      </Text>
+      <Text style={s.name}>{x.display_name}</Text>
     </View>
   );
   return (
@@ -159,21 +156,41 @@ export function PinDetailView({
                     size={64}
                     shape="square"
                   />
-                  {p.recruiting && <RecruitBadge />}
+                  {p.recruiting && (
+                    <View style={s.identityBadge}>
+                      <RecruitBadge />
+                    </View>
+                  )}
                 </View>
                 <View style={s.summary}>
-                  <View style={{ flex: 1 }}>
+                  <View style={{ flex: 1, gap: 4 }}>
                     <Text style={s.title}>{p.body}</Text>
                     <Text style={s.muted}>
                       {p.mine ? "自分" : p.display_name}
-                      {p.recruiting ? ` ・ ${pinCount(p)}` : ""}
+                      {p.recruiting && (
+                        <>
+                          {" ・ "}
+                          {p.count}
+                          <Text style={s.capacity}>
+                            {p.capacity === null ? "人" : `/${p.capacity}人`}
+                          </Text>
+                        </>
+                      )}
                     </Text>
                   </View>
                   {p.recruiting && <PeopleStack people={onsitePeople(p)} />}
                 </View>
                 {p.mine && (
                   <View style={s.toggle}>
-                    <Text style={s.title}>募集モード</Text>
+                    <View style={s.toggleLabel}>
+                      <SuperAsset
+                        name="非常口rounded"
+                        size={21}
+                        tint="white"
+                        opacity={0.65}
+                      />
+                      <Text style={s.controlLabel}>募集モード</Text>
+                    </View>
                     <Switch
                       accessibilityLabel="募集モード"
                       disabled={disabled}
@@ -275,17 +292,18 @@ export function PinDetailView({
             <View
               style={{
                 position: "absolute",
-                right: 24,
-                bottom: insets.bottom + 18,
+                right: 28,
+                bottom: 28,
               }}
             >
               <RoundAction
                 label="編集する"
+                size={52}
                 glyph="✎"
                 disabled={disabled || readOnly}
                 onPress={() => {
                   editDenshin(p);
-                  router.push("/pins/create");
+                  router.replace("/pins/create");
                 }}
               />
             </View>
@@ -294,9 +312,9 @@ export function PinDetailView({
             <View
               style={{
                 position: "absolute",
-                bottom: insets.bottom + 16,
+                bottom: 28,
                 width: p.attendance === "left" ? 140 : 220,
-                right: 24,
+                right: 28,
                 zIndex: 10,
               }}
             >
@@ -346,29 +364,67 @@ const s = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
+    marginRight: -8,
   },
-  content: { padding: 22, paddingTop: 16, gap: 22 },
-  identity: { flexDirection: "row", gap: 18, alignItems: "center" },
-  summary: { flexDirection: "row", gap: 10, alignItems: "center" },
-  title: { color: "white", fontSize: 22, fontWeight: "600", lineHeight: 29 },
+  content: { padding: 24, paddingTop: 16, gap: 14 },
+  identity: {
+    flexDirection: "row",
+    gap: 18,
+    alignItems: "center",
+    marginBottom: -8,
+  },
+  identityBadge: { transform: [{ translateY: 5 }] },
+  summary: {
+    flexDirection: "row",
+    gap: 10,
+    alignItems: "center",
+    marginBottom: 4,
+  },
+  title: {
+    fontFamily: "ui-rounded",
+    color: "white",
+    fontSize: 22,
+    fontWeight: "600",
+    lineHeight: 29,
+  },
   muted: {
+    fontFamily: "ui-rounded",
     color: "rgba(255,255,255,0.5)",
     fontSize: 16,
     fontWeight: "600",
     lineHeight: 21,
   },
+  capacity: { fontSize: 11 },
   toggle: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    padding: 16,
-    borderRadius: 28,
-    backgroundColor: "#ffffff22",
+    minHeight: 52,
+    paddingHorizontal: 14,
+    paddingVertical: 8,
+    gap: 12,
+    marginHorizontal: -8,
+    borderRadius: 26,
+    backgroundColor: "rgba(255,255,255,0.15)",
   },
-  section: { color: "rgba(255,255,255,0.65)", fontSize: 14 },
-  roster: { gap: 10, marginTop: 4 },
+  toggleLabel: { flexDirection: "row", alignItems: "center", gap: 8, flex: 1 },
+  controlLabel: {
+    fontFamily: "ui-rounded",
+    color: "rgba(255,255,255,0.65)",
+    fontSize: 16,
+    lineHeight: 22,
+    fontWeight: "500",
+    flexShrink: 1,
+  },
+  section: { color: "rgba(255,255,255,0.65)", fontSize: 14, fontWeight: "500" },
+  roster: { gap: 10, marginTop: 6 },
   person: { flexDirection: "row", gap: 10, alignItems: "center" },
-  name: { color: "#ffffffbb", fontSize: 15 },
+  name: {
+    fontFamily: "ui-rounded",
+    color: "rgba(255,255,255,0.5)",
+    fontSize: 15,
+    fontWeight: "600",
+  },
   button: {
     backgroundColor: "#ffffffbb",
     padding: 17,

@@ -9,6 +9,7 @@ export function NativeIconButton({
   dark = true,
   rotation = 0,
   accent = "#34C759",
+  size = 44,
 }: {
   icon: SuperAssetName;
   label: string;
@@ -18,6 +19,7 @@ export function NativeIconButton({
   dark?: boolean;
   rotation?: number;
   accent?: string;
+  size?: number;
 }) {
   return (
     <Pressable
@@ -26,9 +28,9 @@ export function NativeIconButton({
       disabled={disabled}
       onPress={onPress}
       style={{
-        width: 44,
-        height: 44,
-        borderRadius: 22,
+        width: size,
+        height: size,
+        borderRadius: size / 2,
         backgroundColor: active ? accent : "rgba(255,255,255,0.15)",
         opacity: disabled ? 0.35 : 1,
         alignItems: "center",

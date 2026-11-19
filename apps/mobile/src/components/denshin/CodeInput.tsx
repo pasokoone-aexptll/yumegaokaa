@@ -7,10 +7,14 @@ export function CodeInput({
   value,
   onChange,
   disabled = false,
+  success = false,
+  grouped = true,
 }: {
   value: string;
   onChange: (value: string) => void;
   disabled?: boolean;
+  success?: boolean;
+  grouped?: boolean;
 }) {
   const input = useRef<ComponentRef<typeof TextInput>>(null);
   return (
@@ -32,15 +36,20 @@ export function CodeInput({
             key={index}
             style={{
               flex: 1,
-              marginLeft: index === 3 ? 15 : 0,
+              marginLeft: grouped && index === 3 ? 15 : 0,
               height: 56,
-              borderRadius: 12,
+              borderRadius: grouped ? 12 : 14,
               backgroundColor: "rgba(0,0,0,0.04)",
               overflow: "hidden",
             }}
           >
             {value[index] !== undefined && (
-              <RollingNumber value={Number(value[index])} compact light />
+              <RollingNumber
+                value={Number(value[index])}
+                compact
+                light
+                color={success ? "#01AE6B" : undefined}
+              />
             )}
           </View>
         ))}

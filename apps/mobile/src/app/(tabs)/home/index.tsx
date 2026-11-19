@@ -11,6 +11,7 @@ import {
   Text,
   View,
   Image,
+  useWindowDimensions,
 } from "react-native";
 import { useRouter } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -19,7 +20,6 @@ import { Avatar } from "../../../components/Avatar";
 import { PeopleStack, green } from "../../../components/denshin/PinParts";
 import {
   onsitePeople,
-  pinCount,
   denshinError,
   HiddenAttendance,
 } from "../../../lib/denshin";
@@ -36,6 +36,7 @@ export default function Home() {
     insets = useSafeAreaInsets();
   const pins = useDenshinPins();
   const remaining = useInviteQuota();
+  const { width } = useWindowDimensions();
   const [refreshing, setRefreshing] = useState(false),
     [leaving, setLeaving] = useState(false);
   async function refresh() {
@@ -55,8 +56,8 @@ export default function Home() {
         await cancelPendingCommand("denshin_attend");
         await pins.load(true);
         Alert.alert(
-          "前回の送信結果を確認しました",
-          "最新の参加状態を確認して、もう一度取り消してください。",
+          "参加状態を更新しました",
+          "参加を取り消すには、もう一度タップしてください。",
         );
         return;
       }
@@ -78,7 +79,7 @@ export default function Home() {
       style={s.page}
       contentContainerStyle={{
         flexGrow: 1,
-        paddingTop: insets.top,
+        paddingTop: Math.max(0, insets.top - 6),
         paddingBottom: 0,
       }}
       refreshControl={
@@ -93,10 +94,10 @@ export default function Home() {
         source={require("../../../../assets/superassets/DreamCloud背景.png")}
         style={{
           position: "absolute",
-          top: 430,
+          top: width * 1.07,
           right: -4,
-          width: 250,
-          height: 250,
+          width: width * 0.62,
+          height: width * 0.62,
           opacity: 1,
         }}
         resizeMode="contain"
@@ -127,6 +128,7 @@ export default function Home() {
             <SpeechBubble>
               <SuperAsset
                 name="非常口rounded"
+                size={21}
                 tint={recruiting ? green : "rgba(0,0,0,0.65)"}
               />
               <Text style={[s.sectionTitle, recruiting && { color: green }]}>
@@ -140,8 +142,9 @@ export default function Home() {
               )}
             {pins.items
               .filter((p) => p.recruiting === recruiting)
-              .map((p) => (
+              .map((p, index) => (
                 <View key={p.id} style={s.row}>
+                  {index > 0 && <View style={s.separator} />}
                   <Pressable
                     style={s.main}
                     onPress={() =>
@@ -157,12 +160,20 @@ export default function Home() {
                       shape="square"
                       path={p.avatar_path}
                       name={p.display_name}
-                      size={48}
+                      size={49}
                     />
-                    <View style={{ flex: 1, gap: 4 }}>
-                      <Text style={s.muted}>
+                    <View style={{ flex: 1, gap: 3 }}>
+                      <Text style={s.metadata}>
                         {p.mine ? "自分" : p.display_name}
-                        {p.recruiting ? ` ・ ${pinCount(p)}` : ""}
+                        {p.recruiting && (
+                          <Text>
+                            {" "}
+                            ・ {p.count}
+                            <Text style={{ fontSize: 9 }}>
+                              {p.capacity === null ? "人" : `/${p.capacity}人`}
+                            </Text>
+                          </Text>
+                        )}
                         {p.attendance === "planned"
                           ? " ・ 参加予定"
                           : p.attendance === "arrived"
@@ -172,33 +183,18 @@ export default function Home() {
                       <Text style={s.body} numberOfLines={2}>
                         {p.body}
                       </Text>
+                      <View style={s.location}>
+                        <SuperAsset
+                          name="nav"
+                          tint="black"
+                          opacity={0.3}
+                          size={10}
+                        />
+                        <Text style={s.locationText}>位置を確認する</Text>
+                      </View>
                     </View>
-                    <PeopleStack people={onsitePeople(p)} />
-                  </Pressable>
-                  <Pressable
-                    style={s.location}
-                    accessibilityRole="button"
-                    onPress={() =>
-                      openMapAt(router, p.longitude, p.latitude, {
-                        kind: "denshin",
-                        id: p.id,
-                      })
-                    }
-                  >
-                    <View
-                      style={{
-                        flexDirection: "row",
-                        alignItems: "center",
-                        gap: 5,
-                      }}
-                    >
-                      <SuperAsset
-                        name="nav"
-                        tint="black"
-                        opacity={0.3}
-                        size={12}
-                      />
-                      <Text style={s.muted}>位置を確認する</Text>
+                    <View style={{ alignSelf: "center" }}>
+                      <PeopleStack people={onsitePeople(p)} />
                     </View>
                   </Pressable>
                 </View>
@@ -226,29 +222,29 @@ export default function Home() {
         style={{
           margin: 16,
           marginTop: 12,
-          minHeight: 76,
+          minHeight: 75,
           flexDirection: "row",
           alignItems: "center",
-          borderRadius: 20,
+          borderRadius: 17,
           overflow: "hidden",
           backgroundColor: "#FF5577",
         }}
       >
-        <View style={{ padding: 15 }}>
+        <View style={{ paddingHorizontal: 13, paddingVertical: 12 }}>
           <SuperAsset
             name="非常口rounded"
-            size={46}
+            size={49}
             tint="white"
             opacity={0.8}
           />
         </View>
-        <View style={{ flex: 1, gap: 6 }}>
+        <View style={{ flex: 1, gap: 4 }}>
           <Text
             style={{
               fontFamily: "ui-rounded",
               fontWeight: "600",
               color: "white",
-              fontSize: 17,
+              fontSize: 15,
             }}
           >
             招待QRで友達を招待しよう！
@@ -273,7 +269,7 @@ export default function Home() {
         <View
           style={{
             alignSelf: "stretch",
-            width: 58,
+            width: "20%",
             backgroundColor: "rgba(255,255,255,0.3)",
             borderLeftWidth: 2,
             borderColor: "rgba(255,255,255,0.7)",
@@ -291,18 +287,18 @@ const s = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-between",
     paddingHorizontal: 22,
-    marginBottom: 46,
+    marginBottom: 52,
   },
   add: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
+    width: 48,
+    height: 48,
+    borderRadius: 24,
     backgroundColor: "white",
     alignItems: "center",
     justifyContent: "center",
   },
   content: { paddingHorizontal: 20 },
-  section: { marginBottom: 30, gap: 8 },
+  section: { marginBottom: 28, gap: 5 },
   sectionTitle: {
     fontSize: 16,
     fontWeight: "600",
@@ -311,21 +307,19 @@ const s = StyleSheet.create({
     borderRadius: 20,
     padding: 0,
     alignSelf: "center",
-    lineHeight: 24,
+    lineHeight: 21,
     fontFamily: "ui-rounded",
   },
   row: {
-    paddingVertical: 12,
-    borderBottomWidth: StyleSheet.hairlineWidth,
-    borderColor: "#00000018",
+    paddingVertical: 9,
   },
-  main: { flexDirection: "row", alignItems: "center", gap: 12 },
+  main: { flexDirection: "row", alignItems: "flex-start", gap: 12 },
   body: {
     fontFamily: "ui-rounded",
     fontSize: 16,
-    fontWeight: "600",
+    fontWeight: "500",
     color: "black",
-    lineHeight: 23,
+    lineHeight: 22,
   },
   muted: {
     fontFamily: "ui-rounded",
@@ -333,6 +327,27 @@ const s = StyleSheet.create({
     color: "rgba(0,0,0,0.35)",
     lineHeight: 17,
   },
-  location: { marginLeft: 60, minHeight: 32, justifyContent: "center" },
+  metadata: {
+    fontFamily: "ui-rounded",
+    fontSize: 14,
+    lineHeight: 17,
+    fontWeight: "600",
+    color: "rgba(0,0,0,0.35)",
+  },
+  location: { flexDirection: "row", alignItems: "center", gap: 5 },
+  locationText: {
+    fontFamily: "ui-rounded",
+    fontSize: 10,
+    lineHeight: 14,
+    color: "rgba(0,0,0,0.3)",
+  },
+  separator: {
+    position: "absolute",
+    left: 61,
+    right: 0,
+    top: 0,
+    height: StyleSheet.hairlineWidth,
+    backgroundColor: "rgba(0,0,0,0.08)",
+  },
   error: { color: "#b22", paddingVertical: 12 },
 });

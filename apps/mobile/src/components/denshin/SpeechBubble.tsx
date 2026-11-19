@@ -1,6 +1,7 @@
 import { useState, type ReactNode } from "react";
 import { View, StyleSheet, type ViewStyle } from "react-native";
 import Svg, { Path } from "react-native-svg";
+import { BlurView } from "expo-blur";
 
 /** Size the bubble around its content; the tail never participates in text alignment. */
 export function SpeechBubble({
@@ -8,19 +9,23 @@ export function SpeechBubble({
   color = "white",
   style,
   tail = "bottom",
+  bodyStyle,
+  material = false,
 }: {
   children: ReactNode;
   color?: string;
   style?: ViewStyle;
   tail?: "top" | "bottom";
+  bodyStyle?: ViewStyle;
+  material?: boolean;
 }) {
   const [size, setSize] = useState({ width: 0, height: 0 });
   const { width: w, height: h } = size;
   const r = Math.min(h / 2, w / 2);
-  const top = tail === "top" ? 14 : 0;
+  const top = tail === "top" ? 18 : 0;
   const outline =
     tail === "top"
-      ? `M${r} 14H25L10 0Q7 -2 7 3V15Q0 18 0 ${14 + r}V${14 + h - r}Q0 ${14 + h} ${r} ${14 + h}H${w - r}Q${w} ${14 + h} ${w} ${14 + h - r}V${14 + r}Q${w} 14 ${w - r} 14Z`
+      ? `M${r} ${top}H25V4Q25 -2 30 2L47 ${top}H${w - r}A${r} ${r} 0 0 1 ${w} ${top + r}V${top + h - r}A${r} ${r} 0 0 1 ${w - r} ${top + h}H${r}A${r} ${r} 0 0 1 0 ${top + h - r}V${top + r}A${r} ${r} 0 0 1 ${r} ${top}Z`
       : `M${r} 0H${w - r}A${r} ${r} 0 0 1 ${w} ${r}V${h - r}A${r} ${r} 0 0 1 ${w - r} ${h}H26.5C23 ${h} 20 ${h + 1.86} 17 ${h + 4}C10 ${h + 9} 8 ${h + 9} 7.5 ${h + 8.5}C7 ${h + 8} 7 ${h + 7.18} 7.5 ${h + 6.5}C11.9 ${h + 0.5} 8.5 ${h - 2.29} 5.69 ${h - 5}Q0 ${h - 10} 0 ${r}A${r} ${r} 0 0 1 ${r} 0Z`;
   return (
     <View
@@ -44,8 +49,19 @@ export function SpeechBubble({
         onLayout={({ nativeEvent: { layout } }) =>
           setSize({ width: layout.width, height: layout.height })
         }
-        style={s.body}
+        style={[s.body, bodyStyle]}
       >
+        {material && (
+          <BlurView
+            pointerEvents="none"
+            intensity={70}
+            tint="systemUltraThinMaterialDark"
+            style={[
+              StyleSheet.absoluteFill,
+              { borderRadius: r, overflow: "hidden" },
+            ]}
+          />
+        )}
         {children}
       </View>
     </View>
@@ -59,7 +75,7 @@ const s = StyleSheet.create({
     justifyContent: "center",
     gap: 9,
     paddingHorizontal: 15,
-    paddingVertical: 9,
+    paddingVertical: 8,
     minHeight: 36,
   },
 });

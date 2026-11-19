@@ -1,7 +1,14 @@
 import { NativeToggle as Switch } from "../components/denshin/NativeToggle";
 import { useEffect, useMemo, useState } from "react";
-import { ActivityIndicator, Image, StyleSheet, Text, View } from "react-native";
-import { CameraView, useCameraPermissions } from "expo-camera";
+import {
+  ActivityIndicator,
+  Image,
+  StyleSheet,
+  Text,
+  View,
+  useWindowDimensions,
+} from "react-native";
+import { useCameraPermissions } from "expo-camera";
 import { SvgXml } from "react-native-svg";
 import { useLocalSearchParams, usePathname, useRouter } from "expo-router";
 import { DetailPage } from "../components/DetailUI";
@@ -12,8 +19,11 @@ import { inviteSvg, parseInviteQR } from "../lib/inviteQR";
 import { useInvitations } from "../hooks/useInvitations";
 import { useProfile } from "../hooks/useProfile";
 import { Avatar } from "../components/Avatar";
+import { ReceiveInvitation } from "../components/onboarding/ReceiveInvitation";
 export default function Invitations() {
   const d = useInvitations();
+  const { width } = useWindowDimensions();
+  const qrSize = Math.min(260, width * 0.647);
   const { profile } = useProfile();
   const [permission, requestPermission] = useCameraPermissions();
   const [scanning, setScanning] = useState(false);
@@ -45,6 +55,32 @@ export default function Invitations() {
       )
     : 0;
   const target = d.items.find((i) => i.id === revoke);
+  if (d.receiving)
+    return (
+      <ReceiveInvitation
+        scanning={!!permission?.granted && scanning}
+        busy={d.busy}
+        status={d.status}
+        onCancel={() => setScanning(false)}
+        onScan={() => {
+          void requestPermission().then((p) => {
+            if (p.granted) setScanning(true);
+            else d.setStatus("設定からカメラへのアクセスを許可してください。");
+          });
+        }}
+        onCode={(data) => {
+          const code = parseInviteQR(data);
+          if (!code || d.busy) return;
+          setScanning(false);
+          void d.act("invite_accept", { code });
+        }}
+        onLogout={() => {
+          void native
+            .logout()
+            .catch(() => d.setStatus("ログアウトできませんでした。"));
+        }}
+      />
+    );
   return (
     <DetailPage
       root={d.receiving}
@@ -56,8 +92,8 @@ export default function Invitations() {
           source={require("../../assets/superassets/DreamCloud背景.png")}
           style={{
             position: "absolute",
-            top: 370,
-            right: -4,
+            top: 360,
+            right: -12,
             width: 250,
             height: 250,
             opacity: 1,
@@ -116,50 +152,11 @@ export default function Invitations() {
             />
           </View>
         </View>
-      ) : d.receiving ? (
-        <>
-          <View style={s.scan}>
-            {permission?.granted && scanning ? (
-              <CameraView
-                style={{ width: "100%", height: "100%" }}
-                barcodeScannerSettings={{ barcodeTypes: ["qr"] }}
-                onBarcodeScanned={({ data }) => {
-                  const code = parseInviteQR(data);
-                  if (!code || d.busy) return;
-                  setScanning(false);
-                  void d.act("invite_accept", { code });
-                }}
-              />
-            ) : (
-              <SuperAsset name="非常口から人が出る" width={230} height={280} />
-            )}
-          </View>
-          <NativeAction
-            title="招待QRを読み込む"
-            disabled={d.busy}
-            onPress={() => {
-              void requestPermission().then((p) => {
-                if (p.granted) setScanning(true);
-                else
-                  d.setStatus("設定からカメラへのアクセスを許可してください。");
-              });
-            }}
-          />
-          <NativeAction
-            title="ログアウト"
-            disabled={d.busy}
-            onPress={() => {
-              void native
-                .logout()
-                .catch(() => d.setStatus("ログアウトできませんでした。"));
-            }}
-          />
-        </>
       ) : (
         <>
-          <View style={s.qr}>
+          <View style={[s.qr, { height: qrSize }]}>
             {svg && remaining > 0 ? (
-              <SvgXml xml={svg} width={252} height={252} />
+              <SvgXml xml={svg} width={qrSize} height={qrSize} />
             ) : (
               <SuperAsset
                 name="非常口から人が出るrounded"
@@ -179,7 +176,7 @@ export default function Invitations() {
             </View>
           )}
           <NativeAction
-            title={d.pending ? "前回の招待を確認" : "招待を再発行"}
+            title="招待を再発行"
             disabled={d.busy}
             onPress={() => void d.act("invite_create")}
           />
@@ -197,7 +194,8 @@ export default function Invitations() {
           <Text style={[s.title, s.history]}>History</Text>
           <View style={s.historyGroup}>
             {d.items.map((i, index) => (
-              <View key={i.id} style={[s.row, index > 0 && s.separator]}>
+              <View key={i.id} style={[s.row, s.historyRow]}>
+                {index > 0 && <View style={s.separator} />}
                 <SuperAsset name="inviteFriends" size={30} />
                 <Text style={s.name}>
                   {d.issuerName ? `${d.issuerName} → ` : ""}
@@ -205,7 +203,11 @@ export default function Invitations() {
                 </Text>
                 <Switch
                   key={`${i.id}:${d.loading}`}
-                  accessibilityLabel={`${i.recipient_name ?? "未使用の招待"}の招待を削除する`}
+                  accessibilityLabel={
+                    i.recipient_name
+                      ? `${i.recipient_name}の招待を削除する`
+                      : "未使用の招待を削除する"
+                  }
                   value={!i.revoked && (i.used || !i.expired)}
                   disabled={d.busy || i.revoked || (!i.used && i.expired)}
                   onValueChange={() =>
@@ -234,7 +236,7 @@ const s = StyleSheet.create({
     height: 252,
     alignItems: "center",
     justifyContent: "center",
-    marginTop: 12,
+    marginTop: 18,
   },
   scan: {
     height: 330,
@@ -246,13 +248,13 @@ const s = StyleSheet.create({
   gauge: {
     flexDirection: "row",
     alignSelf: "center",
-    gap: 2,
+    gap: 1.8,
     padding: 6,
     borderWidth: 1,
     borderColor: "rgba(0,175,107,0.12)",
     borderRadius: 10,
-    marginBottom: 8,
-    marginTop: -22,
+    marginBottom: 0,
+    marginTop: -36,
   },
   tick: { width: 4, height: 18, borderRadius: 4, backgroundColor: "#00AF6B" },
   row: {
@@ -267,9 +269,14 @@ const s = StyleSheet.create({
     overflow: "hidden",
     backgroundColor: "white",
   },
+  historyRow: { minHeight: 54, paddingVertical: 9 },
   separator: {
-    borderTopWidth: StyleSheet.hairlineWidth,
-    borderTopColor: "rgba(0,0,0,0.08)",
+    position: "absolute",
+    top: 0,
+    left: 48,
+    right: 14,
+    height: StyleSheet.hairlineWidth,
+    backgroundColor: "rgba(0,0,0,0.08)",
   },
   name: { flex: 1, fontFamily: "ui-rounded", fontWeight: "600", fontSize: 17 },
   secondary: {
@@ -287,8 +294,8 @@ const s = StyleSheet.create({
   history: {
     color: "rgba(0,0,0,0.2)",
     fontSize: 24,
-    marginTop: 78,
-    marginBottom: -18,
+    marginTop: 85,
+    marginBottom: -14,
   },
   confirm: { paddingTop: 60 },
 });

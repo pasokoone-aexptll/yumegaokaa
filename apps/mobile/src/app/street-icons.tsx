@@ -2,11 +2,12 @@ import { useCallback, useContext, useState } from "react";
 import { useFocusEffect, useLocalSearchParams, useRouter } from "expo-router";
 import { Image, Text, View } from "react-native";
 import Svg, { Defs, LinearGradient, Rect, Stop } from "react-native-svg";
-import { Action, ui } from "../components/Page";
+import { ui } from "../components/Page";
 import { DetailPage, DetailRow, Section } from "../components/DetailUI";
 import { SpeechBubble } from "../components/denshin/SpeechBubble";
 import { SuperAsset } from "../components/icons/SuperAsset";
 import { NativeAction } from "../components/denshin/NativeAction";
+import { ProfileSetup } from "../components/onboarding/ProfileSetup";
 import { Avatar } from "../components/Avatar";
 import { AccountAccessContext } from "../hooks/useAccountAccess";
 import {
@@ -62,12 +63,27 @@ export default function StreetIcons() {
       setBusy(false);
     }
   }
-  const editing = edit === "1" || access.status === "pool_required";
+  if (access.status === "pool_required")
+    return (
+      <ProfileSetup
+        stage="pool"
+        onExit={() => {
+          void native
+            .logout()
+            .catch(() => setError("ログアウトできませんでした。"));
+        }}
+        busy={busy}
+        error={error}
+        onNext={() => void update()}
+      />
+    );
+  const editing = edit === "1";
   return (
     <DetailPage
       bottomPadding={26}
       title={editing ? "画像を差し替える" : ""}
       titleColor={editing ? "white" : undefined}
+      titleStyle={editing ? { fontSize: 17, fontWeight: "400" } : undefined}
       background={
         <View
           pointerEvents="none"
@@ -104,6 +120,7 @@ export default function StreetIcons() {
               fontFamily: "ui-rounded",
               fontSize: 34,
               fontWeight: "800",
+              marginTop: -8,
               color: "black",
             }}
           >
@@ -126,7 +143,7 @@ export default function StreetIcons() {
       <View
         style={{
           alignItems: "center",
-          marginTop: editing ? -10 : 88,
+          marginTop: editing ? -10 : 96,
           gap: editing ? 50 : 30,
         }}
       >
@@ -176,22 +193,14 @@ export default function StreetIcons() {
         style={{
           textAlign: "center",
           color: "rgba(0,0,0,0.55)",
-          lineHeight: 24,
+          fontFamily: "ui-rounded",
+          fontSize: 13,
+          fontWeight: "500",
+          lineHeight: 18,
         }}
       >
         匿名性を守るため、地図上の気配に表示されるアイコンはPoolの中からランダムに選ばれます
       </Text>
-      {access.status === "pool_required" && (
-        <Action
-          title="ログアウト"
-          disabled={busy}
-          onPress={() =>
-            void native
-              .logout()
-              .catch(() => setError("ログアウトできませんでした。"))
-          }
-        />
-      )}
     </DetailPage>
   );
 }

@@ -10,6 +10,7 @@ import {
   ScrollView,
   StyleSheet,
   Text,
+  type TextStyle,
   View,
 } from "react-native";
 import {
@@ -29,6 +30,7 @@ export function DetailPage({
   onRefresh,
   background,
   titleColor,
+  titleStyle,
   bottomPadding,
 }: {
   title: string;
@@ -39,6 +41,7 @@ export function DetailPage({
   onRefresh?: () => Promise<unknown>;
   background?: ReactNode;
   titleColor?: string;
+  titleStyle?: TextStyle;
   bottomPadding?: number;
 }) {
   const router = useRouter();
@@ -101,6 +104,7 @@ export function DetailPage({
             style={[
               detail.title,
               titleColor ? { color: titleColor } : undefined,
+              titleStyle,
             ]}
           >
             {title}

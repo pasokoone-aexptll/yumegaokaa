@@ -2,15 +2,9 @@ import { native } from "../lib/native";
 import { useContext, useState } from "react";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { AccountAccessContext } from "../hooks/useAccountAccess";
-import {
-  ScrollView,
-  Text,
-  TextInput,
-  View,
-  Pressable,
-  Image,
-} from "react-native";
+import { ScrollView, Text, TextInput, View, Pressable } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { ProfileSetup } from "../components/onboarding/ProfileSetup";
 import { Avatar } from "../components/Avatar";
 import { useProfile } from "../hooks/useProfile";
 import { NativeIconButton } from "../components/denshin/NativeIconButton";
@@ -35,100 +29,28 @@ export default function Profile() {
   };
   if (onboarding)
     return (
-      <ScrollView
-        style={{ flex: 1, backgroundColor: "white" }}
-        contentContainerStyle={{
-          padding: 28,
-          paddingTop: insets.top + 45,
-          flexGrow: 1,
-          gap: 24,
+      <ProfileSetup
+        stage={nameSaved || profile?.display_name ? "photo" : "name"}
+        name={name}
+        onName={setName}
+        busy={busy}
+        error={logoutError || (status === "保存しました" ? undefined : status)}
+        onExit={() => {
+          void native
+            .logout()
+            .catch(() => setLogoutError("ログアウトできませんでした。"));
         }}
-        automaticallyAdjustKeyboardInsets
-        keyboardShouldPersistTaps="handled"
-      >
-        <SuperAsset name="accountAtmark" size={60} />
-        <Text style={{ fontFamily: "ui-rounded", fontSize: 26 }}>
-          {nameSaved ? "プロフィール画像を選ぶ" : "名前を決める"}
-        </Text>
-        {nameSaved ? (
-          <>
-            <View style={{ alignItems: "center", marginTop: 50 }}>
-              <Avatar
-                shape="square"
-                path={profile?.avatar_path}
-                version={profile?.avatar_updated_at}
-                name={name}
-                size={140}
-              />
-            </View>
-            <NativeAction
-              title="画像を選ぶ"
-              tone="blue"
-              disabled={busy}
-              onPress={() => void selectAvatar()}
-            />
-            <NativeAction
-              title="次へ"
-              tone="blue"
-              disabled={busy}
-              onPress={() => access.retry()}
-            />
-          </>
-        ) : (
-          <>
-            <Text style={{ color: "rgba(0,0,0,0.5)", lineHeight: 22 }}>
-              ユーザー名は街チャットや電信PINに表示されます。
-            </Text>
-            <TextInput
-              accessibilityLabel="名前"
-              value={name}
-              onChangeText={setName}
-              editable={!busy}
-              maxLength={50}
-              placeholder="名前"
-              style={{
-                fontFamily: "ui-rounded",
-                fontSize: 18,
-                backgroundColor: "rgba(0,0,0,0.04)",
-                padding: 16,
-                borderRadius: 24,
-              }}
-            />
-            <NativeAction
-              title="次へ"
-              tone="blue"
-              disabled={busy || !name.trim()}
-              onPress={() => {
-                void save().then((ok) => {
-                  if (ok) setNameSaved(true);
-                });
-              }}
-            />
-          </>
-        )}
-        {!!status && <Text accessibilityRole="alert">{status}</Text>}
-        <Image
-          source={require("../../assets/superassets/DreamCloud背景.png")}
-          style={{
-            width: 240,
-            height: 210,
-            alignSelf: "flex-end",
-            opacity: 0.4,
-          }}
-          resizeMode="contain"
-        />
-        <View style={{ flex: 1 }} />
-        {!!logoutError && <Text accessibilityRole="alert">{logoutError}</Text>}
-        <NativeAction
-          title="ログアウト"
-          disabled={busy}
-          onPress={() => {
-            void native
-              .logout()
-              .catch(() => setLogoutError("ログアウトできませんでした。"));
-          }}
-        />
-      </ScrollView>
+        onNext={() => {
+          if (!nameSaved && !profile?.display_name)
+            void save().then((ok) => {
+              if (ok) setNameSaved(true);
+            });
+          else
+            void selectAvatar().then((ok) => {
+              if (ok) access.retry();
+            });
+        }}
+      />
     );
   return (
     <ScrollView
@@ -140,7 +62,7 @@ export default function Profile() {
         style={{
           height: 200,
           backgroundColor: "rgba(255,45,85,0.2)",
-          paddingTop: insets.top + 10,
+          paddingTop: insets.top,
           paddingHorizontal: 24,
           flexDirection: "row",
           justifyContent: "space-between",
@@ -176,21 +98,21 @@ export default function Profile() {
       </View>
       <View
         style={{
-          marginTop: -54,
+          marginTop: -53,
           alignItems: "center",
           gap: 20,
           paddingHorizontal: 26,
         }}
       >
         <View
-          style={{ borderRadius: 28, padding: 5, backgroundColor: "#F6F6F6" }}
+          style={{ borderRadius: 26, padding: 4, backgroundColor: "#F6F6F6" }}
         >
           <Avatar
             shape="square"
             path={profile?.avatar_path}
             version={profile?.avatar_updated_at}
             name={name}
-            size={100}
+            size={96}
           />
         </View>
         {editing ? (
@@ -202,7 +124,7 @@ export default function Profile() {
             <Text
               style={{
                 fontFamily: "ui-rounded",
-                color: "#FF2D55",
+                color: "#FF3DA5",
                 fontSize: 20,
                 fontWeight: "700",
               }}
@@ -222,7 +144,7 @@ export default function Profile() {
           </Text>
         )}
         {editing && (
-          <View style={{ width: "100%", marginTop: 16 }}>
+          <View style={{ width: "100%", marginTop: 13 }}>
             <View
               style={{
                 backgroundColor: "white",
@@ -237,6 +159,7 @@ export default function Profile() {
                 style={{
                   fontFamily: "ui-rounded",
                   fontSize: 18,
+                  fontWeight: "600",
                   flex: 1,
                   height: 54,
                   backgroundColor: "white",
@@ -268,7 +191,16 @@ export default function Profile() {
                 </Pressable>
               )}
             </View>
-            <Text style={{ color: "rgba(0,0,0,0.2)", padding: 20 }}>
+            <Text
+              style={{
+                color: "rgba(0,0,0,0.2)",
+                paddingHorizontal: 20,
+                paddingVertical: 10,
+                fontFamily: "ui-rounded",
+                fontSize: 13,
+                fontWeight: "600",
+              }}
+            >
               Enter your name
             </Text>
           </View>

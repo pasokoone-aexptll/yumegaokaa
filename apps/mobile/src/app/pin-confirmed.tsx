@@ -25,7 +25,7 @@ export function PinConfirmedView({
     <PinSheet>
       <ScrollView
         contentContainerStyle={{
-          padding: 28,
+          padding: 24,
           paddingTop: 16,
           gap: 26,
           flexGrow: 1,
@@ -36,6 +36,7 @@ export function PinConfirmedView({
             flexDirection: "row",
             justifyContent: "space-between",
             alignItems: "center",
+            marginRight: -8,
           }}
         >
           <PinHeading />

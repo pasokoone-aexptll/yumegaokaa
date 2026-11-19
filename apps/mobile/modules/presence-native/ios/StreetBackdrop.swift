@@ -116,7 +116,7 @@ final class NativeSheetAppearance: ExpoView {
     backgroundColor = .clear
     if #available(iOS 26.0, *) {
       let glass = UIGlassEffect(style: .regular)
-      glass.tintColor = UIColor.black.withAlphaComponent(0.22)
+      glass.tintColor = UIColor.black.withAlphaComponent(0.06)
       glassSurface.effect = glass
     } else {
       glassSurface.effect = UIBlurEffect(style: .systemThinMaterialDark)
@@ -159,11 +159,13 @@ final class NativeSheetAppearance: ExpoView {
               if #available(iOS 26.1, *) {
                 let configureMaterial = {
                   let material = UIGlassEffect(style: .regular)
-                  material.tintColor = UIColor.black.withAlphaComponent(0.22)
+                  material.tintColor = UIColor.black.withAlphaComponent(0.06)
                   sheet.backgroundEffect = material
                   for detent in sheet.detents {
                     detent.backgroundEffect = material
                   }
+                  // React Native's transparent content wrapper needs its own
+                  // native glass surface; detent material alone is not visible.
                 }
                 // Changing detent materials during presentation makes UIKit
                 // lay out the final sheet immediately, skipping its slide-up.

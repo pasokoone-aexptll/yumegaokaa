@@ -6,10 +6,12 @@ export function RollingNumber({
   value,
   compact = false,
   light = false,
+  color,
 }: {
   value: number;
   compact?: boolean;
   light?: boolean;
+  color?: string;
 }) {
   const reduced = useContext(ReducedIconMotion);
   const previous = useRef(value);
@@ -47,7 +49,11 @@ export function RollingNumber({
       },
     ],
   });
-  const textStyle = [s.text, light && { color: "black" }];
+  const textStyle = [
+    s.text,
+    light && { color: "black" },
+    color ? { color } : undefined,
+  ];
   return (
     <View
       accessible

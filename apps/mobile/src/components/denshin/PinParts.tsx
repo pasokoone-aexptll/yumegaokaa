@@ -8,6 +8,7 @@ import { SpeechBubble } from "./SpeechBubble";
 import { NativeIconButton } from "./NativeIconButton";
 import { StyleSheet, Text, View } from "react-native";
 import { Avatar } from "../Avatar";
+import { BlurView } from "expo-blur";
 import type { PinPerson } from "../../lib/denshin";
 export const green = "#34C759";
 export function RecruitmentGlyph({ color = green }: { color?: string }) {
@@ -26,13 +27,16 @@ export function PinHeading({ suffix = "PIN" }: { suffix?: string }) {
     <View
       style={{
         flexDirection: "row",
-        alignItems: "center",
-        gap: 6,
+        alignItems: "flex-end",
+        gap: 5,
         flexShrink: 1,
       }}
     >
-      <DenshinLogo dark width={72} />
-      <Text style={s.suffix}>{suffix}</Text>
+      <DenshinLogo dark width={suffix === "PIN" ? 72 : 60} />
+      <Text style={s.suffix}>
+        <Text style={suffix === "PIN" ? s.pin : s.editorPin}>PIN</Text>
+        {suffix.slice(3) ? ` ${suffix.slice(3)}` : ""}
+      </Text>
     </View>
   );
 }
@@ -42,12 +46,14 @@ export function RoundAction({
   onPress,
   disabled = false,
   active = false,
+  size = 44,
 }: {
   label: string;
   glyph: string;
   onPress: () => void;
   disabled?: boolean;
   active?: boolean;
+  size?: number;
 }) {
   const icons: Record<string, SuperAssetName> = {
     "×": "x",
@@ -63,6 +69,7 @@ export function RoundAction({
       onPress={onPress}
       disabled={disabled}
       active={active}
+      size={size}
     />
   );
 }
@@ -71,12 +78,22 @@ export function PeopleStack({ people }: { people: PinPerson[] }) {
     <View style={s.people}>
       {people.slice(0, 3).map((p) => (
         <View key={p.account_id} style={s.overlap}>
-          <Avatar path={p.avatar_path} name={p.display_name} size={30} />
+          <Avatar path={p.avatar_path} name={p.display_name} size={33} />
         </View>
       ))}
       {people.length > 3 && (
         <View style={[s.overlap, s.more]}>
-          <Text style={{ color: "white" }}>+{people.length - 3}</Text>
+          <BlurView
+            pointerEvents="none"
+            intensity={70}
+            tint="systemThinMaterialDark"
+            style={StyleSheet.absoluteFill}
+          />
+          <Text
+            style={{ color: "white", fontSize: 17, fontFamily: "ui-rounded" }}
+          >
+            +{people.length - 3}
+          </Text>
         </View>
       )}
     </View>
@@ -99,8 +116,8 @@ const s = StyleSheet.create({
   },
   badgeText: {
     color: green,
-    fontWeight: "600",
-    fontSize: 15,
+    fontWeight: "500",
+    fontSize: 17,
     lineHeight: 21,
     fontFamily: "ui-rounded",
     alignSelf: "center",
@@ -110,8 +127,12 @@ const s = StyleSheet.create({
     fontFamily: "ui-rounded",
     color: "rgba(255,255,255,0.65)",
     fontWeight: "400",
-    fontSize: 17,
+    fontSize: 18,
+    lineHeight: 24,
+    marginBottom: -1,
   },
+  pin: { fontSize: 16, fontWeight: "600" },
+  editorPin: { fontSize: 14, fontWeight: "600" },
   round: {
     width: 44,
     height: 44,
@@ -121,16 +142,17 @@ const s = StyleSheet.create({
     justifyContent: "center",
   },
   glyph: { color: "white", fontSize: 26 },
-  people: { flexDirection: "row", paddingLeft: 8, alignItems: "center" },
+  people: { flexDirection: "row", paddingLeft: 20, alignItems: "center" },
   overlap: {
-    marginLeft: -8,
-    borderWidth: 1.5,
+    marginLeft: -20,
+    borderWidth: 2,
     borderColor: "white",
-    borderRadius: 18,
+    borderRadius: 19,
   },
   more: {
-    width: 32,
-    height: 32,
+    width: 37,
+    height: 37,
+    overflow: "hidden",
     backgroundColor: "rgba(255,255,255,0.2)",
     alignItems: "center",
     justifyContent: "center",

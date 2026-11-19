@@ -1,4 +1,5 @@
 import { NativeToggle as Switch } from "../../components/denshin/NativeToggle";
+import { NativeAction } from "../../components/denshin/NativeAction";
 import { useContext, useEffect, useState } from "react";
 import { ReducedIconMotion } from "../../components/icons/IconMotion";
 import { RollingNumber } from "../../components/denshin/RollingNumber";
@@ -60,7 +61,7 @@ export default function CreatePin() {
     <PinSheet>
       <Stack.Screen
         options={{
-          sheetAllowedDetents: [draft.limited && expanded ? 0.75 : 0.47, 0.95],
+          sheetAllowedDetents: [draft.limited && expanded ? 0.77 : 0.47, 0.95],
         }}
       />
       <ScrollView
@@ -107,7 +108,7 @@ export default function CreatePin() {
             <View
               style={{ flexDirection: "row", alignItems: "center", gap: 12 }}
             >
-              <SuperAsset name="user" tint="white" opacity={0.65} />
+              <SuperAsset name="user" size={21} tint="white" opacity={0.65} />
               <Text style={s.label}>最大募集人数</Text>
             </View>
             <Switch
@@ -118,11 +119,12 @@ export default function CreatePin() {
               trackColor={{ true: green }}
             />
           </View>
+          {draft.limited && <View style={s.divider} />}
           {draft.limited && !expanded && (
             <Pressable
               accessibilityRole="button"
               accessibilityLabel="人数を変更"
-              style={s.row}
+              style={[s.row, s.numberRow]}
               onPress={() => {
                 if (!reduced)
                   LayoutAnimation.configureNext(
@@ -132,11 +134,26 @@ export default function CreatePin() {
               }}
             >
               <Text style={s.label}>数値</Text>
-              <View
-                style={{ flexDirection: "row", alignItems: "center", gap: 8 }}
-              >
-                <Text style={s.label}>{draft.capacity}</Text>
-                <SuperAsset name="chevron-base" size={14} tint="white" />
+              <View style={s.numberPill}>
+                <Text style={s.numberValue}>{draft.capacity}</Text>
+                <View style={s.stepperGlyph}>
+                  <View style={{ transform: [{ rotate: "-90deg" }] }}>
+                    <SuperAsset
+                      name="chevron-base"
+                      size={12}
+                      tint="white"
+                      opacity={0.65}
+                    />
+                  </View>
+                  <View style={{ transform: [{ rotate: "90deg" }] }}>
+                    <SuperAsset
+                      name="chevron-base"
+                      size={12}
+                      tint="white"
+                      opacity={0.65}
+                    />
+                  </View>
+                </View>
               </View>
             </Pressable>
           )}
@@ -164,11 +181,17 @@ export default function CreatePin() {
               />
             </View>
           )}
+          <View style={s.divider} />
           <View style={s.row}>
             <View
               style={{ flexDirection: "row", alignItems: "center", gap: 12 }}
             >
-              <SuperAsset name="非常口rounded" tint="white" opacity={0.65} />
+              <SuperAsset
+                name="非常口rounded"
+                size={21}
+                tint="white"
+                opacity={0.65}
+              />
               <Text style={s.label}>募集モード</Text>
             </View>
             <Switch
@@ -185,7 +208,8 @@ export default function CreatePin() {
           disabled={disabled || !!draft.original?.count}
           style={[
             s.group,
-            { padding: 20, opacity: draft.original?.count ? 0.45 : 1 },
+            s.mapRow,
+            { opacity: draft.original?.count ? 0.45 : 1 },
           ]}
           onPress={() => {
             Keyboard.dismiss();
@@ -194,20 +218,22 @@ export default function CreatePin() {
           }}
         >
           <View style={{ flexDirection: "row", alignItems: "center", gap: 12 }}>
-            <SuperAsset name="map" tint="white" opacity={0.65} />
+            <SuperAsset name="map" size={21} tint="white" opacity={0.65} />
             <Text style={s.label}>
               {draft.location ? "マップを変更する" : "マップを挿入"}
             </Text>
           </View>
-          {draft.location && <Text style={s.hint}>場所を選択済み</Text>}
         </Pressable>
         {!!draft.original?.count && (
           <Text style={s.hint}>参加者がいる間は場所を変更できません。</Text>
         )}
         <Text style={s.hint}>作成から24時間で消えます。1日3個まで。</Text>
         {!!draft.id && (
-          <Pressable
-            accessibilityRole="button"
+          <NativeAction
+            title="電信PINを削除"
+            destructive
+            onDark
+            contentWidth={190}
             disabled={disabled}
             onPress={() =>
               Alert.alert(
@@ -223,10 +249,7 @@ export default function CreatePin() {
                 ],
               )
             }
-            style={{ alignItems: "center", padding: 16 }}
-          >
-            <Text style={s.error}>電信PINを削除</Text>
-          </Pressable>
+          />
         )}
       </ScrollView>
     </PinSheet>
@@ -240,38 +263,78 @@ const s = StyleSheet.create({
     padding: 0,
     flexShrink: 0,
     paddingTop: 0,
+    paddingLeft: 8,
+    marginRight: -4,
   },
   actions: { flexDirection: "row", gap: 10 },
-  content: { padding: 22, paddingTop: 16, gap: 24 },
+  content: { padding: 20, paddingTop: 16, gap: 24 },
   input: {
     borderRadius: 26,
-    backgroundColor: "#ffffff22",
-    padding: 20,
-    fontSize: 21,
+    backgroundColor: "rgba(255,255,255,0.15)",
+    paddingHorizontal: 18,
+    paddingVertical: 13,
+    fontFamily: "ui-rounded",
+    fontSize: 18,
+    lineHeight: 26,
     color: "white",
-    minHeight: 66,
+    minHeight: 52,
     maxHeight: 190,
     textAlignVertical: "top",
   },
-  group: { borderRadius: 28, backgroundColor: "#ffffff22", overflow: "hidden" },
+  group: {
+    borderRadius: 26,
+    backgroundColor: "rgba(255,255,255,0.15)",
+    overflow: "hidden",
+  },
   row: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    padding: 18,
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    minHeight: 52,
     gap: 12,
   },
-  label: { color: "#ffffffdd", fontSize: 18 },
+  label: {
+    fontFamily: "ui-rounded",
+    color: "rgba(255,255,255,0.65)",
+    fontSize: 16,
+    lineHeight: 22,
+    fontWeight: "500",
+  },
+  divider: {
+    height: StyleSheet.hairlineWidth,
+    marginLeft: 49,
+    marginRight: 16,
+    backgroundColor: "rgba(255,255,255,0.2)",
+  },
+  numberRow: { paddingLeft: 49 },
+  numberPill: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 4,
+    minWidth: 64,
+    minHeight: 32,
+    paddingHorizontal: 12,
+    borderRadius: 16,
+    backgroundColor: "rgba(0,0,0,0.15)",
+  },
+  numberValue: {
+    fontFamily: "ui-rounded",
+    fontSize: 20,
+    fontWeight: "600",
+    color: "rgba(255,255,255,0.65)",
+  },
+  stepperGlyph: { height: 18, justifyContent: "center", gap: -4 },
+  mapRow: { minHeight: 56, paddingHorizontal: 16, paddingVertical: 16 },
   hint: { fontSize: 13, color: "#ffffff88", marginTop: 5 },
   counter: {
     flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
     gap: 24,
-    padding: 16,
-    borderTopWidth: StyleSheet.hairlineWidth,
-    borderBottomWidth: StyleSheet.hairlineWidth,
-    borderColor: "#ffffff33",
+    paddingVertical: 12,
   },
   number: {
     color: "white",

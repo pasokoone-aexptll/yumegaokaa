@@ -8,7 +8,7 @@ const source = ts.transpileModule(
   { compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022 } },
 ).outputText;
 
-async function check(status, name, failure = false, contributed = true) {
+async function check(status, name, failure = false, contributed = true, avatar = "avatar.jpg") {
   const states = [], failures = [], calls = [], exports = {};
   let stateSlot = 0;
   const native = {
@@ -17,7 +17,7 @@ async function check(status, name, failure = false, contributed = true) {
       if (operation === 'account_access') return { status };
       if (failure) throw Error('network_error');
       if (operation === 'street_icon_get') return { contributed };
-      return { display_name: name };
+      return { display_name: name, avatar_path: avatar };
     },
     stop: async () => {},
     session: async () => {},
@@ -38,7 +38,7 @@ async function check(status, name, failure = false, contributed = true) {
   return { states, failures, calls };
 }
 
-test('invited member without a name must complete profile; saved name resumes Map access', async () => {
+test('invited member without a name must complete profile; saved name and photo resume Map access', async () => {
   assert.deepEqual((await check('active', '')).states, [{ revision: 7, chatRestrictedUntil: null, status: 'profile_required' }]);
   assert.deepEqual((await check('active', '街の人')).states, [{ revision: 7, chatRestrictedUntil: null, status: 'active' }]);
 });
@@ -57,4 +57,10 @@ test('unregistered and suspended users do not read profiles; network failure can
 test('first enrollment requires pool contribution independently of the saved display name', async () => {
   assert.deepEqual((await check('active', 'name', false, false)).states,
     [{ revision: 7, chatRestrictedUntil: null, status: 'pool_required' }]);
+});
+
+
+test('a saved name without a photo resumes the required photo step', async () => {
+  assert.deepEqual((await check('active', 'name', false, true, null)).states,
+    [{ revision: 7, chatRestrictedUntil: null, status: 'profile_required' }]);
 });

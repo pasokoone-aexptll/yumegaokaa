@@ -2,19 +2,19 @@
 
 2026-11-19追記：電信PINのQ-DP01〜06はユーザーが推奨案をすべて承認。DENSHIN_PIN_SPECに本文反映しDP01実装を開始。旧有効データがある場合の移行判断は配備前に確認。
 
-## 2026-11-19の再開点：電信PIN仕様
+## 現在の再開点（2026-11-20・Figma最終照合を継続中）
 
-最新追加（11月20日・Toggle実寸/全画面照合/6桁認証）：Map参加ToggleをUIKit標準UISwitchへ接続し、実寸に合わせた外周を3x Simulator画像で上下左右12px＝4ptと確認。ログイン地点はnative blurで境界線を隠す。街の位置・範囲・入街条件は変更なし。
+ユーザーは就寝中。全29画面と登録動画の差分を自律修正する依頼。意味変更は確認し、独立作業は止めない。細部ごとのiPhone再インストールは不要。現行4tabs・提供SVG・標準Sheet/実UIGlassEffectを維持する。
 
-ユーザー回答でメール変更を6桁自動認証へ。新旧両メールの確認は維持し、手動確認ボタンは撤去、完了時はコードを残してリング→チェック。現在メールは表示のみ・×不要の回答も採用。自動認証/メール状態の6試験、TypeScript、Lint0 errors/既存3 warningsが成功。
+- 直近の合意：未使用QR削除で発行枠返却、登録済みは返却せず相手停止。街ロゴ下は10分観測で消さず入街中全員の匿名Pool画像列を常設。NFCマーカーは表示専用。
+- 055/056をローカルとクラウドへ適用済み。055は未使用revokedを枠計算から除外、056は全滞在の匿名画像集約をヘッダーへ追加。地図セルの10分条件/名前/座標非公開は維持。専用DB試験成功。Simulatorで実QR発行/残数/再表示と入街者画像を確認。
+- Home/Map/チャット/toast/招待QR/History、PINの標準sheet余白/固定編集、設定/Profile/Pool/通知/Blocks/Account/運営Formを照合・修正。Map背景のPIN半高→全高→半高でglassが維持されることを再確認。
+- 登録/ログインを分離し6桁で自動認証、本人写真も必須。元動画のドット書体・扉/人物/影・GIF・こたつ・プロフィール登録・完了演出を修正。実Authの成功前に画面を進めない。確認fixtureは実APIへ送信しない。
+- 画面別の到達状況は `frontend-redesign/UI_REVIEW_STATUS.md`。最新画像/録画は `/tmp/yumegaoka-final-figma-20261120/`。UI_REVIEWなしの通常版をSimulatorへ上書き・起動済み（PID65624）。Home招待→戻る→Settings、確認メニュー非表示、Home/Mapのモード表示整合、実PINへのMap移動・詳細開閉を確認。実機は今回追加変更を転送しない。
+- 未決定はOPEN_QUESTIONS Q-UI01（登録OTP下の緑ゲージが期限か再送待ちか）。質問済み・回答待ち。その他の視覚照合を継続する。全29画面完全一致・実メール/カメラ/NFC/運営MFA/実会員参加の成功は未宣言。
+- TypeScript、対象認証/初期設定/QR/ヘッダー14試験成功。Native Simulator Release成功。通常版のMapドラッグ動作は確認できたが、NFCマーカー直接タップのカメラ比較中にDevice HubがnoWindowsAvailable/cgWindowNotFoundとなり操作不可。未確認を合格にしない。現在地ボタンはSimulatorの位置未取得で標準Alertを表示。既定33タスクと固定残量は変更しない。
 
-PIN名簿の行間/固定CTAの幅/成功画面の縦位置、通知行と日付、ブロック候補と解除、運営Form、City pool画像寸法、Invite履歴、Accountの余白/ボタン/薄色footerをFigmaへ修正。PIN半高→全高→半高でglass背景が維持されることを確認。通常アカウントで出ない状態は `EXPO_PUBLIC_UI_REVIEW=1` かつSimulator限定の `/settings/review`・`/review-pin` で実表示部品にfixtureを渡して検証。実API/認可は置換せず、fixtureからDBへ書かない。最終ビルドは確認フラグなし。iPhone 18 Pro/iOS27へ上書きしPID24959で起動、Map画面で利用可能。実PINの読み込み時だけ残る上端20ptはindicatorをScrollView内へ移して修正・確認済み。同じPIN再タップで閉じることも確認。画面別の証拠と残りはUI_REVIEW_STATUS、画像は `/tmp/yumegaoka-ui-review-20261120/`。
-
-前段で確認済み：PINの×は確認なし破棄、Home＋→Map→作成、本文中央揃え、募集作者/街人数の太めSF Rounded、toast右余白8pt、人数12→13、City Login下から表示、Tokyo/rounded非常口/試験タップ→クラウド確定後の成功。待機リングから本人限定試験タグを使えるが実NFC認可は迂回しない。録画 `/tmp/yumegaoka-ui-final-20261120/flows.mp4`。実NFCは未確認。
-
-自己PIN作成/参加通知とCity pool取り下げUI削除は承認・実装済み。移行054はローカル/クラウド適用済み、本人通知の非重複/権限/24時間清掃/Pushなしを検証。053関数renameのPIN操作PT503回帰も解消。今回DB追加変更なし。
-
-未確認：実メールOTP、他会員の参加/到着一巡、実通知到着、運営MFA、実カメラQR、実NFC/実機、全画面アクセシビリティ。fixture表示をこれらの実動作合格と混同しない。全29画面完全一致は未達、意味の変更は引き続き確認する。旧33タスクの実装29/統合27/実機11/DONE27/BLOCKED3、固定残量ローカル4/外部3は不変。
+前段の証拠：PIN×即破棄、Home＋→Map作成、UISwitch外周上下左右4pt、City Login下から表示/Tokyo/rounded非常口/リング→クラウド成功は `/tmp/yumegaoka-ui-final-20261120/flows.mp4` 等。自己PIN作成/参加通知は054、ローカル/クラウド適用とDB検証済み。過去のPIDや当時の「DB変更なし」は当該段階の履歴。
 
 052（招待残数）はユーザーがローカル・クラウドへの適用を明示承認し、両方へ適用済み。既存の発行上限や利用者データは変更せず、invite_listにremaining/issuer_nameを追加。Homeのチケットに実残数を表示する。051も両方適用済み。
 

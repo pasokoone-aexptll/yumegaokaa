@@ -1,5 +1,5 @@
 import { SuperAsset, type SuperAssetName } from "../icons/SuperAsset";
-import { Pressable, Text } from "react-native";
+import { Pressable, Text, type StyleProp, type TextStyle } from "react-native";
 export function NativeAction({
   title,
   onPress,
@@ -10,16 +10,24 @@ export function NativeAction({
   compact = false,
   onDark = false,
   leadingIcon,
+  trailingIcon,
+  trailingRotation = 0,
+  contentAlign = "center",
+  labelStyle,
 }: {
   title: string;
   onPress: () => void;
   disabled?: boolean;
   destructive?: boolean;
-  tone?: "green" | "blue" | "neutral";
+  tone?: "green" | "blue" | "neutral" | "black";
   contentWidth?: number;
   compact?: boolean;
   onDark?: boolean;
   leadingIcon?: SuperAssetName;
+  trailingIcon?: SuperAssetName;
+  trailingRotation?: number;
+  contentAlign?: "center" | "start";
+  labelStyle?: StyleProp<TextStyle>;
 }) {
   return (
     <Pressable
@@ -32,15 +40,17 @@ export function NativeAction({
         borderRadius: 40,
         alignItems: "center",
         flexDirection: "row",
-        justifyContent: "center",
+        justifyContent: contentAlign === "start" ? "flex-start" : "center",
         gap: 6,
         backgroundColor: destructive
           ? "#FF3B30"
-          : tone === "blue"
-            ? "#008CFF"
-            : tone === "neutral"
-              ? "rgba(255,255,255,0.75)"
-              : "#34C759",
+          : tone === "black"
+            ? "black"
+            : tone === "blue"
+              ? "#008CFF"
+              : tone === "neutral"
+                ? "rgba(255,255,255,0.75)"
+                : "#34C759",
         opacity: disabled ? 0.4 : 1,
       }}
     >
@@ -52,14 +62,25 @@ export function NativeAction({
         />
       )}
       <Text
-        style={{
-          color: tone === "neutral" && !onDark ? "black" : "white",
-          fontFamily: "ui-rounded",
-          fontSize: compact ? 16 : 18,
-        }}
+        style={[
+          {
+            color: tone === "neutral" && !onDark ? "black" : "white",
+            fontFamily: "ui-rounded",
+            fontSize: compact ? 16 : 18,
+          },
+          labelStyle,
+        ]}
       >
         {title}
       </Text>
+      {trailingIcon && (
+        <SuperAsset
+          name={trailingIcon}
+          rotation={trailingRotation}
+          size={18}
+          tint={tone === "neutral" && !onDark ? "black" : "white"}
+        />
+      )}
     </Pressable>
   );
 }
