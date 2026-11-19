@@ -1,4 +1,3 @@
-import { useContext } from "react";
 import { SplashPlayingContext } from "../../components/LaunchSplash";
 import { initialPitch } from "../../components/map/headerLayout";
 import { IconPressable as Pressable } from "../../components/icons/IconMotion";
@@ -25,7 +24,7 @@ import { streetMapStyles as styles } from "../../components/streetMapStyles";
 import { mapStyle } from "../../lib/mapStyle";
 import { StreetChat } from "../../components/StreetChat";
 import { useRouter, useLocalSearchParams, useFocusEffect } from "expo-router";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useContext, useEffect, useRef, useState } from "react";
 import {
   useWindowDimensions,
   Platform,
@@ -127,9 +126,27 @@ export default function Street() {
   }
   const openedRequest = useRef<string | undefined>(undefined);
   useEffect(() => {
+    if (
+      !mapFocused ||
+      !ready ||
+      !signed ||
+      params.panel !== "create-pin" ||
+      openedRequest.current === params.mapRequest
+    )
+      return;
+    const timer = setTimeout(() => {
+      openedRequest.current = params.mapRequest;
+      router.setParams({ panel: "" });
+      router.push("/pins/create");
+    }, 340);
+    return () => clearTimeout(timer);
+  }, [mapFocused, ready, signed, params.panel, params.mapRequest, router]);
+
+  useEffect(() => {
     const lon = Number(params.longitude),
       lat = Number(params.latitude);
     if (
+      params.panel !== "create-pin" &&
       ready &&
       signed &&
       params.longitude &&
@@ -182,6 +199,9 @@ export default function Street() {
       };
     }
   }, [
+    router,
+    setError,
+    params.panel,
     mapFocused,
     androidMapReady,
     params.longitude,

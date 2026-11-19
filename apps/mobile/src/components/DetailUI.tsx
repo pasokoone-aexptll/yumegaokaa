@@ -2,7 +2,7 @@ import { SheetChrome } from "./SheetChrome";
 
 import { IconPressable as Pressable } from "./icons/IconMotion";
 import type { ReactNode } from "react";
-import { useState } from "react";
+import { Children, Fragment, useState } from "react";
 import {
   ActivityIndicator,
   Platform,
@@ -27,6 +27,8 @@ export function DetailPage({
   mapSheet = false,
   refreshing = false,
   onRefresh,
+  background,
+  titleColor,
 }: {
   title: string;
   children: ReactNode;
@@ -34,6 +36,8 @@ export function DetailPage({
   mapSheet?: boolean;
   refreshing?: boolean;
   onRefresh?: () => Promise<unknown>;
+  background?: ReactNode;
+  titleColor?: string;
 }) {
   const router = useRouter();
   const [reloading, setReloading] = useState(false);
@@ -51,6 +55,7 @@ export function DetailPage({
       }
       style={[detail.page, materialSheet && { backgroundColor: "white" }]}
     >
+      {background}
       {materialSheet && <SheetChrome />}
       <ScrollView
         refreshControl={
@@ -89,7 +94,14 @@ export function DetailPage({
           ) : (
             <View style={{ width: 49 }} />
           )}
-          <Text style={detail.title}>{title}</Text>
+          <Text
+            style={[
+              detail.title,
+              titleColor ? { color: titleColor } : undefined,
+            ]}
+          >
+            {title}
+          </Text>
           <View style={{ width: 49 }} />
         </View>
         {children}
@@ -107,7 +119,23 @@ export function Section({
   return (
     <View style={{ gap: 8 }}>
       {title && <Text style={detail.sectionTitle}>{title}</Text>}
-      <View style={detail.group}>{children}</View>
+      <View style={detail.group}>
+        {Children.toArray(children).map((child, index, rows) => (
+          <Fragment key={index}>
+            {child}
+            {index < rows.length - 1 && (
+              <View
+                style={{
+                  height: StyleSheet.hairlineWidth,
+                  marginLeft: 48,
+                  marginRight: 14,
+                  backgroundColor: "rgba(0,0,0,0.07)",
+                }}
+              />
+            )}
+          </Fragment>
+        ))}
+      </View>
     </View>
   );
 }
@@ -212,6 +240,7 @@ export function PrimaryAction({
 export const detail = StyleSheet.create({
   page: { flex: 1, backgroundColor: "#F6F6F6" },
   navigation: {
+    marginHorizontal: -4,
     paddingHorizontal: 0,
     paddingTop: 0,
     paddingBottom: 12,
@@ -230,7 +259,7 @@ export const detail = StyleSheet.create({
   },
   content: {
     flexGrow: 1,
-    padding: 20,
+    padding: 26,
     paddingTop: 0,
     paddingBottom: 36,
     gap: 24,
@@ -262,8 +291,6 @@ export const detail = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: 12,
-    borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: "#0000000d",
   },
   rowTitle: {
     fontFamily: "ui-rounded",

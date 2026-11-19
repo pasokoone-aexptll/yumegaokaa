@@ -53,7 +53,12 @@ export function MapHeader({
         >
           <SuperAsset name="user-fill" tint="white" size={21} />
           <Text
-            style={{ fontFamily: "ui-rounded", color: "white", fontSize: 20 }}
+            style={{
+              fontFamily: "ui-rounded",
+              fontWeight: "700",
+              color: "white",
+              fontSize: 20,
+            }}
           >
             {count ?? "—"}
           </Text>

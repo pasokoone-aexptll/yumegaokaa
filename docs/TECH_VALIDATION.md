@@ -1,6 +1,23 @@
 # 技術検証と実装状況
 
-## 2026-11-20 NFC待機・Figma差分の再修正（R03/R04/R12〜R14/R19）
+## 2026-11-20 待機リング・自己操作通知・Figma照合（R03/R04/R10〜R14/R17/R19）
+
+今回の追加指定を採用して実装。旧33タスクの実機達成数には加算しない。
+
+- City Login：実際のglass背景は表示開始時に挿入し、標準sheet/detentのbackgroundEffect変更を表示遷移の完了後へ移動。遷移中に変更すると表示アニメーションが最終位置へ飛ぶ原因をSimulatorで確認して修正。標準slide_from_bottomを使い半画面表示、下部の待機リングをタップして既存の本人限定試験タグから入街可能にした。クラウドの期限付き許可を更新し、OFF→待機→タップ→人数0から1→緑の非常口/成功チェック→閉鎖を録画確認。サーバー成功前にONへ偽装していない。実NFC/ADPの確認ではない。
+- Home/Map：Homeの＋がMapへの横移動後に作成sheetを開くことをSimulatorで確認。Homeの気配モードメニュー、余白/文字、招待雲の二重opacityを修正。募集吹き出しのアイコン寸法を維持し本文を上下中央化。電信ロゴの暗色変種、SF Roundedの街人数/募集作者名と現在人数の大きさを調整。ログイン地点はplugloginを暗い角丸四角へ。境界座標と公開範囲は変更なし。
+- Toggle：SwiftUI標準Toggleをintrinsic sizeで包み、padding4ptの不透明な明るい緑の外周へ。SimulatorのON状態をrawスクリーンショットで確認。Toastは右余白8pt、上下8pt、左16ptとし、×の上下/右余白を一致。既存48ptの予約領域を維持。
+- PIN：最新回答で破棄確認を撤去。×→閉鎖→再度作成で空欄を実画面確認。未確定送信はdiscard意思をSecureStoreへ保存し、シートを閉じた後は旧入力を復元/再実行せず、次回保存より前に古い受付を取消・照合する。公開済みPINの削除確認は維持。人数展開時は標準detentを0.47から0.75へ変更し、地図挿入まで見えること、12→13を確認。
+- 通知/設定：自己作成/参加の表示用見出しと本文カードを分離。空通知のアイコン/説明文の間隔、設定子画面の横余白・区切り、プロフィールの入力/紫の完了、City pool素材/今日の画像/差替え画面、招待のQR/期限ゲージ/History/削除確認、ブロック入力をFigmaへ調整。City poolの取り下げUIを撤去。
+- 054：commandsの成功確定に自己作成/参加の通知を一度だけ追加。参加取消では消さず、本人だけ取得/既読化でき、24時間で取得対象外・清掃。自己通知はPush outboxに入れない。053の関数rename後に残ったPL/pgSQL引数修飾名が原因でPIN操作がPT503になる回帰も修正。既存の認可・利用資格・定員・再送処理を維持。
+- DB検証：pin-activity / denshin-flow / current-invitationの3試験成功。本文スナップショット、他者の既読拒否、再送非重複、取消後履歴、Pushなし、期限と清掃、既存PINフロー/QR再表示再発行を確認。fixtureはrollback。054はローカルとクラウドの両DBへtransactionで適用、migration履歴と関数修飾名修正を再読確認。
+- クライアント：entry-state / entry-presentation / entry-success-dismissal / notifications-state / denshin-clientの21試験成功。その後の×変更でcommand-discardとdenshin-clientの8試験成功。通信不能/モジュール再ロード後の破棄意思、旧入力の非再送、次回新規保存前の取消、通常×でdraft消去とbackを確認。
+- 最終確認：TypeScript成功、全mobile Lintは0 errors/既存3 warnings。Xcode Release/arm64 Simulatorビルド成功。iPhone 18 Pro/iOS27へ上書き・起動（最終PID5993）。通知の追加間隔修正と人数展開は最終ビルドを実画面確認。
+- 証拠（このMacの一時保存）：`/tmp/yumegaoka-ui-final-20261120/flows.mp4`（68秒、入街待機〜成功）、`flow-contact.png`、`map.png`、`toggle.png`。ビルドログ `/tmp/yumegaoka-native-ui-build.log`。認証情報を成果物/ログへ出力していない。
+- 未確認：新通知ありの実画面（現在の本人inboxは空）、別会員からのPIN参加/到着一巡、実メール変更/OTP、実カメラQR、運営資格付き画面、iPhone実機、Dynamic Type/Reduce Transparencyの全体。全29画面・動画全フレームの完全一致は未達。運営画面は一般アカウントの資格拒否を確認し、確認のための権限付与は行わない。
+- 進捗：実装29/33（87.9%）、統合27/33（81.8%）、実機11/33（33.3%）、DONE27/33（81.8%）、BLOCKED3/33（9.1%）を維持。固定残量ローカル4→4・外部3→3。追加Figma必須差分の修正であり分母変更なし、総残工数は未計測。
+
+## 2026-11-20 前段のNFC待機・Figma差分（リング代用の追加指示前）
 
 - 入街：未スキャン時の接続エラーを除去。iOS Simulator判定をnativeから取得し、NFCセッション/入街APIを呼ばず待機表示。実端末は既存NFC→checkinを維持、ユーザー取消は閉じ、実エラーは標準Alert。Tokyo/rounded非常口/回数、NFCを探しています…、待機リングをSimulator確認。成功リング650ms→チェック220msを実装、成功はサーバー確定後のみ。実NFC/成功演出の実機確認は未完。
 - Sheet：実UIGlassEffectを標準sheet controllerの背景へ挿入。絶対配置の背景をReactの先頭に置くとreact-native-screensが全高ヘッダーと見なして本文高を0にすることをSimulatorで発見し修正。全高/半高の往復で本文・名簿・背景色・固定編集ボタンを確認。今回の既存PINは主催者のみ/参加者0なので参加ボタンの実データ操作は未検証。

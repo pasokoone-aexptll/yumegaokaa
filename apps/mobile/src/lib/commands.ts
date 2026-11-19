@@ -1,6 +1,6 @@
 import * as SecureStore from "expo-secure-store";
 import { native, url } from "./native";
-type Pending = { id: string; count: number };
+type Pending = { id: string; count: number; discarded?: boolean };
 const running = new Set<string>();
 async function storageKey(kind: string) {
   const session = await native.session();
@@ -30,7 +30,8 @@ async function remove(key: string, p: Pending) {
     await SecureStore.deleteItemAsync(key + "_" + i);
 }
 export async function pendingCommand(kind: string) {
-  return read(await storageKey(kind));
+  const pending = await read(await storageKey(kind));
+  return pending?.discarded ? null : pending;
 }
 export async function submitCommand<T>(
   kind: string,
@@ -41,6 +42,12 @@ export async function submitCommand<T>(
   running.add(key);
   try {
     let pending = await read(key);
+    if (pending?.discarded) {
+      // A new draft may proceed only after the old abandoned request is settled.
+      await native.rpc("command_cancel", { id: pending.id });
+      await remove(key, pending);
+      pending = null;
+    }
     if (pending && JSON.stringify(pending.body) !== JSON.stringify(body))
       throw Error("pending_command_exists");
     if (pending) {
@@ -130,4 +137,19 @@ export async function reconcilePendingCommand(kind: string) {
   } finally {
     running.delete(key);
   }
+}
+
+/** Persist the discard intent before leaving the editor. Never restore/replay it. */
+export async function discardPendingCommand(kind: string): Promise<void> {
+  const key = await storageKey(kind);
+  if (running.has(key)) throw Error("operation_in_progress");
+  const pending = await read(key);
+  if (!pending) return;
+  await SecureStore.setItemAsync(
+    key,
+    JSON.stringify({ id: pending.id, count: pending.count, discarded: true }),
+  );
+  // Cancellation may complete after the sheet closes. The persisted intent
+  // survives offline/relaunch; submitCommand settles it before any new request.
+  void cancelPendingCommand(kind).catch(() => {});
 }

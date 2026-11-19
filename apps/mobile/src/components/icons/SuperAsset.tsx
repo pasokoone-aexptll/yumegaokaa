@@ -37,17 +37,24 @@ export function SuperAsset({
 
 export function DenshinLogo({
   dark = false,
+  monochrome = false,
   width = 96,
 }: {
   dark?: boolean;
+  monochrome?: boolean;
   width?: number;
 }) {
   const xml = dark
     ? assets["電信"]
         .replace(/stroke="#01AE6B"/gi, 'stroke="white"')
-        .replace(/fill="#01AE6B"/gi, 'fill="black"')
-        .replace(/#E6F7F0/gi, "white")
-    : assets["電信"];
+        .replace(/fill="#01AE6B"/gi, 'fill="white"')
+        .replace(/#E6F7F0/gi, "black")
+    : monochrome
+      ? assets["電信"]
+          .replace(/stroke="#01AE6B"/gi, 'stroke="rgba(0,0,0,0.2)"')
+          .replace(/fill="#01AE6B"/gi, 'fill="black"')
+          .replace(/#E6F7F0/gi, "white")
+      : assets["電信"];
   return (
     <SvgXml
       xml={xml}

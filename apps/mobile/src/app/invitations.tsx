@@ -10,8 +10,11 @@ import { SuperAsset } from "../components/icons/SuperAsset";
 import { native } from "../lib/native";
 import { inviteSvg, parseInviteQR } from "../lib/inviteQR";
 import { useInvitations } from "../hooks/useInvitations";
+import { useProfile } from "../hooks/useProfile";
+import { Avatar } from "../components/Avatar";
 export default function Invitations() {
   const d = useInvitations();
+  const { profile } = useProfile();
   const [permission, requestPermission] = useCameraPermissions();
   const [scanning, setScanning] = useState(false);
   const [now, setNow] = useState(() => Date.now());
@@ -53,11 +56,11 @@ export default function Invitations() {
           source={require("../../assets/superassets/DreamCloud背景.png")}
           style={{
             position: "absolute",
-            top: 380,
-            right: -110,
-            width: 360,
-            height: 300,
-            opacity: 0.12,
+            top: 370,
+            right: -4,
+            width: 250,
+            height: 250,
+            opacity: 1,
           }}
           resizeMode="contain"
         />
@@ -68,30 +71,48 @@ export default function Invitations() {
         </Text>
       ) : target ? (
         <View style={s.confirm}>
-          <Text style={s.title}>招待を削除しますか？</Text>
-          <View style={s.row}>
-            <SuperAsset name="inviteFriends" size={32} />
-            <Text style={s.name}>
-              {target.recipient_name ??
-                (target.used ? "登録済みの相手" : "未使用")}
-            </Text>
+          <Text style={[s.title, { color: "rgba(0,0,0,0.7)" }]}>招待を削除しますか？</Text>
+          <View style={[s.row, { borderRadius: 26, marginTop: 70 }]}>
+            <Avatar
+              shape="square"
+              path={profile?.avatar_path}
+              name={d.issuerName}
+              size={48}
+            />
+            <View style={{ flex: 1, gap: 4 }}>
+              <Text
+                style={{
+                  fontFamily: "ui-rounded",
+                  color: "rgba(0,0,0,0.35)",
+                  fontSize: 14,
+                }}
+              >
+                {d.issuerName}
+              </Text>
+              <Text style={s.name}>
+                → {""}
+                {target.recipient_name ??
+                  (target.used ? "登録済みの相手" : "未使用")}
+              </Text>
+            </View>
           </View>
-          <Text style={s.secondary}>
+          <Text style={[s.secondary, { marginTop: 16 }]}>
             {target.used
               ? "登録済みの相手も利用停止になります。街への参加・チャット等を利用できなくなります。"
               : "このQRは使用できなくなります。"}
           </Text>
-          <NativeAction
-            title="削除"
-            destructive
-            disabled={d.busy}
-            onPress={() => {
-              void d.act("invite_revoke", { id: target.id }).then((ok) => {
-                if (ok) router.back();
-              });
-            }}
-          />
-          <NativeAction title="戻る" onPress={() => router.back()} />
+          <View style={{ marginTop: target.used ? 80 : 103 }}>
+            <NativeAction
+              title="削除"
+              destructive
+              disabled={d.busy}
+              onPress={() => {
+                void d.act("invite_revoke", { id: target.id }).then((ok) => {
+                  if (ok) router.back();
+                });
+              }}
+            />
+          </View>
         </View>
       ) : d.receiving ? (
         <>
@@ -136,7 +157,7 @@ export default function Invitations() {
         <>
           <View style={s.qr}>
             {svg && remaining > 0 ? (
-              <SvgXml xml={svg} width={220} height={220} />
+              <SvgXml xml={svg} width={252} height={252} />
             ) : (
               <SuperAsset
                 name="非常口から人が出るrounded"
@@ -161,7 +182,7 @@ export default function Invitations() {
             onPress={() => void d.act("invite_create")}
           />
           {!!current && (
-            <Text style={s.secondary}>
+            <Text style={[s.secondary, { marginTop: -16 }]}>
               expiration date{" "}
               {new Date(current.expires_at).toLocaleDateString()}
             </Text>
@@ -203,10 +224,10 @@ export default function Invitations() {
 }
 const s = StyleSheet.create({
   qr: {
-    height: 220,
+    height: 252,
     alignItems: "center",
     justifyContent: "center",
-    marginTop: 26,
+    marginTop: 12,
   },
   scan: {
     height: 330,
@@ -224,6 +245,7 @@ const s = StyleSheet.create({
     borderColor: "rgba(0,175,107,0.12)",
     borderRadius: 10,
     marginBottom: 8,
+    marginTop: -22,
   },
   tick: { width: 4, height: 18, borderRadius: 4, backgroundColor: "#00AF6B" },
   row: {
@@ -256,5 +278,5 @@ const s = StyleSheet.create({
     textAlign: "center",
   },
   history: { color: "rgba(0,0,0,0.2)", marginTop: 60, marginBottom: 0 },
-  confirm: { gap: 35, paddingTop: 60 },
+  confirm: { paddingTop: 60 },
 });

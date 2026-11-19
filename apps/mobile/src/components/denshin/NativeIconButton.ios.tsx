@@ -17,6 +17,7 @@ export function NativeIconButton({
   active = false,
   dark = true,
   rotation = 0,
+  accent = "#34C759",
 }: {
   icon: SuperAssetName;
   label: string;
@@ -25,6 +26,7 @@ export function NativeIconButton({
   active?: boolean;
   dark?: boolean;
   rotation?: number;
+  accent?: string;
 }) {
   const artwork = (
     <View
@@ -64,7 +66,7 @@ export function NativeIconButton({
             buttonBorderShape("circle"),
             accessibilityLabel(label),
             disabledModifier(disabled),
-            ...(active ? [tint("#34C759")] : []),
+            ...(active ? [tint(accent)] : []),
           ]}
         >
           <RNHostView matchContents>{artwork}</RNHostView>
@@ -81,7 +83,7 @@ export function NativeIconButton({
         width: 44,
         height: 44,
         borderRadius: 22,
-        backgroundColor: active ? "#34C759" : "rgba(255,255,255,0.15)",
+        backgroundColor: active ? accent : "rgba(255,255,255,0.15)",
         opacity: disabled ? 0.35 : 1,
         alignItems: "center",
         justifyContent: "center",

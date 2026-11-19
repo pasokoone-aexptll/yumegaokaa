@@ -64,7 +64,8 @@ export function Notice({
         <View
           style={{
             paddingVertical: 8,
-            paddingHorizontal: 16,
+            paddingLeft: 16,
+            paddingRight: 8,
             flexDirection: "row",
             alignItems: "center",
             gap: 10,

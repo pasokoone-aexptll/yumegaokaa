@@ -1,6 +1,6 @@
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useState } from "react";
-import { ActivityIndicator, Text, TextInput, View } from "react-native";
+import { ActivityIndicator, Text, TextInput, View, Pressable } from "react-native";
 import { DetailPage } from "../components/DetailUI";
 import { NativeAction } from "../components/denshin/NativeAction";
 import { SuperAsset } from "../components/icons/SuperAsset";
@@ -28,8 +28,8 @@ export default function Blocks() {
       {data.loading ? (
         <ActivityIndicator />
       ) : data.items.length === 0 ? (
-        <View style={{ alignItems: "center", gap: 40, paddingTop: 70 }}>
-          <SuperAsset name="非常口から人が出る" width={210} height={240} />
+        <View style={{ alignItems: "center", gap: 20, paddingTop: 60 }}>
+          <SuperAsset name="非常口から人が出る" width={280} height={335} />
           <Text
             style={{
               fontFamily: "ui-rounded",
@@ -81,6 +81,7 @@ export default function Blocks() {
               style={{ width: name ? "100%" : 80, marginTop: name ? 50 : 0 }}
             >
               <NativeAction
+                contentWidth={name ? 168 : 30}
                 title={name ? "ユーザーをブロック" : "解除"}
                 destructive={!!name}
                 disabled={data.busy}
@@ -97,27 +98,17 @@ export default function Blocks() {
       {!name && (
         <>
           <View style={{ flex: 1, minHeight: 40 }} />
-          <TextInput
-            accessibilityLabel="ブロックするユーザー名"
-            value={query}
-            onChangeText={setQuery}
-            placeholder="ブロックするユーザー名を入力"
-            clearButtonMode="while-editing"
-            returnKeyType="search"
-            onSubmitEditing={search}
-            autoCapitalize="none"
-            autoCorrect={false}
-            style={{
-              backgroundColor: "white",
-              borderRadius: 30,
-              padding: 18,
-              fontFamily: "ui-rounded",
-              fontSize: 17,
-            }}
-          />
-          {!!query.trim() && (
-            <NativeAction tone="blue" title="ユーザーを確認" onPress={search} />
-          )}
+          <View style={{ backgroundColor: "white", borderRadius: 30, minHeight: 54, paddingHorizontal: 14, flexDirection: "row", alignItems: "center", gap: 10 }}>
+            <SuperAsset name="atmark" size={22} tint="black" opacity={0.3} />
+            <TextInput accessibilityLabel="ブロックするユーザー名" value={query} onChangeText={setQuery}
+              placeholder="ブロックするユーザー名を入力" placeholderTextColor="rgba(0,0,0,0.2)"
+              returnKeyType="search" onSubmitEditing={search} autoCapitalize="none" autoCorrect={false}
+              style={{ flex: 1, minHeight: 54, color: "black", fontFamily: "ui-rounded", fontSize: 17 }} />
+            <Pressable accessibilityRole="button" accessibilityLabel="ユーザー名を消去" onPress={() => setQuery("")}
+              hitSlop={12} style={{ width: 20, height: 20, borderRadius: 10, backgroundColor: "rgba(0,0,0,0.2)", alignItems: "center", justifyContent: "center" }}>
+              <SuperAsset name="x" size={11} tint="white" />
+            </Pressable>
+          </View>
           <Text
             style={{
               color: "rgba(0,0,0,0.25)",

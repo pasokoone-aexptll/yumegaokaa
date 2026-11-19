@@ -5,12 +5,14 @@ export function NativeAction({
   disabled = false,
   destructive = false,
   tone = "green",
+  contentWidth = 168,
 }: {
   title: string;
   onPress: () => void;
   disabled?: boolean;
   destructive?: boolean;
   tone?: "green" | "blue" | "neutral";
+  contentWidth?: number;
 }) {
   return (
     <Pressable
@@ -19,6 +21,7 @@ export function NativeAction({
       onPress={onPress}
       style={{
         padding: 16,
+        minWidth: contentWidth,
         borderRadius: 40,
         alignItems: "center",
         backgroundColor: destructive

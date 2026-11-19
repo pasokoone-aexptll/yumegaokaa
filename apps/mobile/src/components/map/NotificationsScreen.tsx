@@ -15,6 +15,7 @@ import { useNotifications } from "../../hooks/useNotifications";
 import { usePushPermission } from "../../hooks/usePushNotifications";
 import { DenshinLogo, SuperAsset } from "../icons/SuperAsset";
 import { SpeechBubble } from "../denshin/SpeechBubble";
+import { NoticeHeading, NoticeSubject } from "../notifications/NoticeContent";
 import { NativeAction } from "../denshin/NativeAction";
 export function NotificationsScreen() {
   const router = useRouter();
@@ -176,39 +177,8 @@ export function NotificationsScreen() {
             }
             style={{ paddingVertical: 20, gap: 12 }}
           >
-            <View
-              style={{ flexDirection: "row", alignItems: "center", gap: 10 }}
-            >
-              <SuperAsset
-                name={
-                  item.kind === "mention" ? "非常口から人が出るrounded" : "電信"
-                }
-                width={item.kind === "mention" ? 40 : 60}
-                height={40}
-              />
-              <Text
-                style={{
-                  flex: 1,
-                  fontFamily: "ui-rounded",
-                  fontSize: 18,
-                  color: "rgba(0,0,0,0.7)",
-                  fontWeight: "600",
-                }}
-              >
-                {item.kind === "pin_closed"
-                  ? "PINの募集が終了しました"
-                  : item.kind === "pin_changed"
-                    ? "PINが変更されました"
-                    : item.kind === "mention"
-                      ? "メンションされました"
-                      : item.kind === "canceled"
-                        ? "イベントが中止されました"
-                        : "イベントが変更されました"}
-              </Text>
-            </View>
-            <Text style={{ fontSize: 16, color: "rgba(0,0,0,0.5)" }}>
-              {item.title}
-            </Text>
+            <NoticeHeading notice={item} />
+            <NoticeSubject notice={item} />
           </Pressable>
         )}
         ListEmptyComponent={
@@ -219,12 +189,17 @@ export function NotificationsScreen() {
               style={{
                 flex: 1,
                 alignItems: "center",
-                justifyContent: "center",
-                gap: 30,
+                paddingTop: 96,
               }}
             >
-              <SuperAsset name="非常口から人が出る" width={210} height={270} />
-              <Text style={{ color: "rgba(0,0,0,0.2)", fontSize: 18 }}>
+              <SuperAsset name="非常口から人が出る" width={270} height={325} />
+              <Text
+                style={{
+                  color: "rgba(0,0,0,0.2)",
+                  fontSize: 18,
+                  marginTop: -22,
+                }}
+              >
                 まだ何もありません
               </Text>
             </View>

@@ -1,6 +1,7 @@
 import { useCallback, useContext, useState } from "react";
 import { useFocusEffect, useLocalSearchParams, useRouter } from "expo-router";
-import { Alert, Text, View } from "react-native";
+import { Image, Text, View } from "react-native";
+import Svg, { Defs, LinearGradient, Rect, Stop } from "react-native-svg";
 import { Action, ui } from "../components/Page";
 import { DetailPage, DetailRow, Section } from "../components/DetailUI";
 import { SpeechBubble } from "../components/denshin/SpeechBubble";
@@ -45,17 +46,12 @@ export default function StreetIcons() {
       };
     }, []),
   );
-  async function update(remove = false) {
+  async function update() {
     if (busy) return;
     setBusy(true);
     setError("");
     try {
-      const result = remove
-        ? await native.rpc<StreetIconState>("street_icon_remove", {
-            street_id: streetID,
-            id: state?.contribution_id,
-          })
-        : await chooseStreetIcon();
+      const result = await chooseStreetIcon();
       if (result) {
         setState(result);
         access.retry();
@@ -68,17 +64,50 @@ export default function StreetIcons() {
   }
   const editing = edit === "1" || access.status === "pool_required";
   return (
-    <DetailPage title={editing ? "画像を差し替える" : "City pool icon"}>
+    <DetailPage
+      title={editing ? "画像を差し替える" : ""}
+      titleColor={editing ? "white" : undefined}
+      background={
+        <View
+          pointerEvents="none"
+          style={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            right: 0,
+            height: 390,
+          }}
+        >
+          <Svg width="100%" height="100%">
+            <Defs>
+              <LinearGradient id="pool-sky" x1="0" y1="0" x2="0" y2="1">
+                <Stop offset="0" stopColor="#008CFF" stopOpacity={0.9} />
+                <Stop offset="1" stopColor="#008CFF" stopOpacity={0} />
+              </LinearGradient>
+            </Defs>
+            <Rect width="100%" height="100%" fill="url(#pool-sky)" />
+          </Svg>
+        </View>
+      }
+    >
       {!editing && (
-        <>
-          <View style={{ alignItems: "center", paddingVertical: 24 }}>
-            <SpeechBubble>
-              <Text style={{ color: "rgba(0,140,255,0.7)", fontSize: 21 }}>
-                街の気配
-              </Text>
-            </SpeechBubble>
-            <SuperAsset name="myCityPoolIcon" size={74} />
-          </View>
+        <View style={{ marginTop: -38, gap: 12 }}>
+          <Image
+            source={require("../../assets/superassets/気配sample.png")}
+            style={{ width: 250, height: 125, marginLeft: 10 }}
+            resizeMode="contain"
+            accessible={false}
+          />
+          <Text
+            style={{
+              fontFamily: "ui-rounded",
+              fontSize: 34,
+              fontWeight: "800",
+              color: "black",
+            }}
+          >
+            City pool icon
+          </Text>
           <Section>
             <DetailRow
               title="画像を差し替える"
@@ -91,10 +120,14 @@ export default function StreetIcons() {
               }
             />
           </Section>
-        </>
+        </View>
       )}
       <View
-        style={{ alignItems: "center", marginTop: editing ? 30 : 65, gap: 30 }}
+        style={{
+          alignItems: "center",
+          marginTop: editing ? -10 : 88,
+          gap: editing ? 50 : 30,
+        }}
       >
         <View
           style={{ padding: 9, backgroundColor: "white", borderRadius: 40 }}
@@ -110,17 +143,23 @@ export default function StreetIcons() {
             name=""
             size={140}
           />
+          {!editing && (
+            <View
+              style={{ position: "absolute", top: -22, left: 96, width: 165 }}
+            >
+              <SpeechBubble>
+                <Text style={{ fontSize: 23, fontFamily: "ui-rounded" }}>
+                  今日の画像
+                </Text>
+              </SpeechBubble>
+            </View>
+          )}
         </View>
-        {!editing && (
-          <SpeechBubble>
-            <Text style={{ fontSize: 23, fontFamily: "ui-rounded" }}>
-              今日の画像
-            </Text>
-          </SpeechBubble>
-        )}
         {editing && (
           <NativeAction
             title="画像を変更"
+            contentWidth={100}
+            tone="neutral"
             disabled={busy}
             onPress={() => void update()}
           />
@@ -131,7 +170,7 @@ export default function StreetIcons() {
           {error}
         </Text>
       )}
-      <View style={{ flex: 1, minHeight: 80 }} />
+      <View style={{ flex: 1, minHeight: 60 }} />
       <Text
         style={{
           textAlign: "center",
@@ -141,26 +180,6 @@ export default function StreetIcons() {
       >
         匿名性を守るため、地図上の気配に表示されるアイコンはPoolの中からランダムに選ばれます
       </Text>
-      {editing && state?.contribution_id && (
-        <Action
-          title="提供を取り下げる"
-          disabled={busy}
-          onPress={() =>
-            Alert.alert(
-              "画像を取り下げますか？",
-              "この画像は街のpoolで使われなくなります。",
-              [
-                { text: "キャンセル", style: "cancel" },
-                {
-                  text: "取り下げる",
-                  style: "destructive",
-                  onPress: () => void update(true),
-                },
-              ],
-            )
-          }
-        />
-      )}
       {access.status === "pool_required" && (
         <Action
           title="ログアウト"

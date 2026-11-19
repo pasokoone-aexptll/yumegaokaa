@@ -14,10 +14,10 @@ import {
   TextInput,
   View,
 } from "react-native";
-import { useRouter } from "expo-router";
+import { Stack, useRouter } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useDenshinEditor } from "../../hooks/useDenshinEditor";
-import { updateDenshinDraft, clearDenshinDraft } from "../../lib/denshinDraft";
+import { updateDenshinDraft } from "../../lib/denshinDraft";
 import { beginDenshinPlacement } from "../../lib/pinPlacement";
 import { PinSheet } from "../../components/denshin/PinSheet";
 import {
@@ -28,7 +28,7 @@ import {
 export default function CreatePin() {
   const router = useRouter(),
     insets = useSafeAreaInsets();
-  const { draft, busy, locked, error, save, revise, remove } =
+  const { draft, busy, locked, error, save, discard, remove } =
     useDenshinEditor();
   useEffect(() => {
     if (error) Alert.alert("操作できませんでした", error);
@@ -37,22 +37,7 @@ export default function CreatePin() {
   const [expanded, setExpanded] = useState(false);
   const reduced = useContext(ReducedIconMotion);
   function close() {
-    if (busy) return;
-    if (locked) {
-      void revise();
-      return;
-    }
-    Alert.alert("編集を閉じますか？", "保存していない内容を破棄します。", [
-      { text: "戻る", style: "cancel" },
-      {
-        text: "破棄",
-        style: "destructive",
-        onPress: () => {
-          clearDenshinDraft();
-          router.back();
-        },
-      },
-    ]);
+    void discard();
   }
   function publish() {
     if (
@@ -73,6 +58,11 @@ export default function CreatePin() {
   }
   return (
     <PinSheet>
+      <Stack.Screen
+        options={{
+          sheetAllowedDetents: [draft.limited && expanded ? 0.75 : 0.47, 0.95],
+        }}
+      />
       <ScrollView
         style={{ flex: 1 }}
         contentInsetAdjustmentBehavior="never"

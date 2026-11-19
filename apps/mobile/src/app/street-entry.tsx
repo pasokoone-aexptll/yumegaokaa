@@ -25,7 +25,9 @@ import { useEntryPresentation } from "../hooks/useEntryPresentation";
 import { fieldTrial, localEntry, nfcDisabled } from "../lib/development";
 export default function StreetEntry() {
   const trialRing =
-    Platform.OS === "ios" && nfcDisabled && (fieldTrial || localEntry);
+    Platform.OS === "ios" &&
+    (nfcDisabled || native.isSimulator?.()) &&
+    (fieldTrial || localEntry);
   const started = useRef(false);
   const lastError = useRef("");
   const value = useSyncExternalStore(
@@ -44,12 +46,13 @@ export default function StreetEntry() {
         },
         {
           text: "もう一度読み取る",
-          onPress: () => void entrySheetState.get()?.scan("tag"),
+          onPress: () =>
+            void entrySheetState.get()?.scan(trialRing ? "default" : "tag"),
         },
       ]);
     }
     lastError.current = message;
-  }, [value?.entryError]);
+  }, [value?.entryError, trialRing]);
   const [count, setCount] = useState<number>();
   useEffect(() => {
     let live = true;
@@ -127,14 +130,15 @@ export default function StreetEntry() {
             justifyContent: "space-between",
           }}
         >
-          <View style={{ width: 44 }} />
+          <View style={{ width: 49 }} />
           <View style={{ flexDirection: "row", gap: 8, alignItems: "center" }}>
             <SuperAsset name="s3logo" size={22} />
             <Text
               style={{
                 color: "rgba(255,255,255,0.7)",
                 fontFamily: "ui-rounded",
-                fontSize: 20,
+                fontWeight: "600",
+                fontSize: 17,
               }}
             >
               Login city
@@ -146,7 +150,7 @@ export default function StreetEntry() {
             onPress={() => entrySheetState.close()}
           />
         </View>
-        <View style={{ marginTop: 30 }}>
+        <View style={{ marginTop: 22 }}>
           <EntryAnimation phase={phase} size={diameter} />
           {count !== undefined && count > 0 && (
             <View
@@ -166,14 +170,6 @@ export default function StreetEntry() {
                 </Text>
               </SpeechBubble>
             </View>
-          )}
-          {phase === "explain" && (trialRing || !!value.entryError) && (
-            <Pressable
-              accessibilityRole="button"
-              accessibilityLabel={trialRing ? "街に入る" : "読み取りを再試行"}
-              onPress={() => void value.scan(trialRing ? "default" : "tag")}
-              style={{ position: "absolute", inset: 0 }}
-            />
           )}
         </View>
         <View style={{ alignItems: "center", gap: 12 }}>
@@ -202,9 +198,22 @@ export default function StreetEntry() {
           </Text>
         </View>
         <View style={{ flex: 1, minHeight: 26 }} />
-        <View style={{ marginBottom: 20 }}>
+        <Pressable
+          accessibilityRole={trialRing ? "button" : "progressbar"}
+          accessibilityLabel={
+            trialRing && phase === "explain"
+              ? "NFCログインを試す"
+              : phase === "success"
+                ? "ログイン成功"
+                : "NFCを待機中"
+          }
+          disabled={!trialRing || phase !== "explain"}
+          onPress={() => void value.scan("default")}
+          hitSlop={12}
+          style={{ marginBottom: 12 }}
+        >
           <EntryProgress success={phase === "success"} />
-        </View>
+        </Pressable>
       </ScrollView>
     </PinSheet>
   );

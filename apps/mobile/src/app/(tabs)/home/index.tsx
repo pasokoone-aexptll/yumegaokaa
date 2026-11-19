@@ -1,3 +1,4 @@
+import { HomeModeDropdown } from "../../../components/HomeModeDropdown";
 import { useInviteQuota } from "../../../hooks/useInviteQuota";
 import { useState } from "react";
 import {
@@ -9,6 +10,7 @@ import {
   StyleSheet,
   Text,
   View,
+  Image,
 } from "react-native";
 import { useRouter } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -21,7 +23,7 @@ import {
   denshinError,
   HiddenAttendance,
 } from "../../../lib/denshin";
-import { openMapAt } from "../../../lib/mapNavigation";
+import { openMapAt, openMapPinComposer } from "../../../lib/mapNavigation";
 import {
   cancelPendingCommand,
   pendingCommand,
@@ -76,7 +78,7 @@ export default function Home() {
       style={s.page}
       contentContainerStyle={{
         flexGrow: 1,
-        paddingTop: insets.top + 25,
+        paddingTop: insets.top,
         paddingBottom: 0,
       }}
       refreshControl={
@@ -86,12 +88,28 @@ export default function Home() {
         />
       }
     >
+      <Image
+        pointerEvents="none"
+        source={require("../../../../assets/superassets/DreamCloud背景.png")}
+        style={{
+          position: "absolute",
+          top: 430,
+          right: -4,
+          width: 250,
+          height: 250,
+          opacity: 1,
+        }}
+        resizeMode="contain"
+      />
       <View style={s.header}>
-        <DenshinLogo />
+        <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
+          <DenshinLogo />
+          <HomeModeDropdown />
+        </View>
         <Pressable
           accessibilityRole="button"
           accessibilityLabel="電信PINを作成"
-          onPress={() => router.push("/pins/create")}
+          onPress={() => openMapPinComposer(router)}
           style={s.add}
         >
           <SuperAsset name="add" tint="black" size={24} />
@@ -267,7 +285,7 @@ export default function Home() {
   );
 }
 const s = StyleSheet.create({
-  page: { flex: 1, backgroundColor: "rgba(0,0,0,0.05)" },
+  page: { flex: 1, backgroundColor: "#F2F2F2" },
   header: {
     flexDirection: "row",
     alignItems: "center",
@@ -292,7 +310,9 @@ const s = StyleSheet.create({
     backgroundColor: "white",
     borderRadius: 20,
     padding: 0,
-    alignSelf: "flex-start",
+    alignSelf: "center",
+    lineHeight: 24,
+    fontFamily: "ui-rounded",
   },
   row: {
     paddingVertical: 12,
@@ -300,8 +320,19 @@ const s = StyleSheet.create({
     borderColor: "#00000018",
   },
   main: { flexDirection: "row", alignItems: "center", gap: 12 },
-  body: { fontSize: 16, color: "#111", lineHeight: 23 },
-  muted: { fontSize: 12, color: "#999", lineHeight: 17 },
+  body: {
+    fontFamily: "ui-rounded",
+    fontSize: 16,
+    fontWeight: "600",
+    color: "black",
+    lineHeight: 23,
+  },
+  muted: {
+    fontFamily: "ui-rounded",
+    fontSize: 13,
+    color: "rgba(0,0,0,0.35)",
+    lineHeight: 17,
+  },
   location: { marginLeft: 60, minHeight: 32, justifyContent: "center" },
   error: { color: "#b22", paddingVertical: 12 },
 });

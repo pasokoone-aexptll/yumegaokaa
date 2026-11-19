@@ -157,11 +157,24 @@ final class NativeSheetAppearance: ExpoView {
               child.overrideUserInterfaceStyle = .dark
               sheet.overrideTraitCollection = UITraitCollection(userInterfaceStyle: .dark)
               if #available(iOS 26.1, *) {
-                let material = UIGlassEffect(style: .regular)
-                material.tintColor = UIColor.black.withAlphaComponent(0.22)
-                sheet.backgroundEffect = material
-                for detent in sheet.detents {
-                  detent.backgroundEffect = material
+                let configureMaterial = {
+                  let material = UIGlassEffect(style: .regular)
+                  material.tintColor = UIColor.black.withAlphaComponent(0.22)
+                  sheet.backgroundEffect = material
+                  for detent in sheet.detents {
+                    detent.backgroundEffect = material
+                  }
+                }
+                // Changing detent materials during presentation makes UIKit
+                // lay out the final sheet immediately, skipping its slide-up.
+                // The glassSurface already travels with the native sheet.
+                if let transition = controller.transitionCoordinator,
+                   transition.isAnimated {
+                  transition.animate(alongsideTransition: nil) { _ in
+                    configureMaterial()
+                  }
+                } else {
+                  configureMaterial()
                 }
               }
               return

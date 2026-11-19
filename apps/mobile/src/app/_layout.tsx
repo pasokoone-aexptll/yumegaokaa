@@ -82,7 +82,8 @@ export default function Layout() {
                 name="street-entry"
                 options={{
                   presentation: "formSheet",
-                  sheetAllowedDetents: [0.57],
+                  animation: "slide_from_bottom",
+                  sheetAllowedDetents: [0.5],
                   sheetInitialDetentIndex: 0,
                   sheetGrabberVisible: true,
                   sheetCornerRadius: Platform.OS === "android" ? 28 : undefined,
@@ -136,7 +137,7 @@ export default function Layout() {
                 name="pins/create"
                 options={{
                   presentation: "formSheet",
-                  sheetAllowedDetents: [0.57, 0.85],
+                  sheetAllowedDetents: [0.47, 0.95],
                   sheetInitialDetentIndex: 0,
                   sheetGrabberVisible: true,
                   sheetCornerRadius: Platform.OS === "android" ? 28 : undefined,

@@ -7,6 +7,7 @@ import {
 } from "@expo/ui/swift-ui/modifiers";
 import { SuperAsset } from "../icons/SuperAsset";
 export function ModeDropdown({
+  dark = true,
   ghost,
   active,
   disabled,
@@ -14,6 +15,7 @@ export function ModeDropdown({
   placesVisible,
   onTogglePlaces,
 }: {
+  dark?: boolean;
   placesVisible?: boolean;
   onTogglePlaces?: () => void;
   ghost: boolean;
@@ -24,7 +26,7 @@ export function ModeDropdown({
   return (
     <Host
       style={{ width: 52, height: 34 }}
-      colorScheme="dark"
+      colorScheme={dark ? "dark" : "light"}
       ignoreSafeArea="all"
       alignment="center"
     >
@@ -56,7 +58,7 @@ export function ModeDropdown({
               <View style={{ transform: [{ rotate: "90deg" }] }}>
                 <SuperAsset
                   name="chevron-base"
-                  tint="white"
+                  tint={dark ? "white" : "black"}
                   opacity={0.7}
                   size={24}
                 />

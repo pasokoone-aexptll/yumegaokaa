@@ -25,3 +25,11 @@ export function openMapAt(
     },
   });
 }
+
+/** Select Map first; its focused screen opens the composer after the tab slides. */
+export function openMapPinComposer(router: ReturnType<typeof useRouter>) {
+  router.navigate({
+    pathname: Platform.OS === "android" ? "/(tabs)" : "/",
+    params: { panel: "create-pin", mapRequest: `${Date.now()}-${++request}` },
+  });
+}

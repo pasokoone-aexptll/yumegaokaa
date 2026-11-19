@@ -97,7 +97,14 @@ const s = StyleSheet.create({
     borderRadius: 18,
     alignSelf: "flex-start",
   },
-  badgeText: { color: green, fontWeight: "600", fontSize: 15 },
+  badgeText: {
+    color: green,
+    fontWeight: "600",
+    fontSize: 15,
+    lineHeight: 21,
+    fontFamily: "ui-rounded",
+    alignSelf: "center",
+  },
   heading: { color: "#ffffffdd", fontWeight: "600", fontSize: 27 },
   suffix: {
     fontFamily: "ui-rounded",

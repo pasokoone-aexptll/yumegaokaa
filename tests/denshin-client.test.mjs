@@ -74,6 +74,7 @@ function editorHarness({
   saved = null,
   submit = async () => ({ id: "pin" }),
   cancel = async () => null,
+  discard = async () => {},
 } = {}) {
   let draft = {
       body: "本文",
@@ -113,7 +114,7 @@ function editorHarness({
         },
       };
     if (id === "expo-router")
-      return { useRouter: () => ({ replace: (r) => routes.push(r), dismissTo: (r) => routes.push(r) }) };
+      return { useRouter: () => ({ replace: (r) => routes.push(r), dismissTo: (r) => routes.push(r), back: () => routes.push("back") }) };
     if (id.includes("denshinDraft"))
       return {
         useDenshinDraft: () => draft,
@@ -130,6 +131,7 @@ function editorHarness({
           return submit(k, b);
         },
         cancelPendingCommand: cancel,
+        discardPendingCommand: discard,
       };
     if (id.includes("sessionState"))
       return { sessionState: { get: () => ({ revision }) } };
@@ -249,4 +251,12 @@ test("編集画面の削除は元PINのrevisionで送信し、成功後にMapへ
   assert.deepEqual(h.sent, [{ kind: "denshin_delete", body: { id: "existing", revision: 7 } }]);
   assert.equal(h.cleared(), 1);
   assert.deepEqual(h.routes, ["/(tabs)"]);
+});
+
+test("×は確認なしで下書きを破棄して戻り、未確定送信は破棄意思だけを先に保存する", async () => {
+  let discarded = "";
+  const h = editorHarness({saved: {kind:"denshin_create", body:{body:"送信待ち",longitude:139,latitude:35,capacity:null}}, discard:async kind=>{discarded=kind;}});
+  const editor = await h.ready();
+  await editor.discard();
+  assert.equal(discarded,"denshin_create");assert.equal(h.cleared(),1);assert.deepEqual(h.routes,["back"]);assert.equal(h.sent.length,0);
 });

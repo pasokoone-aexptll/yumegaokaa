@@ -1,7 +1,10 @@
 import { Text, View, ActivityIndicator } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { Page } from "../components/Page";
-import { DenshinLogo } from "../components/icons/SuperAsset";
+import { DetailPage } from "../components/DetailUI";
+import {
+  NoticeHeading,
+  NoticeSubject,
+} from "../components/notifications/NoticeContent";
 import { NativeAction } from "../components/denshin/NativeAction";
 import { useNotifications } from "../hooks/useNotifications";
 export default function NoticeDetail() {
@@ -10,33 +13,12 @@ export default function NoticeDetail() {
   const d = useNotifications();
   const notice = d.items.find((n) => n.id === id);
   return (
-    <Page title="">
+    <DetailPage title="">
       {d.loading && <ActivityIndicator />}
       {notice && (
         <View style={{ gap: 35, paddingTop: 55 }}>
-          <DenshinLogo />
-          <Text
-            style={{
-              fontFamily: "ui-rounded",
-              fontSize: 27,
-              fontWeight: "600",
-            }}
-          >
-            {notice.kind === "pin_closed"
-              ? "PINの募集が終了しました"
-              : notice.kind === "pin_changed"
-                ? "PINが変更されました"
-                : notice.kind === "mention"
-                  ? "メンションされました"
-                  : notice.kind === "canceled"
-                    ? "イベントが中止されました"
-                    : "イベントが変更されました"}
-          </Text>
-          <View
-            style={{ backgroundColor: "white", padding: 24, borderRadius: 28 }}
-          >
-            <Text style={{ fontSize: 19 }}>{notice.title}</Text>
-          </View>
+          <NoticeHeading notice={notice} large />
+          <NoticeSubject notice={notice} detail />
           {(notice.kind === "pin_changed" ||
             notice.kind === "changed" ||
             notice.kind === "mention") && (
@@ -57,19 +39,22 @@ export default function NoticeDetail() {
               }}
             />
           )}
-          <NativeAction
-            title="了解しました"
-            disabled={d.reading !== null}
-            onPress={() => {
-              void d.markRead(notice).then((ok) => {
-                if (ok) router.back();
-              });
-            }}
-          />
+          <View style={{ marginTop: 58 }}>
+            <NativeAction
+              tone="blue"
+              title="了解しました"
+              disabled={d.reading !== null}
+              onPress={() => {
+                void d.markRead(notice).then((ok) => {
+                  if (ok) router.back();
+                });
+              }}
+            />
+          </View>
         </View>
       )}
       {!d.loading && !notice && <Text>この通知はありません。</Text>}
       {!!d.error && <Text accessibilityRole="alert">{d.error}</Text>}
-    </Page>
+    </DetailPage>
   );
 }

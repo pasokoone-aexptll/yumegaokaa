@@ -14,12 +14,14 @@ export function NativeAction({
   disabled = false,
   destructive = false,
   tone = "green",
+  contentWidth = 168,
 }: {
   title: string;
   onPress: () => void;
   disabled?: boolean;
   destructive?: boolean;
   tone?: "green" | "blue" | "neutral";
+  contentWidth?: number;
 }) {
   if (Platform.OS === "ios")
     return (
@@ -57,12 +59,12 @@ export function NativeAction({
           <RNHostView matchContents>
             <Text
               style={{
-                width: 168,
+                width: contentWidth,
                 textAlign: "center",
                 fontFamily: "ui-rounded",
                 fontSize: 18,
                 fontWeight: "600",
-                color: "white",
+                color: tone === "neutral" ? "black" : "white",
                 paddingVertical: 4,
               }}
             >
@@ -91,7 +93,11 @@ export function NativeAction({
         opacity: disabled ? 0.4 : 1,
       }}
     >
-      <Text style={{ color: "white", fontSize: 18 }}>{title}</Text>
+      <Text
+        style={{ color: tone === "neutral" ? "black" : "white", fontSize: 18 }}
+      >
+        {title}
+      </Text>
     </Pressable>
   );
 }

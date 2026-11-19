@@ -159,8 +159,9 @@ export default function Profile() {
         )}
         <NativeIconButton
           icon={editing ? "check" : "edit"}
-          dark={false}
+          dark={editing}
           active={editing}
+          accent="#C82DE0"
           disabled={busy || (editing && !name.trim())}
           label={editing ? "保存" : "編集"}
           onPress={() => {
@@ -222,23 +223,51 @@ export default function Profile() {
         )}
         {editing && (
           <View style={{ width: "100%", marginTop: 16 }}>
-            <TextInput
-              accessibilityLabel="名前"
+            <View
               style={{
-                fontFamily: "ui-rounded",
-                fontSize: 18,
-                paddingHorizontal: 24,
-                height: 54,
                 backgroundColor: "white",
                 borderRadius: 30,
+                flexDirection: "row",
+                alignItems: "center",
+                paddingHorizontal: 24,
               }}
-              placeholder="Enter your name"
-              maxLength={50}
-              value={name}
-              onChangeText={setName}
-              editable={!busy}
-              clearButtonMode="while-editing"
-            />
+            >
+              <TextInput
+                accessibilityLabel="名前"
+                style={{
+                  fontFamily: "ui-rounded",
+                  fontSize: 18,
+                  flex: 1,
+                  height: 54,
+                  backgroundColor: "white",
+                  borderRadius: 30,
+                }}
+                placeholder="Enter your name"
+                maxLength={50}
+                value={name}
+                onChangeText={setName}
+                editable={!busy}
+              />
+              {!!name && (
+                <Pressable
+                  accessibilityRole="button"
+                  accessibilityLabel="名前を消去"
+                  disabled={busy}
+                  onPress={() => setName("")}
+                  hitSlop={12}
+                  style={{
+                    width: 20,
+                    height: 20,
+                    borderRadius: 10,
+                    backgroundColor: "rgba(0,0,0,0.2)",
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}
+                >
+                  <SuperAsset name="x" tint="white" size={11} />
+                </Pressable>
+              )}
+            </View>
             <Text style={{ color: "rgba(0,0,0,0.2)", padding: 20 }}>
               Enter your name
             </Text>

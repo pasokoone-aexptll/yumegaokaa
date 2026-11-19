@@ -9,7 +9,17 @@ export type Notice = {
   event_id: string;
   pin_id?: string;
   title: string;
-  kind: "changed" | "canceled" | "mention" | "pin_changed" | "pin_closed";
+  kind:
+    | "changed"
+    | "canceled"
+    | "mention"
+    | "pin_changed"
+    | "pin_closed"
+    | "pin_created"
+    | "pin_joined";
+  display_name?: string;
+  avatar_path?: string;
+  deleted?: boolean;
   created_at: string;
   read: boolean;
 };

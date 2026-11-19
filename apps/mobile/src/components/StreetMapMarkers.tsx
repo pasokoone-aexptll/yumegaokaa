@@ -1,4 +1,4 @@
-import { onsitePeople, DenshinPin, pinCount } from "../lib/denshin";
+import { onsitePeople, DenshinPin } from "../lib/denshin";
 import {
   PeopleStack,
   RecruitmentSign,
@@ -50,6 +50,8 @@ export function StreetMapMarkers({
     longitude: number,
     latitude: number,
   ) {
+    // This function runs only from marker onPress handlers, never during render.
+    // eslint-disable-next-line react-hooks/purity
     const now = Date.now();
     if (now - lastTap.current < 300) return;
     lastTap.current = now;
@@ -163,8 +165,22 @@ export function StreetMapMarkers({
               style={{ alignItems: "center", maxWidth: 210, padding: 8 }}
             >
               {pin.recruiting && (
-                <Text style={{ color: "white", fontSize: 11 }}>
-                  {pin.display_name} ・ {pinCount(pin)}
+                <Text
+                  style={{
+                    color: "rgba(255,255,255,0.85)",
+                    fontFamily: "ui-rounded",
+                    fontWeight: "700",
+                    fontSize: 13,
+                    alignSelf: "flex-start",
+                    marginLeft: 8,
+                    marginBottom: 5,
+                  }}
+                >
+                  {pin.display_name} ・{" "}
+                  <Text style={{ fontSize: 16 }}>{pin.count}</Text>
+                  <Text style={{ fontSize: 10 }}>
+                    {pin.capacity === null ? "人" : `/${pin.capacity}人`}
+                  </Text>
                 </Text>
               )}
               <PinBubble>

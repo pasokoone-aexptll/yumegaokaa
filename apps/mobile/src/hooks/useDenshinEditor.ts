@@ -8,6 +8,7 @@ import {
 } from "../lib/denshinDraft";
 import {
   pendingCommand,
+  discardPendingCommand,
   submitCommand,
   cancelPendingCommand,
 } from "../lib/commands";
@@ -119,6 +120,22 @@ export function useDenshinEditor() {
       setBusy(false);
     }
   }
+  async function discard() {
+    if (running.current || restoring) return;
+    running.current = true;
+    const session = sessionState.get().revision;
+    try {
+      if (pending) await discardPendingCommand(pending.kind);
+      if (session !== sessionState.get().revision) return;
+      clearDenshinDraft();
+      setPending(undefined);
+      router.back();
+    } catch (e) {
+      if (session === sessionState.get().revision) setError(denshinError(e));
+    } finally {
+      running.current = false;
+    }
+  }
   async function remove() {
     if (!draft.id || !draft.original || pending || running.current) return;
     running.current = true;
@@ -147,6 +164,7 @@ export function useDenshinEditor() {
     locked: !!pending,
     save,
     revise,
+    discard,
     remove,
   };
 }

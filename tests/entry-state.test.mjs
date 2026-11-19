@@ -6,15 +6,15 @@ const source = ts.transpileModule(
   readFileSync("apps/mobile/src/hooks/useStreetMap.ts", "utf8"),
   { compilerOptions: { module: ts.ModuleKind.CommonJS } },
 ).outputText;
-function harness(checkin, stop, simulator = false) {
+function harness(checkin, stop, simulator = false, fieldTrial = false) {
   const slots = [];
   let index = 0,
     calls = 0;
   const native = {
     isSimulator: () => simulator,
-    checkin: async () => {
+    checkin: async (tagId) => {
       calls++;
-      return checkin();
+      return checkin(tagId);
     },
     stop:
       stop ??
@@ -51,7 +51,7 @@ function harness(checkin, stop, simulator = false) {
         useEffect() {},
       };
     if (id.includes("development"))
-      return { localEntry: true, nfcDisabled: true };
+      return { localEntry: !fieldTrial, nfcDisabled: !fieldTrial, fieldTrial };
     if (id.includes("nfc-manager"))
       return {
         __esModule: true,
@@ -156,4 +156,31 @@ test("Simulator NFC wait neither attempts checkin nor displays a connection erro
   assert.equal(h.render().entryError, "");
   assert.equal(h.render().active, false);
   assert.equal(h.calls, 0);
+});
+
+test("Simulator ring uses the account-bound trial tag and waits for server acceptance", async () => {
+  let resolve;
+  const h = harness((tagId) => {
+    assert.equal(tagId, "14fdc906-3ff4-4576-a212-35c42642dd49");
+    return new Promise((r) => (resolve = r));
+  }, undefined, true, true);
+  await h.render().scan("tag");
+  assert.equal(h.calls, 0);
+  const entering = h.render().scan("default");
+  assert.equal(h.render().sheet, "checking");
+  assert.equal(h.render().active, false);
+  await h.render().scan("default");
+  assert.equal(h.calls, 1);
+  resolve(active);
+  await entering;
+  assert.equal(h.render().sheet, "success");
+  assert.equal(h.render().active, true);
+});
+
+test("Simulator ring preserves the trial grant check instead of fabricating success", async () => {
+  const h = harness(async () => { throw Error("inactive_tag"); }, undefined, true, true);
+  await h.render().scan("default");
+  assert.equal(h.render().active, false);
+  assert.equal(h.render().sheet, "explain");
+  assert.match(h.render().entryError, /入街許可がありません/);
 });
