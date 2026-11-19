@@ -37,9 +37,25 @@ import { useStreetChat, type Message } from "../hooks/useStreetChat";
 function MentionBody({ message }: { message: Message }) {
   const names = message.mentions ?? [];
   const parts = mentionParts(message.body ?? "", names);
-  const prefix = names.filter(name => !parts.some(p => p.name === name));
-  return <>{prefix.length > 0 && <Text style={{ color: "#39A3FF" }}>{prefix.map(n => "@"+n).join(" ")} </Text>}
-    {parts.map((p,i) => p.name ? <Text key={i} style={{ color: "#39A3FF" }}>{p.text}</Text> : p.text)}</>;
+  const prefix = names.filter((name) => !parts.some((p) => p.name === name));
+  return (
+    <>
+      {prefix.length > 0 && (
+        <Text style={{ color: "#39A3FF" }}>
+          {prefix.map((n) => "@" + n).join(" ")}{" "}
+        </Text>
+      )}
+      {parts.map((p, i) =>
+        p.name ? (
+          <Text key={i} style={{ color: "#39A3FF" }}>
+            {p.text}
+          </Text>
+        ) : (
+          p.text
+        ),
+      )}
+    </>
+  );
 }
 
 export function StreetChat({
@@ -135,7 +151,8 @@ export function StreetChat({
   const latestId = items[0]?.id;
   useEffect(() => {
     const frame = requestAnimationFrame(() => {
-      if (!readingHistory.current) scroll.current?.scrollToEnd({ animated: false });
+      if (!readingHistory.current)
+        scroll.current?.scrollToEnd({ animated: false });
     });
     return () => cancelAnimationFrame(frame);
   }, [latestId, readingHistory]);
@@ -222,7 +239,11 @@ export function StreetChat({
         measure();
       }}
     >
-      <ProgressiveBlur edge="solid" intensity={Platform.OS === "android" ? 85 : 30} active={expanded} />
+      <ProgressiveBlur
+        edge="solid"
+        intensity={Platform.OS === "android" ? 85 : 30}
+        active={expanded}
+      />
       <Animated.View
         style={[
           StyleSheet.absoluteFill,
@@ -245,25 +266,35 @@ export function StreetChat({
               height: Math.min(height * 0.55, availableHeight - overlap),
             }}
           >
-            {Platform.OS !== "android" && <ProgressiveBlur edge="bottom" intensity={24} />}
+            {Platform.OS !== "android" && (
+              <ProgressiveBlur edge="bottom" intensity={24} />
+            )}
             {Platform.OS === "android" ? (
-              <View style={[StyleSheet.absoluteFill, {
-                experimental_backgroundImage: "linear-gradient(180deg, rgba(23,27,35,0) 0%, rgba(23,27,35,0.32) 50%, rgba(23,27,35,0.82) 100%)",
-              }]} />
-            ) : <Svg
-              pointerEvents="none"
-              style={StyleSheet.absoluteFill}
-              width="100%"
-              height="100%"
-            >
-              <Defs>
-                <LinearGradient id="chatShade" x1="0" y1="0" x2="0" y2="100%">
-                  <Stop offset="0" stopColor="black" stopOpacity={0} />
-                  <Stop offset="1" stopColor="black" stopOpacity={0.46} />
-                </LinearGradient>
-              </Defs>
-              <Rect width="100%" height="100%" fill="url(#chatShade)" />
-            </Svg>}
+              <View
+                style={[
+                  StyleSheet.absoluteFill,
+                  {
+                    experimental_backgroundImage:
+                      "linear-gradient(180deg, rgba(23,27,35,0) 0%, rgba(23,27,35,0.32) 50%, rgba(23,27,35,0.82) 100%)",
+                  },
+                ]}
+              />
+            ) : (
+              <Svg
+                pointerEvents="none"
+                style={StyleSheet.absoluteFill}
+                width="100%"
+                height="100%"
+              >
+                <Defs>
+                  <LinearGradient id="chatShade" x1="0" y1="0" x2="0" y2="100%">
+                    <Stop offset="0" stopColor="black" stopOpacity={0} />
+                    <Stop offset="1" stopColor="black" stopOpacity={0.46} />
+                  </LinearGradient>
+                </Defs>
+                <Rect width="100%" height="100%" fill="url(#chatShade)" />
+              </Svg>
+            )}
           </View>
           <Animated.View
             pointerEvents="box-none"
@@ -328,21 +359,40 @@ export function StreetChat({
                           layoutMeasurement,
                         },
                       }) => {
-                        const away = contentSize.height - layoutMeasurement.height - contentOffset.y > 48;
+                        const away =
+                          contentSize.height -
+                            layoutMeasurement.height -
+                            contentOffset.y >
+                          48;
                         if (jumpingToLatest.current) return;
                         setAwayFromLatest(away);
-                        if (away && expanded && !readingHistory.current) beginHistory();
+                        if (away && expanded && !readingHistory.current)
+                          beginHistory();
                         if (!away && readingHistory.current) followLatest();
                       }}
                       onScrollBeginDrag={() => {
                         jumpingToLatest.current = false;
                         beginHistory();
                       }}
-                      onScrollEndDrag={({ nativeEvent: { contentSize, layoutMeasurement, contentOffset } }) => {
-                        if (contentSize.height - layoutMeasurement.height - contentOffset.y <= 48) followLatest();
+                      onScrollEndDrag={({
+                        nativeEvent: {
+                          contentSize,
+                          layoutMeasurement,
+                          contentOffset,
+                        },
+                      }) => {
+                        if (
+                          contentSize.height -
+                            layoutMeasurement.height -
+                            contentOffset.y <=
+                          48
+                        )
+                          followLatest();
                         endHistoryDrag();
                       }}
-                      onMomentumScrollBegin={() => { if (!jumpingToLatest.current) beginHistory(); }}
+                      onMomentumScrollBegin={() => {
+                        if (!jumpingToLatest.current) beginHistory();
+                      }}
                       onMomentumScrollEnd={endHistoryDrag}
                       keyboardShouldPersistTaps="handled"
                       keyboardDismissMode="interactive"
@@ -377,6 +427,7 @@ export function StreetChat({
                               version={m.avatar_updated_at}
                               name={m.display_name}
                               size={32}
+                              shape="square"
                             />
                           )}
                           <View style={{ flex: 1, minWidth: 0 }}>
@@ -388,9 +439,19 @@ export function StreetChat({
                             >
                               <Text style={styles.author}>
                                 {m.kind !== "arrival" && (
-                                  <Text style={styles.authorName}
+                                  <Text
+                                    style={styles.authorName}
                                     accessibilityHint="タップしてメンションの宛先に追加"
-                                    onPress={!m.mine && !m.deleted && m.author_id ? () => toggleMention(m.author_id!, m.display_name) : undefined}>
+                                    onPress={
+                                      !m.mine && !m.deleted && m.author_id
+                                        ? () =>
+                                            toggleMention(
+                                              m.author_id!,
+                                              m.display_name,
+                                            )
+                                        : undefined
+                                    }
+                                  >
                                     {m.display_name}{" "}
                                     {m.stay_level ? `Lv${m.stay_level} ` : ""}
                                   </Text>
@@ -401,7 +462,11 @@ export function StreetChat({
                                   second: "2-digit",
                                 })}
                               </Text>
-                              <Text textBreakStrategy="simple" android_hyphenationFrequency="none" style={styles.body}>
+                              <Text
+                                textBreakStrategy="simple"
+                                android_hyphenationFrequency="none"
+                                style={styles.body}
+                              >
                                 {m.deleted ? (
                                   "削除されたメッセージ"
                                 ) : m.kind === "arrival" ? (
@@ -440,7 +505,13 @@ export function StreetChat({
                                   maxWidth: "100%",
                                 }}
                               >
-                                <Text textBreakStrategy="simple" android_hyphenationFrequency="none" style={styles.body}>{e.body}</Text>
+                                <Text
+                                  textBreakStrategy="simple"
+                                  android_hyphenationFrequency="none"
+                                  style={styles.body}
+                                >
+                                  {e.body}
+                                </Text>
                               </ChatTouchRegion>
                             </View>
                           </View>
@@ -471,7 +542,13 @@ export function StreetChat({
                                 maxWidth: "100%",
                               }}
                             >
-                              <Text textBreakStrategy="simple" android_hyphenationFrequency="none" style={styles.body}>{pendingText}</Text>
+                              <Text
+                                textBreakStrategy="simple"
+                                android_hyphenationFrequency="none"
+                                style={styles.body}
+                              >
+                                {pendingText}
+                              </Text>
                             </ChatTouchRegion>
                           </View>
                         </View>
@@ -493,7 +570,9 @@ export function StreetChat({
                       }
                       followLatest();
                       setAwayFromLatest(false);
-                      scroll.current?.scrollToEnd({ animated: Platform.OS !== "android" });
+                      scroll.current?.scrollToEnd({
+                        animated: Platform.OS !== "android",
+                      });
                     }}
                   >
                     <SmoothSurface
@@ -529,12 +608,25 @@ export function StreetChat({
                 />
               )}
               {mentions.length > 0 && (
-                <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 8 }}>
-                  {mentions.map(m => <Text key={m.id} accessibilityRole="button"
-                    accessibilityLabel={`${m.name}を宛先から外す`}
-                    onPress={() => toggleMention(m.id, m.name)} style={{ color: "#39A3FF" }}>
-                    @{m.name || items.find(item => item.author_id === m.id)?.display_name || "選択済み"} ×
-                  </Text>)}
+                <View
+                  style={{ flexDirection: "row", flexWrap: "wrap", gap: 8 }}
+                >
+                  {mentions.map((m) => (
+                    <Text
+                      key={m.id}
+                      accessibilityRole="button"
+                      accessibilityLabel={`${m.name}を宛先から外す`}
+                      onPress={() => toggleMention(m.id, m.name)}
+                      style={{ color: "#39A3FF" }}
+                    >
+                      @
+                      {m.name ||
+                        items.find((item) => item.author_id === m.id)
+                          ?.display_name ||
+                        "選択済み"}{" "}
+                      ×
+                    </Text>
+                  ))}
                 </View>
               )}
               <View style={styles.composer} onTouchStart={Keyboard.dismiss}>

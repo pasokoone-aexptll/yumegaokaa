@@ -2,7 +2,7 @@ import type { useStreetMap } from "../hooks/useStreetMap";
 export type EntrySheetState = Pick<
   ReturnType<typeof useStreetMap>,
   "sheet" | "entryError" | "setSheet" | "scan" | "exit"
->;
+> & { placeName?: string };
 let current: EntrySheetState | null = null;
 const listeners = new Set<() => void>();
 export const entrySheetState = {

@@ -1,3 +1,4 @@
+import { SuperAsset } from "./icons/SuperAsset";
 import { MapAsset } from "./map/MapAsset";
 import type { ColorValue } from "react-native";
 export function TabIcon({
@@ -9,6 +10,14 @@ export function TabIcon({
   color: ColorValue | null;
   focused: boolean;
 }) {
+  if (kind === "account")
+    return (
+      <SuperAsset
+        name={focused ? "user-fill" : "user"}
+        size={32}
+        tint={typeof color === "string" ? color : undefined}
+      />
+    );
   const names = {
     home: ["home", "homeSelect"],
     map: ["mapChat", "mapChatSelect"],

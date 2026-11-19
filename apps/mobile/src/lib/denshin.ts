@@ -65,3 +65,21 @@ export function denshinError(error: unknown) {
     return "本文・人数・街の範囲内の場所を確認してください。";
   return "送信結果を確認できません。接続を確認して再試行してください。";
 }
+
+export function onsitePeople(pin: DenshinPin): PinPerson[] {
+  const people = pin.people.filter(
+    (person) =>
+      person.state === "arrived" && person.account_id !== pin.author_id,
+  );
+  return pin.host_arrived
+    ? [
+        {
+          account_id: pin.author_id,
+          display_name: pin.display_name,
+          avatar_path: pin.avatar_path,
+          state: "arrived",
+        },
+        ...people,
+      ]
+    : people;
+}

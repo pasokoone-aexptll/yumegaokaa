@@ -1,3 +1,4 @@
+import { SuperAsset, type SuperAssetName } from "./icons/SuperAsset";
 import { UIIcon } from "./icons/UIIcon";
 const symbols = {
   "chevron-back": "chevron-left",
@@ -30,5 +31,15 @@ export function DetailIcon({
   size?: number;
   color?: string;
 }) {
+  const supplied: Partial<Record<keyof typeof symbols, SuperAssetName>> = {
+    "person-circle-outline": "profile",
+    "person-add-outline": "inviteFriends",
+    "images-outline": "myCityPoolIcon",
+    "hand-left-outline": "Block",
+    "shield-checkmark-outline": "accountSettings",
+    "construct-outline": "運営",
+  };
+  const asset = supplied[name];
+  if (asset) return <SuperAsset name={asset} size={size} />;
   return <UIIcon name={symbols[name]} size={size} />;
 }

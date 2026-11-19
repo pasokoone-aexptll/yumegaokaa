@@ -1,225 +1,242 @@
-import { deniedMessage } from "../../lib/pushPlatform";
-import { useState } from "react";
+import { useCallback, useContext, useEffect, useMemo, useState } from "react";
 import {
+  ActivityIndicator,
   Animated,
-  Image,
+  SectionList,
   Text,
   View,
   Pressable,
-  ActivityIndicator,
-  RefreshControl,
 } from "react-native";
+import Svg, { Defs, LinearGradient, Rect, Stop } from "react-native-svg";
+import { ReducedIconMotion } from "../icons/IconMotion";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { StatusBar } from "expo-status-bar";
 import { useRouter } from "expo-router";
-import { usePushPermission } from "../../hooks/usePushNotifications";
 import { useNotifications } from "../../hooks/useNotifications";
-import { DetailRow, Section, detail } from "../DetailUI";
-
+import { usePushPermission } from "../../hooks/usePushNotifications";
+import { DenshinLogo, SuperAsset } from "../icons/SuperAsset";
+import { SpeechBubble } from "../denshin/SpeechBubble";
+import { NativeAction } from "../denshin/NativeAction";
 export function NotificationsScreen() {
   const router = useRouter();
+  const reduced = useContext(ReducedIconMotion);
+  const [pinned, setPinned] = useState(false);
+  const [date, setDate] = useState("");
+  const [fade] = useState(() => new Animated.Value(0));
+  const visible = useCallback(
+    ({
+      viewableItems,
+    }: {
+      viewableItems: { section?: { title: string } }[];
+    }) => {
+      if (viewableItems[0]?.section?.title)
+        setDate(viewableItems[0].section.title);
+    },
+    [],
+  );
+  useEffect(() => {
+    const animation = Animated.timing(fade, {
+      toValue: pinned ? 1 : 0,
+      duration: reduced ? 0 : 200,
+      useNativeDriver: true,
+    });
+    animation.start();
+    return () => animation.stop();
+  }, [pinned, reduced, fade]);
   const push = usePushPermission();
-  const { items, error, loading, reading, load, markRead } = useNotifications();
-  const [scroll] = useState(() => new Animated.Value(0));
-  const [refreshing, setRefreshing] = useState(false);
+  const d = useNotifications();
+  const items = d.items;
+  const sections = useMemo(() => {
+    const groups = new Map<string, typeof items>();
+    for (const item of items
+      .filter((n) => !n.read)
+      .sort((a, b) => Date.parse(b.created_at) - Date.parse(a.created_at))) {
+      const date = new Date(item.created_at);
+      const key = date.toLocaleDateString("ja-JP");
+      const group = groups.get(key) ?? [];
+      group.push(item);
+      groups.set(key, group);
+    }
+    return Array.from(groups, ([key, data]) => ({
+      key,
+      title:
+        new Date(data[0].created_at).toDateString() ===
+        new Date().toDateString()
+          ? "Today"
+          : `${new Date(data[0].created_at).getMonth() + 1}/${new Date(data[0].created_at).getDate()}`,
+      data,
+    }));
+  }, [items]);
   return (
     <SafeAreaView
-      style={{ flex: 1, backgroundColor: "#fafafa" }}
-      edges={["top"]}
+      edges={["top", "left", "right"]}
+      style={{ flex: 1, backgroundColor: "#F2F2F2" }}
     >
-      <StatusBar style="dark" />
-      <View
-        style={{ height: 44, justifyContent: "center", alignItems: "center" }}
-      >
+      <View style={{ padding: 22, height: 115, zIndex: 2 }}>
+        <DenshinLogo />
+        <View style={{ position: "absolute", left: 92, top: 40 }}>
+          <SpeechBubble>
+            <Text
+              style={{
+                color: "#34C759",
+                fontFamily: "ui-rounded",
+                fontSize: 17,
+              }}
+            >
+              通知
+            </Text>
+          </SpeechBubble>
+        </View>
         <Animated.Text
           style={{
-            fontSize: 17,
+            position: "absolute",
+            left: 175,
+            top: 30,
+            fontFamily: "ui-rounded",
+            fontSize: 26,
             fontWeight: "600",
-            color: "#000000cc",
-            opacity: scroll.interpolate({
-              inputRange: [160, 210],
-              outputRange: [0, 1],
-              extrapolate: "clamp",
-            }),
+            color: "rgba(0,0,0,0.2)",
+            opacity: fade,
+            transform: [
+              {
+                translateY: fade.interpolate({
+                  inputRange: [0, 1],
+                  outputRange: [8, 0],
+                }),
+              },
+            ],
           }}
         >
-          オラクル通知
+          {date}
         </Animated.Text>
-      </View>
-      <Animated.ScrollView
-        scrollEventThrottle={16}
-        onScroll={Animated.event(
-          [{ nativeEvent: { contentOffset: { y: scroll } } }],
-          { useNativeDriver: true },
-        )}
-        refreshControl={
-          <RefreshControl
-            refreshing={refreshing}
-            onRefresh={async () => {
-              setRefreshing(true);
-              try {
-                await load();
-              } finally {
-                setRefreshing(false);
-              }
-            }}
-          />
-        }
-        contentContainerStyle={{ paddingBottom: 32 }}
-      >
-        <Animated.View
+        <View
+          pointerEvents="none"
           style={{
-            padding: 20,
-            paddingTop: 0,
-            opacity: scroll.interpolate({
-              inputRange: [0, 190],
-              outputRange: [1, 0],
-              extrapolate: "clamp",
-            }),
+            position: "absolute",
+            left: 0,
+            right: 0,
+            height: 30,
+            bottom: -30,
           }}
         >
-          <Image
-            source={require("../../../assets/brand/DreamCloud.png")}
+          <Svg width="100%" height="100%">
+            <Defs>
+              <LinearGradient
+                id="notification-fade"
+                x1="0"
+                y1="0"
+                x2="0"
+                y2="1"
+              >
+                <Stop offset="0" stopColor="#F2F2F2" />
+                <Stop offset="1" stopColor="#F2F2F2" stopOpacity={0} />
+              </LinearGradient>
+            </Defs>
+            <Rect width="100%" height="100%" fill="url(#notification-fade)" />
+          </Svg>
+        </View>
+      </View>
+      {!!d.error && <Text accessibilityRole="alert">{d.error}</Text>}
+      <SectionList
+        sections={sections}
+        keyExtractor={(item) => item.id}
+        stickySectionHeadersEnabled={false}
+        onViewableItemsChanged={visible}
+        onScroll={(event) => setPinned(event.nativeEvent.contentOffset.y > 40)}
+        scrollEventThrottle={32}
+        refreshing={d.loading}
+        onRefresh={() => void d.load()}
+        contentContainerStyle={{
+          flexGrow: 1,
+          paddingHorizontal: 26,
+          paddingBottom: 25,
+        }}
+        renderSectionHeader={({ section }) => (
+          <Text
             style={{
-              width: 180,
-              height: 150,
-              alignSelf: "flex-start",
-              marginBottom: 24,
-            }}
-            resizeMode="contain"
-          />
-          <Animated.Text
-            style={{
-              fontSize: 30,
+              backgroundColor: "#F2F2F2",
+              color: "rgba(0,0,0,0.2)",
+              fontFamily: "ui-rounded",
               fontWeight: "600",
-              color: "#00000099",
+              fontSize: 26,
+              paddingVertical: 18,
             }}
           >
-            オラクル通知
-          </Animated.Text>
-          <Text style={{ fontSize: 16, marginTop: 4, color: "#00000044" }}>
-            接続センター アシスタント
+            {section.title}
           </Text>
-        </Animated.View>
-        <View style={{ paddingHorizontal: 20, gap: 24 }}>
-          {!!error && (
-            <Text accessibilityRole="alert" style={detail.error}>
-              {error}
+        )}
+        renderItem={({ item }) => (
+          <Pressable
+            accessibilityRole="button"
+            onPress={() =>
+              router.push({ pathname: "/inbox/[id]", params: { id: item.id } })
+            }
+            style={{ paddingVertical: 20, gap: 12 }}
+          >
+            <View
+              style={{ flexDirection: "row", alignItems: "center", gap: 10 }}
+            >
+              <SuperAsset
+                name={
+                  item.kind === "mention" ? "非常口から人が出るrounded" : "電信"
+                }
+                width={item.kind === "mention" ? 40 : 60}
+                height={40}
+              />
+              <Text
+                style={{
+                  flex: 1,
+                  fontFamily: "ui-rounded",
+                  fontSize: 18,
+                  color: "rgba(0,0,0,0.7)",
+                  fontWeight: "600",
+                }}
+              >
+                {item.kind === "pin_closed"
+                  ? "PINの募集が終了しました"
+                  : item.kind === "pin_changed"
+                    ? "PINが変更されました"
+                    : item.kind === "mention"
+                      ? "メンションされました"
+                      : item.kind === "canceled"
+                        ? "イベントが中止されました"
+                        : "イベントが変更されました"}
+              </Text>
+            </View>
+            <Text style={{ fontSize: 16, color: "rgba(0,0,0,0.5)" }}>
+              {item.title}
             </Text>
-          )}
-          {loading && <ActivityIndicator />}
-          {!loading && !error && !items.length && (
-            <Text style={detail.secondary}>お知らせはありません。</Text>
-          )}
-          {(["mention", "pin_changed", "pin_closed", "changed", "canceled"] as const).map((kind) => {
-            const notices = items.filter((n) => n.kind === kind);
-            if (!notices.length) return null;
-            return (
-              <View key={kind} style={{ gap: 12 }}>
-                <Text
-                  style={{
-                    fontSize: 17,
-                    fontWeight: "600",
-                    color: "#00000099",
-                  }}
-                >
-                  {kind === "pin_changed" ? "変更された電信PIN" : kind === "pin_closed" ? "終了した募集" : kind === "mention" ? "メンション" : kind === "changed"
-                    ? "変更されたイベント"
-                    : "中止されたイベント"}
-                </Text>
-                {notices.map((n) => (
-                  <View
-                    key={n.id}
-                    style={{
-                      paddingVertical: 16,
-                      gap: 8,
-                      borderBottomWidth: 0.5,
-                      borderBottomColor: "#00000010",
-                    }}
-                  >
-                    <Text
-                      style={{
-                        fontSize: 18,
-                        fontWeight: n.read ? "500" : "600",
-                      }}
-                    >
-                      {n.title}
-                    </Text>
-                    <Text style={detail.secondary}>
-                      {kind === "pin_changed" ? "参加中の電信PINに変更があります" : kind === "pin_closed" ? "電信PINの募集が終了しました" : kind === "mention" ? "街のチャットでメンションされました" : kind === "canceled"
-                        ? "参加予定のイベントが中止されました"
-                        : "参加予定のイベントに変更があります"}
-                    </Text>
-                    <Text style={{ fontSize: 12, color: "#00000066" }}>
-                      {new Date(n.created_at).toLocaleString("ja-JP")}
-                    </Text>
-                    <Pressable
-                      accessibilityRole="button"
-                      disabled={
-                        reading !== null || (kind === "canceled" && n.read)
-                      }
-                      style={{ paddingVertical: 12, alignSelf: "flex-start" }}
-                      onPress={async () => {
-                        if (!(await markRead(n))) return;
-                        if (kind === "pin_changed" && n.pin_id) router.push({ pathname: "/map-pin", params: { id: n.pin_id } });
-                        if (kind === "mention") router.push("/(tabs)");
-                        if (kind === "changed")
-                          router.push({
-                            pathname: "/events/[id]",
-                            params: { id: n.event_id },
-                          });
-                      }}
-                    >
-                      {reading === n.id ? (
-                        <ActivityIndicator />
-                      ) : (
-                        <Text
-                          style={{
-                            color:
-                              n.read && kind === "canceled"
-                                ? "#00000055"
-                                : "#008cff",
-                            fontSize: 16,
-                            fontWeight: "600",
-                          }}
-                        >
-                          {kind === "mention" ? "街のチャットを開く" : (kind === "changed" || kind === "pin_changed")
-                            ? "詳細を確認"
-                            : n.read
-                              ? "確認済み"
-                              : "確認しました"}
-                        </Text>
-                      )}
-                    </Pressable>
-                  </View>
-                ))}
-              </View>
-            );
-          })}
-          <Section>
-            <DetailRow
-              title={
-                push.status === "registered"
-                  ? "プッシュ通知は有効です"
-                  : "プッシュ通知を有効にする"
-              }
-              disabled={["unavailable", "registering", "registered"].includes(
-                push.status,
-              )}
+          </Pressable>
+        )}
+        ListEmptyComponent={
+          d.loading ? (
+            <ActivityIndicator />
+          ) : (
+            <View
+              style={{
+                flex: 1,
+                alignItems: "center",
+                justifyContent: "center",
+                gap: 30,
+              }}
+            >
+              <SuperAsset name="非常口から人が出る" width={210} height={270} />
+              <Text style={{ color: "rgba(0,0,0,0.2)", fontSize: 18 }}>
+                まだ何もありません
+              </Text>
+            </View>
+          )
+        }
+        ListFooterComponent={
+          push.status === "registered" ||
+          push.status === "unavailable" ? undefined : (
+            <NativeAction
+              title="プッシュ通知を有効にする"
+              disabled={push.status === "registering"}
               onPress={() => void push.enable()}
-              subtitle={
-                push.status === "unavailable"
-                  ? "この検証ビルドはプッシュ通知に未対応です。"
-                  : push.status === "denied"
-                    ? deniedMessage
-                    : push.status === "error"
-                      ? "登録できませんでした。再試行してください。"
-                      : undefined
-              }
             />
-          </Section>
-        </View>
-      </Animated.ScrollView>
+          )
+        }
+      />
     </SafeAreaView>
   );
 }

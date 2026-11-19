@@ -3,13 +3,13 @@ import { useState } from "react";
 import {
   ActivityIndicator,
   Animated,
-  Image,
   Platform,
   Pressable,
   Text,
   View,
 } from "react-native";
-import { SmoothSurface } from "./SmoothSurface";
+import { GlassView } from "expo-glass-effect";
+import { SuperAsset } from "../icons/SuperAsset";
 
 /** Dismissing this notice never changes the underlying visit or observation state. */
 export type BannerProps = {
@@ -34,7 +34,7 @@ export function Notice({
   children?: React.ReactNode;
 }) {
   const [busy, setBusy] = useState(false);
-  const { visible, appearance, progress, dismiss } = useNoticeMotion(autoDismiss);
+  const { visible, appearance, dismiss } = useNoticeMotion(autoDismiss);
   if (!visible) return null;
   return (
     <Animated.View
@@ -51,10 +51,10 @@ export function Notice({
         marginTop: 8,
       }}
     >
-      <SmoothSurface
-        color="#00000080"
-        blurIntensity={25}
-        radius={20}
+      <GlassView
+        glassEffectStyle="regular"
+        colorScheme="dark"
+        tintColor="rgba(0,0,0,0.5)"
         style={{
           overflow: "hidden",
           borderRadius: 20,
@@ -64,23 +64,12 @@ export function Notice({
         <View
           style={{
             paddingVertical: 10,
-            paddingRight: 12,
+            paddingHorizontal: 16,
             flexDirection: "row",
             alignItems: "center",
             gap: 10,
           }}
         >
-          <Image
-            accessible={false}
-            source={require("../../../assets/illustrations/girl-viewing.png")}
-            resizeMode="contain"
-            style={{
-              width: 54,
-              height: 64,
-              alignSelf: "flex-end",
-              marginBottom: -10,
-            }}
-          />
           <View style={{ flex: 1 }}>
             <Text
               accessibilityLiveRegion="polite"
@@ -92,6 +81,7 @@ export function Notice({
           </View>
           <Pressable
             accessibilityRole="button"
+            accessibilityLabel={onAction ? actionLabel : "通知を閉じる"}
             disabled={busy}
             accessibilityState={{ busy, disabled: busy }}
             onPress={async () => {
@@ -107,18 +97,20 @@ export function Notice({
               }
             }}
             style={{
-              backgroundColor: "white",
+              backgroundColor: "rgba(255,255,255,0.1)",
               borderRadius: 24,
-              paddingHorizontal: 24,
+              paddingHorizontal: 10,
               paddingVertical: 12,
             }}
           >
             {busy ? (
               <ActivityIndicator color="black" />
+            ) : !onAction ? (
+              <SuperAsset name="x" size={12} tint="white" opacity={0.5} />
             ) : (
               <Text
                 style={{
-                  color: "black",
+                  color: "white",
                   fontWeight: "600",
                   fontSize: 14,
                   fontFamily: Platform.OS === "ios" ? "ui-rounded" : undefined,
@@ -129,19 +121,7 @@ export function Notice({
             )}
           </Pressable>
         </View>
-        {autoDismiss && (
-          <Animated.View
-            style={{
-              height: 2,
-              backgroundColor: "white",
-              width: progress.interpolate({
-                inputRange: [0, 1],
-                outputRange: ["0%", "100%"],
-              }),
-            }}
-          />
-        )}
-      </SmoothSurface>
+      </GlassView>
     </Animated.View>
   );
 }

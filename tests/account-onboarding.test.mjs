@@ -9,7 +9,8 @@ const source = ts.transpileModule(
 ).outputText;
 
 async function check(status, name, failure = false, contributed = true) {
-  const states = [], calls = [], exports = {};
+  const states = [], failures = [], calls = [], exports = {};
+  let stateSlot = 0;
   const native = {
     rpc: async (operation) => {
       calls.push(operation);
@@ -23,7 +24,7 @@ async function check(status, name, failure = false, contributed = true) {
   };
   const react = {
     createContext: value => value,
-    useState: value => [value, next => states.push(next)],
+    useState: value => { const slot = stateSlot++; return [value, next => (slot === 0 ? states : failures).push(next)]; },
     useRef: value => ({ current: value }),
     useCallback: callback => callback,
     useEffect: () => {},
@@ -34,7 +35,7 @@ async function check(status, name, failure = false, contributed = true) {
   );
   exports.useAccountAccess(true, 7).retry();
   await new Promise(resolve => setImmediate(resolve));
-  return { states, calls };
+  return { states, failures, calls };
 }
 
 test('invited member without a name must complete profile; saved name resumes Map access', async () => {
@@ -48,7 +49,9 @@ test('unregistered and suspended users do not read profiles; network failure can
     assert.deepEqual(result.calls, ['account_access']);
     assert.equal(result.states[0].status, status);
   }
-  assert.deepEqual((await check('active', '', true)).states, []);
+  const failed = await check('active', '', true);
+  assert.deepEqual(failed.states, []);
+  assert.deepEqual(failed.failures, [7]);
 });
 
 test('first enrollment requires pool contribution independently of the saved display name', async () => {

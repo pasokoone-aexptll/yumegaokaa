@@ -6,13 +6,18 @@ import { useState } from "react";
 import {
   ActivityIndicator,
   Platform,
+  RefreshControl,
   ScrollView,
   StyleSheet,
   Text,
   View,
 } from "react-native";
-import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
+import {
+  SafeAreaView,
+  useSafeAreaInsets,
+} from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
+import { NativeIconButton } from "./denshin/NativeIconButton";
 import { DetailIcon } from "./DetailIcon";
 
 export function DetailPage({
@@ -38,59 +43,55 @@ export function DetailPage({
   return (
     <SafeAreaView
       edges={
-        materialSheet ? ["left", "right", "bottom"]
-          : root || edgeToEdge ? ["top", "left", "right"] : ["top", "bottom", "left", "right"]
+        materialSheet
+          ? ["left", "right", "bottom"]
+          : root || edgeToEdge
+            ? ["top", "left", "right"]
+            : ["top", "bottom", "left", "right"]
       }
       style={[detail.page, materialSheet && { backgroundColor: "white" }]}
     >
       {materialSheet && <SheetChrome />}
       <ScrollView
+        refreshControl={
+          onRefresh ? (
+            <RefreshControl
+              refreshing={refreshing || reloading}
+              onRefresh={() => {
+                setReloading(true);
+                void onRefresh().finally(() => setReloading(false));
+              }}
+            />
+          ) : undefined
+        }
         nestedScrollEnabled={materialSheet}
-        contentContainerStyle={[detail.content, edgeToEdge && { paddingBottom: detail.content.paddingBottom + insets.bottom }]}
+        contentContainerStyle={[
+          detail.content,
+          edgeToEdge && {
+            paddingBottom: detail.content.paddingBottom + insets.bottom,
+          },
+        ]}
         keyboardShouldPersistTaps="handled"
         automaticallyAdjustKeyboardInsets
         keyboardDismissMode="interactive"
       >
         <View style={detail.navigation}>
           {!root ? (
-            <Pressable
-              accessibilityRole="button"
-              accessibilityLabel="戻る"
-              hitSlop={8}
+            <NativeIconButton
+              icon="chevron-base"
+              rotation={180}
+              dark={false}
+              label="戻る"
               onPress={() =>
                 router.canGoBack() ? router.back() : router.replace("/")
               }
-              style={detail.round}
-            >
-              <DetailIcon name="chevron-back" size={22} color="#111" />
-            </Pressable>
+            />
           ) : (
-            <View />
+            <View style={{ width: 44 }} />
           )}
-          {onRefresh && (
-            <Pressable
-              accessibilityRole="button"
-              accessibilityLabel="再読み込み"
-              disabled={refreshing || reloading}
-              onPress={async () => {
-                setReloading(true);
-                try {
-                  await onRefresh();
-                } finally {
-                  setReloading(false);
-                }
-              }}
-              style={detail.round}
-            >
-              {refreshing || reloading ? (
-                <ActivityIndicator color="#111" />
-              ) : (
-                <DetailIcon name="reload" size={19} color="#111" />
-              )}
-            </Pressable>
-          )}
+          <Text style={detail.title}>{title}</Text>
+          <View style={{ width: 44 }} />
         </View>
-        <Text style={detail.title}>{title}</Text>
         {children}
       </ScrollView>
     </SafeAreaView>
@@ -135,7 +136,7 @@ export function DetailRow({
       {icon && (
         <DetailIcon
           name={icon}
-          size={21}
+          size={30}
           color={danger ? "#c52836" : "#00000088"}
         />
       )}
@@ -209,13 +210,15 @@ export function PrimaryAction({
   );
 }
 export const detail = StyleSheet.create({
-  page: { flex: 1, backgroundColor: "#f2f2f7" },
+  page: { flex: 1, backgroundColor: "#F6F6F6" },
   navigation: {
     paddingHorizontal: 0,
     paddingTop: 8,
     paddingBottom: 12,
     flexDirection: "row",
     justifyContent: "space-between",
+    alignItems: "center",
+    gap: 12,
   },
   round: {
     width: 42,
@@ -232,10 +235,12 @@ export const detail = StyleSheet.create({
     gap: 24,
   },
   title: {
-    fontSize: 30,
+    fontFamily: "ui-rounded",
+    flex: 1,
+    textAlign: "center",
+    fontSize: 19,
     fontWeight: "600",
-    color: "#111",
-    letterSpacing: -0.6,
+    color: "black",
   },
   sectionTitle: {
     fontSize: 13,
@@ -245,7 +250,7 @@ export const detail = StyleSheet.create({
   },
   group: {
     backgroundColor: "white",
-    borderRadius: 20,
+    borderRadius: 26,
     borderCurve: "continuous",
     overflow: "hidden",
   },
@@ -259,7 +264,12 @@ export const detail = StyleSheet.create({
     borderBottomWidth: StyleSheet.hairlineWidth,
     borderBottomColor: "#0000000d",
   },
-  rowTitle: { fontSize: 16, color: "#111" },
+  rowTitle: {
+    fontFamily: "ui-rounded",
+    fontSize: 17,
+    fontWeight: "600",
+    color: "#111",
+  },
   secondary: { fontSize: 14, lineHeight: 21, color: "#00000088" },
   body: { fontSize: 16, lineHeight: 25, color: "#000000cc" },
   primary: {

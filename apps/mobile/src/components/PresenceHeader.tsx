@@ -1,4 +1,4 @@
-import { SmoothSurface } from "./map/SmoothSurface";
+import { SpeechBubble } from "./denshin/SpeechBubble";
 import { useState } from "react";
 import { Text, View } from "react-native";
 import { Avatar } from "./Avatar";
@@ -11,17 +11,16 @@ export function PresenceHeader({ icons }: { icons: (string | null)[] }) {
   if (!icons.length) return null;
   const shown = visiblePresenceIcons(icons.length, width, badgeWidth, 38, 4);
   return (
-    <SmoothSurface
-      color="#00000099"
-      blurIntensity={20}
-      radius={28}
-      style={{ padding: 5, marginTop: 2 }}
+    <SpeechBubble
+      tail="top"
+      color="rgba(255,255,255,0.25)"
+      style={{ alignSelf: "stretch", marginTop: 4 }}
     >
       <View
         accessible
         accessibilityLabel={`有効な気配 ${icons.length}人`}
         onLayout={({ nativeEvent }) => setWidth(nativeEvent.layout.width)}
-        style={{ flexDirection: "row", alignItems: "center", gap: 4 }}
+        style={{ flex: 1, flexDirection: "row", alignItems: "center", gap: 4 }}
       >
         <Text
           accessible={false}
@@ -57,6 +56,6 @@ export function PresenceHeader({ icons }: { icons: (string | null)[] }) {
           </Text>
         )}
       </View>
-    </SmoothSurface>
+    </SpeechBubble>
   );
 }

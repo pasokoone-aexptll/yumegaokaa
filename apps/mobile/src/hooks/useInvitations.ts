@@ -5,6 +5,8 @@ import { useCallback, useContext, useRef, useState } from "react";
 import { native } from "../lib/native";
 type Invite = {
   id: string;
+  created_at: string;
+  recipient_name?: string;
   expires_at: string;
   used: boolean;
   revoked: boolean;
@@ -20,6 +22,7 @@ export function useInvitations() {
     [status, setStatus] = useState(""),
     [busy, setBusy] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [issuerName, setIssuerName] = useState("");
   const generation = useRef(0);
   const request = useRef(0);
   const writing = useRef(false);
@@ -30,9 +33,13 @@ export function useInvitations() {
     setLoading(true);
     try {
       const pending = !!(await pendingCommand("invite_create"));
-      const result = await native.rpc<{ items: Invite[] }>("invite_list", {});
+      const result = await native.rpc<{
+        items: Invite[];
+        issuer_name?: string;
+      }>("invite_list", {});
       if (gen !== generation.current || seq !== request.current) return;
       setPending(pending);
+      setIssuerName(result.issuer_name ?? "");
       setItems(
         result.items.map((item) => ({
           ...item,
@@ -93,6 +100,7 @@ export function useInvitations() {
         op === "invite_accept" ? "招待を受け付けました。" : "更新しました。",
       );
       await refresh();
+      return true;
     } catch (e) {
       if (gen !== generation.current) return;
       if (op === "invite_create") {
@@ -116,6 +124,7 @@ export function useInvitations() {
   }
   return {
     receiving,
+    issuerName,
     pending,
     items,
     code,

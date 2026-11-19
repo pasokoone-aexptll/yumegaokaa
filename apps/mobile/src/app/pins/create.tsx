@@ -1,10 +1,15 @@
+import { NativeToggle as Switch } from "../../components/denshin/NativeToggle";
+import { useContext, useState } from "react";
+import { ReducedIconMotion } from "../../components/icons/IconMotion";
+import { RollingNumber } from "../../components/denshin/RollingNumber";
+import { SuperAsset } from "../../components/icons/SuperAsset";
 import {
   Alert,
+  LayoutAnimation,
   Keyboard,
   Pressable,
   ScrollView,
   StyleSheet,
-  Switch,
   Text,
   TextInput,
   View,
@@ -25,6 +30,8 @@ export default function CreatePin() {
     insets = useSafeAreaInsets();
   const { draft, busy, locked, error, save, revise } = useDenshinEditor();
   const disabled = busy || locked;
+  const [expanded, setExpanded] = useState(false);
+  const reduced = useContext(ReducedIconMotion);
   function close() {
     if (busy) return;
     if (locked) {
@@ -62,25 +69,9 @@ export default function CreatePin() {
   }
   return (
     <PinSheet>
-      <View style={s.header}>
-        <PinHeading suffix={draft.id ? "PINを編集" : "PINを作成"} />
-        <View style={s.actions}>
-          <RoundAction
-            label="閉じる"
-            glyph="×"
-            onPress={close}
-            disabled={busy}
-          />
-          <RoundAction
-            label="保存"
-            glyph="✓"
-            onPress={publish}
-            disabled={busy}
-            active={!!draft.body.trim() && !!draft.location}
-          />
-        </View>
-      </View>
       <ScrollView
+        style={{ flex: 1 }}
+        contentInsetAdjustmentBehavior="never"
         keyboardShouldPersistTaps="handled"
         keyboardDismissMode="interactive"
         contentContainerStyle={[
@@ -88,6 +79,24 @@ export default function CreatePin() {
           { paddingBottom: insets.bottom + 28 },
         ]}
       >
+        <View style={s.header}>
+          <PinHeading suffix={draft.id ? "PINを編集" : "PINを作成"} />
+          <View style={s.actions}>
+            <RoundAction
+              label="閉じる"
+              glyph="×"
+              onPress={close}
+              disabled={busy}
+            />
+            <RoundAction
+              label="保存"
+              glyph="✓"
+              onPress={publish}
+              disabled={busy}
+              active={!!draft.body.trim() && !!draft.location}
+            />
+          </View>
+        </View>
         <TextInput
           accessibilityLabel="ステータスメッセージ"
           placeholder="ステータスメッセージ"
@@ -101,7 +110,12 @@ export default function CreatePin() {
         />
         <View style={s.group}>
           <View style={s.row}>
-            <Text style={s.label}>最大募集人数</Text>
+            <View
+              style={{ flexDirection: "row", alignItems: "center", gap: 12 }}
+            >
+              <SuperAsset name="user" tint="white" opacity={0.65} />
+              <Text style={s.label}>最大募集人数</Text>
+            </View>
             <Switch
               accessibilityLabel="最大募集人数を設定"
               disabled={disabled}
@@ -110,7 +124,29 @@ export default function CreatePin() {
               trackColor={{ true: green }}
             />
           </View>
-          {draft.limited && (
+          {draft.limited && !expanded && (
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel="人数を変更"
+              style={s.row}
+              onPress={() => {
+                if (!reduced)
+                  LayoutAnimation.configureNext(
+                    LayoutAnimation.Presets.easeInEaseOut,
+                  );
+                setExpanded(true);
+              }}
+            >
+              <Text style={s.label}>数値</Text>
+              <View
+                style={{ flexDirection: "row", alignItems: "center", gap: 8 }}
+              >
+                <Text style={s.label}>{draft.capacity}</Text>
+                <SuperAsset name="chevron-base" size={14} tint="white" />
+              </View>
+            </Pressable>
+          )}
+          {draft.limited && expanded && (
             <View style={s.counter}>
               <RoundAction
                 label="人数を減らす"
@@ -123,12 +159,7 @@ export default function CreatePin() {
                   updateDenshinDraft({ capacity: draft.capacity - 1 })
                 }
               />
-              <Text
-                accessibilityLabel={`上限${draft.capacity}人`}
-                style={s.number}
-              >
-                {draft.capacity}
-              </Text>
+              <RollingNumber value={draft.capacity} />
               <RoundAction
                 label="人数を増やす"
                 glyph="＋"
@@ -140,7 +171,12 @@ export default function CreatePin() {
             </View>
           )}
           <View style={s.row}>
-            <Text style={s.label}>募集モード</Text>
+            <View
+              style={{ flexDirection: "row", alignItems: "center", gap: 12 }}
+            >
+              <SuperAsset name="非常口rounded" tint="white" opacity={0.65} />
+              <Text style={s.label}>募集モード</Text>
+            </View>
             <Switch
               accessibilityLabel="募集モード"
               disabled={disabled}
@@ -163,9 +199,12 @@ export default function CreatePin() {
             router.dismissTo("/(tabs)");
           }}
         >
-          <Text style={s.label}>
-            ⌖ {draft.location ? "マップを変更する" : "マップを挿入"}
-          </Text>
+          <View style={{ flexDirection: "row", alignItems: "center", gap: 12 }}>
+            <SuperAsset name="map" tint="white" opacity={0.65} />
+            <Text style={s.label}>
+              {draft.location ? "マップを変更する" : "マップを挿入"}
+            </Text>
+          </View>
           {draft.location && <Text style={s.hint}>場所を選択済み</Text>}
         </Pressable>
         {!!draft.original?.count && (
@@ -191,7 +230,8 @@ const s = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    padding: 20,
+    padding: 0,
+    flexShrink: 0,
     paddingTop: 24,
   },
   actions: { flexDirection: "row", gap: 10 },

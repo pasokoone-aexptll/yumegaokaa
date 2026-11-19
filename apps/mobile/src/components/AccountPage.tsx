@@ -1,12 +1,8 @@
-import { StretchySunset } from "./StretchySunset";
-import { useState, type ReactNode } from "react";
-import { Animated, StyleSheet, Text, View } from "react-native";
-import {
-  SafeAreaView,
-  useSafeAreaInsets,
-} from "react-native-safe-area-context";
+import { type ReactNode, useSyncExternalStore } from "react";
+import { ScrollView, StyleSheet, Text, View } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Avatar } from "./Avatar";
-
+import { sessionState } from "../lib/sessionState";
 export function AccountPage({
   children,
   name,
@@ -19,96 +15,62 @@ export function AccountPage({
   version?: string;
 }) {
   const insets = useSafeAreaInsets();
-  const [scroll] = useState(() => new Animated.Value(0));
+  const session = useSyncExternalStore(
+    sessionState.subscribe,
+    sessionState.get,
+  );
   return (
-    <SafeAreaView edges={["left", "right"]} style={s.page}>
-      <Animated.ScrollView
-        contentInsetAdjustmentBehavior="never"
-        removeClippedSubviews={false}
-        contentContainerStyle={{ flexGrow: 1, paddingBottom: 32 }}
-        scrollEventThrottle={16}
-        onScroll={Animated.event(
-          [{ nativeEvent: { contentOffset: { y: scroll } } }],
-          { useNativeDriver: true },
-        )}
-      >
-        <StretchySunset
-          scroll={scroll}
-          overlayColor="#00000026"
-          height={300 + insets.top}
-          style={[
-            s.hero,
-            { minHeight: 300 + insets.top, paddingTop: insets.top + 24 },
-          ]}
-        >
-          <Animated.View
-            style={{
-              gap: 12,
-              opacity: scroll.interpolate({
-                inputRange: [0, 210],
-                outputRange: [1, 0],
-                extrapolate: "clamp",
-              }),
-            }}
-          >
-            <Avatar path={avatar} version={version} name={name} size={80} />
-            <Text style={s.name}>{name}</Text>
-            <Animated.Text
-              style={[
-                s.title,
-                {
-                  transform: [
-                    {
-                      scale: scroll.interpolate({
-                        inputRange: [0, 200],
-                        outputRange: [1, 0.65],
-                        extrapolate: "clamp",
-                      }),
-                    },
-                  ],
-                },
-              ]}
-            >
-              アカウント
-            </Animated.Text>
-          </Animated.View>
-        </StretchySunset>
-        <View style={s.content}>{children}</View>
-      </Animated.ScrollView>
-      <Animated.View
-        pointerEvents="none"
-        style={[
-          s.bar,
-          {
-            paddingTop: insets.top,
-            height: insets.top + 44,
-            opacity: scroll.interpolate({
-              inputRange: [160, 220],
-              outputRange: [0, 1],
-              extrapolate: "clamp",
-            }),
-          },
-        ]}
-      >
-        <Text style={s.compact}>アカウント</Text>
-      </Animated.View>
-    </SafeAreaView>
+    <ScrollView
+      style={s.page}
+      contentContainerStyle={{ paddingBottom: insets.bottom + 25 }}
+    >
+      <View
+        style={{
+          height: 200,
+          backgroundColor: "rgba(255,45,85,0.2)",
+          paddingTop: insets.top,
+        }}
+      />
+      <View style={s.identity}>
+        <View style={s.avatar}>
+          <Avatar
+            path={avatar}
+            version={version}
+            name={name}
+            size={100}
+            shape="square"
+          />
+        </View>
+        <Text style={s.email}>{session.email}</Text>
+      </View>
+      <Text style={s.name}>@{name}</Text>
+      <View style={s.content}>{children}</View>
+    </ScrollView>
   );
 }
 const s = StyleSheet.create({
-  page: { flex: 1, backgroundColor: "#f2f2f7" },
-  bar: {
-    position: "absolute",
-    top: 0,
-    left: 0,
-    right: 0,
-    backgroundColor: "#f2f2f7",
+  page: { flex: 1, backgroundColor: "#F6F6F6" },
+  identity: {
+    marginTop: -52,
+    flexDirection: "row",
     alignItems: "center",
-    justifyContent: "center",
+    paddingHorizontal: 24,
+    gap: 10,
   },
-  compact: { fontSize: 17, fontWeight: "600", color: "#000000e6" },
-  hero: { padding: 24, minHeight: 270, justifyContent: "flex-end" },
-  name: { fontSize: 22, fontWeight: "600", color: "white" },
-  title: { fontSize: 32, fontWeight: "600", color: "white" },
-  content: { padding: 20, gap: 24 },
+  avatar: { borderRadius: 26, padding: 4, backgroundColor: "#F6F6F6" },
+  email: {
+    flex: 1,
+    fontFamily: "ui-rounded",
+    color: "rgba(0,0,0,0.18)",
+    fontSize: 14,
+  },
+  name: {
+    fontFamily: "ui-rounded",
+    fontWeight: "800",
+    fontSize: 28,
+    marginHorizontal: 30,
+    marginTop: 12,
+    marginBottom: 32,
+  },
+  content: { paddingHorizontal: 26, gap: 26 },
 });

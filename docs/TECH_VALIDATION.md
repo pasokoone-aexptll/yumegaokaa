@@ -1144,3 +1144,35 @@ RN FabricのCJK marked text問題（https://github.com/react/react-native/issues
 ## 2026-11-08 iPhone SEへのインストール（T032 / R19）
 
 iPhone SE（第3世代、iOS 18.7.8）の開発者モードEnabledを確認。ユーザー依頼により既存チームの自動署名・端末登録付きクラウドReleaseをビルドし、codesign検証と実機インストール成功。バンドルにクラウド公開キー・gatewayを確認し、旧LAN API文字列がないことを確認。ログ：/tmp/yumegaoka-iphonese-cloud-20261108.log。起動はSecurity判定（署名/entitlement/開発者信頼）で拒否され、端末での開発者信頼確認待ち。起動・ログイン・SE画面での操作は未確認。コード・仕様・MVP達成率・残量は変更なし。
+
+## 2026-11-19 ネイティブUI実装・途中の確認
+
+- R03/DP01/R12〜R19：@expo/ui SDK58を導入、PINの丸操作をSwiftUI Button glassへ。PinSheetの独自BlurView/SheetChromeを除去し、標準formSheetを使用。RN Screensが子ScrollViewを全体frameへ補正するため、ヘッダーを同じScrollView内へ移動。
+- iPhone18Pro/iOS27 Simulatorで作成、定員ON→数値タップ展開、12→13、閉じる→破棄確認を実操作確認。閉じるが本文欄へ吸われる既存不具合は解消。保存/参加・実機確認は未実施。
+- superassets原本を保存しロゴ/非常口/操作素材へ接続。Home/チャット/ベルはユーザー原本の既存タブ素材を継続。時計・ゴミ箱の追加なし。4タブshift遷移、Reduce Motion時none。
+- 招待050：発行者自身の招待のみ削除可能、受領済み相手のactive=falseで既存停止trigger実行、再削除は冪等。ローカル招待試験/同時受領試験2件成功。クラウド050適用とmigration履歴登録成功。既存実ユーザーへの停止操作はしていない。
+- QR：H誤り訂正、4module余白、丸いfinder/セル、原本から人物部分抽出と中央白地。架空UUIDで専用scheme/不正payload検査成功、QuickLook画像をApple Visionで読み戻してpayload一致。端末カメラ読み取りは未確認。
+- 新通知日付一覧/詳細/確認後非表示、Settings素材とヘッダー、QR履歴・停止確認、Homeチケットはコード実装。最新統合版のSimulator確認は継続中。
+- 29画面/動画の完全再現は未完。オンボーディング・入街回数・プロフィール/街アイコン/ブロック検索/メールOTPの新画面遷移、通知ヘッダーのgradient、全アイコン置換、全状態のFigma照合が残る。旧33タスク達成率・固定残量は変更しない。
+
+### 2026-11-19 Native UI追加接続（R03/R12〜R14/R19）
+- 051：visit INSERT加算、UPDATEで非加算、visit削除後の累計保持、退会で累計削除、名前完全一致・本人除外・block_set/list接続を専用テストで確認。初回SQLのalias `found`衝突を修正し成功。テストの変更はROLLBACK。ユーザーの明示承認後、051をローカル/クラウド適用、クラウドmigration履歴登録済み。
+- QR：専用scheme/UUID以外を拒否、ECC H/quiet zone/中央白地+原本人物SVG。合成した検証用QRをApple Visionで読取成功（実カメラ未確認）。
+- Native操作：@expo/ui SwiftUI Button/Toggle、expo-glass-effect、native formSheetへ接続。旧33タスク達成率は変更しない。
+- 設定子Stack、profile/photo、city pool、メール変更/OTP、ブロック名前検索を接続。メール変更は新旧両方のコード確認を維持。設定変更・利用停止の本番実操作を検証のために行っていない。
+- 初回full lintは既存10 hookエラーと編集中street-icons構文1件で失敗。構文は修正、StreetLoginの既存hookエラーも画面置換で解消。変更ファイルのtargeted lintはエラー0、既存等の警告あり。型確認成功後さらにUI変更したため最終版は再確認対象。
+- 最新ビルドとSimulatorの確認結果は後続記録。全29画面/動画完全一致・実iPhoneは未検証。
+
+## 2026-11-19 Native UI・招待残数の統合確認（R03/R12〜R14/R19）
+
+- 052：ROLLBACK内のDB試験で既定5→発行後4、個別上限10→9、停止時0を確認。ユーザー承認後、ローカル・クラウドへ永続適用成功。051と同様、過去利用者の値の書換えはしない。
+- PINクライアント、メール変更状態、アカウントオンボーディング、招待状態、アバターキャッシュの関連16試験成功。アカウント試験の状態setter混同を修正し、取得失敗でactiveへ進まないことを確認。
+- 前回のクラウド接続Releaseはビルド・Simulator導入成功。4タブを維持した設定→プロフィール→編集のネイティブ遷移を確認。写真未設定時の代替SVGが白地で見えにくかったため黒opacityへ修正。実アカウントの変更は保存していない。
+- 通知日付・運営Form・QR確認push・残数表示・Map Menu/操作ボタンの追加後、TypeScript検査成功。これらの最新表示はSimulator再確認対象。
+- 実機・全Figma一致・PIN参加/到着・カメラQR・実メール変更は未確認。旧33タスクの実機率/DONEに加算しない。
+
+## 2026-11-19 最新Simulator更新（R03/R12〜R14/R19）
+
+移行050〜052を含むクラウドへ接続したReleaseのxcodebuild成功。iPhone 18 Pro / iOS27.0へログイン状態を保持して上書きし、起動成功。Mapの提供SVGロゴ、人数のアクセシビリティ表示、SwiftUIメニュー・スイッチ・追加/現在地ボタン、4タブを確認。追加操作はDevice Hub操作ツールがユーザー変更を繰り返し検出して中断したため、最新のQR残数/通知/運営Formを操作合格にはしていない。前回のPIN重なり解消・12→13定員操作、設定→プロフィール→編集の証拠は維持。
+
+変更TS/TSXのLintはエラー0、Map画面の既存effect依存警告1件。TypeScript成功、git diff --check成功。全体Lintの既存違反と全画面一致・実機確認は別の未完。全Figma/動画の再現完了を意味しない。

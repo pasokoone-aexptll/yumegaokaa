@@ -1,5 +1,5 @@
-import { Switch, View } from "react-native";
-import { SmoothSurface } from "./SmoothSurface";
+import { View } from "react-native";
+import { NativeToggle as Switch } from "../denshin/NativeToggle";
 
 export function ParticipationSwitch({
   value,
@@ -9,12 +9,13 @@ export function ParticipationSwitch({
   onChange: (value: boolean) => void;
 }) {
   return (
-    <SmoothSurface
-      color="#ffffff26"
-      blurIntensity={25}
-      radius={26}
+    <View
       style={{
-        width: 82,
+        backgroundColor: value
+          ? "rgba(52,199,89,0.5)"
+          : "rgba(255,255,255,0.15)",
+        borderRadius: 26,
+        width: 76,
         height: 46,
         alignItems: "center",
         justifyContent: "center",
@@ -27,6 +28,6 @@ export function ParticipationSwitch({
           onValueChange={onChange}
         />
       </View>
-    </SmoothSurface>
+    </View>
   );
 }

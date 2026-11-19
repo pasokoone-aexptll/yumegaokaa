@@ -1,4 +1,4 @@
-import { DenshinPin, pinCount } from "../lib/denshin";
+import { onsitePeople, DenshinPin, pinCount } from "../lib/denshin";
 import {
   PeopleStack,
   RecruitmentSign,
@@ -170,16 +170,33 @@ export function StreetMapMarkers({
               </PinBubble>
               {pin.recruiting ? (
                 <View style={{ alignItems: "center" }}>
-                  <PeopleStack people={pin.people} />
+                  <View
+                    style={{
+                      position: "absolute",
+                      right: -45,
+                      top: -12,
+                      zIndex: 2,
+                    }}
+                  >
+                    <PeopleStack people={onsitePeople(pin)} />
+                  </View>
                   <RecruitmentSign />
                 </View>
               ) : (
-                <Avatar
-                  shape="square"
-                  path={pin.avatar_path}
-                  name={pin.display_name}
-                  size={54}
-                />
+                <View
+                  style={{
+                    borderWidth: 5,
+                    borderColor: "rgba(255,255,255,0.25)",
+                    borderRadius: 18,
+                  }}
+                >
+                  <Avatar
+                    shape="square"
+                    path={pin.avatar_path}
+                    name={pin.display_name}
+                    size={54}
+                  />
+                </View>
               )}
             </MarkerFeedback>
           </Marker>

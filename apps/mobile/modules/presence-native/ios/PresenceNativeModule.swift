@@ -10,6 +10,7 @@ public class PresenceNativeModule: Module {
    Prop("edge") { (view: StreetBackdrop, value: String) in view.edge = value }
    Prop("active", true) { (view: StreetBackdrop, value: Bool) in view.setActive(value) }
   }
+  View(NativeSheetAppearance.self) { ViewName("NativeSheetAppearance") }
   View(SheetBackdrop.self) { ViewName("SheetBackdrop") }
   View(ChatTouchRegion.self) {
    ViewName("ChatTouchRegion")

@@ -49,6 +49,14 @@ export default ({ config }: ConfigContext): ExpoConfig => {
             "react-native-nfc-manager",
       ),
       "./plugins/with-android-launch-background",
+      "expo-image",
+      [
+        "expo-camera",
+        {
+          cameraPermission: "招待QRコードを読み取るためにカメラを使用します。",
+          recordAudioAndroid: false,
+        },
+      ],
       ...(localEntry ? ["./plugins/with-local-entry"] : []),
     ],
     ios: {

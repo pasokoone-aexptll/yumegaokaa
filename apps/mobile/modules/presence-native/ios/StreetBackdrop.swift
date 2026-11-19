@@ -104,3 +104,21 @@ final class SheetBackdrop: ExpoView {
     }
   }
 }
+
+// Configure the system presentation only; UIKit owns its material and drag behavior.
+final class NativeSheetAppearance: ExpoView {
+  override func didMoveToWindow() {
+    super.didMoveToWindow()
+    guard window != nil else { return }
+    DispatchQueue.main.async { [weak self] in
+      var responder: UIResponder? = self
+      while let current = responder {
+        if let controller = current as? UIViewController, controller.sheetPresentationController != nil {
+          controller.overrideUserInterfaceStyle = .dark
+          return
+        }
+        responder = current.next
+      }
+    }
+  }
+}

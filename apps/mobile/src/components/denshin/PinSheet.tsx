@@ -1,17 +1,26 @@
+import { requireNativeViewManager } from "expo-modules-core";
+import type { ViewProps } from "react-native";
 import type { ReactNode } from "react";
 import { KeyboardAvoidingView, Platform, StyleSheet } from "react-native";
-import { BlurView } from "expo-blur";
-import { SheetChrome } from "../SheetChrome";
+const Appearance =
+  Platform.OS === "ios"
+    ? requireNativeViewManager<ViewProps>(
+        "PresenceNative",
+        "NativeSheetAppearance",
+      )
+    : null;
 export function PinSheet({ children }: { children: ReactNode }) {
   return (
     <KeyboardAvoidingView
       style={s.root}
       behavior={Platform.OS === "ios" ? "padding" : undefined}
     >
-      {Platform.OS === "ios" && (
-        <BlurView tint="dark" intensity={70} style={StyleSheet.absoluteFill} />
+      {Appearance && (
+        <Appearance
+          pointerEvents="none"
+          style={{ position: "absolute", width: 1, height: 1 }}
+        />
       )}
-      <SheetChrome />
       {children}
     </KeyboardAvoidingView>
   );
@@ -19,6 +28,6 @@ export function PinSheet({ children }: { children: ReactNode }) {
 const s = StyleSheet.create({
   root: {
     flex: 1,
-    backgroundColor: Platform.OS === "ios" ? "#333c5066" : "#424b5a",
+    backgroundColor: Platform.OS === "ios" ? "transparent" : "#424b5a",
   },
 });

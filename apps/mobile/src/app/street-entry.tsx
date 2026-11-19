@@ -1,35 +1,51 @@
-import { SheetChrome } from "../components/SheetChrome";
+import { native, streetID } from "../lib/native";
+import { SpeechBubble } from "../components/denshin/SpeechBubble";
+import { PinSheet } from "../components/denshin/PinSheet";
+import { SuperAsset } from "../components/icons/SuperAsset";
+import { RoundAction } from "../components/denshin/PinParts";
 import { scheduleEntrySuccessDismissal } from "../lib/entrySuccessDismissal";
 import { requireNativeModule } from "expo-modules-core";
 import type { NativeStackNavigationProp } from "expo-router";
-import { useEffect, useRef, useSyncExternalStore } from "react";
+import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { useNavigation } from "expo-router";
 import {
   Platform,
+  ActivityIndicator,
   Pressable,
   ScrollView,
   Text,
   View,
   useWindowDimensions,
 } from "react-native";
-import { MapBlurView } from "../components/map/MapBlurView";
-import { SvgXml } from "react-native-svg";
-import { brandAndTabSvgAssets } from "../components/map/brandAndTabAssets";
+
 import { EntryAnimation } from "../components/map/EntryAnimation";
 import { entrySheetState } from "../lib/entrySheetState";
 import { useEntryPresentation } from "../hooks/useEntryPresentation";
 import { fieldTrial, localEntry, nfcDisabled } from "../lib/development";
-const header = brandAndTabSvgAssets["DreamCloud Logo"]
-  .replaceAll('fill="white"', 'fill="black"')
-  .replaceAll('fill="#FFFFFF"', 'fill="#000000"');
 export default function StreetEntry() {
-  const trialRing = Platform.OS === "ios" && nfcDisabled && (fieldTrial || localEntry);
+  const trialRing =
+    Platform.OS === "ios" && nfcDisabled && (fieldTrial || localEntry);
   const started = useRef(false);
   const value = useSyncExternalStore(
     entrySheetState.subscribe,
     entrySheetState.get,
   );
   const phase = useEntryPresentation(value?.sheet ?? null);
+  const [count, setCount] = useState<number>();
+  useEffect(() => {
+    let live = true;
+    void native
+      .rpc<{ total: number }>("visit_count", { street_id: streetID })
+      .then((result) => {
+        if (live) setCount(result.total + (phase === "success" ? 0 : 1));
+      })
+      .catch(() => {
+        if (live) setCount(undefined);
+      });
+    return () => {
+      live = false;
+    };
+  }, [phase]);
   const navigation =
     useNavigation<
       NativeStackNavigationProp<Record<string, object | undefined>>
@@ -70,14 +86,7 @@ export default function StreetEntry() {
   }, [phase]);
   if (!value || !phase) return null;
   return (
-    <View style={{ flex: 1, backgroundColor: Platform.OS === "android" ? "#e0e4ed" : "#ffffff66" }}>
-      {Platform.OS === "ios" && <MapBlurView
-        pointerEvents="none"
-        intensity={45}
-        tint="light"
-        style={{ position: "absolute", inset: 0 }}
-      />}
-      <SheetChrome />
+    <PinSheet>
       <ScrollView
         bounces={false}
         overScrollMode="never"
@@ -90,51 +99,139 @@ export default function StreetEntry() {
           gap: 12,
         }}
       >
-        <SvgXml xml={header} width={147} height={22} />
-        <View style={{ marginTop: 8 }}>
+        <View
+          style={{
+            flexDirection: "row",
+            alignItems: "center",
+            width: "100%",
+            justifyContent: "space-between",
+          }}
+        >
+          <View style={{ width: 44 }} />
+          <View style={{ flexDirection: "row", gap: 8, alignItems: "center" }}>
+            <SuperAsset name="s3logo" size={22} />
+            <Text
+              style={{
+                color: "rgba(255,255,255,0.7)",
+                fontFamily: "ui-rounded",
+                fontSize: 20,
+              }}
+            >
+              Login city
+            </Text>
+          </View>
+          <RoundAction
+            label="閉じる"
+            glyph="×"
+            onPress={() => entrySheetState.close()}
+          />
+        </View>
+        <View style={{ marginTop: 30 }}>
           <EntryAnimation phase={phase} size={diameter} />
+          {count !== undefined && count > 0 && (
+            <View
+              pointerEvents="none"
+              style={{ position: "absolute", right: 0, top: 20 }}
+            >
+              <SpeechBubble>
+                <SuperAsset name="非常口rounded" size={23} />
+                <Text
+                  style={{
+                    color: "#34C759",
+                    fontFamily: "ui-rounded",
+                    fontSize: 18,
+                  }}
+                >
+                  {count}回目
+                </Text>
+              </SpeechBubble>
+            </View>
+          )}
           {phase === "explain" && (trialRing || !!value.entryError) && (
             <Pressable
               accessibilityRole="button"
               accessibilityLabel={trialRing ? "街に入る" : "読み取りを再試行"}
               onPress={() => void value.scan(trialRing ? "default" : "tag")}
-              style={{ position: "absolute", inset: 0, borderRadius: diameter / 2 }}
+              style={{
+                position: "absolute",
+                inset: 0,
+                borderRadius: diameter / 2,
+              }}
             />
           )}
         </View>
-        <View style={{ alignItems: "center", gap: 2 }}>
+        <View style={{ alignItems: "center", gap: 12 }}>
+          {!!value.placeName && (
+            <Text
+              style={{
+                fontFamily: "ui-rounded",
+                color: "white",
+                backgroundColor: "rgba(255,255,255,0.15)",
+                borderRadius: 20,
+                padding: 8,
+              }}
+            >
+              {value.placeName}
+            </Text>
+          )}
           <Text
             accessibilityLiveRegion="polite"
             style={{
-              color: "#000000aa",
+              color: "white",
               fontWeight: "600",
               fontSize: 17.92,
               textAlign: "center",
             }}
           >
             {phase === "success"
-              ? "街への参加が完了しました"
+              ? "ログイン成功"
               : phase === "explain"
                 ? "NFCステッカーで街にログイン"
                 : phase === "scanning"
                   ? "ステッカーにタッチしてください"
-                  : "街への参加を記録しています"}
+                  : "ログインしています…"}
           </Text>
-          {phase === "explain" && !!value.entryError && <Text accessibilityLiveRegion="polite" style={{ color: "#a62d35", textAlign: "center" }}>{value.entryError}</Text>}
+          {phase === "explain" && !!value.entryError && (
+            <Text
+              accessibilityLiveRegion="polite"
+              style={{ color: "#a62d35", textAlign: "center" }}
+            >
+              {value.entryError}
+            </Text>
+          )}
           {phase === "explain" && (
-            <Text style={{ color: "#00000080", textAlign: "center", fontSize: 13.44 }}>
+            <Text
+              style={{
+                color: "rgba(255,255,255,0.5)",
+                textAlign: "center",
+                fontSize: 13.44,
+              }}
+            >
               名前や正確な現在地は地図には出ません
             </Text>
           )}
           {phase === "checking" && (
-            <Text style={{ color: "#00000080", textAlign: "center", fontSize: 13.44 }}>
+            <Text
+              style={{
+                color: "rgba(255,255,255,0.5)",
+                textAlign: "center",
+                fontSize: 13.44,
+              }}
+            >
               {localEntry
                 ? "開発用タグで接続中"
                 : "読み取り後はステッカーから離して大丈夫です"}
             </Text>
           )}
         </View>
+        <View style={{ marginTop: 30, marginBottom: 20 }}>
+          {phase === "success" ? (
+            <SuperAsset name="checkRounded" size={42} />
+          ) : phase !== "explain" ? (
+            <ActivityIndicator size="large" color="rgba(255,255,255,0.65)" />
+          ) : null}
+        </View>
       </ScrollView>
-    </View>
+    </PinSheet>
   );
 }

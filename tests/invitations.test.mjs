@@ -104,10 +104,12 @@ test("招待: 発行→単回受領→資格→停止ユーザー再登録不可
     );
     await c.query("rollback to savepoint rejected");
     assert.ok((await call(0, "invite_list")).items.some((x) => x.used));
-    await c.query(
-      "update app_private.members set active=false where account_id=$1",
-      [users[1]],
-    );
+    await c.query("savepoint foreign_invite");
+    await assert.rejects(() => call(1, "invite_revoke", { id: acceptedInvite.id }), /not_found/);
+    await c.query("rollback to savepoint foreign_invite");
+    assert.equal((await call(0, "invite_revoke", { id: acceptedInvite.id })).recipient_suspended, true);
+    assert.equal((await c.query("select active from app_private.members where account_id=$1", [users[1]])).rows[0].active, false);
+    assert.equal((await call(0, "invite_revoke", { id: acceptedInvite.id })).revoked, true);
     await c.query("savepoint banned");
     await assert.rejects(
       () => call(1, "invite_accept", { code: invite.code }),

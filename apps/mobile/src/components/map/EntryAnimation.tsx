@@ -1,60 +1,6 @@
-import { UIIcon } from "../icons/UIIcon";
-import { useEffect } from "react";
-import { Image, View } from "react-native";
-import Animated, {
-  cancelAnimation,
-  Easing,
-  interpolate,
-  useAnimatedProps,
-  useAnimatedStyle,
-  useSharedValue,
-  withDelay,
-  withRepeat,
-  withTiming,
-} from "react-native-reanimated";
-import Svg, { Circle } from "react-native-svg";
-const Ring = Animated.createAnimatedComponent(Circle);
-const circumference = 2 * Math.PI * 146;
-function Dot({ index }: { index: number }) {
-  const phase = useSharedValue(0);
-  useEffect(() => {
-    // Match legacy: independent column phases plus a sharper, short brightness pulse.
-    const column = index % 3;
-    const start = [0.08, 0.62, 0.31][column];
-    phase.value = start;
-    phase.value = withRepeat(
-      withTiming(start + 1, {
-        duration: [1390, 1810, 1570][column],
-        easing: Easing.linear,
-      }),
-      -1,
-    );
-    return () => cancelAnimation(phase);
-  }, [index, phase]);
-  const style = useAnimatedStyle(() => {
-    const progress = (phase.value - Math.floor(index / 3) * 0.18 + 1) % 1;
-    return {
-      opacity: interpolate(progress, [0, 0.16, 0.52, 1], [0.15, 1, 0.15, 0.15]),
-    };
-  });
-  return (
-    <Animated.View
-      style={[
-        {
-          position: "absolute",
-          width: 10,
-          height: 10,
-          borderRadius: 3,
-          backgroundColor: "#00ADF2",
-          left: (index % 3) * 18,
-          top: Math.floor(index / 3) * 18,
-        },
-        style,
-      ]}
-    />
-  );
-}
-/** Presentation only. Never advances the check-in state. */
+import { View } from "react-native";
+import { SuperAsset } from "../icons/SuperAsset";
+/** Real entry phase drives the artwork; presentation never advances authentication. */
 export function EntryAnimation({
   phase,
   size,
@@ -62,150 +8,22 @@ export function EntryAnimation({
   phase: "explain" | "scanning" | "checking" | "success";
   size: number;
 }) {
-  const reveal = useSharedValue(0),
-    rotation = useSharedValue(0),
-    completion = useSharedValue(0),
-    check = useSharedValue(0);
-  const active = phase === "scanning" || phase === "checking";
-  useEffect(() => {
-    reveal.value = withTiming(active ? 1 : 0, { duration: 350 });
-    if (active) {
-      rotation.value = 0;
-      rotation.value = withRepeat(
-        withTiming(1, { duration: 1200, easing: Easing.linear }),
-        -1,
-      );
-    }
-    if (phase === "success") {
-      completion.value = 0;
-      check.value = 0;
-      completion.value = withTiming(1, {
-        duration: 650,
-        easing: Easing.linear,
-      });
-      check.value = withDelay(650, withTiming(1, { duration: 300 }));
-    }
-    return () => {
-      cancelAnimation(reveal);
-      cancelAnimation(rotation);
-      cancelAnimation(completion);
-      cancelAnimation(check);
-    };
-  }, [phase, active, reveal, rotation, completion, check]);
-  const spin = useAnimatedProps(() => ({
-    strokeDashoffset: -rotation.value * circumference,
-  }));
-  const complete = useAnimatedProps(() => ({
-    strokeDashoffset: circumference * (1 - completion.value),
-  }));
-  const checked = useAnimatedStyle(() => ({ opacity: check.value }));
-  const logoStyle = useAnimatedStyle(() => ({
-    transform: [{ translateY: -reveal.value * 30 }],
-    opacity: 0.6 + reveal.value * 0.4,
-  }));
-  const textStyle = useAnimatedStyle(() => ({
-    transform: [{ translateY: reveal.value * 36 }],
-  }));
   return (
-    <View style={{ width: size, height: size, alignSelf: "center" }}>
-      <Svg width={size} height={size} viewBox="0 0 320 320">
-        <Circle cx={160} cy={160} r={156} fill="#ffffffaa" />
-        <Circle
-          cx={160}
-          cy={160}
-          r={146}
-          fill="none"
-          stroke="#0000000d"
-          strokeWidth={4}
-          strokeLinecap="round"
-        />
-        {active && (
-          <Ring
-            cx={160}
-            cy={160}
-            r={146}
-            rotation={-90}
-            origin="160,160"
-            fill="none"
-            stroke="#00ADF2"
-            strokeWidth={4}
-            strokeDasharray={`${circumference * 0.73} ${circumference * 0.27}`}
-            strokeLinecap="round"
-            animatedProps={spin}
-          />
-        )}
-        {phase === "success" && (
-          <>
-            <Ring
-              cx={160}
-              cy={160}
-              r={146}
-              rotation={-90}
-              origin="160,160"
-              fill="none"
-              stroke="#00ADF2"
-              strokeWidth={4}
-              strokeDasharray={`${circumference} ${circumference}`}
-              animatedProps={complete}
-            />
-          </>
-        )}
-      </Svg>
-      {phase === "success" && (
-        <Animated.View
-          pointerEvents="none"
-          style={[
-            { position: "absolute", left: size * 0.38, top: size * 0.38 },
-            checked,
-          ]}
-        >
-          <UIIcon name="check" size={size * 0.24} animateOnMount delay={650} />
-        </Animated.View>
-      )}
-      {phase !== "success" && (
-        <View
-          pointerEvents="none"
-          style={{
-            position: "absolute",
-            inset: 0,
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-        >
-          {active && (
-            <View
-              style={{
-                position: "absolute",
-                top: "49%",
-                width: 46,
-                height: 46,
-              }}
-            >
-              {Array.from({ length: 9 }, (_, index) => (
-                <Dot key={index} index={index} />
-              ))}
-            </View>
-          )}
-          <Animated.View style={logoStyle}>
-            <Image
-              source={
-                active
-                  ? require("../../../assets/brand/DreamCloud.png")
-                  : require("../../../assets/illustrations/entry-logo.png")
-              }
-              style={{ width: 116, height: 80 }}
-              resizeMode="contain"
-            />
-          </Animated.View>
-          <Animated.View style={textStyle}>
-            <Image
-              source={require("../../../assets/illustrations/entry-text.png")}
-              style={{ width: 113, height: 33 }}
-              resizeMode="contain"
-            />
-          </Animated.View>
-        </View>
-      )}
+    <View
+      style={{
+        width: size,
+        height: 110,
+        alignItems: "center",
+        justifyContent: "center",
+        gap: 60,
+      }}
+    >
+      <SuperAsset
+        name="非常口"
+        size={90}
+        tint={phase === "success" ? "#34C759" : "white"}
+        opacity={phase === "success" ? 1 : 0.55}
+      />
     </View>
   );
 }

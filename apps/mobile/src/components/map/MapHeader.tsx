@@ -1,19 +1,22 @@
 import { ModeDropdown } from "./ModeDropdown";
 import { ParticipationSwitch } from "./ParticipationSwitch";
-import { StyleSheet, View } from "react-native";
-import { MapAsset } from "./MapAsset";
+import { StyleSheet, View, Text } from "react-native";
+import { DenshinLogo, SuperAsset } from "../icons/SuperAsset";
 
 export function MapHeader({
   active,
+  count,
   onToggle,
   ghost = false,
   modeDisabled = false,
   onModeChange,
-  placesVisible, onTogglePlaces,
+  placesVisible,
+  onTogglePlaces,
 }: {
   placesVisible?: boolean;
   onTogglePlaces?: () => void;
   active: boolean;
+  count?: number;
   onToggle: (value: boolean) => void;
   ghost?: boolean;
   modeDisabled?: boolean;
@@ -21,10 +24,43 @@ export function MapHeader({
 }) {
   return (
     <View style={styles.row}>
-      <View accessible accessibilityLabel="DreamCloud" style={{ flex: 1, minWidth: 0, alignItems: "flex-start" }}>
-        <MapAsset name="DreamCloud Logo" width={164} height={32} tint="white" fillOpacity={0.6} />
+      <View
+        accessible
+        accessibilityLabel="電信"
+        style={{ flex: 1, minWidth: 0, alignItems: "flex-start" }}
+      >
+        <DenshinLogo dark />
       </View>
-      <ModeDropdown placesVisible={placesVisible} onTogglePlaces={onTogglePlaces} ghost={ghost} active={active} disabled={modeDisabled} onChange={onModeChange} />
+      {count !== undefined && (
+        <View
+          accessible
+          accessibilityLabel={`街にログイン中 ${count}人`}
+          style={{
+            flexDirection: "row",
+            alignItems: "center",
+            gap: 3,
+            backgroundColor: "#FF3B30",
+            paddingHorizontal: 8,
+            paddingVertical: 7,
+            borderRadius: 24,
+          }}
+        >
+          <SuperAsset name="user-fill" tint="white" size={21} />
+          <Text
+            style={{ fontFamily: "ui-rounded", color: "white", fontSize: 20 }}
+          >
+            {count}
+          </Text>
+        </View>
+      )}
+      <ModeDropdown
+        placesVisible={placesVisible}
+        onTogglePlaces={onTogglePlaces}
+        ghost={ghost}
+        active={active}
+        disabled={modeDisabled}
+        onChange={onModeChange}
+      />
       <ParticipationSwitch value={active} onChange={onToggle} />
     </View>
   );

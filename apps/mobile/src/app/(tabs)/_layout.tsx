@@ -1,3 +1,4 @@
+import { ReducedIconMotion } from "../../components/icons/IconMotion";
 import { tabInsets, tabIconStyle } from "../../components/tabInsets";
 import { shouldShowTabs } from "../../lib/tabVisibility";
 import { useContext, useSyncExternalStore } from "react";
@@ -5,12 +6,19 @@ import { sessionState } from "../../lib/sessionState";
 import { AccountAccessContext } from "../../hooks/useAccountAccess";
 import { usePinPlacement } from "../../lib/pinPlacement";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { Keyboard, Platform, useWindowDimensions, View, StyleSheet } from "react-native";
+import {
+  Keyboard,
+  Platform,
+  useWindowDimensions,
+  View,
+  StyleSheet,
+} from "react-native";
 import { MapBlurView } from "../../components/map/MapBlurView";
 import { Tabs, usePathname } from "expo-router";
 import { AnimatedTabButton } from "../../components/AnimatedTabButton";
 import { TabIcon } from "../../components/TabIcon";
 export default function StreetTabs() {
+  const reducedMotion = useContext(ReducedIconMotion);
   const session = useSyncExternalStore(
     sessionState.subscribe,
     sessionState.get,
@@ -33,18 +41,36 @@ export default function StreetTabs() {
         screenListeners={{ tabPress: Keyboard.dismiss }}
         screenOptions={{
           headerShown: false,
+          animation: reducedMotion ? "none" : "shift",
           tabBarButton: (props) => <AnimatedTabButton {...props} />,
           tabBarShowLabel: false,
           tabBarIconStyle: tabIconStyle,
           tabBarActiveTintColor: dark ? "#fff" : "#000",
           tabBarInactiveTintColor: dark ? "#ffffff99" : "#00000099",
-          tabBarBackground: Platform.OS === "android" && dark ? () => (
-            <View pointerEvents="none" style={[StyleSheet.absoluteFill, { overflow: "hidden", backgroundColor: "#151518" }]}>
-              <MapBlurView tint="dark" intensity={40}
-                style={{ position: "absolute", inset: -16 }} />
-              <View style={[StyleSheet.absoluteFill, { backgroundColor: "#18181be6" }]} />
-            </View>
-          ) : undefined,
+          tabBarBackground:
+            Platform.OS === "android" && dark
+              ? () => (
+                  <View
+                    pointerEvents="none"
+                    style={[
+                      StyleSheet.absoluteFill,
+                      { overflow: "hidden", backgroundColor: "#151518" },
+                    ]}
+                  >
+                    <MapBlurView
+                      tint="dark"
+                      intensity={40}
+                      style={{ position: "absolute", inset: -16 }}
+                    />
+                    <View
+                      style={[
+                        StyleSheet.absoluteFill,
+                        { backgroundColor: "#18181be6" },
+                      ]}
+                    />
+                  </View>
+                )
+              : undefined,
           tabBarStyle: {
             display: shouldShowTabs(
               session.ready,
@@ -55,7 +81,12 @@ export default function StreetTabs() {
             )
               ? "flex"
               : "none",
-            backgroundColor: dark && Platform.OS === "android" ? "#19191c" : dark ? "#000000e6" : "#fafafa",
+            backgroundColor:
+              dark && Platform.OS === "android"
+                ? "#19191c"
+                : dark
+                  ? "#000000e6"
+                  : "#fafafa",
             borderTopWidth: StyleSheet.hairlineWidth,
             borderTopColor: dark ? "#ffffff26" : "#0000001a",
             ...tabInsets(insets.bottom, width),
@@ -103,14 +134,16 @@ export default function StreetTabs() {
           }}
         />
       </Tabs>
-      {(Platform.OS === "android" && ((pathname === "/pins/create" && !placement.active) || pathname === "/street-entry")) && (
-        <MapBlurView
-          pointerEvents="none"
-          intensity={25}
-          tint="default"
-          style={StyleSheet.absoluteFill}
-        />
-      )}
+      {Platform.OS === "android" &&
+        ((pathname === "/pins/create" && !placement.active) ||
+          pathname === "/street-entry") && (
+          <MapBlurView
+            pointerEvents="none"
+            intensity={25}
+            tint="default"
+            style={StyleSheet.absoluteFill}
+          />
+        )}
     </View>
   );
 }

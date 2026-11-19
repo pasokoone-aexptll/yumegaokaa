@@ -1,20 +1,23 @@
-import { useEffect, useState } from "react";
-import { StretchySunset } from "./StretchySunset";
+import { useContext, useEffect, useState } from "react";
 import { useRouter } from "expo-router";
 import {
   ActivityIndicator,
-  Image,
   Animated,
   Pressable,
-  StyleSheet,
+  ScrollView,
   Text,
   TextInput,
   View,
 } from "react-native";
+import { Image } from "expo-image";
 import { SafeAreaView } from "react-native-safe-area-context";
 import type { useStreetMap } from "../hooks/useStreetMap";
 import { localEntry } from "../lib/development";
-
+import { ExitDoor } from "./denshin/ExitDoor";
+import { NativeAction } from "./denshin/NativeAction";
+import { CodeInput } from "./denshin/CodeInput";
+import { SpeechBubble } from "./denshin/SpeechBubble";
+import { ReducedIconMotion } from "./icons/IconMotion";
 type Props = Pick<
   ReturnType<typeof useStreetMap>,
   | "email"
@@ -42,178 +45,210 @@ export function StreetLogin({
   nextSendAt = 0,
 }: Props & { nextSendAt?: number }) {
   const router = useRouter();
-  const [scroll] = useState(() => new Animated.Value(0));
+  const reduced = useContext(ReducedIconMotion);
+  const [started, setStarted] = useState(false);
+  const [existing, setExisting] = useState(false);
   const [now, setNow] = useState(Date.now);
+  const [motion] = useState(() => new Animated.Value(1));
+  const stage = sent ? "code" : started ? "email" : "welcome";
+  useEffect(() => {
+    motion.setValue(reduced ? 1 : 0);
+    const animation = Animated.timing(motion, {
+      toValue: 1,
+      duration: reduced ? 0 : 450,
+      useNativeDriver: true,
+    });
+    animation.start();
+    return () => animation.stop();
+  }, [stage, reduced, motion]);
   useEffect(() => {
     if (nextSendAt <= Date.now()) return;
-    setNow(Date.now());
-    const timer = setInterval(() => {
-      const current = Date.now();
-      setNow(current);
-      if (current >= nextSendAt) clearInterval(timer);
-    }, 1000);
+    const timer = setInterval(() => setNow(Date.now()), 1000);
     return () => clearInterval(timer);
   }, [nextSendAt]);
   const remaining = Math.max(0, Math.ceil((nextSendAt - now) / 1000));
   const disabled = busy || !email.trim() || (sent && !/^\d{6}$/.test(code));
+  const note = { color: "rgba(0,0,0,0.4)", fontSize: 14, lineHeight: 22 };
   return (
-    <View style={{ flex: 1, backgroundColor: "#f2f2f7" }}>
-      <Animated.ScrollView
-        removeClippedSubviews={false}
-        contentInsetAdjustmentBehavior="never"
-        scrollEventThrottle={16}
-        onScroll={Animated.event(
-          [{ nativeEvent: { contentOffset: { y: scroll } } }],
-          { useNativeDriver: true },
-        )}
-        contentContainerStyle={{ flexGrow: 1 }}
+    <SafeAreaView
+      edges={["top", "left", "right", "bottom"]}
+      style={{ flex: 1, backgroundColor: "white" }}
+    >
+      <ScrollView
+        contentContainerStyle={{ flexGrow: 1, padding: 26, paddingTop: 40 }}
         automaticallyAdjustKeyboardInsets
-        keyboardShouldPersistTaps="handled"
         keyboardDismissMode="interactive"
+        keyboardShouldPersistTaps="handled"
       >
-        <StretchySunset
-          scroll={scroll}
-          height={280}
-          overlayColor="#00000026"
-          style={s.hero}
+        <Animated.View
+          style={{
+            flexGrow: 1,
+            opacity: motion,
+            transform: [
+              {
+                translateY: motion.interpolate({
+                  inputRange: [0, 1],
+                  outputRange: [24, 0],
+                }),
+              },
+            ],
+          }}
         >
-          <SafeAreaView edges={["top"]} style={{ gap: 12 }}>
-            <Image
-              source={require("../../assets/brand/DreamCloud.png")}
-              style={{ width: 120, height: 96 }}
-              resizeMode="contain"
-            />
-            <Text style={s.brand}>夢ヶ丘オラクル</Text>
-            <Text style={s.subtitle}>接続センター アシスタント</Text>
-          </SafeAreaView>
-        </StretchySunset>
-        <View style={s.body}>
-          <Text style={s.heading}>
-            {sent ? "メールを確認" : "夢ヶ丘にログイン"}
-          </Text>
-          <Text style={s.note}>
-            {sent
-              ? `${email} 宛ての最新の6桁の確認コードを入力してください。`
-              : "招待されたメールアドレスを入力してください。"}
-          </Text>
-          <View style={s.card}>
-            <Text style={s.label}>
-              {sent ? "確認コード" : "メールアドレス"}
-            </Text>
-            {sent ? (
-              <TextInput
-                style={[s.input, { fontSize: 28, letterSpacing: 6 }]}
-                keyboardType="number-pad"
-                autoCapitalize="none"
-                autoCorrect={false}
-                textContentType="oneTimeCode"
-                autoComplete="one-time-code"
-                placeholder="000000"
-                placeholderTextColor="#00000033"
-                value={code}
-                onChangeText={(text) => setCode(text.normalize("NFKC").replace(/\D/g, "").slice(0, 6))}
-                accessibilityLabel="メールの確認コード（6桁）"
-              />
-            ) : (
-              <TextInput
-                style={s.input}
-                autoCapitalize="none"
-                autoCorrect={false}
-                spellCheck={false}
-                keyboardType="email-address"
-                textContentType="emailAddress"
-                placeholder="name@example.com"
-                placeholderTextColor="#00000033"
-                value={email}
-                onChangeText={setEmail}
-                accessibilityLabel="メールアドレス"
-              />
-            )}
-          </View>
-          {!!error && (
-            <Text accessibilityRole="alert" style={{ color: "#c32b40" }}>
-              {error}
-            </Text>
-          )}
-          <View style={{ flex: 1, minHeight: 24 }} />
-          <Pressable
-            accessibilityRole="button"
-            style={[s.button, disabled && { opacity: 0.5 }]}
-            disabled={disabled}
-            onPress={() => void login()}
+          <Text
+            style={{ fontFamily: "ui-rounded", fontSize: 27, marginBottom: 22 }}
           >
-            {busy ? (
-              <ActivityIndicator color="#111" />
-            ) : (
-              <Text style={s.buttonText}>
-                {sent ? "ログイン" : "確認コードを送る"}
-              </Text>
-            )}
-          </Pressable>
-          {sent && (
-            <Pressable accessibilityRole="button" disabled={busy || remaining > 0}
-              onPress={() => void login(true)} style={{ padding: 12, alignItems: "center" }}>
-              <Text style={s.note}>{remaining ? `再送まで${remaining}秒` : "新しいコードを送る"}</Text>
-            </Pressable>
-          )}
-          {!sent && email.trim().includes("@") && (
-            <Pressable accessibilityRole="button" disabled={busy} onPress={() => { setError(""); setSent(true); }}
-              style={{ padding: 12, alignItems: "center" }}>
-              <Text style={s.note}>届いているコードを入力</Text>
-            </Pressable>
-          )}
-          {sent && (
-            <Pressable
-              accessibilityRole="button"
-              disabled={busy}
-              onPress={() => {
-                setSent(false);
-                setCode("");
-                setError("");
-              }}
-              style={{ padding: 12, alignItems: "center" }}
-            >
-              <Text style={s.note}>メールアドレスを変更</Text>
-            </Pressable>
+            {stage === "welcome"
+              ? "ようこそ"
+              : existing
+                ? "ログイン"
+                : "アカウントを作成する"}
+          </Text>
+          <ExitDoor size={210} />
+          {stage === "welcome" ? (
+            <>
+              <View style={{ flex: 1, minHeight: 100 }} />
+              <Pressable
+                accessibilityRole="button"
+                onPress={() => {
+                  setExisting(true);
+                  setStarted(true);
+                }}
+                style={{ paddingVertical: 20 }}
+              >
+                <Text style={{ fontFamily: "ui-rounded", fontSize: 16 }}>
+                  すでにアカウントを持っている
+                </Text>
+              </Pressable>
+              <NativeAction
+                title="アカウントを作成する"
+                tone="blue"
+                onPress={() => {
+                  setExisting(false);
+                  setStarted(true);
+                }}
+              />
+            </>
+          ) : (
+            <View style={{ gap: 22, flex: 1 }}>
+              {sent ? (
+                <>
+                  <Text style={{ fontFamily: "ui-rounded", fontSize: 24 }}>
+                    コードを入力
+                  </Text>
+                  <Text style={note}>
+                    {email} に送信された6桁のコードを入力してください。
+                  </Text>
+                  <CodeInput value={code} onChange={setCode} disabled={busy} />
+                </>
+              ) : (
+                <>
+                  <View style={{ flex: 1, minHeight: 20 }} />
+                  <Text style={note}>メールアドレスを入力</Text>
+                  <TextInput
+                    value={email}
+                    onChangeText={setEmail}
+                    accessibilityLabel="メールアドレス"
+                    editable={!busy}
+                    keyboardType="email-address"
+                    textContentType="emailAddress"
+                    autoCapitalize="none"
+                    autoCorrect={false}
+                    clearButtonMode="while-editing"
+                    placeholder="メールアドレス"
+                    style={{
+                      backgroundColor: "rgba(0,0,0,0.04)",
+                      borderRadius: 24,
+                      padding: 16,
+                      fontFamily: "ui-rounded",
+                      fontSize: 17,
+                    }}
+                  />
+                </>
+              )}
+              {!!error && (
+                <Text accessibilityRole="alert" style={{ color: "#FF3B30" }}>
+                  {error}
+                </Text>
+              )}
+              {busy ? (
+                <ActivityIndicator style={{ margin: 20 }} />
+              ) : (
+                <NativeAction
+                  tone="blue"
+                  title={sent ? "確認する" : "次へ"}
+                  disabled={disabled}
+                  onPress={() => void login()}
+                />
+              )}
+              {!sent && (
+                <Pressable
+                  accessibilityRole="button"
+                  accessibilityLabel="確認コードを送る"
+                  disabled={disabled}
+                  onPress={() => void login()}
+                  style={{ alignSelf: "flex-end", alignItems: "center" }}
+                >
+                  <SpeechBubble color="rgba(0,140,255,0.7)">
+                    <Text style={{ color: "white" }}>
+                      僕をタッチして次へ進む
+                    </Text>
+                  </SpeechBubble>
+                  <Image
+                    source={require("../../assets/superassets/onboarding.gif")}
+                    style={{ width: 180, height: 130 }}
+                    contentFit="contain"
+                    autoplay={!reduced}
+                  />
+                </Pressable>
+              )}
+              {sent && (
+                <Pressable
+                  disabled={busy || remaining > 0}
+                  onPress={() => void login(true)}
+                >
+                  <Text style={note}>
+                    {remaining
+                      ? `再送まで${remaining}秒`
+                      : "新しいコードを送る"}
+                  </Text>
+                </Pressable>
+              )}
+              {!sent && email.includes("@") && (
+                <Pressable
+                  disabled={busy}
+                  onPress={() => {
+                    setError("");
+                    setSent(true);
+                  }}
+                >
+                  <Text style={note}>届いているコードを入力</Text>
+                </Pressable>
+              )}
+              {sent && (
+                <Pressable
+                  disabled={busy}
+                  onPress={() => {
+                    setSent(false);
+                    setCode("");
+                    setError("");
+                    setStarted(true);
+                  }}
+                >
+                  <Text style={note}>メールアドレスを変更</Text>
+                </Pressable>
+              )}
+            </View>
           )}
           {__DEV__ && (
-            <Pressable
-              accessibilityRole="button"
-              onPress={() => router.push("/ui-preview")}
-            >
-              <Text style={s.note}>開発用 UIプレビュー</Text>
+            <Pressable onPress={() => router.push("/ui-preview")}>
+              <Text style={note}>開発用 UIプレビュー</Text>
             </Pressable>
           )}
           {localEntry && (
-            <Text style={s.note}>開発用メールはMacのMailpitに届きます。</Text>
+            <Text style={note}>開発用メールはMacのMailpitに届きます。</Text>
           )}
-        </View>
-      </Animated.ScrollView>
-    </View>
+        </Animated.View>
+      </ScrollView>
+    </SafeAreaView>
   );
 }
-const s = StyleSheet.create({
-  hero: { minHeight: 280, padding: 28, justifyContent: "flex-end" },
-  brand: { color: "white", fontSize: 24, fontWeight: "600" },
-  subtitle: { color: "#ffffffb3", fontSize: 13 },
-  body: { flexGrow: 1, padding: 24, paddingBottom: 40, gap: 18 },
-  heading: { fontSize: 28, fontWeight: "600", color: "#000000e6" },
-  note: { color: "#00000080", fontSize: 14, lineHeight: 21 },
-  card: {
-    backgroundColor: "white",
-    borderRadius: 22,
-    borderCurve: "continuous",
-    padding: 20,
-    gap: 10,
-  },
-  label: { color: "#00000080", fontSize: 13, fontWeight: "600" },
-  input: { color: "#111", fontSize: 18, minHeight: 48 },
-  button: {
-    backgroundColor: "white",
-    borderRadius: 28,
-    minHeight: 56,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  buttonText: { fontSize: 17, fontWeight: "600", color: "#111" },
-});

@@ -2,6 +2,7 @@ import { memo, useContext, useEffect, useState } from "react";
 import { Animated, Easing, View } from "react-native";
 import { SvgAst, parse } from "react-native-svg";
 import frames from "./frames.json";
+import { SuperAsset, type SuperAssetName } from "./SuperAsset";
 import { IconActivation, ReducedIconMotion } from "./IconMotion";
 export type UIIconName = keyof typeof frames;
 const parsed = new Map<string, ReturnType<typeof parse>>();
@@ -11,7 +12,7 @@ function frameAst(name: UIIconName, frame: number) {
   return parsed.get(key)!;
 }
 /** Reviewed SVG geometry sampled from the original layered motion, not a whole-icon scale. */
-export const UIIcon = memo(function UIIcon({
+const LegacyIcon = memo(function LegacyIcon({
   name,
   size = 24,
   width = size,
@@ -62,11 +63,57 @@ export const UIIcon = memo(function UIIcon({
     };
   }, [activation, name, reduced, progress, animateOnMount, delay]);
   return (
-    <View pointerEvents="none" accessible={false} style={{ width: displayWidth, height: displayHeight }}>
+    <View
+      pointerEvents="none"
+      accessible={false}
+      style={{ width: displayWidth, height: displayHeight }}
+    >
       <SvgAst
         ast={frameAst(name, frame)}
-        override={{ width: displayWidth, height: displayHeight, accessible: false }}
+        override={{
+          width: displayWidth,
+          height: displayHeight,
+          accessible: false,
+        }}
       />
+    </View>
+  );
+});
+
+const supplied: Partial<Record<UIIconName, SuperAssetName>> = {
+  "chevron-left": "chevron-base",
+  "chevron-right": "chevron-base",
+  "map-pin": "map",
+  users: "user-fill",
+  user: "user",
+  "user-plus": "inviteFriends",
+  pencil: "edit",
+  image: "myCityPoolIcon",
+  "shield-check": "accountSettings",
+  wrench: "運営",
+  check: "check",
+  "circle-check": "checkRounded",
+  x: "x",
+  "create-pin": "add",
+  navi: "nav",
+  "arrival-plug": "pluglogin",
+};
+export const UIIcon = memo(function UIIcon(
+  props: Parameters<typeof LegacyIcon>[0],
+) {
+  const icon = supplied[props.name];
+  if (!icon) return <LegacyIcon {...props} />;
+  const { size = 24, width = size, height = size } = props;
+  return (
+    <View
+      pointerEvents="none"
+      style={
+        props.name === "chevron-left"
+          ? { transform: [{ rotate: "180deg" }] }
+          : undefined
+      }
+    >
+      <SuperAsset name={icon} width={width} height={height} />
     </View>
   );
 });

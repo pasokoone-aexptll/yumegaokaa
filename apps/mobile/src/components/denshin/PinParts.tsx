@@ -1,38 +1,39 @@
 import { EventCloudPin } from "../EventCloudPin";
-import Svg, { Circle, Path } from "react-native-svg";
-import { StyleSheet, Text, View, Pressable } from "react-native";
+import {
+  DenshinLogo,
+  SuperAsset,
+  type SuperAssetName,
+} from "../icons/SuperAsset";
+import { SpeechBubble } from "./SpeechBubble";
+import { NativeIconButton } from "./NativeIconButton";
+import { StyleSheet, Text, View } from "react-native";
 import { Avatar } from "../Avatar";
 import type { PinPerson } from "../../lib/denshin";
-export const green = "#2bc655";
+export const green = "#34C759";
 export function RecruitmentGlyph({ color = green }: { color?: string }) {
-  return (
-    <Svg width={19} height={22} viewBox="0 0 20 24">
-      <Path d="M2 2h12v20H2z" fill="none" stroke={color} strokeWidth={2} />
-      <Circle cx={10} cy={6} r={2} fill={color} />
-      <Path
-        d="m9 9-3 4-3-1m6-3 3 4 5 1m-8-5-1 7-3 5m3-5 5 5"
-        fill="none"
-        stroke={color}
-        strokeWidth={2.5}
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </Svg>
-  );
+  return <SuperAsset name="非常口rounded" size={21} tint={color} />;
 }
 export function RecruitBadge() {
   return (
-    <View style={s.badge}>
+    <SpeechBubble>
       <RecruitmentGlyph />
       <Text style={s.badgeText}>募集中</Text>
-    </View>
+    </SpeechBubble>
   );
 }
 export function PinHeading({ suffix = "PIN" }: { suffix?: string }) {
   return (
-    <Text style={s.heading}>
-      電信 <Text style={s.suffix}>{suffix}</Text>
-    </Text>
+    <View
+      style={{
+        flexDirection: "row",
+        alignItems: "center",
+        gap: 6,
+        flexShrink: 1,
+      }}
+    >
+      <DenshinLogo dark width={72} />
+      <Text style={s.suffix}>{suffix}</Text>
+    </View>
   );
 }
 export function RoundAction({
@@ -48,20 +49,21 @@ export function RoundAction({
   disabled?: boolean;
   active?: boolean;
 }) {
+  const icons: Record<string, SuperAssetName> = {
+    "×": "x",
+    "✓": "check",
+    "−": "minus",
+    "＋": "add",
+    "✎": "edit",
+  };
   return (
-    <Pressable
-      accessibilityRole="button"
-      accessibilityLabel={label}
-      disabled={disabled}
+    <NativeIconButton
+      icon={icons[glyph] ?? "check"}
+      label={label}
       onPress={onPress}
-      style={[
-        s.round,
-        active && { backgroundColor: green },
-        disabled && { opacity: 0.35 },
-      ]}
-    >
-      <Text style={s.glyph}>{glyph}</Text>
-    </Pressable>
+      disabled={disabled}
+      active={active}
+    />
   );
 }
 export function PeopleStack({ people }: { people: PinPerson[] }) {
@@ -97,7 +99,12 @@ const s = StyleSheet.create({
   },
   badgeText: { color: green, fontWeight: "600", fontSize: 15 },
   heading: { color: "#ffffffdd", fontWeight: "600", fontSize: 27 },
-  suffix: { fontWeight: "400", fontSize: 17 },
+  suffix: {
+    fontFamily: "ui-rounded",
+    color: "rgba(255,255,255,0.65)",
+    fontWeight: "400",
+    fontSize: 17,
+  },
   round: {
     width: 44,
     height: 44,
@@ -117,7 +124,7 @@ const s = StyleSheet.create({
   more: {
     width: 32,
     height: 32,
-    backgroundColor: "#a8abb3",
+    backgroundColor: "rgba(255,255,255,0.2)",
     alignItems: "center",
     justifyContent: "center",
   },

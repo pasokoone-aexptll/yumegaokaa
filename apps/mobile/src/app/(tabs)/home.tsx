@@ -1,3 +1,4 @@
+import { useInviteQuota } from "../../hooks/useInviteQuota";
 import { useState } from "react";
 import {
   ActivityIndicator,
@@ -14,18 +15,25 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useDenshinPins } from "../../hooks/useDenshinPins";
 import { Avatar } from "../../components/Avatar";
 import { PeopleStack, green } from "../../components/denshin/PinParts";
-import { pinCount, denshinError, HiddenAttendance } from "../../lib/denshin";
+import {
+  onsitePeople,
+  pinCount,
+  denshinError,
+  HiddenAttendance,
+} from "../../lib/denshin";
 import { openMapAt } from "../../lib/mapNavigation";
 import {
   cancelPendingCommand,
   pendingCommand,
   submitCommand,
 } from "../../lib/commands";
-import { MapAsset } from "../../components/map/MapAsset";
+import { DenshinLogo, SuperAsset } from "../../components/icons/SuperAsset";
+import { SpeechBubble } from "../../components/denshin/SpeechBubble";
 export default function Home() {
   const router = useRouter(),
     insets = useSafeAreaInsets();
   const pins = useDenshinPins();
+  const remaining = useInviteQuota();
   const [refreshing, setRefreshing] = useState(false),
     [leaving, setLeaving] = useState(false);
   async function refresh() {
@@ -66,7 +74,11 @@ export default function Home() {
   return (
     <ScrollView
       style={s.page}
-      contentContainerStyle={{ paddingTop: insets.top + 25, paddingBottom: 40 }}
+      contentContainerStyle={{
+        flexGrow: 1,
+        paddingTop: insets.top + 25,
+        paddingBottom: 0,
+      }}
       refreshControl={
         <RefreshControl
           refreshing={refreshing}
@@ -75,14 +87,14 @@ export default function Home() {
       }
     >
       <View style={s.header}>
-        <MapAsset name="DreamCloud Logo" width={175} height={32} tint={green} />
+        <DenshinLogo />
         <Pressable
           accessibilityRole="button"
           accessibilityLabel="電信PINを作成"
           onPress={() => router.push("/pins/create")}
           style={s.add}
         >
-          <Text style={{ fontSize: 30 }}>＋</Text>
+          <SuperAsset name="add" tint="black" size={24} />
         </Pressable>
       </View>
       <View style={s.content}>
@@ -94,9 +106,15 @@ export default function Home() {
         {pins.loading && <ActivityIndicator />}
         {[true, false].map((recruiting) => (
           <View key={String(recruiting)} style={s.section}>
-            <Text style={[s.sectionTitle, recruiting && { color: green }]}>
-              {recruiting ? "募集中" : "PIN"}
-            </Text>
+            <SpeechBubble>
+              <SuperAsset
+                name="非常口rounded"
+                tint={recruiting ? green : "rgba(0,0,0,0.65)"}
+              />
+              <Text style={[s.sectionTitle, recruiting && { color: green }]}>
+                {recruiting ? "募集中" : "PIN / 予約募集"}
+              </Text>
+            </SpeechBubble>
             {!pins.loading &&
               !pins.error &&
               !pins.items.some((p) => p.recruiting === recruiting) && (
@@ -137,7 +155,7 @@ export default function Home() {
                         {p.body}
                       </Text>
                     </View>
-                    <PeopleStack people={p.people} />
+                    <PeopleStack people={onsitePeople(p)} />
                   </Pressable>
                   <Pressable
                     style={s.location}
@@ -149,7 +167,21 @@ export default function Home() {
                       })
                     }
                   >
-                    <Text style={s.muted}>⌖ 位置を確認する</Text>
+                    <View
+                      style={{
+                        flexDirection: "row",
+                        alignItems: "center",
+                        gap: 5,
+                      }}
+                    >
+                      <SuperAsset
+                        name="nav"
+                        tint="black"
+                        opacity={0.3}
+                        size={12}
+                      />
+                      <Text style={s.muted}>位置を確認する</Text>
+                    </View>
                   </Pressable>
                 </View>
               ))}
@@ -168,11 +200,69 @@ export default function Home() {
           </View>
         ))}
       </View>
+      <View style={{ flex: 1, minHeight: 40 }} />
+      <Pressable
+        accessibilityRole="button"
+        accessibilityLabel="招待QRで友達を招待"
+        onPress={() => router.push("/settings/invitations")}
+        style={{
+          margin: 16,
+          marginTop: 12,
+          minHeight: 76,
+          flexDirection: "row",
+          alignItems: "center",
+          borderRadius: 20,
+          overflow: "hidden",
+          backgroundColor: "#FF5577",
+        }}
+      >
+        <View style={{ padding: 15 }}>
+          <SuperAsset name="非常口" size={46} tint="white" opacity={0.8} />
+        </View>
+        <View style={{ flex: 1, gap: 6 }}>
+          <Text
+            style={{
+              fontFamily: "ui-rounded",
+              fontWeight: "600",
+              color: "white",
+              fontSize: 17,
+            }}
+          >
+            招待QRで友達を招待しよう！
+          </Text>
+          {remaining !== undefined && (
+            <Text
+              style={{
+                alignSelf: "flex-start",
+                paddingVertical: 4,
+                paddingHorizontal: 10,
+                borderRadius: 20,
+                backgroundColor: "rgba(255,0,45,0.3)",
+                color: "white",
+                fontFamily: "ui-rounded",
+                fontSize: 14,
+              }}
+            >
+              残り{remaining}招待
+            </Text>
+          )}
+        </View>
+        <View
+          style={{
+            alignSelf: "stretch",
+            width: 58,
+            backgroundColor: "rgba(255,255,255,0.3)",
+            borderLeftWidth: 2,
+            borderColor: "rgba(255,255,255,0.7)",
+            borderStyle: "dashed",
+          }}
+        />
+      </Pressable>
     </ScrollView>
   );
 }
 const s = StyleSheet.create({
-  page: { flex: 1, backgroundColor: "#f4f4f4" },
+  page: { flex: 1, backgroundColor: "rgba(0,0,0,0.05)" },
   header: {
     flexDirection: "row",
     alignItems: "center",
@@ -196,7 +286,7 @@ const s = StyleSheet.create({
     color: "#666",
     backgroundColor: "white",
     borderRadius: 20,
-    padding: 10,
+    padding: 0,
     alignSelf: "flex-start",
   },
   row: {

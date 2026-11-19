@@ -1,10 +1,7 @@
-import { UIIcon } from "./icons/UIIcon";
+import { SuperAsset } from "./icons/SuperAsset";
 import { RefreshMarker } from "./map/markerScale";
 import { useContext, useEffect, useRef, useState } from "react";
-import { SymbolView } from "expo-symbols";
-import type { SFSymbol } from "sf-symbols-typescript";
-import { avatarInitial } from "../lib/avatarInitial";
-import { Image, Platform, Text, View } from "react-native";
+import { Image, View } from "react-native";
 import { native, key, url } from "../lib/native";
 
 export function Avatar({
@@ -68,30 +65,30 @@ export function Avatar({
     }
   }
 
-  const initial = bucket === "avatars" ? avatarInitial(name) : undefined;
-  const style = { width: size, height: size, borderRadius: shape === "square" ? size * 0.22 : size / 2 };
+  const style = {
+    width: size,
+    height: size,
+    borderRadius: shape === "square" ? size * 0.22 : size / 2,
+  };
   return (
     <View
+      accessibilityLabel={name || undefined}
       style={[
         style,
         {
           alignItems: "center",
           justifyContent: "center",
-          backgroundColor: "#deeff8",
+          backgroundColor: "rgba(255,255,255,0.15)",
           overflow: "hidden",
         },
       ]}
     >
-      {bucket === "street-icons" ? (
-        <UIIcon name="presence-star" size={size * 0.7} />
-      ) : initial && Platform.OS === "ios" ? (
-        <SymbolView name={initial.toLowerCase() as SFSymbol} tintColor="rgba(0,0,0,0.06)" weight="black"
-          size={size * 0.65} style={{ width: size * 0.72, height: size * 0.72 }} />
-      ) : initial ? (
-        <Text allowFontScaling={false} style={{ fontSize: size * 0.65, lineHeight: size * 0.92, fontWeight: "900", includeFontPadding: false, color: "rgba(0,0,0,0.06)" }}>{initial}</Text>
-      ) : (
-        <UIIcon name="user" size={size * 0.7} />
-      )}
+      <SuperAsset
+        name={bucket === "street-icons" ? "myCityPoolIcon" : "user"}
+        size={size * 0.65}
+        tint={bucket === "street-icons" ? undefined : "black"}
+        opacity={0.25}
+      />
       {path &&
         image.identity === identity &&
         image.token &&

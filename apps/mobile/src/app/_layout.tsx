@@ -46,7 +46,7 @@ export default function Layout() {
         (path === "/access" ||
           (wasSetup && ["/profile", "/street-icons"].includes(path)))
       )
-        router.replace("/");
+        router.replace(wasSetup ? "/welcome" : "/");
     }
   }, [session.ready, session.signed_in, path, access.status, router]);
   return (
@@ -54,10 +54,21 @@ export default function Layout() {
       <AccountAccessContext.Provider value={access}>
         <SafeAreaProvider>
           <Stack
-            key={Platform.OS === "android" ? session.revision : `${session.revision}:${access.status}`}
+            key={
+              Platform.OS === "android"
+                ? session.revision
+                : `${session.revision}:${access.status}`
+            }
             screenOptions={{ headerShown: false }}
           >
-            <Stack.Screen name="(tabs)" options={Platform.OS === "android" ? { contentStyle: { backgroundColor: "#303947" } } : undefined} />
+            <Stack.Screen
+              name="(tabs)"
+              options={
+                Platform.OS === "android"
+                  ? { contentStyle: { backgroundColor: "#303947" } }
+                  : undefined
+              }
+            />
             <Stack.Screen
               name="street-entry"
               options={{
@@ -66,7 +77,10 @@ export default function Layout() {
                 sheetInitialDetentIndex: 0,
                 sheetGrabberVisible: true,
                 sheetCornerRadius: Platform.OS === "android" ? 28 : undefined,
-                contentStyle: { backgroundColor: Platform.OS === "android" ? sheetBackground : "transparent" },
+                contentStyle: {
+                  backgroundColor:
+                    Platform.OS === "android" ? sheetBackground : "transparent",
+                },
               }}
             />
             <Stack.Screen
@@ -115,6 +129,15 @@ export default function Layout() {
                 sheetInitialDetentIndex: 0,
                 sheetGrabberVisible: true,
                 sheetCornerRadius: Platform.OS === "android" ? 28 : undefined,
+                contentStyle: { backgroundColor: "transparent" },
+              }}
+            />
+            <Stack.Screen
+              name="pin-confirmed"
+              options={{
+                presentation: "formSheet",
+                sheetAllowedDetents: [1],
+                sheetGrabberVisible: true,
                 contentStyle: { backgroundColor: "transparent" },
               }}
             />

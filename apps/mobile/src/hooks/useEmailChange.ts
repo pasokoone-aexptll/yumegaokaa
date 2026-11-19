@@ -12,6 +12,7 @@ export function useEmailChange() {
   const [status, setStatus] = useState("");
   const [loading, setLoading] = useState(true);
   const [ready, setReady] = useState(false);
+  const [verifiedAddress, setVerifiedAddress] = useState("");
   const generation = useRef(0);
   const sequence = useRef(0);
   const writing = useRef(false);
@@ -84,6 +85,7 @@ export function useEmailChange() {
       if (!current()) return;
       setOldCode("");
       setNewCode("");
+      setVerifiedAddress("");
       if (refreshed) setStatus("新旧のメールにコードを送りました");
     });
   }
@@ -101,6 +103,7 @@ export function useEmailChange() {
         setNext("");
         if (refreshed) setStatus("メールアドレスを変更しました");
       } else if (current()) {
+        setVerifiedAddress(address);
         if (address === email) setOldCode("");
         else setNewCode("");
         setStatus("もう一方のメールも確認してください");
@@ -110,6 +113,7 @@ export function useEmailChange() {
 
   return {
     email,
+    verifiedAddress,
     pending,
     next,
     setNext,

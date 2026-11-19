@@ -1,8 +1,8 @@
 # yumegaoka ドキュメントの入口
 
-2026-11-19：募集・オフ会は[電信PIN仕様](DENSHIN_PIN_SPEC.md)へ移行決定。電信PINコード・ローカルDB検証まで実施、クラウド049/通知ワーカー配備・Simulator起動を確認。実機未反映、作成シートの重なり不具合あり。Q-DP01〜06は採用済み。画面参照は同書、検証事実はTECH_VALIDATIONのDP01。
+2026-11-19：募集・オフ会は[電信PIN仕様](DENSHIN_PIN_SPEC.md)へ移行決定。電信PINコード・ローカルDB検証まで実施、クラウド049/通知ワーカー配備・Simulator起動を確認。実機未反映。作成シートの重なりは修正しSimulatorで定員展開・閉じる操作を確認。Q-DP01〜06は採用済み。画面参照は同書、検証事実はTECH_VALIDATIONのDP01。
 
-iOSネイティブUIの初回監査・画面別移行案は[IOS_NATIVE_UI_PLAN](frontend-redesign/IOS_NATIVE_UI_PLAN.md)。今回は再設計コード未変更。
+iOSネイティブUIの初回監査・画面別移行案は[IOS_NATIVE_UI_PLAN](frontend-redesign/IOS_NATIVE_UI_PLAN.md)。初回監査後、ユーザー承認により実装へ移行済み。既存4タブを維持し、SwiftUI操作部品・提供SVG・QR招待・設定画面を段階的に接続中。全画面のFigma一致・実機確認は未完。
 
 更新：2026-11-05。実装・レビューはここから開始する。現行文書は現在の合意を示し、履歴は採用根拠を残す。記載がない詳細を承認済みと解釈しない。
 

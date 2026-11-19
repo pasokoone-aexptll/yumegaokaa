@@ -10,11 +10,10 @@ import {
 import { MapStatusBanner } from "../../components/map/MapStatusBanner";
 import { MapErrorDialog } from "../../components/map/MapErrorDialog";
 import { ProgressiveBlur } from "../../components/map/ProgressiveBlur";
-import { MapBlurView } from "../../components/map/MapBlurView";
 import { useEntryPlacesPreference } from "../../hooks/useEntryPlacesPreference";
 import { EntryPlaces } from "../../components/map/EntryPlaces";
 import { MapHeader } from "../../components/map/MapHeader";
-import { MapAsset } from "../../components/map/MapAsset";
+import { NativeIconButton } from "../../components/denshin/NativeIconButton";
 import { StatusBar } from "expo-status-bar";
 import { PresenceHeader } from "../../components/PresenceHeader";
 import { StreetLogin } from "../../components/StreetLogin";
@@ -36,11 +35,7 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import {
-  Camera,
-  CameraRef,
-  Map,
-} from "../../components/map/PlatformMap";
+import { Camera, CameraRef, Map } from "../../components/map/PlatformMap";
 import { native, url } from "../../lib/native";
 import { liveCells } from "../../lib/presence";
 import { fieldTrial, localEntry, nfcDisabled } from "../../lib/development";
@@ -52,7 +47,10 @@ export default function Street() {
   const [mapMoving, setMapMoving] = useState(false);
   const { height } = useWindowDimensions();
   // Move the pin down 24pt so the title and countdown share the visible center.
-  const detailSheetHeight = Math.max(0, height * (Platform.OS === "android" ? 0.5 : 0.38) - 48);
+  const detailSheetHeight = Math.max(
+    0,
+    height * (Platform.OS === "android" ? 0.5 : 0.38) - 48,
+  );
   const [mapFocused, setMapFocused] = useState(false);
   const [androidMapReady, setAndroidMapReady] = useState(false);
   const [detailInset, setDetailInset] = useState(0);
@@ -86,7 +84,8 @@ export default function Street() {
     sent,
     setSent,
     state,
-    snapshot, entryMap,
+    snapshot,
+    entryMap,
     now,
     error,
     setError,
@@ -99,7 +98,8 @@ export default function Street() {
     events,
     denshinPins,
     recruitments,
-    login, nextSendAt,
+    login,
+    nextSendAt,
     exit,
     scan,
     writeTestTag,
@@ -107,7 +107,8 @@ export default function Street() {
     logout,
     changeMode,
   } = useStreetMap();
-  const { visible: showPlaces, toggle: togglePlaces } = useEntryPlacesPreference();
+  const { visible: showPlaces, toggle: togglePlaces } =
+    useEntryPlacesPreference();
   const ghost = state.visit.ghost ?? state.ghost_preference ?? false;
   const mode = state.pending_mode || (ghost ? "ghostActive" : "publicActive");
   const currentMode = signed && ready ? mode : undefined;
@@ -115,10 +116,17 @@ export default function Street() {
   const [modeNotice, setModeNotice] = useState("");
   if (previousMode !== currentMode) {
     setPreviousMode(currentMode);
-    setModeNotice(!currentMode || (!previousMode && !state.pending_mode) ? "" :
-      mode === "public" ? "公開への切替待ち・新しい位置を確認中" :
-      mode === "ghost" ? "非公開への切替待ち" :
-      ghost ? "ゴーストモードに切り替えました" : "通常モードに切り替えました");
+    setModeNotice(
+      !currentMode || (!previousMode && !state.pending_mode)
+        ? ""
+        : mode === "public"
+          ? "公開への切替待ち・新しい位置を確認中"
+          : mode === "ghost"
+            ? "非公開への切替待ち"
+            : ghost
+              ? "ゴーストモードに切り替えました"
+              : "通常モードに切り替えました",
+    );
   }
   function closeAccount() {
     setSettings(false);
@@ -138,28 +146,47 @@ export default function Street() {
     ) {
       const showDetail =
         !!params.detailId &&
-        (["event", "recruitment", "denshin"].includes(params.detailKind ?? ""));
-      if (Platform.OS === "android" && (!mapFocused || !androidMapReady)) return;
-      if (params.mapRequest && openedRequest.current === params.mapRequest) return;
+        ["event", "recruitment", "denshin"].includes(params.detailKind ?? "");
+      if (Platform.OS === "android" && (!mapFocused || !androidMapReady))
+        return;
+      if (params.mapRequest && openedRequest.current === params.mapRequest)
+        return;
       let cancelled = false;
       const frame = requestAnimationFrame(async () => {
         const target = camera.current;
         if (!target || cancelled) return;
         setDetailInset(showDetail ? detailSheetHeight : 0);
         try {
-          await target.flyTo({ center: [lon, lat], zoom: 17, duration: 600, detailPadding: showDetail ? detailSheetHeight : 0 });
+          await target.flyTo({
+            center: [lon, lat],
+            zoom: 17,
+            duration: 600,
+            detailPadding: showDetail ? detailSheetHeight : 0,
+          });
         } catch {
-          if (!cancelled) setError("開催場所を表示できませんでした。もう一度「地図で見る」を押してください。");
+          if (!cancelled)
+            setError(
+              "開催場所を表示できませんでした。もう一度「地図で見る」を押してください。",
+            );
           return;
         }
         if (cancelled) return;
         openedRequest.current = params.mapRequest;
-        if (showDetail) router.push({
-          pathname: params.detailKind === "denshin" ? "/map-pin" : params.detailKind === "event" ? "/map-event" : "/map-recruitment",
-          params: { id: params.detailId!, fromMap: "1" },
-        });
+        if (showDetail)
+          router.push({
+            pathname:
+              params.detailKind === "denshin"
+                ? "/map-pin"
+                : params.detailKind === "event"
+                  ? "/map-event"
+                  : "/map-recruitment",
+            params: { id: params.detailId!, fromMap: "1" },
+          });
       });
-      return () => { cancelled = true; cancelAnimationFrame(frame); };
+      return () => {
+        cancelled = true;
+        cancelAnimationFrame(frame);
+      };
     }
   }, [
     mapFocused,
@@ -189,7 +216,12 @@ export default function Street() {
   }
   if (!ready)
     return (
-      <View style={[styles.center, Platform.OS === "android" && { backgroundColor: "#303947" }]}>
+      <View
+        style={[
+          styles.center,
+          Platform.OS === "android" && { backgroundColor: "#303947" },
+        ]}
+      >
         <ActivityIndicator />
       </View>
     );
@@ -245,7 +277,9 @@ export default function Street() {
             pitch: initialPitch,
           }}
         />
-        {entryMap && (!active || showPlaces) && !placement.active && <EntryPlaces map={entryMap} />}
+        {entryMap && (!active || showPlaces) && !placement.active && (
+          <EntryPlaces map={entryMap} />
+        )}
         <StreetMapMarkers
           onSelect={(longitude, latitude) => {
             setDetailInset(detailSheetHeight);
@@ -281,6 +315,7 @@ export default function Street() {
           <ProgressiveBlur edge="top" intensity={30} />
         </View>
         <MapHeader
+          count={error ? undefined : snapshot?.checked_in_count}
           active={active}
           placesVisible={showPlaces}
           onTogglePlaces={togglePlaces}
@@ -301,8 +336,17 @@ export default function Street() {
             autoDismiss={false}
           />
         )}
-        {(
-          <MapStatusBanner message={["未参加", "気配を観測中"].includes(state.status) || /^(ゴーストモード|公開への切替待ち|非公開への切替待ち)/.test(state.status) ? "" : state.status}>
+        {
+          <MapStatusBanner
+            message={
+              ["未参加", "気配を観測中"].includes(state.status) ||
+              /^(ゴーストモード|公開への切替待ち|非公開への切替待ち)/.test(
+                state.status,
+              )
+                ? ""
+                : state.status
+            }
+          >
             {state.visit.can_update === false &&
               state.visit.state === "active" && (
                 <Pressable
@@ -310,61 +354,37 @@ export default function Street() {
                   onPress={() => setSheet("explain")}
                 >
                   <Text style={styles.link}>
-                    {fieldTrial ? "現地試験で入街" : localEntry ? "開発用の入街を開始" : "この端末でNFCを読む"}
+                    {fieldTrial
+                      ? "現地試験で入街"
+                      : localEntry
+                        ? "開発用の入街を開始"
+                        : "この端末でNFCを読む"}
                   </Text>
                 </Pressable>
               )}
           </MapStatusBanner>
-        )}
+        }
         <View style={{ alignSelf: "flex-end", gap: 10, marginTop: 14 }}>
-          <Pressable
-            accessibilityRole="button"
-            accessibilityLabel="ピンを追加"
+          <NativeIconButton
+            icon="add"
+            label="ピンを追加"
             onPress={() => router.push("/pins/create")}
-            style={{
-              backgroundColor: "#00000033",
-              overflow: "hidden",
-              borderRadius: 23,
-              width: 46,
-              height: 46,
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-          >
-            <MapBlurView
-              pointerEvents="none"
-              intensity={25}
-              tint="default"
-              style={StyleSheet.absoluteFill}
-            />
-            <MapAsset name="CreatePIN" size={26} />
-          </Pressable>
-          <Pressable
-            accessibilityRole="button"
-            accessibilityLabel="現在地へ戻る"
+          />
+          <NativeIconButton
+            icon="nav"
+            label="現在地へ戻る"
             onPress={() => void recenter()}
-            style={{
-              backgroundColor: "#00000033",
-              overflow: "hidden",
-              borderRadius: 23,
-              width: 46,
-              height: 46,
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-          >
-            <MapBlurView
-              pointerEvents="none"
-              intensity={25}
-              tint="default"
-              style={StyleSheet.absoluteFill}
-            />
-            <MapAsset name="Navi" size={26} />
-          </Pressable>
+          />
         </View>
       </SafeAreaView>
       {!placement.active && (
-        <StreetChat onHistoryChange={Platform.OS === "android" ? setHistoryExpanded : undefined} mapMoving={mapMoving} onReadStatus={setChatRead} />
+        <StreetChat
+          onHistoryChange={
+            Platform.OS === "android" ? setHistoryExpanded : undefined
+          }
+          mapMoving={mapMoving}
+          onReadStatus={setChatRead}
+        />
       )}
       {placement.active && (
         <PlacementFooter
@@ -382,6 +402,7 @@ export default function Street() {
       )}
       {!!error && <MapErrorDialog key={error} message={error} />}
       <StreetEntrySheet
+        placeName={entryMap?.name}
         entryError={entryError}
         sheet={sheet}
         setSheet={setSheet}
