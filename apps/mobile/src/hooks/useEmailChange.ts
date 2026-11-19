@@ -13,6 +13,7 @@ export function useEmailChange() {
   const [loading, setLoading] = useState(true);
   const [ready, setReady] = useState(false);
   const [verifiedAddress, setVerifiedAddress] = useState("");
+  const [completedCode, setCompletedCode] = useState("");
   const generation = useRef(0);
   const sequence = useRef(0);
   const writing = useRef(false);
@@ -50,6 +51,7 @@ export function useEmailChange() {
         generation.current++;
         setOldCode("");
         setNewCode("");
+        setCompletedCode("");
       };
     }, [load]),
   );
@@ -86,6 +88,7 @@ export function useEmailChange() {
       setOldCode("");
       setNewCode("");
       setVerifiedAddress("");
+      setCompletedCode("");
       if (refreshed) setStatus("新旧のメールにコードを送りました");
     });
   }
@@ -98,6 +101,7 @@ export function useEmailChange() {
         if (!current()) return;
         const refreshed = await load();
         if (!current()) return;
+        setCompletedCode(code.trim());
         setOldCode("");
         setNewCode("");
         setNext("");
@@ -113,6 +117,7 @@ export function useEmailChange() {
 
   return {
     email,
+    completedCode,
     verifiedAddress,
     pending,
     next,

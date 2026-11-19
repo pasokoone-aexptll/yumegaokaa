@@ -1,3 +1,4 @@
+import { SuperAsset, type SuperAssetName } from "../icons/SuperAsset";
 import { Pressable, Text } from "react-native";
 export function NativeAction({
   title,
@@ -6,6 +7,9 @@ export function NativeAction({
   destructive = false,
   tone = "green",
   contentWidth = 168,
+  compact = false,
+  onDark = false,
+  leadingIcon,
 }: {
   title: string;
   onPress: () => void;
@@ -13,6 +17,9 @@ export function NativeAction({
   destructive?: boolean;
   tone?: "green" | "blue" | "neutral";
   contentWidth?: number;
+  compact?: boolean;
+  onDark?: boolean;
+  leadingIcon?: SuperAssetName;
 }) {
   return (
     <Pressable
@@ -20,10 +27,13 @@ export function NativeAction({
       disabled={disabled}
       onPress={onPress}
       style={{
-        padding: 16,
+        padding: compact ? 10 : 16,
         minWidth: contentWidth,
         borderRadius: 40,
         alignItems: "center",
+        flexDirection: "row",
+        justifyContent: "center",
+        gap: 6,
         backgroundColor: destructive
           ? "#FF3B30"
           : tone === "blue"
@@ -34,11 +44,18 @@ export function NativeAction({
         opacity: disabled ? 0.4 : 1,
       }}
     >
+      {leadingIcon && (
+        <SuperAsset
+          name={leadingIcon}
+          size={20}
+          tint={tone === "neutral" && !onDark ? "black" : "white"}
+        />
+      )}
       <Text
         style={{
-          color: tone === "neutral" ? "black" : "white",
+          color: tone === "neutral" && !onDark ? "black" : "white",
           fontFamily: "ui-rounded",
-          fontSize: 18,
+          fontSize: compact ? 16 : 18,
         }}
       >
         {title}

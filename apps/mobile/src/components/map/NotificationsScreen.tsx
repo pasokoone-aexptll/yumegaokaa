@@ -15,10 +15,29 @@ import { useNotifications } from "../../hooks/useNotifications";
 import { usePushPermission } from "../../hooks/usePushNotifications";
 import { DenshinLogo, SuperAsset } from "../icons/SuperAsset";
 import { SpeechBubble } from "../denshin/SpeechBubble";
-import { NoticeHeading, NoticeSubject } from "../notifications/NoticeContent";
+import { NoticeListContent } from "../notifications/NoticeContent";
 import { NativeAction } from "../denshin/NativeAction";
 export function NotificationsScreen() {
+  const data = useNotifications();
+  const push = usePushPermission();
   const router = useRouter();
+  return (
+    <NotificationsView
+      data={data}
+      push={push}
+      onOpen={(id) => router.push({ pathname: "/inbox/[id]", params: { id } })}
+    />
+  );
+}
+export function NotificationsView({
+  data: d,
+  push,
+  onOpen,
+}: {
+  data: ReturnType<typeof useNotifications>;
+  push: ReturnType<typeof usePushPermission>;
+  onOpen: (id: string) => void;
+}) {
   const reduced = useContext(ReducedIconMotion);
   const [pinned, setPinned] = useState(false);
   const [date, setDate] = useState("");
@@ -43,8 +62,6 @@ export function NotificationsScreen() {
     animation.start();
     return () => animation.stop();
   }, [pinned, reduced, fade]);
-  const push = usePushPermission();
-  const d = useNotifications();
   const [refreshing, setRefreshing] = useState(false);
   const items = d.items;
   const sections = useMemo(() => {
@@ -73,9 +90,9 @@ export function NotificationsScreen() {
       edges={["top", "left", "right"]}
       style={{ flex: 1, backgroundColor: "#F2F2F2" }}
     >
-      <View style={{ padding: 22, height: 115, zIndex: 2 }}>
+      <View style={{ paddingHorizontal: 22, height: 92, zIndex: 2 }}>
         <DenshinLogo />
-        <View style={{ position: "absolute", left: 92, top: 40 }}>
+        <View style={{ position: "absolute", left: 92, top: 18 }}>
           <SpeechBubble>
             <Text
               style={{
@@ -92,7 +109,7 @@ export function NotificationsScreen() {
           style={{
             position: "absolute",
             left: 175,
-            top: 30,
+            top: 8,
             fontFamily: "ui-rounded",
             fontSize: 26,
             fontWeight: "600",
@@ -152,7 +169,8 @@ export function NotificationsScreen() {
         }}
         contentContainerStyle={{
           flexGrow: 1,
-          paddingHorizontal: 26,
+          paddingLeft: 26,
+          paddingRight: 26,
           paddingBottom: 25,
         }}
         renderSectionHeader={({ section }) => (
@@ -163,7 +181,8 @@ export function NotificationsScreen() {
               fontFamily: "ui-rounded",
               fontWeight: "600",
               fontSize: 26,
-              paddingVertical: 18,
+              paddingTop: section === sections[0] ? 18 : 34,
+              paddingBottom: 16,
             }}
           >
             {section.title}
@@ -172,13 +191,10 @@ export function NotificationsScreen() {
         renderItem={({ item }) => (
           <Pressable
             accessibilityRole="button"
-            onPress={() =>
-              router.push({ pathname: "/inbox/[id]", params: { id: item.id } })
-            }
-            style={{ paddingVertical: 20, gap: 12 }}
+            onPress={() => onOpen(item.id)}
+            style={{ paddingBottom: 44, paddingRight: 34 }}
           >
-            <NoticeHeading notice={item} />
-            <NoticeSubject notice={item} />
+            <NoticeListContent notice={item} />
           </Pressable>
         )}
         ListEmptyComponent={
@@ -189,7 +205,7 @@ export function NotificationsScreen() {
               style={{
                 flex: 1,
                 alignItems: "center",
-                paddingTop: 96,
+                paddingTop: 119,
               }}
             >
               <SuperAsset name="非常口から人が出る" width={270} height={325} />

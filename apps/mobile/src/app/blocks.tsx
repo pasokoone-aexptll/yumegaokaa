@@ -1,16 +1,31 @@
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useState } from "react";
-import { ActivityIndicator, Text, TextInput, View, Pressable } from "react-native";
+import {
+  ActivityIndicator,
+  Text,
+  TextInput,
+  View,
+  Pressable,
+} from "react-native";
 import { DetailPage } from "../components/DetailUI";
 import { NativeAction } from "../components/denshin/NativeAction";
 import { SuperAsset } from "../components/icons/SuperAsset";
 import { Avatar } from "../components/Avatar";
 import { useBlocks } from "../hooks/useBlocks";
 export default function Blocks() {
-  const router = useRouter();
   const { name } = useLocalSearchParams<{ name?: string }>();
-  const [query, setQuery] = useState("");
   const data = useBlocks(name);
+  return <BlocksView data={data} name={name} />;
+}
+export function BlocksView({
+  data,
+  name,
+}: {
+  data: ReturnType<typeof useBlocks>;
+  name?: string;
+}) {
+  const router = useRouter();
+  const [query, setQuery] = useState("");
   const search = () => {
     if (query.trim())
       router.push({
@@ -20,6 +35,7 @@ export default function Blocks() {
   };
   return (
     <DetailPage
+      bottomPadding={16}
       title="Block settings"
       refreshing={data.loading}
       onRefresh={data.refresh}
@@ -48,29 +64,43 @@ export default function Blocks() {
             key={user.account_id}
             style={
               name
-                ? { alignItems: "center", gap: 22, paddingVertical: 50 }
+                ? { alignItems: "center", gap: 14, paddingTop: 108 }
                 : {
                     backgroundColor: "white",
                     borderRadius: 25,
-                    padding: 16,
+                    padding: 14,
+                    marginTop: 10,
                     flexDirection: "row",
                     alignItems: "center",
                     gap: 12,
                   }
             }
           >
-            <Avatar
-              shape="square"
-              path={user.avatar_path}
-              version={user.avatar_updated_at}
-              name={user.display_name}
-              size={name ? 135 : 48}
-            />
+            <View
+              style={
+                name
+                  ? {
+                      padding: 9,
+                      borderRadius: 40,
+                      backgroundColor: "white",
+                      boxShadow: "0 8px 16px rgba(0,0,0,0.10)",
+                    }
+                  : undefined
+              }
+            >
+              <Avatar
+                shape="square"
+                path={user.avatar_path}
+                version={user.avatar_updated_at}
+                name={user.display_name}
+                size={name ? 126 : 48}
+              />
+            </View>
             <Text
               style={{
                 fontFamily: "ui-rounded",
                 fontSize: name ? 28 : 20,
-                fontWeight: "600",
+                fontWeight: name ? "800" : "600",
                 flex: name ? undefined : 1,
               }}
             >
@@ -78,10 +108,11 @@ export default function Blocks() {
               {user.display_name}
             </Text>
             <View
-              style={{ width: name ? "100%" : 80, marginTop: name ? 50 : 0 }}
+              style={{ width: name ? "100%" : 66, marginTop: name ? 62 : 0 }}
             >
               <NativeAction
-                contentWidth={name ? 168 : 30}
+                compact={!name}
+                contentWidth={name ? 156 : 40}
                 title={name ? "ユーザーをブロック" : "解除"}
                 destructive={!!name}
                 disabled={data.busy}
@@ -98,14 +129,50 @@ export default function Blocks() {
       {!name && (
         <>
           <View style={{ flex: 1, minHeight: 40 }} />
-          <View style={{ backgroundColor: "white", borderRadius: 30, minHeight: 54, paddingHorizontal: 14, flexDirection: "row", alignItems: "center", gap: 10 }}>
+          <View
+            style={{
+              backgroundColor: "white",
+              borderRadius: 30,
+              minHeight: 54,
+              paddingHorizontal: 14,
+              flexDirection: "row",
+              alignItems: "center",
+              gap: 10,
+            }}
+          >
             <SuperAsset name="atmark" size={22} tint="black" opacity={0.3} />
-            <TextInput accessibilityLabel="ブロックするユーザー名" value={query} onChangeText={setQuery}
-              placeholder="ブロックするユーザー名を入力" placeholderTextColor="rgba(0,0,0,0.2)"
-              returnKeyType="search" onSubmitEditing={search} autoCapitalize="none" autoCorrect={false}
-              style={{ flex: 1, minHeight: 54, color: "black", fontFamily: "ui-rounded", fontSize: 17 }} />
-            <Pressable accessibilityRole="button" accessibilityLabel="ユーザー名を消去" onPress={() => setQuery("")}
-              hitSlop={12} style={{ width: 20, height: 20, borderRadius: 10, backgroundColor: "rgba(0,0,0,0.2)", alignItems: "center", justifyContent: "center" }}>
+            <TextInput
+              accessibilityLabel="ブロックするユーザー名"
+              value={query}
+              onChangeText={setQuery}
+              placeholder="ブロックするユーザー名を入力"
+              placeholderTextColor="rgba(0,0,0,0.2)"
+              returnKeyType="search"
+              onSubmitEditing={search}
+              autoCapitalize="none"
+              autoCorrect={false}
+              style={{
+                flex: 1,
+                minHeight: 54,
+                color: "black",
+                fontFamily: "ui-rounded",
+                fontSize: 17,
+              }}
+            />
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel="ユーザー名を消去"
+              onPress={() => setQuery("")}
+              hitSlop={12}
+              style={{
+                width: 20,
+                height: 20,
+                borderRadius: 10,
+                backgroundColor: "rgba(0,0,0,0.2)",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
               <SuperAsset name="x" size={11} tint="white" />
             </Pressable>
           </View>

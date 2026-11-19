@@ -33,19 +33,32 @@ export default function PinDetail() {
     id: string;
     fromMap?: string;
   }>();
+  const data = useDenshinDetail(id);
+  return <PinDetailView data={data} id={id} fromMap={fromMap} />;
+}
+export function PinDetailView({
+  data: d,
+  id,
+  fromMap,
+  readOnly = false,
+}: {
+  data: ReturnType<typeof useDenshinDetail>;
+  id: string;
+  fromMap?: string;
+  readOnly?: boolean;
+}) {
   const router = useRouter(),
     insets = useSafeAreaInsets();
-  const d = useDenshinDetail(id);
   useEffect(() => {
     if (d.error) Alert.alert("操作できませんでした", d.error);
   }, [d.error]);
   const { confirmed, setConfirmed } = d;
   useEffect(() => {
-    if (confirmed) {
+    if (confirmed && !readOnly) {
       setConfirmed(false);
       router.push({ pathname: "/pin-confirmed", params: { id } });
     }
-  }, [confirmed, setConfirmed, router, id]);
+  }, [confirmed, setConfirmed, router, id, readOnly]);
   const p = d.pin;
   const disabled = d.busy || !!d.pending;
   function mode(next: boolean) {
@@ -61,6 +74,7 @@ export default function PinDetail() {
     else void d.mode(next);
   }
   async function report() {
+    if (readOnly) return;
     try {
       await native.rpc("report_create", {
         target_kind: "denshin",
@@ -74,6 +88,7 @@ export default function PinDetail() {
     }
   }
   async function block() {
+    if (readOnly) return;
     if (!p) return;
     try {
       await native.rpc("block_set", { account_id: p.author_id, blocked: true });
@@ -88,7 +103,7 @@ export default function PinDetail() {
       <Avatar
         path={x.avatar_path}
         name={x.display_name}
-        size={38}
+        size={36}
         shape="square"
       />
       <Text style={s.name}>
@@ -99,7 +114,6 @@ export default function PinDetail() {
   );
   return (
     <PinSheet>
-      {d.loading && <ActivityIndicator color="white" />}
       {d.confirmed && p ? (
         <View style={s.confirm}>
           <RoundAction label="閉じる" glyph="×" onPress={() => router.back()} />
@@ -130,6 +144,7 @@ export default function PinDetail() {
                 onPress={() => router.back()}
               />
             </View>
+            {d.loading && <ActivityIndicator color="white" />}
             {d.ended && (
               <Text style={s.muted}>
                 この電信PINは終了したか、表示できなくなりました。
@@ -170,25 +185,35 @@ export default function PinDetail() {
                 )}
                 {p.recruiting && (
                   <>
-                    <Text style={s.section}>主催者</Text>
-                    {person({
-                      account_id: p.author_id,
-                      display_name: p.display_name,
-                      avatar_path: p.avatar_path,
-                      state: "planned",
-                    })}
-                    <Text style={s.section}>現地にいる人</Text>
-                    {onsitePeople(p).map((x) => person(x))}
-                    {onsitePeople(p).length === 0 && (
-                      <Text style={s.muted}>まだいません</Text>
-                    )}
-                    <Text style={s.section}>参加予定</Text>
-                    {p.people
-                      .filter((x) => x.state === "planned")
-                      .map((x) => person(x))}
-                    {!p.people.some((x) => x.state === "planned") && (
-                      <Text style={s.muted}>まだいません</Text>
-                    )}
+                    <View style={s.roster}>
+                      <Text style={s.section}>主催者</Text>
+                      {person({
+                        account_id: p.author_id,
+                        display_name: p.display_name,
+                        avatar_path: p.avatar_path,
+                        state: "planned",
+                      })}
+                    </View>
+                    <View style={s.roster}>
+                      <Text style={s.section}>現地にいる人</Text>
+                      <View style={s.group}>
+                        {onsitePeople(p).map((x) => person(x))}
+                      </View>
+                      {onsitePeople(p).length === 0 && (
+                        <Text style={s.muted}>まだいません</Text>
+                      )}
+                    </View>
+                    <View style={s.roster}>
+                      <Text style={s.section}>参加予定</Text>
+                      <View style={s.group}>
+                        {p.people
+                          .filter((x) => x.state === "planned")
+                          .map((x) => person(x))}
+                      </View>
+                      {!p.people.some((x) => x.state === "planned") && (
+                        <Text style={s.muted}>まだいません</Text>
+                      )}
+                    </View>
                     {!p.mine && p.attendance === "planned" && (
                       <Pressable
                         disabled={disabled}
@@ -257,7 +282,7 @@ export default function PinDetail() {
               <RoundAction
                 label="編集する"
                 glyph="✎"
-                disabled={disabled}
+                disabled={disabled || readOnly}
                 onPress={() => {
                   editDenshin(p);
                   router.push("/pins/create");
@@ -270,12 +295,15 @@ export default function PinDetail() {
               style={{
                 position: "absolute",
                 bottom: insets.bottom + 16,
-                width: 220,
+                width: p.attendance === "left" ? 140 : 220,
                 right: 24,
                 zIndex: 10,
               }}
             >
               <NativeAction
+                onDark
+                leadingIcon={p.attendance === "planned" ? "check" : undefined}
+                contentWidth={p.attendance === "left" ? 96 : 170}
                 tone={!p.mine && p.attendance === "left" ? "neutral" : "green"}
                 title={
                   p.attendance === "planned"
@@ -322,8 +350,13 @@ const s = StyleSheet.create({
   content: { padding: 22, paddingTop: 16, gap: 22 },
   identity: { flexDirection: "row", gap: 18, alignItems: "center" },
   summary: { flexDirection: "row", gap: 10, alignItems: "center" },
-  title: { color: "white", fontSize: 21, lineHeight: 29 },
-  muted: { color: "#ffffff88", fontSize: 14, lineHeight: 21 },
+  title: { color: "white", fontSize: 22, fontWeight: "600", lineHeight: 29 },
+  muted: {
+    color: "rgba(255,255,255,0.5)",
+    fontSize: 16,
+    fontWeight: "600",
+    lineHeight: 21,
+  },
   toggle: {
     flexDirection: "row",
     justifyContent: "space-between",
@@ -332,7 +365,8 @@ const s = StyleSheet.create({
     borderRadius: 28,
     backgroundColor: "#ffffff22",
   },
-  section: { color: "#ffffffaa", fontSize: 14, marginTop: 15 },
+  section: { color: "rgba(255,255,255,0.65)", fontSize: 14 },
+  roster: { gap: 10, marginTop: 4 },
   person: { flexDirection: "row", gap: 10, alignItems: "center" },
   name: { color: "#ffffffbb", fontSize: 15 },
   button: {

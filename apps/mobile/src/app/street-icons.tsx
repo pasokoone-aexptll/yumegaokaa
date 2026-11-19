@@ -65,6 +65,7 @@ export default function StreetIcons() {
   const editing = edit === "1" || access.status === "pool_required";
   return (
     <DetailPage
+      bottomPadding={26}
       title={editing ? "画像を差し替える" : ""}
       titleColor={editing ? "white" : undefined}
       background={
@@ -141,7 +142,7 @@ export default function StreetIcons() {
             }
             version={editing ? undefined : state?.day}
             name=""
-            size={140}
+            size={editing ? 136 : 128}
           />
           {!editing && (
             <View

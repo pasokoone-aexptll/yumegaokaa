@@ -19,6 +19,11 @@ public class PresenceNativeModule: Module {
   }
   View(NativeSheetAppearance.self) { ViewName("NativeSheetAppearance") }
   View(SheetBackdrop.self) { ViewName("SheetBackdrop") }
+  View(CityParticipationSwitch.self) {
+   ViewName("CityParticipationSwitch")
+   Events("onValueChange")
+   Prop("value", false) { (view: CityParticipationSwitch, value: Bool) in view.setValue(value) }
+  }
   View(ChatTouchRegion.self) {
    ViewName("ChatTouchRegion")
    Prop("surface", false) { (view: ChatTouchRegion, value: Bool) in view.surface = value }
@@ -112,6 +117,51 @@ public class PresenceNativeModule: Module {
  }
 }
 
+
+// Keep UIKit's switch, thumb, gestures and accessibility. Fit the outline to
+// the control itself, rather than SwiftUI's invisible label/layout container.
+final class CityParticipationSwitch: ExpoView {
+ let onValueChange = EventDispatcher()
+ private let control = UISwitch()
+ private let outline = UIView()
+ private var confirmedValue = false
+ required init(appContext: AppContext? = nil) {
+  super.init(appContext: appContext)
+  outline.isUserInteractionEnabled = false
+  outline.layer.cornerCurve = .circular
+  addSubview(outline)
+  control.onTintColor = UIColor(red: 0.204, green: 0.780, blue: 0.349, alpha: 1)
+  control.overrideUserInterfaceStyle = .dark
+  control.accessibilityLabel = "街への参加"
+  control.addTarget(self, action: #selector(changed), for: .valueChanged)
+  addSubview(control)
+  updateOutline()
+ }
+ override func layoutSubviews() {
+  super.layoutSubviews()
+  let size = control.sizeThatFits(.zero)
+  control.bounds = CGRect(origin: .zero, size: size)
+  control.center = CGPoint(x: bounds.midX, y: bounds.midY)
+  outline.frame = control.frame.insetBy(dx: -4, dy: -4)
+  outline.layer.cornerRadius = outline.bounds.height / 2
+ }
+ func setValue(_ value: Bool) {
+  confirmedValue = value
+  control.setOn(value, animated: window != nil && !UIAccessibility.isReduceMotionEnabled)
+  updateOutline()
+ }
+ private func updateOutline() {
+  outline.backgroundColor = confirmedValue
+   ? UIColor(red: 0.271, green: 0.898, blue: 0.443, alpha: 1)
+   : UIColor.white.withAlphaComponent(0.15)
+ }
+ @objc private func changed() {
+  let requested = control.isOn
+  // Only a confirmed visit changes participation; opening NFC is an intent.
+  control.setOn(confirmedValue, animated: true)
+  onValueChange(["value": requested])
+ }
+}
 
 // Separate from the presence observer: recentering never starts a visit or RPC.
 @MainActor private final class ForegroundLocation: NSObject, @preconcurrency CLLocationManagerDelegate {

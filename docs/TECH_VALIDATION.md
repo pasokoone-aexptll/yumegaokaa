@@ -1,12 +1,26 @@
 # 技術検証と実装状況
 
-## 2026-11-20 待機リング・自己操作通知・Figma照合（R03/R04/R10〜R14/R17/R19）
+## 2026-11-20 Toggle実寸・全画面照合の継続・6桁自動認証（R03/R04/R12〜R14/R19）
+
+- Map参加スイッチ：SwiftUI Hostの測定値と画面上のcontrol外形に差があったため、UIKit標準UISwitchをExpoViewで接続。`sizeThatFits`の実寸から四辺4ptの外周を配置し、不透明な明るい緑を使用。3x Simulator画像ではON外周の上下左右がすべて12px。標準thumb/操作/アクセシビリティを維持し、NFC待機を開いただけで参加確定にはしない。
+- ログイン地点：ユーザー指定のnative blur（systemThickMaterialDark）を角丸枠内へ追加。地図の境界線がマーカーを横切る位置をSimulatorで表示し、内部では線が見えないことを確認。座標、街境界、入街条件は無変更。
+- メール変更：明示回答「6桁で自動認証する」を実装。入力が6桁になった時点で送信し、同じメール/コードの再描画・busy解除で重複送信しない。修正した入力や別メールのコードは別の検証として扱う。既存の新旧両メール確認、失敗時の状態再取得を維持。完了時に6桁を残してリングをチェックへ置換。現在メールは最新回答どおり表示専用・×なし。
+- 確認用データ：`EXPO_PUBLIC_UI_REVIEW=1` とネイティブSimulator判定の両方を必要とする画面を追加。PIN/通知/ブロック/OTP/運営の実表示部品にfixtureを渡し、実APIや権限を偽装しない。fixtureからの通報・ブロック・編集・参加等は実DBへ書かない。通常ルートは既存hookを使う。最終ビルドでは確認フラグを外す。
+- Simulator確認：通知あり・日付固定・詳細、ブロック候補・一覧、標準運営Form、PIN半高→全高→半高・現地5人/予定1人・主催者別枠・固定CTA・参加確定・通常PIN、OTP入力から自動成功表示をfixtureで確認。PIN拡大縮小後も実ガラス背景が地図の色を保持。通知の行間/画像位置、ブロック候補の枠/余白、解除の折り返し、運営Formの提供SVGの描画、PINの名簿間隔/CTA幅/成功画面の縦配置を修正。PIN詳細の初期高さをFigmaに合わせ0.47へ、見出しを22pt/semiboldへ調整。
+- 実データPIN：読込中ActivityIndicatorがScrollViewの前に置かれ、標準sheetが20ptの固定header余白を保持する問題を発見。indicatorを本文内へ移し、同じ既存PINをHome→Mapから開いて解消を画像比較。同じPIN再タップで閉じることも確認。
+- 実データ確認：Settings/Profile/編集、City pool/差替え、InviteのQR再表示・History・削除確認、Account/メール入力の導線。変更・削除・送信は行わない。City pool画像寸法、招待履歴の文字/間隔/期限書式、Accountのカードと削除ボタン/薄色footer位置を調整。
+- 検証：TypeScript成功、mobile Lintは0 errors/既存3 warnings。自動認証3件＋既存メール状態3件の計6テスト成功（連打/再描画非重複、入力訂正、別メール、未準備/無効入力の抑止、送信結果不明の復旧、blur競合）。Xcode arm64 Simulator Releaseビルド成功。確認フラグなしの最終版をiPhone 18 Pro/iOS27へ上書き・起動（PID24959）。Accountの12pt下部補正/メール入力間隔、実PINの上端修正を最終版で確認しMap画面へ戻した。DB変更なし。
+- 画像：`/tmp/yumegaoka-ui-review-20261120/` の `map-native-switch.png`、`switch-crop.png`、`marker-blur.png`、`notices-list.png`、`notice-detail.png`、`otp-success.png`、`operator-form.png`、`pin-full-planned.png`、`pin-confirmed.png`、`pin-real-before-inset.png`、`pin-real-final.png`、`email-input-final.png`。提供PNGとの比較証拠であり、実会員同士のAPI一巡の証拠ではない。
+- 未確認：実メールの新旧両コード、他会員の実参加/到着、新通知が実データで届く導線、実運営MFA操作、実カメラQR、NFC・iPhone実機、全体のDynamic Type/Reduce Transparency。全29画面・動画全フレームの完全一致とは扱わない。現在の画面別状況はUI_REVIEW_STATUSへ更新。
+- MVP開発進捗：実装29/33（87.9%）、統合27/33（81.8%）、実機11/33（33.3%）、DONE27/33（81.8%）、BLOCKED3/33（9.1%）は不変。固定残量はローカル4→4、外部3→3。既存Figma必須範囲の差分修正で分母は変更しない。総残工数は未再計測。
+
+## 2026-11-20 前段の待機リング・自己操作通知・Figma照合（R03/R04/R10〜R14/R17/R19）
 
 今回の追加指定を採用して実装。旧33タスクの実機達成数には加算しない。
 
 - City Login：実際のglass背景は表示開始時に挿入し、標準sheet/detentのbackgroundEffect変更を表示遷移の完了後へ移動。遷移中に変更すると表示アニメーションが最終位置へ飛ぶ原因をSimulatorで確認して修正。標準slide_from_bottomを使い半画面表示、下部の待機リングをタップして既存の本人限定試験タグから入街可能にした。クラウドの期限付き許可を更新し、OFF→待機→タップ→人数0から1→緑の非常口/成功チェック→閉鎖を録画確認。サーバー成功前にONへ偽装していない。実NFC/ADPの確認ではない。
 - Home/Map：Homeの＋がMapへの横移動後に作成sheetを開くことをSimulatorで確認。Homeの気配モードメニュー、余白/文字、招待雲の二重opacityを修正。募集吹き出しのアイコン寸法を維持し本文を上下中央化。電信ロゴの暗色変種、SF Roundedの街人数/募集作者名と現在人数の大きさを調整。ログイン地点はplugloginを暗い角丸四角へ。境界座標と公開範囲は変更なし。
-- Toggle：SwiftUI標準Toggleをintrinsic sizeで包み、padding4ptの不透明な明るい緑の外周へ。SimulatorのON状態をrawスクリーンショットで確認。Toastは右余白8pt、上下8pt、左16ptとし、×の上下/右余白を一致。既存48ptの予約領域を維持。
+- Toggle（前段）：SwiftUI標準Toggleをintrinsic sizeで包み、padding4ptの外周を実装。当時ON画像は確認したが四辺の実測は未実施で、不均一の再指摘を受け上記UISwitchへ置換。Toastは右余白8pt、上下8pt、左16ptとし、×の上下/右余白を一致。既存48ptの予約領域を維持。
 - PIN：最新回答で破棄確認を撤去。×→閉鎖→再度作成で空欄を実画面確認。未確定送信はdiscard意思をSecureStoreへ保存し、シートを閉じた後は旧入力を復元/再実行せず、次回保存より前に古い受付を取消・照合する。公開済みPINの削除確認は維持。人数展開時は標準detentを0.47から0.75へ変更し、地図挿入まで見えること、12→13を確認。
 - 通知/設定：自己作成/参加の表示用見出しと本文カードを分離。空通知のアイコン/説明文の間隔、設定子画面の横余白・区切り、プロフィールの入力/紫の完了、City pool素材/今日の画像/差替え画面、招待のQR/期限ゲージ/History/削除確認、ブロック入力をFigmaへ調整。City poolの取り下げUIを撤去。
 - 054：commandsの成功確定に自己作成/参加の通知を一度だけ追加。参加取消では消さず、本人だけ取得/既読化でき、24時間で取得対象外・清掃。自己通知はPush outboxに入れない。053の関数rename後に残ったPL/pgSQL引数修飾名が原因でPIN操作がPT503になる回帰も修正。既存の認可・利用資格・定員・再送処理を維持。

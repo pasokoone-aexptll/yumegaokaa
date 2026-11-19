@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { BlurView } from "expo-blur";
 import { StyleSheet, Text, View } from "react-native";
 import { Boundary, Marker } from "./PlatformMap";
 import { SuperAsset } from "../icons/SuperAsset";
@@ -50,6 +51,12 @@ export function EntryPlaces({ map }: { map: EntryMap }) {
                 </View>
               )}
               <View style={styles.pin}>
+                <BlurView
+                  pointerEvents="none"
+                  intensity={100}
+                  tint="systemThickMaterialDark"
+                  style={StyleSheet.absoluteFill}
+                />
                 <View style={styles.pinBorder}>
                   <SuperAsset
                     name="pluglogin"
@@ -93,7 +100,12 @@ const styles = StyleSheet.create({
     borderColor: "transparent",
     borderTopColor: "white",
   },
-  pin: { backgroundColor: "rgba(0,0,0,0.4)", padding: 3, borderRadius: 14 },
+  pin: {
+    backgroundColor: "rgba(0,0,0,0.4)",
+    padding: 3,
+    borderRadius: 14,
+    overflow: "hidden",
+  },
   pinBorder: {
     width: 34,
     height: 34,

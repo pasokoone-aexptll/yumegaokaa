@@ -1,8 +1,12 @@
 import { SuperAsset } from "./icons/SuperAsset";
 import { RefreshMarker } from "./map/markerScale";
-import { useContext, useEffect, useRef, useState } from "react";
-import { Image, View } from "react-native";
+import { createContext, useContext, useEffect, useRef, useState } from "react";
+import { Image, View, type ImageSourcePropType } from "react-native";
 import { native, key, url } from "../lib/native";
+// Scoped local image sources for isolated presentation previews; no auth adapter override.
+export const AvatarImageContext = createContext<
+  Record<string, ImageSourcePropType>
+>({});
 
 export function Avatar({
   path,
@@ -20,6 +24,7 @@ export function Avatar({
   shape?: "circle" | "square";
 }) {
   const refreshMarker = useContext(RefreshMarker);
+  const localImage = useContext(AvatarImageContext)[name];
   const identity = JSON.stringify([bucket, path, version]);
   const [image, setImage] = useState({ identity: "", token: "", attempt: 0 });
   const [failed, setFailed] = useState("");
@@ -89,6 +94,9 @@ export function Avatar({
         tint={bucket === "street-icons" ? undefined : "black"}
         opacity={0.25}
       />
+      {localImage && (
+        <Image source={localImage} style={[style, { position: "absolute" }]} />
+      )}
       {path &&
         image.identity === identity &&
         image.token &&

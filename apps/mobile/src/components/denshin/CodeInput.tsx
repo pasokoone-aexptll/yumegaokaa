@@ -17,14 +17,14 @@ export function CodeInput({
     <Pressable
       accessibilityRole="none"
       onPress={() => input.current?.focus()}
-      style={{ position: "relative" }}
+      style={{ position: "relative", marginHorizontal: 6 }}
     >
       <View
         pointerEvents="none"
         style={{
           flexDirection: "row",
           justifyContent: "space-between",
-          gap: 6,
+          gap: 7,
         }}
       >
         {Array.from({ length: 6 }, (_, index) => (
@@ -32,6 +32,7 @@ export function CodeInput({
             key={index}
             style={{
               flex: 1,
+              marginLeft: index === 3 ? 15 : 0,
               height: 56,
               borderRadius: 12,
               backgroundColor: "rgba(0,0,0,0.04)",

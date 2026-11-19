@@ -1,4 +1,5 @@
-import { Platform, Pressable, Text } from "react-native";
+import { SuperAsset, type SuperAssetName } from "../icons/SuperAsset";
+import { Platform, Pressable, Text, View } from "react-native";
 import { Host, Button, RNHostView } from "@expo/ui/swift-ui";
 import {
   buttonStyle,
@@ -14,7 +15,10 @@ export function NativeAction({
   disabled = false,
   destructive = false,
   tone = "green",
-  contentWidth = 168,
+  contentWidth = 156,
+  compact = false,
+  onDark = false,
+  leadingIcon,
 }: {
   title: string;
   onPress: () => void;
@@ -22,11 +26,15 @@ export function NativeAction({
   destructive?: boolean;
   tone?: "green" | "blue" | "neutral";
   contentWidth?: number;
+  compact?: boolean;
+  onDark?: boolean;
+  leadingIcon?: SuperAssetName;
 }) {
   if (Platform.OS === "ios")
     return (
       <Host
-        style={{ height: 54, width: "100%" }}
+        style={{ height: compact ? 40 : 54, width: "100%" }}
+        colorScheme={onDark ? "dark" : "light"}
         alignment="center"
         ignoreSafeArea="all"
       >
@@ -43,7 +51,7 @@ export function NativeAction({
             ),
             accessibilityLabel(title),
             buttonBorderShape("capsule"),
-            controlSize("large"),
+            controlSize(compact ? "regular" : "large"),
             disabledModifier(disabled),
             tint(
               destructive
@@ -57,19 +65,36 @@ export function NativeAction({
           ]}
         >
           <RNHostView matchContents>
-            <Text
+            <View
               style={{
                 width: contentWidth,
-                textAlign: "center",
-                fontFamily: "ui-rounded",
-                fontSize: 18,
-                fontWeight: "600",
-                color: tone === "neutral" ? "black" : "white",
-                paddingVertical: 4,
+                flexDirection: "row",
+                alignItems: "center",
+                justifyContent: "center",
+                gap: 6,
               }}
             >
-              {title}
-            </Text>
+              {leadingIcon && (
+                <SuperAsset
+                  name={leadingIcon}
+                  size={20}
+                  tint={tone === "neutral" && !onDark ? "black" : "white"}
+                />
+              )}
+              <Text
+                style={{
+                  flexShrink: 1,
+                  textAlign: "center",
+                  fontFamily: "ui-rounded",
+                  fontSize: compact ? 16 : 18,
+                  fontWeight: "600",
+                  color: tone === "neutral" && !onDark ? "black" : "white",
+                  paddingVertical: 0,
+                }}
+              >
+                {title}
+              </Text>
+            </View>
           </RNHostView>
         </Button>
       </Host>
@@ -94,7 +119,10 @@ export function NativeAction({
       }}
     >
       <Text
-        style={{ color: tone === "neutral" ? "black" : "white", fontSize: 18 }}
+        style={{
+          color: tone === "neutral" && !onDark ? "black" : "white",
+          fontSize: 18,
+        }}
       >
         {title}
       </Text>

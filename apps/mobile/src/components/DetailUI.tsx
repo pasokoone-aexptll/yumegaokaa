@@ -29,6 +29,7 @@ export function DetailPage({
   onRefresh,
   background,
   titleColor,
+  bottomPadding,
 }: {
   title: string;
   children: ReactNode;
@@ -38,6 +39,7 @@ export function DetailPage({
   onRefresh?: () => Promise<unknown>;
   background?: ReactNode;
   titleColor?: string;
+  bottomPadding?: number;
 }) {
   const router = useRouter();
   const [reloading, setReloading] = useState(false);
@@ -75,6 +77,7 @@ export function DetailPage({
           edgeToEdge && {
             paddingBottom: detail.content.paddingBottom + insets.bottom,
           },
+          bottomPadding !== undefined && { paddingBottom: bottomPadding },
         ]}
         keyboardShouldPersistTaps="handled"
         automaticallyAdjustKeyboardInsets

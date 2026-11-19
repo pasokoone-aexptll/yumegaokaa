@@ -125,7 +125,19 @@ export default function Layout() {
                 name="map-pin"
                 options={{
                   presentation: "formSheet",
-                  sheetAllowedDetents: [0.5, 1],
+                  sheetAllowedDetents: [0.47, 1],
+                  sheetInitialDetentIndex: 0,
+                  sheetGrabberVisible: true,
+                  sheetExpandsWhenScrolledToEdge: true,
+                  sheetLargestUndimmedDetentIndex: 1,
+                  contentStyle: { backgroundColor: "transparent" },
+                }}
+              />
+              <Stack.Screen
+                name="review-pin"
+                options={{
+                  presentation: "formSheet",
+                  sheetAllowedDetents: [0.47, 1],
                   sheetInitialDetentIndex: 0,
                   sheetGrabberVisible: true,
                   sheetExpandsWhenScrolledToEdge: true,

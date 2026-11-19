@@ -1,15 +1,13 @@
-import { Host, Toggle } from "@expo/ui/swift-ui";
-import {
-  accessibilityLabel,
-  background,
-  fixedSize,
-  labelsHidden,
-  padding,
-  shapes,
-  tint,
-} from "@expo/ui/swift-ui/modifiers";
+import { requireNativeViewManager } from "expo-modules-core";
+import type { NativeSyntheticEvent, ViewProps } from "react-native";
 
-/** The outline follows the native switch's intrinsic capsule, equally on all sides. */
+const Switch = requireNativeViewManager<
+  ViewProps & {
+    value: boolean;
+    onValueChange: (event: NativeSyntheticEvent<{ value: boolean }>) => void;
+  }
+>("PresenceNative", "CityParticipationSwitch");
+
 export function ParticipationSwitch({
   value,
   onChange,
@@ -18,27 +16,10 @@ export function ParticipationSwitch({
   onChange: (value: boolean) => void;
 }) {
   return (
-    <Host
+    <Switch
       style={{ width: 74, height: 40 }}
-      alignment="center"
-      ignoreSafeArea="all"
-      colorScheme="dark"
-    >
-      <Toggle
-        isOn={value}
-        onIsOnChange={onChange}
-        modifiers={[
-          labelsHidden(),
-          fixedSize(),
-          accessibilityLabel("街への参加"),
-          tint("#34C759"),
-          padding({ all: 4 }),
-          background(
-            value ? "#45E571" : "rgba(255,255,255,0.15)",
-            shapes.capsule(),
-          ),
-        ]}
-      />
-    </Host>
+      value={value}
+      onValueChange={({ nativeEvent }) => onChange(nativeEvent.value)}
+    />
   );
 }

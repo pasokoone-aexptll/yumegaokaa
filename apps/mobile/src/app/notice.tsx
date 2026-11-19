@@ -9,16 +9,29 @@ import { NativeAction } from "../components/denshin/NativeAction";
 import { useNotifications } from "../hooks/useNotifications";
 export default function NoticeDetail() {
   const { id } = useLocalSearchParams<{ id: string }>();
-  const router = useRouter();
   const d = useNotifications();
+  return <NoticeDetailView data={d} id={id} />;
+}
+export function NoticeDetailView({
+  data: d,
+  id,
+}: {
+  data: ReturnType<typeof useNotifications>;
+  id: string;
+}) {
+  const router = useRouter();
   const notice = d.items.find((n) => n.id === id);
   return (
     <DetailPage title="">
       {d.loading && <ActivityIndicator />}
       {notice && (
         <View style={{ gap: 35, paddingTop: 55 }}>
-          <NoticeHeading notice={notice} large />
-          <NoticeSubject notice={notice} detail />
+          <View style={{ paddingHorizontal: 16 }}>
+            <NoticeHeading notice={notice} large />
+          </View>
+          <View style={{ marginHorizontal: 5 }}>
+            <NoticeSubject notice={notice} detail />
+          </View>
           {(notice.kind === "pin_changed" ||
             notice.kind === "changed" ||
             notice.kind === "mention") && (

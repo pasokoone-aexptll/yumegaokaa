@@ -131,3 +131,40 @@ export function NoticeSubject({
     </View>
   );
 }
+
+export function NoticeListContent({ notice }: { notice: Notice }) {
+  const joined = notice.kind === "pin_joined";
+  if (!joined)
+    return (
+      <View style={{ gap: 12 }}>
+        <NoticeHeading notice={notice} />
+        <NoticeSubject notice={notice} />
+      </View>
+    );
+  return (
+    <View
+      style={{
+        flexDirection: "row",
+        gap: 11,
+        paddingHorizontal: 2,
+        alignItems: "flex-start",
+      }}
+    >
+      <SuperAsset name="非常口から人が出るrounded" width={53} height={62} />
+      <View style={{ flex: 1, gap: 7 }}>
+        <Text
+          style={{
+            fontFamily: "ui-rounded",
+            fontSize: 18,
+            lineHeight: 23,
+            fontWeight: "600",
+            color: "rgba(0,0,0,0.7)",
+          }}
+        >
+          {noticeTitle(notice)}
+        </Text>
+        <NoticeSubject notice={notice} />
+      </View>
+    </View>
+  );
+}

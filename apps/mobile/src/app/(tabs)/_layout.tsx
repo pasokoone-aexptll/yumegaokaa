@@ -32,6 +32,7 @@ export default function StreetTabs() {
     "/",
     "/map-event",
     "/map-pin",
+    "/review-pin",
     "/pin-confirmed",
     "/map-recruitment",
     "/pins/create",

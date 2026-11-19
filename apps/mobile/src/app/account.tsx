@@ -12,12 +12,24 @@ import { useEmailChange } from "../hooks/useEmailChange";
 import { NativeAction } from "../components/denshin/NativeAction";
 import { CodeInput } from "../components/denshin/CodeInput";
 import { SuperAsset } from "../components/icons/SuperAsset";
+import { useAutoVerifyCode } from "../hooks/useAutoVerifyCode";
+import { VerificationProgress } from "../components/denshin/VerificationProgress";
 import { MapAsset } from "../components/map/MapAsset";
 export default function Account() {
+  const data = useEmailChange();
+  return <AccountView data={data} />;
+}
+export function AccountView({
+  data: a,
+  editing,
+}: {
+  data: ReturnType<typeof useEmailChange>;
+  editing?: string;
+}) {
   const router = useRouter();
   const { height } = useWindowDimensions();
-  const { edit } = useLocalSearchParams<{ edit?: string }>();
-  const a = useEmailChange();
+  const params = useLocalSearchParams<{ edit?: string }>();
+  const edit = editing ?? params.edit;
   const complete = a.status === "メールアドレスを変更しました";
   const address =
     a.verifiedAddress === a.email
@@ -28,51 +40,70 @@ export default function Account() {
           ? a.pending
           : a.email;
   const isNew = address === a.pending;
-  const code = isNew ? a.newCode : a.oldCode;
+  const code = complete ? a.completedCode : isNew ? a.newCode : a.oldCode;
+  useAutoVerifyCode({
+    address,
+    code,
+    enabled: !!edit && !!a.pending && a.ready && !complete,
+    busy: a.busy,
+    verify: a.verify,
+  });
   const inputStyle = {
     fontFamily: "ui-rounded",
-    backgroundColor: "white",
-    borderRadius: 30,
-    padding: 18,
     fontSize: 17,
+    fontWeight: "600",
+    flex: 1,
   } as const;
   return (
     <DetailPage
+      bottomPadding={edit ? 16 : 4}
       title={edit ? "" : "Account settings"}
       refreshing={a.loading}
       onRefresh={a.load}
     >
       {edit ? (
-        <View style={{ gap: 30, paddingTop: 52 }}>
+        <View style={{ gap: complete || a.pending ? 24 : 32, paddingTop: 44 }}>
           <Text style={{ fontSize: 27, fontWeight: "600" }}>
             メールアドレスを変更
           </Text>
-          {complete ? (
-            <View style={{ alignItems: "center", paddingTop: 100 }}>
-              <SuperAsset name="checkRounded" size={64} />
-            </View>
-          ) : a.pending ? (
+          {complete || a.pending ? (
             <>
-              <Text style={{ color: "rgba(0,0,0,0.4)", lineHeight: 24 }}>
-                {address} に送信された6桁のコードを入力してください。
+              <Text
+                style={{
+                  color: "rgba(0,0,0,0.3)",
+                  fontSize: 16,
+                  lineHeight: 24,
+                  marginTop: 16,
+                }}
+              >
+                6-digit codeをメールに送信しました
               </Text>
               <CodeInput
                 value={code}
                 onChange={isNew ? a.setNewCode : a.setOldCode}
-                disabled={a.busy || !a.ready}
+                disabled={complete || a.busy || !a.ready}
               />
-              <View style={{ marginTop: 80 }}>
-                <NativeAction
-                  tone="blue"
-                  title="確認"
-                  disabled={a.busy || !a.ready || code.length !== 6}
-                  onPress={() => void a.verify(address, code)}
-                />
+              <View
+                style={{
+                  alignItems: "center",
+                  marginTop: Math.max(100, height * 0.16),
+                }}
+              >
+                <VerificationProgress complete={complete} busy={a.busy} />
               </View>
-              <Text style={{ color: "rgba(0,0,0,0.4)", lineHeight: 22 }}>
-                メール変更は、現在と新しいメールアドレスの両方で確認します。
-              </Text>
-              {a.verifiedAddress === "" && (
+              {!complete && (
+                <Text
+                  style={{
+                    color: "rgba(0,0,0,0.4)",
+                    textAlign: "center",
+                    lineHeight: 22,
+                  }}
+                >
+                  {address}
+                  {"\n"}現在と新しいメールアドレスの両方で確認します。
+                </Text>
+              )}
+              {!complete && a.verifiedAddress === "" && (
                 <Pressable
                   onPress={() =>
                     router.setParams({ edit: isNew ? "old" : "new" })
@@ -166,23 +197,37 @@ export default function Account() {
         </View>
       ) : (
         <>
-          <View style={{ marginTop: 36 }}>
+          <View
+            style={{
+              marginTop: 20,
+              minHeight: 54,
+              backgroundColor: "white",
+              borderRadius: 30,
+              paddingHorizontal: 14,
+              flexDirection: "row",
+              alignItems: "center",
+              gap: 10,
+            }}
+          >
+            <SuperAsset name="atmark" size={26} tint="black" opacity={0.3} />
             <Text selectable style={inputStyle}>
               {a.email || "読み込み中…"}
             </Text>
           </View>
-          <Section>
-            <DetailRow
-              title="メールアドレスを変更"
-              leading={<SuperAsset name="accountAtmark" size={30} />}
-              onPress={() =>
-                router.push({
-                  pathname: "/settings/account",
-                  params: { edit: "1" },
-                })
-              }
-            />
-          </Section>
+          <View style={{ marginTop: -9 }}>
+            <Section>
+              <DetailRow
+                title="メールアドレスを変更"
+                leading={<SuperAsset name="accountAtmark" size={30} />}
+                onPress={() =>
+                  router.push({
+                    pathname: "/settings/account",
+                    params: { edit: "1" },
+                  })
+                }
+              />
+            </Section>
+          </View>
           <View style={{ flex: 1, minHeight: 170 }} />
           <NativeAction
             title="アカウントを削除"
@@ -196,7 +241,7 @@ export default function Account() {
             style={{
               alignItems: "center",
               gap: 8,
-              marginTop: 64,
+              marginTop: 46,
               paddingVertical: 8,
             }}
           >
@@ -222,8 +267,8 @@ export default function Account() {
           </Pressable>
         </>
       )}
-      {a.busy && <ActivityIndicator />}
-      {!!a.status && (
+      {a.busy && !a.pending && <ActivityIndicator />}
+      {!!a.status && !complete && (
         <Text
           accessibilityRole="alert"
           style={{ color: "rgba(0,0,0,0.55)", textAlign: "center" }}

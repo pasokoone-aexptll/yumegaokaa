@@ -5,8 +5,15 @@ import { OperatorForm } from "../components/settings/OperatorForm";
 import { Action, Empty, ui } from "../components/Page";
 import { useOperatorDashboard } from "../hooks/useOperatorDashboard";
 export default function Screen() {
-  const router = useRouter();
   const dashboard = useOperatorDashboard();
+  return <AdminView dashboard={dashboard} />;
+}
+export function AdminView({
+  dashboard,
+}: {
+  dashboard: ReturnType<typeof useOperatorDashboard>;
+}) {
+  const router = useRouter();
   const {
     operator,
     ready,

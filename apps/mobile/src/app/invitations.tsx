@@ -71,7 +71,9 @@ export default function Invitations() {
         </Text>
       ) : target ? (
         <View style={s.confirm}>
-          <Text style={[s.title, { color: "rgba(0,0,0,0.7)" }]}>招待を削除しますか？</Text>
+          <Text style={[s.title, { color: "rgba(0,0,0,0.7)" }]}>
+            招待を削除しますか？
+          </Text>
           <View style={[s.row, { borderRadius: 26, marginTop: 70 }]}>
             <Avatar
               shape="square"
@@ -89,7 +91,7 @@ export default function Invitations() {
               >
                 {d.issuerName}
               </Text>
-              <Text style={s.name}>
+              <Text style={[s.name, { fontSize: 24, fontWeight: "800" }]}>
                 → {""}
                 {target.recipient_name ??
                   (target.used ? "登録済みの相手" : "未使用")}
@@ -182,9 +184,14 @@ export default function Invitations() {
             onPress={() => void d.act("invite_create")}
           />
           {!!current && (
-            <Text style={[s.secondary, { marginTop: -16 }]}>
+            <Text
+              style={[
+                s.secondary,
+                { marginTop: -16, fontSize: 13, color: "rgba(0,0,0,0.2)" },
+              ]}
+            >
               expiration date{" "}
-              {new Date(current.expires_at).toLocaleDateString()}
+              {new Date(current.expires_at).toLocaleDateString("sv-SE")}
             </Text>
           )}
           <Text style={[s.title, s.history]}>History</Text>
@@ -277,6 +284,11 @@ const s = StyleSheet.create({
     fontSize: 28,
     textAlign: "center",
   },
-  history: { color: "rgba(0,0,0,0.2)", marginTop: 60, marginBottom: 0 },
+  history: {
+    color: "rgba(0,0,0,0.2)",
+    fontSize: 24,
+    marginTop: 78,
+    marginBottom: -18,
+  },
   confirm: { paddingTop: 60 },
 });
