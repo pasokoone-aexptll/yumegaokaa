@@ -1,5 +1,7 @@
 # yumegaoka ドキュメントの入口
 
+2026-11-19：募集・オフ会は[電信PIN仕様](DENSHIN_PIN_SPEC.md)へ移行決定。現行コードは旧実装。画面参照は同書、残判断はOPEN_QUESTIONS Q-DP01〜06。
+
 更新：2026-11-05。実装・レビューはここから開始する。現行文書は現在の合意を示し、履歴は採用根拠を残す。記載がない詳細を承認済みと解釈しない。
 
 新セッションは [SESSION_HANDOFF](SESSION_HANDOFF.md) を読む。現在は主要ロジック・ローカル統合済み、UI改修・実機確認・外部接続を残す段階。iOSはApple Maps、AndroidはMapLibre。APNs直接送信はローカル実装済みで本番接続待ち。
