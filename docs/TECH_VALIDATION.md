@@ -1,6 +1,16 @@
 # 技術検証と実装状況
 
-## 2026-11-19 電信PINの実装とローカル検証（DP01）
+## 2026-11-19 電信PINのクラウド配備・SimulatorとUI監査（DP01）
+
+- 明示許可「電信PINの反映・起動は進める」。配備前読取：クラウド048、旧有効event/recruitment各0件。dry-runの対象は049のみ。適用成功、schema_migrations=202611190049、pins/attendanceの存在を再確認。データリセットなし。
+- Render配備用ブランチにFCMのPIN通知文言だけを通常push（36261da）。既存サービスのManual Deployを実行し、dep-dbvbv3ek1f9s73c3p7kgがDeploy succeeded / Live、18:21 JSTを確認。healthz成功。APNs資格の新設定や実通知送信は行っていない。
+- c449960のiOS ReleaseをXcode/arm64 Simulator向けにビルド成功。出力 `/tmp/yumegaoka-denshin-simulator/Build/Products/Release-iphonesimulator/app.app`、ログ `/tmp/yumegaoka-denshin-simulator-build.log`。初回は旧ローカル設定に気づき中断、環境変数でクラウドを指定して再実行。`.env.local`と製品コードを変更していない。バンドル内Supabase HTTPS/Render WSS存在と旧LAN URL不在を確認。
+- Device HubのiPhone 18 Pro/iOS27.0へインストール・起動。ユーザーがログインし、地図と既存クラウドチャット表示を確認。未入街で作成シートを開き、募集/定員の切替、定員変更、Map位置選択→戻ると設定保持を確認。保存/公開は行っていない。既存ローカルDB競合試験は再実行していない。
+- 不具合：作成シートの見出し/操作ボタンと本文欄が重なり、閉じるへのタップが本文に届く。シート外タップでは地図へ戻れた。DP01の操作完成を阻害するため、標準Sheet/Formへの移行時の最優先項目。今回の監査のみ指示に従いコード未変更。クラウド上の保存/参加一巡、iPhone実機、実Pushは未確認。
+- UI初回監査と6段階移行案は[IOS_NATIVE_UI_PLAN](frontend-redesign/IOS_NATIVE_UI_PLAN.md)。SwiftUI未導入、Native Stack既存、TabsはJS、UIGlassEffectは一部既存、PINはBlurView。32 TSXルート/レイアウトと共通部品/ネイティブ境界を照合。依存導入なし。
+- DP01：配備待ち→配備済み、Simulator未起動→起動/部分導線確認。UI操作不具合と実機待ちは残る。旧33：実装29/33(87.9%)、統合27/33(81.8%)、実機11/33(33.3%)、DONE27/33(81.8%)、BLOCKED3/33(9.1%)。固定残量ローカル4→4、外部3→3。新UI移行6段階は別枠、工数未見積もり。
+
+## 2026-11-19 電信PINの実装とローカル検証（DP01・配備前の履歴）
 
 R12/R13/R14/R16/R17/R19。Q-DP01〜06はユーザーがすべて採用。新仕様・FigmaはDENSHIN_PIN_SPEC参照。
 

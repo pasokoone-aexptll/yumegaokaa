@@ -4,7 +4,7 @@
 
 ## 2026-11-19の再開点：電信PIN仕様
 
-最新依頼は6点の採用とFigmaに沿った実装。[DENSHIN_PIN_SPEC](DENSHIN_PIN_SPEC.md)を参照。旧募集・オフ会を置換し、街外作成/1日3個/24時間/募集切替/会員名簿を採用。添付2枚をdocs/reference/denshin-pinに保持。DB/API/UIを実装、ローカル049まで適用と主要フロー/競合検証成功。端末更新・クラウド配備なし。TECH_VALIDATIONのDP01記録を参照。旧募集の退出/ゴースト終了と20分、イベント限定名簿は以下の旧実装記録であり、新仕様には適用しない。Q-DP01〜06は承認済み。旧33タスクの履歴は維持、新範囲DP01は実機待ち・配備待ち、一部UI差分。ローカルColimaとsupabase_db_yumegaokaのみ起動。現地クラウドの旧有効データは未照合、新API未配備。新UIを現地端末へ配布する前に対応する。
+最新は電信PINのクラウド反映/Simulator起動と、iOS Native UI方針の初回監査依頼。確認への回答「電信PINの反映・起動は進める」に従い、Supabase yumegaoka-fieldの旧有効募集/イベント0件を読取確認後049を適用。Renderの36261daがLive（dep-dbvbv3ek1f9s73c3p7kg）。c449960のクラウド接続ReleaseをiPhone 18 Pro/iOS27.0 Simulatorへ導入、ユーザーがログイン済み。未入街のPIN作成、募集/定員変更、位置選択往復を確認。見出し/操作ボタンと本文欄の重なりがあり保存/参加一巡未確認。標準Sheet化で最優先修正する。今回は再設計のコード変更なし。[IOS_NATIVE_UI_PLAN](frontend-redesign/IOS_NATIVE_UI_PLAN.md)に32 TSXルート/レイアウトの監査と6段階の移行計画。UIの次の実装はNativeTabs/標準Sheet/Form、既存hooks/API維持。旧33タスクの達成率と固定残量は変更なし。電信PIN仕様は[DENSHIN_PIN_SPEC](DENSHIN_PIN_SPEC.md)。実機・実Push確認は未完。
 
 
 ## 現在の作業制約（2026-11-05・最新）

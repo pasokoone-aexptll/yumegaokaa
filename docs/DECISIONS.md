@@ -2,6 +2,10 @@
 
 2026-11-19追記：電信PINのQ-DP01〜06はユーザーが推奨案をすべて承認。DENSHIN_PIN_SPECに本文反映しDP01実装を開始。旧有効データがある場合の移行判断は配備前に確認。
 
+## 2026-11-19：iOSネイティブUIの採用方針
+
+ユーザーのImplementation Policyを採用。RN/TSと既存ロジックを維持し、SwiftUI/Expo UI、標準ナビゲーション/Sheet/フォームを優先。Figmaの情報と導線は保持し、iOSの外観・操作はApple標準UIを優先。独自BlurでLiquid Glassを模倣しない。Androidの現行挙動は保持。初回はコードを変えず監査・計画のみ。電信PINの既存実装の配備/Simulator起動は別途明示許可。詳細は[移行計画](frontend-redesign/IOS_NATIVE_UI_PLAN.md)。
+
 ## 2026-11-19：電信PINへ統合（仕様採用・ローカル実装済み）
 
 根拠：ユーザー「基本的に推奨案でいい」「街の外にいても」「一日に…3こまで」、作成後も募集ON/OFF・編集可能と指定。Group 740/741を閲覧者/作者のUI参照として提供。
