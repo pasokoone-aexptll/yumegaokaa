@@ -1,12 +1,13 @@
 import { ReducedIconMotion } from "../../components/icons/IconMotion";
 import { tabInsets, tabIconStyle } from "../../components/tabInsets";
 import { shouldShowTabs } from "../../lib/tabVisibility";
-import { useContext, useSyncExternalStore } from "react";
+import { useContext, useEffect, useState, useSyncExternalStore } from "react";
 import { sessionState } from "../../lib/sessionState";
 import { AccountAccessContext } from "../../hooks/useAccountAccess";
 import { usePinPlacement } from "../../lib/pinPlacement";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import {
+  Animated,
   Easing,
   Keyboard,
   Platform,
@@ -36,6 +37,17 @@ export default function StreetTabs() {
     "/pins/create",
     "/street-entry",
   ].includes(pathname);
+  const [themeProgress] = useState(() => new Animated.Value(dark ? 1 : 0));
+  useEffect(() => {
+    const animation = Animated.timing(themeProgress, {
+      toValue: dark ? 1 : 0,
+      duration: reducedMotion ? 0 : 320,
+      easing: Easing.inOut(Easing.cubic),
+      useNativeDriver: false,
+    });
+    animation.start();
+    return () => animation.stop();
+  }, [dark, reducedMotion, themeProgress]);
   const insets = useSafeAreaInsets();
   const { width } = useWindowDimensions();
   return (
@@ -94,7 +106,28 @@ export default function StreetTabs() {
                     />
                   </View>
                 )
-              : undefined,
+              : () => (
+                  <Animated.View
+                    pointerEvents="none"
+                    style={[
+                      StyleSheet.absoluteFill,
+                      {
+                        backgroundColor: themeProgress.interpolate({
+                          inputRange: [0, 1],
+                          outputRange: ["rgb(250,250,250)", "rgb(26,26,26)"],
+                        }),
+                        borderTopWidth: StyleSheet.hairlineWidth,
+                        borderTopColor: themeProgress.interpolate({
+                          inputRange: [0, 1],
+                          outputRange: [
+                            "rgba(0,0,0,0.1)",
+                            "rgba(255,255,255,0.15)",
+                          ],
+                        }),
+                      },
+                    ]}
+                  />
+                ),
           tabBarStyle: {
             display: shouldShowTabs(
               session.ready,
@@ -105,14 +138,8 @@ export default function StreetTabs() {
             )
               ? "flex"
               : "none",
-            backgroundColor:
-              dark && Platform.OS === "android"
-                ? "#19191c"
-                : dark
-                  ? "#000000e6"
-                  : "#fafafa",
-            borderTopWidth: StyleSheet.hairlineWidth,
-            borderTopColor: dark ? "#ffffff26" : "#0000001a",
+            backgroundColor: "transparent",
+            borderTopWidth: 0,
             ...tabInsets(insets.bottom, width),
           },
         }}

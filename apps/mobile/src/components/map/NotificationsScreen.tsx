@@ -44,6 +44,7 @@ export function NotificationsScreen() {
   }, [pinned, reduced, fade]);
   const push = usePushPermission();
   const d = useNotifications();
+  const [refreshing, setRefreshing] = useState(false);
   const items = d.items;
   const sections = useMemo(() => {
     const groups = new Map<string, typeof items>();
@@ -143,8 +144,11 @@ export function NotificationsScreen() {
         onViewableItemsChanged={visible}
         onScroll={(event) => setPinned(event.nativeEvent.contentOffset.y > 40)}
         scrollEventThrottle={32}
-        refreshing={d.loading}
-        onRefresh={() => void d.load()}
+        refreshing={refreshing}
+        onRefresh={() => {
+          setRefreshing(true);
+          void d.load().finally(() => setRefreshing(false));
+        }}
         contentContainerStyle={{
           flexGrow: 1,
           paddingHorizontal: 26,
