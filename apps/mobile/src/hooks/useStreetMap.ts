@@ -7,7 +7,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { Alert, DeviceEventEmitter, AppState, Platform } from "react-native";
 import { closeMenu, setToolsButtonVisible } from "expo-dev-client";
 import { gatewayConnection } from "../lib/gatewayConnection";
-import NfcManager, { NfcTech, Ndef } from "react-native-nfc-manager";
+import NfcManager, { NfcTech, Ndef, NfcError } from "react-native-nfc-manager";
 import {
   key,
   displayClock,
@@ -20,7 +20,12 @@ import {
 import { Recruitment } from "../lib/recruitments";
 import { StreetEvent } from "../lib/events";
 import { scanPrompt } from "../lib/entryPlatform";
-import { fieldTrial, localEntry, localHost, nfcDisabled } from "../lib/development";
+import {
+  fieldTrial,
+  localEntry,
+  localHost,
+  nfcDisabled,
+} from "../lib/development";
 const initial: NativeState = {
   observing: false,
   status: "未参加",
@@ -41,8 +46,10 @@ const friendly = (error: unknown) => {
     return "街の内側で現在地を確認してから、通常モードに戻してください。";
   if (s.includes("operation_in_progress"))
     return "参加状態を確認中です。少し待ってからお試しください。";
-  if (s.includes("nfc_off")) return "端末のNFCをオンにしてから、もう一度読み取ってください。";
-  if (/invalid_tag|SyntaxError/.test(s)) return "夢ヶ丘のNFCステッカーを読み取ってください。";
+  if (s.includes("nfc_off"))
+    return "端末のNFCをオンにしてから、もう一度読み取ってください。";
+  if (/invalid_tag|SyntaxError/.test(s))
+    return "夢ヶ丘のNFCステッカーを読み取ってください。";
   if (s.includes("inactive_tag")) return "このステッカーは現在使えません。";
   if (s.includes("wrong_writer"))
     return "別の端末で参加しています。この端末で参加するにはNFCにタッチしてください。";
@@ -74,7 +81,9 @@ export function useStreetMap() {
     >(null),
     [settings, setSettings] = useState(false);
   const [entryError, setEntryError] = useState("");
-  useEffect(() => { if (!sheet) setEntryError(""); }, [sheet]);
+  useEffect(() => {
+    if (!sheet) setEntryError("");
+  }, [sheet]);
   const entryInFlight = useRef(false);
   const canceled = useRef(false),
     fetching = useRef(false),
@@ -109,11 +118,12 @@ export function useStreetMap() {
       setName(config.name);
       setEntryMap(config);
       const denshin = await native.rpc<{ items: DenshinPin[] }>(
-        "denshin_list", { street_id: streetID },
+        "denshin_list",
+        { street_id: streetID },
       );
       if (generation !== snapshotGeneration.current) return;
       setDenshinPins(
-        denshin.items.filter(p => !localBlocks.hidden(p.author_id)),
+        denshin.items.filter((p) => !localBlocks.hidden(p.author_id)),
       );
       const pins = await native.rpc<{ items: StreetEvent[] }>("event_list", {
         street_id: streetID,
@@ -136,8 +146,10 @@ export function useStreetMap() {
         ["membership_required", "unauthorized", "login_required"].some((x) =>
           String(e).includes(x),
         )
-      )
-        { setSnapshot(undefined); setEntryMap(undefined); }
+      ) {
+        setSnapshot(undefined);
+        setEntryMap(undefined);
+      }
     } finally {
       fetching.current = false;
       if (refreshQueued.current && generation === snapshotGeneration.current) {
@@ -164,10 +176,15 @@ export function useStreetMap() {
         setError(friendly(e));
         setReady(true);
       });
-    const outsideExit = Platform.OS === "android"
-      ? DeviceEventEmitter.addListener("yumegaokaAndroidVisitEnded", setState) : undefined;
+    const outsideExit =
+      Platform.OS === "android"
+        ? DeviceEventEmitter.addListener("yumegaokaAndroidVisitEnded", setState)
+        : undefined;
     const listener = native.addListener("onChange", (s) => setState(s));
-    return () => { outsideExit?.remove(); listener.remove(); };
+    return () => {
+      outsideExit?.remove();
+      listener.remove();
+    };
   }, []);
   useEffect(() => {
     if (!signed) return;
@@ -205,7 +222,11 @@ export function useStreetMap() {
         });
       },
       reconnected: () => {
-        if (Platform.OS === "android") void native.resume().then(setState).catch(() => {});
+        if (Platform.OS === "android")
+          void native
+            .resume()
+            .then(setState)
+            .catch(() => {});
       },
       changed: () => {
         streetChanges.notify();
@@ -214,7 +235,9 @@ export function useStreetMap() {
     });
     gateway.setActive(AppState.currentState === "active");
     const unsubscribeBlocks = localBlocks.subscribe(() => {
-      setDenshinPins(items => items.filter(p => !localBlocks.hidden(p.author_id)));
+      setDenshinPins((items) =>
+        items.filter((p) => !localBlocks.hidden(p.author_id)),
+      );
       setRecruitments((items) =>
         items.filter((p) => !localBlocks.hidden(p.author_id)),
       );
@@ -274,10 +297,17 @@ export function useStreetMap() {
       }
     } catch (e) {
       const message = String(e);
-      if (sending && /over_email_send_rate_limit|over_request_rate_limit|rate limit|after .*seconds/i.test(message)) {
+      if (
+        sending &&
+        /over_email_send_rate_limit|over_request_rate_limit|rate limit|after .*seconds/i.test(
+          message,
+        )
+      ) {
         setSent(true);
         setNextSendAt(Date.now() + 60000);
-        setError("メールの送信上限に達しました。届いている最新のコードを入力するか、時間をおいて再送してください。");
+        setError(
+          "メールの送信上限に達しました。届いている最新のコードを入力するか、時間をおいて再送してください。",
+        );
       } else {
         setError(friendly(e));
       }
@@ -297,7 +327,11 @@ export function useStreetMap() {
     }));
     void NfcManager.cancelTechnologyRequest().catch(() => {});
     try {
-      setState(await native.stop(state.visit.can_update ? state.visit.visit_id : undefined));
+      setState(
+        await native.stop(
+          state.visit.can_update ? state.visit.visit_id : undefined,
+        ),
+      );
       await refresh();
     } catch {
       setError("端末の観測は停止しました。退出は通信回復後に反映します。");
@@ -316,9 +350,13 @@ export function useStreetMap() {
       }
     } catch (e) {
       if (!canceled.current) {
-        setEntryError(fieldTrial && tagId === "14fdc906-3ff4-4576-a212-35c42642dd49" && String(e).includes("inactive_tag")
-          ? "このアカウントには有効な現地試験の入街許可がありません。登録済みのNFCステッカーで入街してください。"
-          : friendly(e));
+        setEntryError(
+          fieldTrial &&
+            tagId === "14fdc906-3ff4-4576-a212-35c42642dd49" &&
+            String(e).includes("inactive_tag")
+            ? "このアカウントには有効な現地試験の入街許可がありません。登録済みのNFCステッカーで入街してください。"
+            : friendly(e),
+        );
         setSheet("explain");
       }
     }
@@ -337,6 +375,12 @@ export function useStreetMap() {
     }
   }
   async function performScan(source: "default" | "tag") {
+    // Simulator has no NFC reader. Keep the waiting presentation without
+    // attempting a session or falsely treating hardware absence as a network error.
+    if (source === "tag" && native.isSimulator?.()) {
+      setSheet("explain");
+      return;
+    }
     if (fieldTrial && source === "default") {
       await enterFixture("14fdc906-3ff4-4576-a212-35c42642dd49");
       return;
@@ -357,7 +401,7 @@ export function useStreetMap() {
     setError("");
     try {
       await NfcManager.start();
-      if (!await NfcManager.isEnabled()) throw new Error("nfc_off");
+      if (!(await NfcManager.isEnabled())) throw new Error("nfc_off");
       if (canceled.current) return;
       await NfcManager.requestTechnology(NfcTech.Ndef, {
         alertMessage: scanPrompt,
@@ -386,7 +430,15 @@ export function useStreetMap() {
       }
     } catch (e) {
       if (!canceled.current) {
-        setEntryError(friendly(e));
+        if (e instanceof NfcError.UserCancel) {
+          setSheet(null);
+          return;
+        }
+        setEntryError(
+          e instanceof NfcError.Timeout
+            ? "NFCが見つかりませんでした。ステッカーに近づけて、もう一度お試しください。"
+            : friendly(e),
+        );
         setSheet("explain");
       }
     } finally {
@@ -460,7 +512,10 @@ export function useStreetMap() {
     snapshotGeneration.current++;
     refreshQueued.current = false;
     await native.logout();
-    { setSnapshot(undefined); setEntryMap(undefined); }
+    {
+      setSnapshot(undefined);
+      setEntryMap(undefined);
+    }
     setDenshinPins([]);
     setEvents([]);
     setRecruitments([]);

@@ -1,5 +1,5 @@
 import { NativeToggle as Switch } from "../../components/denshin/NativeToggle";
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { ReducedIconMotion } from "../../components/icons/IconMotion";
 import { RollingNumber } from "../../components/denshin/RollingNumber";
 import { SuperAsset } from "../../components/icons/SuperAsset";
@@ -28,7 +28,11 @@ import {
 export default function CreatePin() {
   const router = useRouter(),
     insets = useSafeAreaInsets();
-  const { draft, busy, locked, error, save, revise } = useDenshinEditor();
+  const { draft, busy, locked, error, save, revise, remove } =
+    useDenshinEditor();
+  useEffect(() => {
+    if (error) Alert.alert("操作できませんでした", error);
+  }, [error]);
   const disabled = busy || locked;
   const [expanded, setExpanded] = useState(false);
   const reduced = useContext(ReducedIconMotion);
@@ -211,14 +215,27 @@ export default function CreatePin() {
           <Text style={s.hint}>参加者がいる間は場所を変更できません。</Text>
         )}
         <Text style={s.hint}>作成から24時間で消えます。1日3個まで。</Text>
-        {!!error && (
-          <Text accessibilityRole="alert" style={s.error}>
-            {error}
-          </Text>
-        )}
-        {locked && (
-          <Pressable disabled={busy} onPress={() => void revise()}>
-            <Text style={s.label}>送信結果を確認して編集に戻る</Text>
+        {!!draft.id && (
+          <Pressable
+            accessibilityRole="button"
+            disabled={disabled}
+            onPress={() =>
+              Alert.alert(
+                "電信PINを削除しますか？",
+                "参加者へ終了を通知します。今日の作成枠は戻りません。",
+                [
+                  { text: "戻る", style: "cancel" },
+                  {
+                    text: "削除",
+                    style: "destructive",
+                    onPress: () => void remove(),
+                  },
+                ],
+              )
+            }
+            style={{ alignItems: "center", padding: 16 }}
+          >
+            <Text style={s.error}>電信PINを削除</Text>
           </Pressable>
         )}
       </ScrollView>
@@ -232,10 +249,10 @@ const s = StyleSheet.create({
     justifyContent: "space-between",
     padding: 0,
     flexShrink: 0,
-    paddingTop: 24,
+    paddingTop: 0,
   },
   actions: { flexDirection: "row", gap: 10 },
-  content: { padding: 22, gap: 24 },
+  content: { padding: 22, paddingTop: 16, gap: 24 },
   input: {
     borderRadius: 26,
     backgroundColor: "#ffffff22",

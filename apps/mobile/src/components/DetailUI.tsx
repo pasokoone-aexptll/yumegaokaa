@@ -154,7 +154,7 @@ export function DetailRow({
         />
       ) : (
         onPress && (
-          <DetailIcon name="chevron-forward" size={17} color="#00000055" />
+          <DetailIcon name="chevron-forward" size={28} color="#00000055" />
         )
       )}
     </>
@@ -213,7 +213,7 @@ export const detail = StyleSheet.create({
   page: { flex: 1, backgroundColor: "#F6F6F6" },
   navigation: {
     paddingHorizontal: 0,
-    paddingTop: 8,
+    paddingTop: 0,
     paddingBottom: 12,
     flexDirection: "row",
     justifyContent: "space-between",
@@ -231,6 +231,7 @@ export const detail = StyleSheet.create({
   content: {
     flexGrow: 1,
     padding: 20,
+    paddingTop: 0,
     paddingBottom: 36,
     gap: 24,
   },
@@ -255,9 +256,9 @@ export const detail = StyleSheet.create({
     overflow: "hidden",
   },
   row: {
-    minHeight: 55,
+    minHeight: 54,
     paddingHorizontal: 16,
-    paddingVertical: 15,
+    paddingVertical: 12,
     flexDirection: "row",
     alignItems: "center",
     gap: 12,

@@ -29,7 +29,7 @@ export function inviteSvg(code: string): string {
     q = 4,
     side = n + q * 2;
   const parts = [
-    `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${side} ${side}"><rect width="${side}" height="${side}" fill="white"/>`,
+    `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${side} ${side}"><rect width="${side}" height="${side}" rx="4" fill="white"/>`,
   ];
   for (let y = 0; y < n; y++)
     for (let x = 0; x < n; x++) {
@@ -37,8 +37,17 @@ export function inviteSvg(code: string): string {
       const finder =
         (x < 7 && y < 7) || (x >= n - 7 && y < 7) || (x < 7 && y >= n - 7);
       if (finder) continue;
+      const dark = (dx: number, dy: number) =>
+        dx >= 0 && dy >= 0 && dx < n && dy < n && !!modules.get(dy, dx);
+      const r = 0.42,
+        X = x + q,
+        Y = y + q;
+      const tl = !dark(x - 1, y) && !dark(x, y - 1) ? r : 0;
+      const tr = !dark(x + 1, y) && !dark(x, y - 1) ? r : 0;
+      const br = !dark(x + 1, y) && !dark(x, y + 1) ? r : 0;
+      const bl = !dark(x - 1, y) && !dark(x, y + 1) ? r : 0;
       parts.push(
-        `<rect x="${x + q}" y="${y + q}" width="1" height="1" rx="${finder ? 0.12 : 0.28}" fill="#00AF6B"/>`,
+        `<path d="M${X + tl} ${Y}H${X + 1 - tr}Q${X + 1} ${Y} ${X + 1} ${Y + tr}V${Y + 1 - br}Q${X + 1} ${Y + 1} ${X + 1 - br} ${Y + 1}H${X + bl}Q${X} ${Y + 1} ${X} ${Y + 1 - bl}V${Y + tl}Q${X} ${Y} ${X + tl} ${Y}Z" fill="#00AF6B"/>`,
       );
     }
   for (const [x, y] of [

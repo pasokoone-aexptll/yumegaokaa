@@ -111,12 +111,28 @@ export function useDenshinEditor() {
       if (result) {
         clearDenshinDraft();
         router.replace({ pathname: "/map-pin", params: { id: result.id } });
-      } else
-        setError(
-          draft.id
-            ? "送信を取り消しました。競合の場合は詳細へ戻り、最新の内容から編集し直してください。"
-            : "内容を修正できます。",
-        );
+      } else setError("");
+    } catch (e) {
+      setError(denshinError(e));
+    } finally {
+      running.current = false;
+      setBusy(false);
+    }
+  }
+  async function remove() {
+    if (!draft.id || !draft.original || pending || running.current) return;
+    running.current = true;
+    setBusy(true);
+    const session = sessionState.get().revision;
+    try {
+      await submitCommand("denshin_delete", {
+        id: draft.id,
+        revision: draft.original.revision,
+      });
+      if (session !== sessionState.get().revision) return;
+      clearDenshinDraft();
+      streetChanges.notify();
+      router.dismissTo("/(tabs)");
     } catch (e) {
       setError(denshinError(e));
     } finally {
@@ -131,5 +147,6 @@ export function useDenshinEditor() {
     locked: !!pending,
     save,
     revise,
+    remove,
   };
 }

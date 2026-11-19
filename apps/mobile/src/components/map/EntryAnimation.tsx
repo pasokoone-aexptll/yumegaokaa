@@ -19,7 +19,7 @@ export function EntryAnimation({
       }}
     >
       <SuperAsset
-        name="非常口"
+        name="非常口rounded"
         size={90}
         tint={phase === "success" ? "#34C759" : "white"}
         opacity={phase === "success" ? 1 : 0.55}

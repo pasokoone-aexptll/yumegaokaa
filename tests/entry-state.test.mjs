@@ -6,11 +6,12 @@ const source = ts.transpileModule(
   readFileSync("apps/mobile/src/hooks/useStreetMap.ts", "utf8"),
   { compilerOptions: { module: ts.ModuleKind.CommonJS } },
 ).outputText;
-function harness(checkin, stop) {
+function harness(checkin, stop, simulator = false) {
   const slots = [];
   let index = 0,
     calls = 0;
   const native = {
+    isSimulator: () => simulator,
     checkin: async () => {
       calls++;
       return checkin();
@@ -145,4 +146,14 @@ test("OFF immediately stays off while exit is pending and when transport fails",
   await exiting;
   assert.equal(h.render().active, false);
   assert.match(h.render().error, /通信回復後/);
+});
+
+
+test("Simulator NFC wait neither attempts checkin nor displays a connection error", async () => {
+  const h = harness(async () => active, undefined, true);
+  await h.render().scan("tag");
+  assert.equal(h.render().sheet, "explain");
+  assert.equal(h.render().entryError, "");
+  assert.equal(h.render().active, false);
+  assert.equal(h.calls, 0);
 });

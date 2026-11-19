@@ -105,9 +105,25 @@ final class SheetBackdrop: ExpoView {
   }
 }
 
-// Configure the system presentation only; UIKit owns its material and drag behavior.
+// UIKit owns the sheet gestures; its content uses a real UIGlassEffect surface.
 final class NativeSheetAppearance: ExpoView {
   private weak var configuredSheet: UISheetPresentationController?
+  private let glassSurface = UIVisualEffectView()
+
+  required init(appContext: AppContext? = nil) {
+    super.init(appContext: appContext)
+    isUserInteractionEnabled = false
+    backgroundColor = .clear
+    if #available(iOS 26.0, *) {
+      let glass = UIGlassEffect(style: .regular)
+      glass.tintColor = UIColor.black.withAlphaComponent(0.22)
+      glassSurface.effect = glass
+    } else {
+      glassSurface.effect = UIBlurEffect(style: .systemThinMaterialDark)
+    }
+    glassSurface.isUserInteractionEnabled = false
+    glassSurface.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+  }
   override func didMoveToWindow() {
     super.didMoveToWindow()
     applyAppearance()
@@ -130,11 +146,19 @@ final class NativeSheetAppearance: ExpoView {
                let sheet = controller.sheetPresentationController {
               guard self?.configuredSheet !== sheet else { return }
               self?.configuredSheet = sheet
+              // Keep material outside the React content wrapper: an absolute
+              // full-size first child is interpreted as a sheet header by
+              // react-native-screens and collapses the ScrollView on expansion.
+              if let surface = self?.glassSurface {
+                surface.frame = controller.view.bounds
+                controller.view.insertSubview(surface, at: 0)
+              }
               controller.overrideUserInterfaceStyle = .dark
               child.overrideUserInterfaceStyle = .dark
               sheet.overrideTraitCollection = UITraitCollection(userInterfaceStyle: .dark)
               if #available(iOS 26.1, *) {
-                let material = UIBlurEffect(style: .systemThinMaterialDark)
+                let material = UIGlassEffect(style: .regular)
+                material.tintColor = UIColor.black.withAlphaComponent(0.22)
                 sheet.backgroundEffect = material
                 for detent in sheet.detents {
                   detent.backgroundEffect = material

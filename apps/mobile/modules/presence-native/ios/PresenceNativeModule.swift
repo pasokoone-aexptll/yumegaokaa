@@ -5,6 +5,13 @@ import UIKit
 public class PresenceNativeModule: Module {
  public func definition() -> ModuleDefinition {
   Name("PresenceNative")
+  Function("isSimulator") { () -> Bool in
+   #if targetEnvironment(simulator)
+   return true
+   #else
+   return false
+   #endif
+  }
   Events("onChange")
   View(StreetBackdrop.self) {
    Prop("edge") { (view: StreetBackdrop, value: String) in view.edge = value }

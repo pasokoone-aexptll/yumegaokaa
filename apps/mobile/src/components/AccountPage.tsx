@@ -1,4 +1,4 @@
-import { type ReactNode, useSyncExternalStore, useRef } from "react";
+import { type ReactNode, useSyncExternalStore, useState } from "react";
 import { Animated, StyleSheet, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Avatar } from "./Avatar";
@@ -15,7 +15,7 @@ export function AccountPage({
   version?: string;
 }) {
   const insets = useSafeAreaInsets();
-  const scroll = useRef(new Animated.Value(0)).current;
+  const [scroll] = useState(() => new Animated.Value(0));
   const pull = scroll.interpolate({
     inputRange: [-1, 0, 1],
     outputRange: [1, 0, 0],
@@ -60,7 +60,9 @@ export function AccountPage({
             shape="square"
           />
         </View>
-        <Text style={s.email}>{session.email}</Text>
+        <Text numberOfLines={1} style={s.email}>
+          {session.email}
+        </Text>
       </View>
       <Text style={s.name}>@{name}</Text>
       <View style={s.content}>{children}</View>
@@ -82,6 +84,8 @@ const s = StyleSheet.create({
     fontFamily: "ui-rounded",
     color: "rgba(0,0,0,0.18)",
     fontSize: 14,
+    alignSelf: "flex-start",
+    marginTop: 29,
   },
   name: {
     fontFamily: "ui-rounded",

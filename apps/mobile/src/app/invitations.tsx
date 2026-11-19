@@ -1,6 +1,6 @@
 import { NativeToggle as Switch } from "../components/denshin/NativeToggle";
 import { useEffect, useMemo, useState } from "react";
-import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
+import { ActivityIndicator, Image, StyleSheet, Text, View } from "react-native";
 import { CameraView, useCameraPermissions } from "expo-camera";
 import { SvgXml } from "react-native-svg";
 import { useLocalSearchParams, usePathname, useRouter } from "expo-router";
@@ -47,6 +47,21 @@ export default function Invitations() {
       root={d.receiving}
       title={d.receiving ? "招待を受け取る" : "Invite friends to the app"}
     >
+      {!d.receiving && (
+        <Image
+          pointerEvents="none"
+          source={require("../../assets/superassets/DreamCloud背景.png")}
+          style={{
+            position: "absolute",
+            top: 380,
+            right: -110,
+            width: 360,
+            height: 300,
+            opacity: 0.12,
+          }}
+          resizeMode="contain"
+        />
+      )}
       {revoke && !target ? (
         <Text style={s.secondary}>
           {d.loading ? "読み込み中…" : "この招待は表示できません。"}
@@ -191,7 +206,7 @@ const s = StyleSheet.create({
     height: 220,
     alignItems: "center",
     justifyContent: "center",
-    marginTop: 10,
+    marginTop: 26,
   },
   scan: {
     height: 330,
@@ -240,6 +255,6 @@ const s = StyleSheet.create({
     fontSize: 28,
     textAlign: "center",
   },
-  history: { color: "rgba(0,0,0,0.2)", marginTop: 45, marginBottom: 18 },
+  history: { color: "rgba(0,0,0,0.2)", marginTop: 60, marginBottom: 0 },
   confirm: { gap: 35, paddingTop: 60 },
 });

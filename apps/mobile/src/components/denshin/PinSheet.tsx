@@ -15,13 +15,13 @@ export function PinSheet({ children }: { children: ReactNode }) {
       style={s.root}
       behavior={Platform.OS === "ios" ? "padding" : undefined}
     >
+      {children}
       {Appearance && (
         <Appearance
           pointerEvents="none"
           style={{ position: "absolute", width: 1, height: 1 }}
         />
       )}
-      {children}
     </KeyboardAvoidingView>
   );
 }

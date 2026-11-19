@@ -10,7 +10,7 @@ import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { useNavigation } from "expo-router";
 import {
   Platform,
-  ActivityIndicator,
+  Alert,
   Pressable,
   ScrollView,
   Text,
@@ -18,6 +18,7 @@ import {
   useWindowDimensions,
 } from "react-native";
 
+import { EntryProgress } from "../components/map/EntryProgress";
 import { EntryAnimation } from "../components/map/EntryAnimation";
 import { entrySheetState } from "../lib/entrySheetState";
 import { useEntryPresentation } from "../hooks/useEntryPresentation";
@@ -26,11 +27,29 @@ export default function StreetEntry() {
   const trialRing =
     Platform.OS === "ios" && nfcDisabled && (fieldTrial || localEntry);
   const started = useRef(false);
+  const lastError = useRef("");
   const value = useSyncExternalStore(
     entrySheetState.subscribe,
     entrySheetState.get,
   );
   const phase = useEntryPresentation(value?.sheet ?? null);
+  useEffect(() => {
+    const message = value?.entryError ?? "";
+    if (message && message !== lastError.current) {
+      Alert.alert("ログインできませんでした", message, [
+        {
+          text: "閉じる",
+          style: "cancel",
+          onPress: () => entrySheetState.close(),
+        },
+        {
+          text: "もう一度読み取る",
+          onPress: () => void entrySheetState.get()?.scan("tag"),
+        },
+      ]);
+    }
+    lastError.current = message;
+  }, [value?.entryError]);
   const [count, setCount] = useState<number>();
   useEffect(() => {
     let live = true;
@@ -51,7 +70,7 @@ export default function StreetEntry() {
       NativeStackNavigationProp<Record<string, object | undefined>>
     >();
   const { width } = useWindowDimensions();
-  // Figma: circle background spans 82% of screen width (SVG has 2.5% inset).
+  // Space for the centered 90pt sign and its visit-count bubble.
   const diameter = width * (0.82 / 0.975);
   useEffect(() => {
     if (!trialRing && value?.sheet === "explain" && !started.current) {
@@ -92,7 +111,8 @@ export default function StreetEntry() {
         overScrollMode="never"
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{
-          paddingTop: Platform.OS === "android" ? 0 : 24,
+          paddingTop: 16,
+          flexGrow: 1,
           paddingHorizontal: 20,
           paddingBottom: 12,
           alignItems: "center",
@@ -131,15 +151,15 @@ export default function StreetEntry() {
           {count !== undefined && count > 0 && (
             <View
               pointerEvents="none"
-              style={{ position: "absolute", right: 0, top: 20 }}
+              style={{ position: "absolute", right: 32, top: 8 }}
             >
               <SpeechBubble>
-                <SuperAsset name="非常口rounded" size={23} />
+                <SuperAsset name="非常口rounded" size={21} />
                 <Text
                   style={{
                     color: "#34C759",
                     fontFamily: "ui-rounded",
-                    fontSize: 18,
+                    fontSize: 17,
                   }}
                 >
                   {count}回目
@@ -152,84 +172,38 @@ export default function StreetEntry() {
               accessibilityRole="button"
               accessibilityLabel={trialRing ? "街に入る" : "読み取りを再試行"}
               onPress={() => void value.scan(trialRing ? "default" : "tag")}
-              style={{
-                position: "absolute",
-                inset: 0,
-                borderRadius: diameter / 2,
-              }}
+              style={{ position: "absolute", inset: 0 }}
             />
           )}
         </View>
         <View style={{ alignItems: "center", gap: 12 }}>
-          {!!value.placeName && (
-            <Text
-              style={{
-                fontFamily: "ui-rounded",
-                color: "white",
-                backgroundColor: "rgba(255,255,255,0.15)",
-                borderRadius: 20,
-                padding: 8,
-              }}
-            >
-              {value.placeName}
-            </Text>
-          )}
+          <Text
+            style={{
+              fontFamily: "ui-rounded",
+              color: "white",
+              backgroundColor: "rgba(255,255,255,0.15)",
+              borderRadius: 20,
+              paddingVertical: 6,
+              paddingHorizontal: 14,
+              fontSize: 16,
+            }}
+          >
+            Tokyo
+          </Text>
           <Text
             accessibilityLiveRegion="polite"
-            style={{
-              color: "white",
-              fontWeight: "600",
-              fontSize: 17.92,
-              textAlign: "center",
-            }}
+            style={{ color: "white", fontSize: 17, textAlign: "center" }}
           >
             {phase === "success"
               ? "ログイン成功"
-              : phase === "explain"
-                ? "NFCステッカーで街にログイン"
-                : phase === "scanning"
-                  ? "ステッカーにタッチしてください"
-                  : "ログインしています…"}
+              : phase === "checking"
+                ? "ログインしています…"
+                : "NFCを探しています…"}
           </Text>
-          {phase === "explain" && !!value.entryError && (
-            <Text
-              accessibilityLiveRegion="polite"
-              style={{ color: "#a62d35", textAlign: "center" }}
-            >
-              {value.entryError}
-            </Text>
-          )}
-          {phase === "explain" && (
-            <Text
-              style={{
-                color: "rgba(255,255,255,0.5)",
-                textAlign: "center",
-                fontSize: 13.44,
-              }}
-            >
-              名前や正確な現在地は地図には出ません
-            </Text>
-          )}
-          {phase === "checking" && (
-            <Text
-              style={{
-                color: "rgba(255,255,255,0.5)",
-                textAlign: "center",
-                fontSize: 13.44,
-              }}
-            >
-              {localEntry
-                ? "開発用タグで接続中"
-                : "読み取り後はステッカーから離して大丈夫です"}
-            </Text>
-          )}
         </View>
-        <View style={{ marginTop: 30, marginBottom: 20 }}>
-          {phase === "success" ? (
-            <SuperAsset name="checkRounded" size={42} />
-          ) : phase !== "explain" ? (
-            <ActivityIndicator size="large" color="rgba(255,255,255,0.65)" />
-          ) : null}
+        <View style={{ flex: 1, minHeight: 26 }} />
+        <View style={{ marginBottom: 20 }}>
+          <EntryProgress success={phase === "success"} />
         </View>
       </ScrollView>
     </PinSheet>

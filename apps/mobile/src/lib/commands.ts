@@ -108,3 +108,26 @@ export async function cancelPendingCommand<T>(kind: string): Promise<T | null> {
     running.delete(key);
   }
 }
+
+/** Resolve only acknowledged outcomes; never execute or cancel from a screen load. */
+export async function reconcilePendingCommand(kind: string) {
+  const key = await storageKey(kind);
+  if (running.has(key)) return read(key);
+  running.add(key);
+  try {
+    const pending = await read(key);
+    if (!pending) return null;
+    const status = await native.rpc<{
+      completed: boolean;
+      expired: boolean;
+      canceled: boolean;
+    }>("command_status", { id: pending.id });
+    if (status.completed || status.expired || status.canceled) {
+      await remove(key, pending);
+      return null;
+    }
+    return pending;
+  } finally {
+    running.delete(key);
+  }
+}

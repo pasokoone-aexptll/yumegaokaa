@@ -36,6 +36,9 @@ export default function PinDetail() {
   const router = useRouter(),
     insets = useSafeAreaInsets();
   const d = useDenshinDetail(id);
+  useEffect(() => {
+    if (d.error) Alert.alert("操作できませんでした", d.error);
+  }, [d.error]);
   const { confirmed, setConfirmed } = d;
   useEffect(() => {
     if (confirmed) {
@@ -127,31 +130,10 @@ export default function PinDetail() {
                 onPress={() => router.back()}
               />
             </View>
-            {!!d.error && (
-              <Text accessibilityRole="alert" style={s.error}>
-                {d.error}
-              </Text>
-            )}
             {d.ended && (
               <Text style={s.muted}>
                 この電信PINは終了したか、表示できなくなりました。
               </Text>
-            )}
-            {d.pending && (
-              <NativeAction
-                tone="neutral"
-                title={d.busy ? "通信を確認中…" : "通信を確認"}
-                disabled={d.busy}
-                onPress={() => Alert.alert(
-                  "変更が保存されたか確認できません",
-                  "再試行しても同じ変更が二重に保存されることはありません。送信をやめる場合も、すでに保存された変更は残ります。",
-                  [
-                    { text: "閉じる", style: "cancel" },
-                    { text: "送信をやめる", onPress: () => void d.recover(true) },
-                    { text: "再試行", onPress: () => void d.recover(false) },
-                  ],
-                )}
-              />
             )}
             {p && !d.ended && (
               <>
@@ -229,38 +211,7 @@ export default function PinDetail() {
                     <Text style={s.link}>マップで見る</Text>
                   </Pressable>
                 )}
-                {p.mine ? (
-                  <View style={s.management}>
-                    <RoundAction
-                      label="編集する"
-                      glyph="✎"
-                      disabled={disabled}
-                      onPress={() => {
-                        editDenshin(p);
-                        router.push("/pins/create");
-                      }}
-                    />
-                    <Pressable
-                      disabled={disabled}
-                      onPress={() =>
-                        Alert.alert(
-                          "電信PINを削除しますか？",
-                          "参加者へ終了を通知します。今日の作成枠は戻りません。",
-                          [
-                            { text: "戻る", style: "cancel" },
-                            {
-                              text: "削除",
-                              style: "destructive",
-                              onPress: () => void d.remove(),
-                            },
-                          ],
-                        )
-                      }
-                    >
-                      <Text style={s.error}>削除する</Text>
-                    </Pressable>
-                  </View>
-                ) : (
+                {!p.mine && (
                   <View style={s.management}>
                     <Pressable
                       onPress={() =>
@@ -295,12 +246,31 @@ export default function PinDetail() {
               </>
             )}
           </ScrollView>
+          {p?.mine && !d.ended && (
+            <View
+              style={{
+                position: "absolute",
+                right: 24,
+                bottom: insets.bottom + 18,
+              }}
+            >
+              <RoundAction
+                label="編集する"
+                glyph="✎"
+                disabled={disabled}
+                onPress={() => {
+                  editDenshin(p);
+                  router.push("/pins/create");
+                }}
+              />
+            </View>
+          )}
           {p?.recruiting && !p.mine && !d.ended && (
             <View
               style={{
                 position: "absolute",
                 bottom: insets.bottom + 16,
-                left: 24,
+                width: 220,
                 right: 24,
                 zIndex: 10,
               }}
@@ -344,12 +314,12 @@ const s = StyleSheet.create({
   header: {
     padding: 0,
     flexShrink: 0,
-    paddingTop: 22,
+    paddingTop: 0,
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
   },
-  content: { padding: 22, gap: 14 },
+  content: { padding: 22, paddingTop: 16, gap: 22 },
   identity: { flexDirection: "row", gap: 18, alignItems: "center" },
   summary: { flexDirection: "row", gap: 10, alignItems: "center" },
   title: { color: "white", fontSize: 21, lineHeight: 29 },

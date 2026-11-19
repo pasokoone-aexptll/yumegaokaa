@@ -57,13 +57,13 @@ export function Notice({
         tintColor="rgba(0,0,0,0.5)"
         style={{
           overflow: "hidden",
-          borderRadius: 20,
+          borderRadius: 999,
           borderCurve: "continuous",
         }}
       >
         <View
           style={{
-            paddingVertical: 10,
+            paddingVertical: 8,
             paddingHorizontal: 16,
             flexDirection: "row",
             alignItems: "center",
@@ -73,7 +73,7 @@ export function Notice({
           <View style={{ flex: 1 }}>
             <Text
               accessibilityLiveRegion="polite"
-              style={{ color: "#ffffff99", fontWeight: "600", fontSize: 15 }}
+              style={{ color: "#ffffff99", fontWeight: "400", fontSize: 14 }}
             >
               {message}
             </Text>
@@ -99,8 +99,11 @@ export function Notice({
             style={{
               backgroundColor: "rgba(255,255,255,0.1)",
               borderRadius: 24,
-              paddingHorizontal: 10,
-              paddingVertical: 12,
+              width: onAction ? undefined : 28,
+              height: 28,
+              paddingHorizontal: onAction ? 10 : 0,
+              alignItems: "center",
+              justifyContent: "center",
             }}
           >
             {busy ? (

@@ -217,7 +217,12 @@ export default function Home() {
         }}
       >
         <View style={{ padding: 15 }}>
-          <SuperAsset name="非常口" size={46} tint="white" opacity={0.8} />
+          <SuperAsset
+            name="非常口rounded"
+            size={46}
+            tint="white"
+            opacity={0.8}
+          />
         </View>
         <View style={{ flex: 1, gap: 6 }}>
           <Text

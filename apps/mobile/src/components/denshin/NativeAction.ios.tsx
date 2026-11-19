@@ -1,7 +1,8 @@
 import { Platform, Pressable, Text } from "react-native";
-import { Host, Button } from "@expo/ui/swift-ui";
+import { Host, Button, RNHostView } from "@expo/ui/swift-ui";
 import {
   buttonStyle,
+  accessibilityLabel,
   buttonBorderShape,
   controlSize,
   disabled as disabledModifier,
@@ -28,15 +29,17 @@ export function NativeAction({
         ignoreSafeArea="all"
       >
         <Button
-          label={title}
           role={destructive ? "destructive" : "default"}
           onPress={onPress}
           modifiers={[
             buttonStyle(
               Number(Platform.Version) >= 26
-                ? tone === "neutral" ? "glass" : "glassProminent"
+                ? tone === "neutral"
+                  ? "glass"
+                  : "glassProminent"
                 : "borderedProminent",
             ),
+            accessibilityLabel(title),
             buttonBorderShape("capsule"),
             controlSize("large"),
             disabledModifier(disabled),
@@ -50,7 +53,23 @@ export function NativeAction({
                     : "#34C759",
             ),
           ]}
-        />
+        >
+          <RNHostView matchContents>
+            <Text
+              style={{
+                width: 168,
+                textAlign: "center",
+                fontFamily: "ui-rounded",
+                fontSize: 18,
+                fontWeight: "600",
+                color: "white",
+                paddingVertical: 4,
+              }}
+            >
+              {title}
+            </Text>
+          </RNHostView>
+        </Button>
       </Host>
     );
   return (

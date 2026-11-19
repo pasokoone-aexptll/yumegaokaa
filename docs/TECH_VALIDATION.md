@@ -1,5 +1,15 @@
 # 技術検証と実装状況
 
+## 2026-11-20 NFC待機・Figma差分の再修正（R03/R04/R12〜R14/R19）
+
+- 入街：未スキャン時の接続エラーを除去。iOS Simulator判定をnativeから取得し、NFCセッション/入街APIを呼ばず待機表示。実端末は既存NFC→checkinを維持、ユーザー取消は閉じ、実エラーは標準Alert。Tokyo/rounded非常口/回数、NFCを探しています…、待機リングをSimulator確認。成功リング650ms→チェック220msを実装、成功はサーバー確定後のみ。実NFC/成功演出の実機確認は未完。
+- Sheet：実UIGlassEffectを標準sheet controllerの背景へ挿入。絶対配置の背景をReactの先頭に置くとreact-native-screensが全高ヘッダーと見なして本文高を0にすることをSimulatorで発見し修正。全高/半高の往復で本文・名簿・背景色・固定編集ボタンを確認。今回の既存PINは主催者のみ/参加者0なので参加ボタンの実データ操作は未検証。
+- PIN：詳細の通信確認/削除操作を撤去、削除は編集内の標準確認へ。エラーはsheet本文から標準Alertへ。結果照会はcommand_statusのみ、未確定受付を保持し、確定/失効/取消済みのみ破棄。自動実行・取消なし。編集削除は元revisionを送る対象試験成功、実PINは削除していない。
+- Toast：カプセル化/中央×、48ptの予約領域。Simulatorで表示中と消去後の＋/現在地の位置が一致。Accountメールはピンク内、謝辞/ブランドは中央薄色、接続画面は撤去。入力@/クリア×と主要ボタン幅/位置を修正。設定とメール入力をSimulatorで確認、メール変更送信は行わない。
+- 招待：QRの丸いモジュール/連結角/外枠、中央人物、白地を修正。H訂正とquiet zone維持。生成したテストQRをApple Visionでデコードし元UUIDと一致。Simulatorで現在QR/期限/History表示を確認、新規発行・失効は行わない。
+- 検証：対象19テスト（entry-state/presentation/success-dismissal、command-reconciliation、invite-qr、denshin-client）成功。最後のPIN文言変更後は関連6テストも成功。TypeScript成功、変更箇所Lintはエラー0（Map既存の重複import/依存配列警告3件）。Xcode Release/arm64 Simulatorビルド成功、クラウド接続の既存アプリへ上書き。DB/API配備変更なし。
+- 旧MVPは実装29/33、統合27/33、実機11/33、DONE27/33、BLOCKED3/33のまま。固定残量ローカル4→4・外部3→3、新UI完全一致/実機を完了にしない。
+
 ## 2026-11-19 電信PINのクラウド配備・SimulatorとUI監査（DP01）
 
 - 明示許可「電信PINの反映・起動は進める」。配備前読取：クラウド048、旧有効event/recruitment各0件。dry-runの対象は049のみ。適用成功、schema_migrations=202611190049、pins/attendanceの存在を再確認。データリセットなし。

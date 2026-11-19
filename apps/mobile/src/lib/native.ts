@@ -36,6 +36,7 @@ export type Snapshot = {
   }[];
 };
 const bridge = requireNativeModule("PresenceNative") as {
+  isSimulator?(): boolean;
   pushSync(request: boolean): Promise<string>;
   pushStatus(): Promise<string>;
   pushOpen(): Promise<boolean>;
@@ -111,6 +112,7 @@ function configure(url: string, key: string) {
   return promise;
 }
 export const native: typeof bridge = {
+  isSimulator: () => bridge.isSimulator?.() ?? false,
   ...authMethods,
   pushSync: (request) => auth.pushSync(request),
   pushStatus: async () => auth.pushStatus(),
@@ -126,9 +128,12 @@ export const native: typeof bridge = {
   configure,
   sendOTP: (email) => auth.sendOTP(email),
   rpc: (operation, payload) => auth.rpc(operation, payload),
-  checkin: (tag) => platformAuth ? platformAuth.checkin(tag) : bridge.checkin(tag),
-  setGhost: (ghost) => platformAuth ? platformAuth.setGhost(ghost) : bridge.setGhost(ghost),
-  stop: (visitId) => platformAuth ? platformAuth.stop(visitId) : bridge.stop(),
+  checkin: (tag) =>
+    platformAuth ? platformAuth.checkin(tag) : bridge.checkin(tag),
+  setGhost: (ghost) =>
+    platformAuth ? platformAuth.setGhost(ghost) : bridge.setGhost(ghost),
+  stop: (visitId) =>
+    platformAuth ? platformAuth.stop(visitId) : bridge.stop(),
   resume: () => auth.resume(),
   addListener: (event, listener) => bridge.addListener(event, listener),
 };

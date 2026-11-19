@@ -48,7 +48,7 @@ export function denshinError(error: unknown) {
   if (text.includes("active_limit"))
     return "同時に公開できる電信PINは3個までです。";
   if (text.includes("confirmation_required"))
-    return "新しく参加した人がいます。送信を取り消して最新の参加者を確認し、募集終了をやり直してください。";
+    return "新しく参加した人がいます。最新の参加者を確認してから、募集を終了してください。";
   if (text.includes("full"))
     return "満員になりました。空きができると参加できます。";
   if (text.includes("not_found"))
@@ -63,7 +63,7 @@ export function denshinError(error: unknown) {
     return "現在は参加を受け付けていません。";
   if (text.includes("invalid_input"))
     return "本文・人数・街の範囲内の場所を確認してください。";
-  return "送信結果を確認できません。接続を確認して再試行してください。";
+  return "しばらくしてから、もう一度お試しください。";
 }
 
 export function onsitePeople(pin: DenshinPin): PinPerson[] {

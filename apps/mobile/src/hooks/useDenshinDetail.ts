@@ -5,6 +5,7 @@ import { native } from "../lib/native";
 import {
   cancelPendingCommand,
   pendingCommand,
+  reconcilePendingCommand,
   submitCommand,
 } from "../lib/commands";
 import { Attendance, DenshinPin, denshinError } from "../lib/denshin";
@@ -62,21 +63,32 @@ export function useDenshinDetail(id: string) {
         "denshin_delete",
       ];
       let live = true;
-      void Promise.all(
-        kinds.map(async (k) => ({ kind: k, command: await pendingCommand(k) })),
-      )
-        .then((saved) => {
-          if (live) setPending(saved.find((x) => x.command)?.kind);
-        })
-        .catch((e) => {
-          if (live) setError(denshinError(e));
-        })
-        .finally(() => {
-          if (live) setRestoring(false);
-        });
+      const reconcile = () =>
+        Promise.all(
+          kinds.map(async (k) => ({
+            kind: k,
+            command: await reconcilePendingCommand(k),
+          })),
+        )
+          .then((saved) => {
+            if (live) {
+              setPending(saved.find((x) => x.command)?.kind);
+              void load();
+            }
+          })
+          .catch((e) => {
+            if (live) setError(denshinError(e));
+          })
+          .finally(() => {
+            if (live) setRestoring(false);
+          });
       const refresh = () => {
-        if (AppState.currentState === "active") void load();
+        if (AppState.currentState === "active") {
+          void load();
+          void reconcile();
+        }
       };
+      void reconcile();
       const timer = setInterval(refresh, 10000);
       const stop = streetChanges.subscribe(refresh);
       const fg = AppState.addEventListener("change", refresh);

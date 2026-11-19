@@ -113,7 +113,7 @@ function editorHarness({
         },
       };
     if (id === "expo-router")
-      return { useRouter: () => ({ replace: (r) => routes.push(r) }) };
+      return { useRouter: () => ({ replace: (r) => routes.push(r), dismissTo: (r) => routes.push(r) }) };
     if (id.includes("denshinDraft"))
       return {
         useDenshinDraft: () => draft,
@@ -239,4 +239,14 @@ test("主催者の旧到着フラグが残っていても現地列には参加�
   assert.deepEqual(onsitePeople(pin).map(p => p.account_id), ["guest"]);
   assert.equal(pinCount(pin), "2/10人");
   assert.deepEqual(onsitePeople({ ...pin, people: [] }), []);
+});
+
+test("編集画面の削除は元PINのrevisionで送信し、成功後にMapへ戻る", async () => {
+  const h = editorHarness();
+  await h.ready();
+  h.edit({ id: "existing", original: { revision: 7 } });
+  await h.render().remove();
+  assert.deepEqual(h.sent, [{ kind: "denshin_delete", body: { id: "existing", revision: 7 } }]);
+  assert.equal(h.cleared(), 1);
+  assert.deepEqual(h.routes, ["/(tabs)"]);
 });

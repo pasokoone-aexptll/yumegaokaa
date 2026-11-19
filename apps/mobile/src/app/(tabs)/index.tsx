@@ -31,16 +31,15 @@ import {
   Platform,
   Keyboard,
   ActivityIndicator,
-  Modal,
   StyleSheet,
   Text,
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Camera, CameraRef, Map } from "../../components/map/PlatformMap";
-import { native, url } from "../../lib/native";
+import { native } from "../../lib/native";
 import { liveCells } from "../../lib/presence";
-import { fieldTrial, localEntry, nfcDisabled } from "../../lib/development";
+import { fieldTrial, localEntry } from "../../lib/development";
 import { useStreetMap } from "../../hooks/useStreetMap";
 export default function Street() {
   const router = useRouter();
@@ -95,8 +94,6 @@ export default function Street() {
     entryError,
     sheet,
     setSheet,
-    settings,
-    setSettings,
     events,
     denshinPins,
     recruitments,
@@ -104,9 +101,7 @@ export default function Street() {
     nextSendAt,
     exit,
     scan,
-    writeTestTag,
     active,
-    logout,
     changeMode,
   } = useStreetMap();
   const { visible: showPlaces, toggle: togglePlaces } =
@@ -129,10 +124,6 @@ export default function Street() {
               ? "ゴーストモードに切り替えました"
               : "通常モードに切り替えました",
     );
-  }
-  function closeAccount() {
-    setSettings(false);
-    if (params.panel === "account") router.setParams({ panel: "" });
   }
   const openedRequest = useRef<string | undefined>(undefined);
   useEffect(() => {
@@ -332,43 +323,56 @@ export default function Street() {
         <View style={{ minHeight: 48 }}>
           <PresenceHeader icons={presenceIcons} />
         </View>
-        <MapStatusBanner message={modeNotice} />
-        {chatRead && (
-          <MapStatusBanner
-            message={chatRead.error}
-            actionLabel="再読み込み"
-            onAction={chatRead.reload}
-            autoDismiss={false}
-          />
-        )}
-        {
-          <MapStatusBanner
-            message={
-              ["未参加", "気配を観測中"].includes(state.status) ||
-              /^(ゴーストモード|公開への切替待ち|非公開への切替待ち)/.test(
-                state.status,
-              )
-                ? ""
-                : state.status
-            }
+        <View pointerEvents="box-none" style={{ height: 48 }}>
+          <View
+            pointerEvents="box-none"
+            style={{
+              position: "absolute",
+              top: 0,
+              left: 0,
+              right: 0,
+              zIndex: 2,
+            }}
           >
-            {state.visit.can_update === false &&
-              state.visit.state === "active" && (
-                <Pressable
-                  accessibilityRole="button"
-                  onPress={() => setSheet("explain")}
-                >
-                  <Text style={styles.link}>
-                    {fieldTrial
-                      ? "現地試験で入街"
-                      : localEntry
-                        ? "開発用の入街を開始"
-                        : "この端末でNFCを読む"}
-                  </Text>
-                </Pressable>
-              )}
-          </MapStatusBanner>
-        }
+            <MapStatusBanner message={modeNotice} />
+            {chatRead && (
+              <MapStatusBanner
+                message={chatRead.error}
+                actionLabel="再読み込み"
+                onAction={chatRead.reload}
+                autoDismiss={false}
+              />
+            )}
+            {
+              <MapStatusBanner
+                message={
+                  ["未参加", "気配を観測中"].includes(state.status) ||
+                  /^(ゴーストモード|公開への切替待ち|非公開への切替待ち)/.test(
+                    state.status,
+                  )
+                    ? ""
+                    : state.status
+                }
+              >
+                {state.visit.can_update === false &&
+                  state.visit.state === "active" && (
+                    <Pressable
+                      accessibilityRole="button"
+                      onPress={() => setSheet("explain")}
+                    >
+                      <Text style={styles.link}>
+                        {fieldTrial
+                          ? "現地試験で入街"
+                          : localEntry
+                            ? "開発用の入街を開始"
+                            : "この端末でNFCを読む"}
+                      </Text>
+                    </Pressable>
+                  )}
+              </MapStatusBanner>
+            }
+          </View>
+        </View>
         <View style={{ alignSelf: "flex-end", gap: 10, marginTop: 14 }}>
           <NativeIconButton
             icon="add"
@@ -414,36 +418,6 @@ export default function Street() {
         exit={exit}
         scan={scan}
       />
-      <Modal
-        visible={settings || params.panel === "account"}
-        animationType="slide"
-        onRequestClose={closeAccount}
-      >
-        <SafeAreaView style={styles.login}>
-          <Text style={styles.heading}>アカウント</Text>
-          <Text>{email}</Text>
-          <Text style={styles.note}>開発用接続: {url}</Text>
-          <Text>{state.status}</Text>
-          {__DEV__ && !nfcDisabled && (
-            <Pressable accessibilityRole="button" onPress={writeTestTag}>
-              <Text style={styles.link}>開発用の空NFCタグを設定</Text>
-            </Pressable>
-          )}
-          <Pressable
-            accessibilityRole="button"
-            style={styles.button}
-            onPress={() => {
-              closeAccount();
-              void logout();
-            }}
-          >
-            <Text style={styles.buttonText}>ログアウト</Text>
-          </Pressable>
-          <Pressable accessibilityRole="button" onPress={closeAccount}>
-            <Text style={styles.link}>地図に戻る</Text>
-          </Pressable>
-        </SafeAreaView>
-      </Modal>
     </View>
   );
 }

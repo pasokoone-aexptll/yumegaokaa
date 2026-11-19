@@ -36,7 +36,11 @@ export function NativeIconButton({
         justifyContent: "center",
       }}
     >
-      <SuperAsset name={icon} size={icon === "chevron-base" ? 36 : 22} tint={dark ? "white" : "black"} />
+      <SuperAsset
+        name={icon}
+        size={icon === "chevron-base" ? 36 : icon === "x" ? 16 : 22}
+        tint={dark ? "white" : "black"}
+      />
     </View>
   );
   if (Platform.OS === "ios")

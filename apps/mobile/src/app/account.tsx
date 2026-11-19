@@ -4,6 +4,7 @@ import {
   TextInput,
   View,
   Pressable,
+  useWindowDimensions,
 } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { DetailPage, Section, DetailRow } from "../components/DetailUI";
@@ -11,8 +12,10 @@ import { useEmailChange } from "../hooks/useEmailChange";
 import { NativeAction } from "../components/denshin/NativeAction";
 import { CodeInput } from "../components/denshin/CodeInput";
 import { SuperAsset } from "../components/icons/SuperAsset";
+import { MapAsset } from "../components/map/MapAsset";
 export default function Account() {
   const router = useRouter();
+  const { height } = useWindowDimensions();
   const { edit } = useLocalSearchParams<{ edit?: string }>();
   const a = useEmailChange();
   const complete = a.status === "メールアドレスを変更しました";
@@ -85,19 +88,72 @@ export default function Account() {
             </>
           ) : (
             <>
-              <TextInput
-                accessibilityLabel="新しいメールアドレス"
-                style={inputStyle}
-                value={a.next}
-                onChangeText={a.setNext}
-                placeholder="新しいメールアドレスを入力"
-                keyboardType="email-address"
-                autoCapitalize="none"
-                autoCorrect={false}
-                editable={!a.busy && a.ready}
-                clearButtonMode="while-editing"
-              />
-              <View style={{ marginTop: 180 }}>
+              <View
+                style={{
+                  backgroundColor: "white",
+                  borderRadius: 999,
+                  height: 54,
+                  flexDirection: "row",
+                  alignItems: "center",
+                  paddingHorizontal: 14,
+                  gap: 10,
+                }}
+              >
+                <SuperAsset
+                  name="atmark"
+                  size={26}
+                  tint="black"
+                  opacity={0.3}
+                />
+                <TextInput
+                  accessibilityLabel="新しいメールアドレス"
+                  style={{
+                    flex: 1,
+                    minWidth: 0,
+                    fontFamily: "ui-rounded",
+                    fontSize: 17,
+                    color: "black",
+                    paddingVertical: 0,
+                  }}
+                  value={a.next}
+                  onChangeText={a.setNext}
+                  placeholder="新しいメールアドレスを入力"
+                  placeholderTextColor="rgba(0,0,0,0.18)"
+                  keyboardType="email-address"
+                  autoCapitalize="none"
+                  autoCorrect={false}
+                  editable={!a.busy && a.ready}
+                  clearButtonMode="never"
+                />
+                {!!a.next && (
+                  <Pressable
+                    accessibilityRole="button"
+                    accessibilityLabel="メールアドレスを消去"
+                    disabled={a.busy}
+                    onPress={() => a.setNext("")}
+                    style={{
+                      width: 28,
+                      height: 28,
+                      alignItems: "center",
+                      justifyContent: "center",
+                    }}
+                  >
+                    <View
+                      style={{
+                        width: 20,
+                        height: 20,
+                        borderRadius: 10,
+                        backgroundColor: "rgba(0,0,0,0.22)",
+                        alignItems: "center",
+                        justifyContent: "center",
+                      }}
+                    >
+                      <SuperAsset name="x" size={12} tint="white" />
+                    </View>
+                  </Pressable>
+                )}
+              </View>
+              <View style={{ marginTop: Math.max(120, height * 0.3) }}>
                 <NativeAction
                   title="次へ"
                   tone="blue"
@@ -127,22 +183,43 @@ export default function Account() {
               }
             />
           </Section>
-          <DetailRow
-            title="ログイン・接続状態"
-            onPress={() =>
-              router.navigate({ pathname: "/", params: { panel: "account" } })
-            }
-          />
           <View style={{ flex: 1, minHeight: 170 }} />
           <NativeAction
             title="アカウントを削除"
             destructive
             onPress={() => router.push("/withdraw")}
           />
-          <DetailRow
-            title="データと謝辞・利用規約とプライバシー"
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel="データと謝辞・利用規約とプライバシー"
             onPress={() => router.push("/settings/licenses")}
-          />
+            style={{
+              alignItems: "center",
+              gap: 8,
+              marginTop: 64,
+              paddingVertical: 8,
+            }}
+          >
+            <View style={{ opacity: 0.08 }}>
+              <MapAsset
+                name="DreamCloud Logo"
+                width={147}
+                height={22}
+                tint="black"
+                fillOpacity={1}
+              />
+            </View>
+            <Text
+              style={{
+                textAlign: "center",
+                fontSize: 12,
+                fontFamily: "ui-rounded",
+                color: "rgba(0,0,0,0.14)",
+              }}
+            >
+              データと謝辞・利用規約とプライバシー
+            </Text>
+          </Pressable>
         </>
       )}
       {a.busy && <ActivityIndicator />}
