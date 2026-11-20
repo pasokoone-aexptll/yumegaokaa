@@ -56,7 +56,7 @@ export function AccountPage({
             path={avatar}
             version={version}
             name={name}
-            size={100}
+            size={96}
             shape="square"
           />
         </View>
@@ -72,13 +72,13 @@ export function AccountPage({
 const s = StyleSheet.create({
   page: { flex: 1, backgroundColor: "#F6F6F6" },
   identity: {
-    marginTop: -52,
+    marginTop: -53,
     flexDirection: "row",
     alignItems: "center",
-    paddingHorizontal: 24,
-    gap: 10,
+    paddingHorizontal: 21,
+    gap: 8,
   },
-  avatar: { borderRadius: 26, padding: 4, backgroundColor: "#F6F6F6" },
+  avatar: { borderRadius: 26, padding: 5, backgroundColor: "#F6F6F6" },
   email: {
     flex: 1,
     fontFamily: "ui-rounded",
@@ -92,7 +92,7 @@ const s = StyleSheet.create({
     fontWeight: "800",
     fontSize: 28,
     marginHorizontal: 30,
-    marginTop: 6,
+    marginTop: 9,
     marginBottom: 32,
   },
   content: { paddingHorizontal: 26, gap: 26 },
