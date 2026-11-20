@@ -58,6 +58,7 @@ export function StreetLogin({
     [existing, setExisting] = useState(false);
   const [height, setHeight] = useState(874),
     [now, setNow] = useState(Date.now);
+  const [sendingCode, setSendingCode] = useState(false);
   const [formMotion] = useState(() => new Animated.Value(1));
   const stage = sent ? "code" : started ? "email" : "welcome";
   useEffect(() => {
@@ -103,6 +104,14 @@ export function StreetLogin({
       await login(false, !existing);
     },
   });
+  async function sendCode(resend: boolean, createAccount: boolean) {
+    setSendingCode(true);
+    try {
+      await login(resend, createAccount);
+    } finally {
+      setSendingCode(false);
+    }
+  }
   function choose(isExisting: boolean) {
     setExisting(isExisting);
     setStarted(true);
@@ -176,8 +185,8 @@ export function StreetLogin({
             <Animated.View
               style={{
                 position: "absolute",
-                left: 28,
-                right: 28,
+                left: 32,
+                right: 32,
                 top: formTop,
                 opacity: formMotion,
                 transform: [
@@ -281,19 +290,19 @@ export function StreetLogin({
                     <EntryProgress
                       success={authSuccess}
                       light
-                      label={authSuccess ? "認証成功" : "認証中"}
+                      label={authSuccess ? "認証成功" : sendingCode ? "コード送信中" : "認証中"}
                     />
                     <Text style={[s.note, authSuccess && { color: "#01AE6B" }]}>
                       {authSuccess
                         ? "authentication successful"
-                        : "認証しています…"}
+                        : sendingCode ? "コードを送信しています…" : "認証しています…"}
                     </Text>
                   </>
                 ) : (
                   <>
                     <Pressable
                       disabled={remaining > 0}
-                      onPress={() => void login(true, !existing)}
+                      onPress={() => void sendCode(true, !existing)}
                     >
                       <Text style={s.note}>
                         {remaining
@@ -330,7 +339,7 @@ export function StreetLogin({
                   disabled={!canSend}
                   onPress={() => {
                     Keyboard.dismiss();
-                    void login(false, false);
+                    void sendCode(false, false);
                   }}
                 />
                 <Pressable onPress={() => choose(false)} disabled={busy}>
@@ -362,7 +371,7 @@ export function StreetLogin({
                   disabled={!canSend}
                   onPress={() => {
                     Keyboard.dismiss();
-                    void login(false, true);
+                    void sendCode(false, true);
                   }}
                   style={{
                     width: 270,

@@ -21,7 +21,7 @@ export function CodeInput({
     <Pressable
       accessibilityRole="none"
       onPress={() => input.current?.focus()}
-      style={{ position: "relative", marginHorizontal: 6 }}
+      style={{ position: "relative", marginHorizontal: grouped ? 6 : 0 }}
     >
       <View
         pointerEvents="none"
