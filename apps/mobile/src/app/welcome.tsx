@@ -41,19 +41,28 @@ export function WelcomeView({
   // Final portrait geometry from the 786 × 1720 reference video.
   const portraitDiameter = width * (478 / 786);
   const portraitBorder = portraitDiameter * (34 / 478);
+  const [laidOut, setLaidOut] = useState(false);
   const [remaining, setRemaining] = useState(10),
     [motion] = useState(() => new Animated.Value(0));
   useEffect(() => {
+    if (!laidOut) return;
     const a = Animated.timing(motion, {
       toValue: 1,
       duration: reduced ? 0 : 6500,
       easing: Easing.linear,
       useNativeDriver: true,
     });
-    a.start();
-    return () => a.stop();
-  }, [motion, reduced]);
+    // Wait for the laid-out native view to reach the screen before advancing.
+    let frame = requestAnimationFrame(() => {
+      frame = requestAnimationFrame(() => a.start());
+    });
+    return () => {
+      cancelAnimationFrame(frame);
+      a.stop();
+    };
+  }, [laidOut, motion, reduced]);
   useEffect(() => {
+    if (!laidOut) return;
     const started = Date.now();
     const t = setInterval(
       () =>
@@ -63,7 +72,7 @@ export function WelcomeView({
       100,
     );
     return () => clearInterval(t);
-  }, []);
+  }, [laidOut]);
   useEffect(() => {
     if (remaining === 0) onComplete();
   }, [remaining, onComplete]);
@@ -72,7 +81,10 @@ export function WelcomeView({
     outputRange: [0, 1, 1, 0, 0],
   });
   return (
-    <View style={{ flex: 1, backgroundColor: "white" }}>
+    <View
+      onLayout={() => setLaidOut(true)}
+      style={{ flex: 1, backgroundColor: "white" }}
+    >
       <Animated.View
         style={{
           position: "absolute",
