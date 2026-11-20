@@ -16,6 +16,8 @@ function Scene() {
   const data = pinData({
     ...pin,
     recruiting: scene !== "normal",
+    people: scene === "empty" ? [] : pin.people,
+    count: scene === "empty" ? 0 : pin.count,
     body: scene === "normal" ? "警察なんか多い" : pin.body,
     attendance:
       scene === "planned" || scene === "confirmed" ? "planned" : "left",

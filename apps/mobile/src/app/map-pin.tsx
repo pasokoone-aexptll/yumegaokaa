@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { NativeToggle as Switch } from "../components/denshin/NativeToggle";
 import { NativeAction } from "../components/denshin/NativeAction";
 import { SuperAsset } from "../components/icons/SuperAsset";
@@ -10,7 +10,6 @@ import {
   StyleSheet,
   Text,
   View,
-  useWindowDimensions,
 } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -61,10 +60,11 @@ export function PinDetailView({
       router.push({ pathname: "/pin-confirmed", params: { id } });
     }
   }, [confirmed, setConfirmed, router, id, readOnly]);
-  const { height: windowHeight } = useWindowDimensions();
-  const [expanded, setExpanded] = useState(false);
   const p = d.pin;
   const disabled = d.busy || !!d.pending;
+  const onsite = p ? onsitePeople(p) : [];
+  const planned =
+    p?.people.filter((person) => person.state === "planned") ?? [];
   function mode(next: boolean) {
     if (!next && p?.count)
       Alert.alert(
@@ -136,11 +136,7 @@ export function PinDetailView({
     </View>
   );
   return (
-    <PinSheet
-      onLayout={(event) =>
-        setExpanded(event.nativeEvent.layout.height > windowHeight * 0.75)
-      }
-    >
+    <PinSheet>
       {d.confirmed && p ? (
         <View style={s.confirm}>
           <RoundAction label="閉じる" glyph="×" onPress={() => router.back()} />
@@ -165,11 +161,19 @@ export function PinDetailView({
           >
             <View style={s.header}>
               <PinHeading />
-              <RoundAction
-                label="閉じる"
-                glyph="×"
-                onPress={() => router.back()}
-              />
+              <View style={s.headerActions}>
+                {p && !p.mine && !d.ended && (
+                  <PinAuthorMenu
+                    onReport={confirmReport}
+                    onBlock={confirmBlock}
+                  />
+                )}
+                <RoundAction
+                  label="閉じる"
+                  glyph="×"
+                  onPress={() => router.back()}
+                />
+              </View>
             </View>
             {d.loading && <ActivityIndicator color="white" />}
             {d.ended && (
@@ -180,16 +184,7 @@ export function PinDetailView({
             {p && !d.ended && (
               <>
                 <View style={s.identity}>
-                  {!p.mine && !p.recruiting ? (
-                    <PinAuthorMenu
-                      onReport={confirmReport}
-                      onBlock={confirmBlock}
-                    >
-                      {authorAvatar}
-                    </PinAuthorMenu>
-                  ) : (
-                    authorAvatar
-                  )}
+                  {authorAvatar}
                   {p.recruiting && (
                     <View style={s.identityBadge}>
                       <RecruitBadge />
@@ -198,14 +193,7 @@ export function PinDetailView({
                 </View>
                 <View style={s.summary}>
                   <View style={{ flex: 1, gap: 4 }}>
-                    <Text
-                      style={[
-                        s.title,
-                        expanded ? s.expandedTitle : s.halfTitle,
-                      ]}
-                    >
-                      {p.body}
-                    </Text>
+                    <Text style={[s.title, s.halfTitle]}>{p.body}</Text>
                     <Text style={s.muted}>
                       {p.mine ? "自分" : p.display_name}
                       {p.recruiting && (
@@ -252,26 +240,18 @@ export function PinDetailView({
                         state: "planned",
                       })}
                     </View>
-                    <View style={s.roster}>
-                      <Text style={s.section}>現地にいる人</Text>
-                      <View style={s.group}>
-                        {onsitePeople(p).map((x) => person(x))}
+                    {onsite.length > 0 && (
+                      <View style={s.roster}>
+                        <Text style={s.section}>現地にいる人</Text>
+                        <View style={s.group}>{onsite.map(person)}</View>
                       </View>
-                      {onsitePeople(p).length === 0 && (
-                        <Text style={s.muted}>まだいません</Text>
-                      )}
-                    </View>
-                    <View style={s.roster}>
-                      <Text style={s.section}>参加予定</Text>
-                      <View style={s.group}>
-                        {p.people
-                          .filter((x) => x.state === "planned")
-                          .map((x) => person(x))}
+                    )}
+                    {planned.length > 0 && (
+                      <View style={s.roster}>
+                        <Text style={s.section}>参加予定</Text>
+                        <View style={s.group}>{planned.map(person)}</View>
                       </View>
-                      {!p.people.some((x) => x.state === "planned") && (
-                        <Text style={s.muted}>まだいません</Text>
-                      )}
-                    </View>
+                    )}
                     {!p.mine && p.attendance === "planned" && (
                       <Pressable
                         disabled={disabled}
@@ -293,38 +273,6 @@ export function PinDetailView({
                   >
                     <Text style={s.link}>マップで見る</Text>
                   </Pressable>
-                )}
-                {!p.mine && p.recruiting && (
-                  <View style={s.management}>
-                    <Pressable
-                      onPress={() =>
-                        Alert.alert(
-                          "この電信PINを通報しますか？",
-                          "内容を運営へ送信します。",
-                          [
-                            { text: "戻る", style: "cancel" },
-                            { text: "通報", onPress: () => void report() },
-                          ],
-                        )
-                      }
-                    >
-                      <Text style={s.muted}>通報</Text>
-                    </Pressable>
-                    <Pressable
-                      onPress={() =>
-                        Alert.alert(
-                          "このユーザーをブロックしますか？",
-                          "PINを非表示にします。参加中の場合はHomeから取消できます。",
-                          [
-                            { text: "戻る", style: "cancel" },
-                            { text: "ブロック", onPress: () => void block() },
-                          ],
-                        )
-                      }
-                    >
-                      <Text style={s.muted}>ブロック</Text>
-                    </Pressable>
-                  </View>
                 )}
               </>
             )}
@@ -429,7 +377,7 @@ const s = StyleSheet.create({
     lineHeight: 29,
   },
   halfTitle: { fontSize: 24, lineHeight: 32 },
-  expandedTitle: { fontSize: 18, lineHeight: 25 },
+  headerActions: { flexDirection: "row", alignItems: "center", gap: 10 },
   muted: {
     fontFamily: "ui-rounded",
     color: "rgba(255,255,255,0.5)",

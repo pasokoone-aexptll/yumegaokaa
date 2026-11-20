@@ -1,35 +1,41 @@
-import { Button, ContextMenu, Host, RNHostView } from "@expo/ui/swift-ui";
+import { Button, Host, Image, Menu } from "@expo/ui/swift-ui";
+import { Platform } from "react-native";
 import {
-  accessibilityElement,
   accessibilityLabel,
-  accessibilityHint,
+  buttonStyle,
+  buttonBorderShape,
+  frame,
+  tint,
 } from "@expo/ui/swift-ui/modifiers";
 import type { PinAuthorMenuProps } from "./PinAuthorMenu";
 
-export function PinAuthorMenu({
-  children,
-  onReport,
-  onBlock,
-}: PinAuthorMenuProps) {
+export function PinAuthorMenu({ onReport, onBlock }: PinAuthorMenuProps) {
   return (
-    <Host style={{ width: 64, height: 64 }}>
-      <ContextMenu
+    <Host
+      style={{ width: 44, height: 44 }}
+      alignment="center"
+      colorScheme="dark"
+      ignoreSafeArea="all"
+    >
+      <Menu
+        label={
+          <Image
+            systemName="ellipsis"
+            size={24}
+            color="rgba(255,255,255,0.7)"
+            modifiers={[frame({ width: 28, height: 28 })]}
+          />
+        }
         modifiers={[
-          accessibilityElement("combine"),
-          accessibilityLabel("投稿者の操作"),
-          accessibilityHint("長押しで通報とブロックを表示"),
+          accessibilityLabel("PINのその他の操作"),
+          buttonStyle(Number(Platform.Version) >= 26 ? "glass" : "bordered"),
+          buttonBorderShape("circle"),
+          tint("rgba(255,255,255,0.7)"),
         ]}
       >
-        <ContextMenu.Trigger>
-          <RNHostView matchContents>
-            <>{children}</>
-          </RNHostView>
-        </ContextMenu.Trigger>
-        <ContextMenu.Items>
-          <Button label="通報" onPress={onReport} />
-          <Button label="ブロック" role="destructive" onPress={onBlock} />
-        </ContextMenu.Items>
-      </ContextMenu>
+        <Button label="通報" onPress={onReport} />
+        <Button label="ブロック" role="destructive" onPress={onBlock} />
+      </Menu>
     </Host>
   );
 }

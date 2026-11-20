@@ -125,22 +125,24 @@ function Scenes() {
             <Text>{label}</Text>
           </Pressable>
         ))}
-        {["half", "full", "planned", "confirmed", "normal"].map((scene) => (
-          <Pressable
-            key={scene}
-            onPress={() => {
-              router.navigate("/(tabs)");
-              setTimeout(
-                () =>
-                  router.push({ pathname: "/review-pin", params: { scene } }),
-                350,
-              );
-            }}
-            style={{ padding: 16 }}
-          >
-            <Text>PIN {scene}</Text>
-          </Pressable>
-        ))}
+        {["half", "full", "planned", "confirmed", "normal", "empty"].map(
+          (scene) => (
+            <Pressable
+              key={scene}
+              onPress={() => {
+                router.navigate("/(tabs)");
+                setTimeout(
+                  () =>
+                    router.push({ pathname: "/review-pin", params: { scene } }),
+                  350,
+                );
+              }}
+              style={{ padding: 16 }}
+            >
+              <Text>PIN {scene}</Text>
+            </Pressable>
+          ),
+        )}
       </ScrollView>
     </SafeAreaView>
   );
