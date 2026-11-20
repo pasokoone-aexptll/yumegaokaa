@@ -158,7 +158,11 @@ import Darwin
  func locationManagerDidChangeAuthorization(_ manager:CLLocationManager){
   if [.denied,.restricted].contains(manager.authorizationStatus){manager.stopUpdatingLocation();outside.reset();emit("位置情報が許可されていません。街への参加は期限まで有効です")}
  }
- func locationManager(_ manager:CLLocationManager,didFailWithError error:Error){outside.reset();emit("測位待ち。新しい気配はまだ送っていません")}
+ func locationManager(_ manager:CLLocationManager,didFailWithError error:Error){
+  // Core Location may deliver a queued failure after observation has stopped.
+  guard enabled else{return}
+  outside.reset();emit("測位待ち。新しい気配はまだ送っていません")
+ }
  func locationManager(_ manager:CLLocationManager,didUpdateLocations locations:[CLLocation]){
   guard enabled,!processing,let location=locations.last else{return}
   processing=true;let ticket=generation

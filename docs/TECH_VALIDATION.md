@@ -1395,3 +1395,5 @@ avatar.tsはlaunchImageLibraryAsyncを最初に呼び、画像変換/通信は�
 2026-11-20 20:45 R03/R19：元動画とSimulator録画をffmpegで60fpsの扉上部走査線へ変換し、緑の幅3%〜97%で開閉を計測。元動画は開0.450/保持2.200/閉0.633秒、修正前は0.767/2.117/0.883秒。Welcomeのopening keyframeと人物fadeを調整、型検査/通常Release成功。通常版PID35609録画 `/tmp/welcome-door-timed.mp4` は0.383/2.217/0.617秒。保持/閉鎖差は0.02秒以内、開口差0.067秒は残る。ルート遷移中の初期フレームも測定へ影響するため全フレーム一致は未宣言。解析は `/tmp/measure-welcome-timed.py`、実会員変更/実機転送なし。
 
 2026-11-20 20:47 R12〜R14：通常版PID35609、Homeの実募集PINからMap詳細→標準grabberでExpanded。本文24pt維持、0人の現地/予定見出しなし、主催者別枠、拡大後のMap透過blur、閉じる上/右16pt・編集下/右28ptをコードと実描画で照合。`/tmp/pin-expanded-current-2047.png`。この画面の追加修正は不要と判断、データ変更なし。現状はExpanded表示のまま。
+
+2026-11-20 R04/R10：Core LocationのdidFailWithErrorがenabledを見ず、clearObservation後にも状態文言を上書きできることをコード監査で確認。didUpdateLocationsと同じくenabled=falseでは無視するguardを追加。通常Simulator ReleaseのSwiftコンパイル成功。遅延エラーの実注入・停止直後レースの動的再現は未確認、ビルド成功を不具合の動的合格としない。今回の新バイナリは未インストール（Simulatorは直前PID35609）。ゴースト中の測位失敗文言はユーザーへ意味確認中で未変更。
