@@ -37,6 +37,7 @@ function Scenes() {
   const [busy, setBusy] = useState(false),
     [success, setSuccess] = useState(false),
     [name, setName] = useState("sannlib");
+  const [nextSendAt, setNextSendAt] = useState(0);
   const live = useRef(true);
   useEffect(() => {
     live.current = true;
@@ -54,6 +55,7 @@ function Scenes() {
     await new Promise((r) => setTimeout(r, 700));
     if (!live.current) return;
     if (!sent || resend) {
+      setNextSendAt(Date.now() + 60000);
       setSent(true);
       setCode("");
       setBusy(false);
@@ -81,6 +83,7 @@ function Scenes() {
             busy,
             login,
           }}
+          nextSendAt={nextSendAt}
           authSuccess={success}
         />
       ) : stage === "invite" ? (

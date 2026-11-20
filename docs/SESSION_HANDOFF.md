@@ -4,14 +4,14 @@
 
 ## 現在の再開点（2026-11-20・Figma最終照合を継続中）
 
-ユーザーは就寝中。全29画面と登録動画の差分を自律修正する依頼。意味変更は確認し、独立作業は止めない。細部ごとのiPhone再インストールは不要。現行4tabs・提供SVG・標準Sheet/実UIGlassEffectを維持する。
+ユーザーは起床し、登録コード下のゲージを再送待ち時間と回答。全29画面と登録動画の差分を自律修正する依頼。意味変更は確認し、独立作業は止めない。細部ごとのiPhone再インストールは不要。現行4tabs・提供SVG・標準Sheet/実UIGlassEffectを維持する。
 
 - 直近の合意：未使用QR削除で発行枠返却、登録済みは返却せず相手停止。街ロゴ下は10分観測で消さず入街中全員の匿名Pool画像列を常設。NFCマーカーは表示専用。
 - 055/056をローカルとクラウドへ適用済み。055は未使用revokedを枠計算から除外、056は全滞在の匿名画像集約をヘッダーへ追加。地図セルの10分条件/名前/座標非公開は維持。専用DB試験成功。Simulatorで実QR発行/残数/再表示と入街者画像を確認。
 - Home/Map/チャット/toast/招待QR/History、PINの標準sheet余白/固定編集、設定/Profile/Pool/通知/Blocks/Account/運営Formを照合・修正。Map背景のPIN半高→全高→半高でglassが維持されることを再確認。
 - 登録/ログインを分離し6桁で自動認証、本人写真も必須。元動画のドット書体・扉/人物/影・GIF・こたつ・プロフィール登録・完了演出を修正。実Authの成功前に画面を進めない。確認fixtureは実APIへ送信しない。
 - 画面別の到達状況は `frontend-redesign/UI_REVIEW_STATUS.md`。最新画像/録画は `/tmp/yumegaoka-final-figma-20261120/`。UI_REVIEWなしの通常版をSimulatorへ上書き・起動済み（PID65624）。Home招待→戻る→Settings、確認メニュー非表示、Home/Mapのモード表示整合、実PINへのMap移動・詳細開閉を確認。実機は今回追加変更を転送しない。
-- 未決定はOPEN_QUESTIONS Q-UI01（登録OTP下の緑ゲージが期限か再送待ちか）。質問済み・回答待ち。その他の視覚照合を継続する。全29画面完全一致・実メール/カメラ/NFC/運営MFA/実会員参加の成功は未宣言。
+- Q-UI01は再送待ち時間と回答済み。緑ゲージを既存の再送可能時刻へ接続。更新後のSimulator確認は未実施。その他の視覚照合を継続する。全29画面完全一致・実メール/カメラ/NFC/運営MFA/実会員参加の成功は未宣言。
 - TypeScript、対象認証/初期設定/QR/ヘッダー14試験成功。Native Simulator Release成功。通常版のMapドラッグ動作は確認できたが、NFCマーカー直接タップのカメラ比較中にDevice HubがnoWindowsAvailable/cgWindowNotFoundとなり操作不可。未確認を合格にしない。現在地ボタンはSimulatorの位置未取得で標準Alertを表示。既定33タスクと固定残量は変更しない。
 
 前段の証拠：PIN×即破棄、Home＋→Map作成、UISwitch外周上下左右4pt、City Login下から表示/Tokyo/rounded非常口/リング→クラウド成功は `/tmp/yumegaoka-ui-final-20261120/flows.mp4` 等。自己PIN作成/参加通知は054、ローカル/クラウド適用とDB検証済み。過去のPIDや当時の「DB変更なし」は当該段階の履歴。

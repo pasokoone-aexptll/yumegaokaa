@@ -2,6 +2,7 @@ import { useContext, useEffect, useState } from "react";
 import { useRouter } from "expo-router";
 import {
   Animated,
+  AppState,
   Easing,
   Keyboard,
   KeyboardAvoidingView,
@@ -74,10 +75,21 @@ export function StreetLogin({
     return () => move.stop();
   }, [stage, reduced, formMotion]);
   useEffect(() => {
-    if (nextSendAt <= Date.now()) return;
-    const t = setInterval(() => setNow(Date.now()), 1000);
-    return () => clearInterval(t);
-  }, [nextSendAt]);
+    const refresh = () => setNow(Date.now());
+    refresh();
+    if (!sent || nextSendAt <= Date.now()) return;
+    const t = setInterval(() => {
+      refresh();
+      if (Date.now() >= nextSendAt) clearInterval(t);
+    }, 250);
+    const subscription = AppState.addEventListener("change", (state) => {
+      if (state === "active") refresh();
+    });
+    return () => {
+      clearInterval(t);
+      subscription.remove();
+    };
+  }, [nextSendAt, sent]);
   const remaining = Math.max(0, Math.ceil((nextSendAt - now) / 1000));
   const canSend =
     !busy && !authSuccess && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim());
@@ -205,6 +217,25 @@ export function StreetLogin({
                     success={authSuccess}
                     grouped={false}
                   />
+                  <View
+                    accessible
+                    accessibilityRole="progressbar"
+                    accessibilityLabel="コードの再送まで"
+                    accessibilityValue={{ min: 0, max: 60, now: remaining, text: `再送まで${remaining}秒` }}
+                    style={s.resendGauge}
+                  >
+                    {Array.from({ length: 54 }, (_, index) => (
+                      <View
+                        key={index}
+                        style={[
+                          s.resendTick,
+                          { opacity: 0.08 + 0.55 * Math.max(0, Math.min(1,
+                            (nextSendAt - now) / 60000 * 54 - index,
+                          )) },
+                        ]}
+                      />
+                    ))}
+                  </View>
                 </>
               ) : (
                 <>
@@ -410,6 +441,23 @@ export function StreetLogin({
 }
 const s = StyleSheet.create({
   root: { flex: 1, backgroundColor: "white" },
+  resendGauge: {
+    marginTop: 60,
+    height: 32,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: "rgba(0,174,107,0.06)",
+    paddingHorizontal: 6,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 2,
+  },
+  resendTick: {
+    flex: 1,
+    height: 18,
+    borderRadius: 3,
+    backgroundColor: "#00AE6B",
+  },
   title: {
     fontFamily: "ui-rounded",
     fontSize: 26,
