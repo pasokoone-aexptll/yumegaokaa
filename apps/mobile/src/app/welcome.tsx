@@ -132,52 +132,70 @@ export function WelcomeView({
           })}
         />
       </Animated.View>
-      <Animated.View
+      <View
+        pointerEvents="none"
         style={{
           position: "absolute",
-          top: height * (402 / 1720),
-          left: width * (375 / 786) - portraitDiameter / 2,
-          opacity: motion.interpolate({
-            inputRange: [0, 0.12, 0.2, 1],
-            outputRange: [0, 0, 1, 1],
-          }),
-          transform: [
-            {
-              translateX: motion.interpolate({
-                inputRange: [0, 0.12, 0.32, 1],
-                outputRange: [-width * 0.28, -width * 0.28, 0, 0],
-              }),
-            },
-            {
-              translateY: motion.interpolate({
-                inputRange: [0, 0.62, 0.64, 0.68, 0.74, 0.78, 0.84, 1],
-                outputRange: [-45, -45, -41, -30, -10, -1.5, 0, 0],
-              }),
-            },
-            {
-              scale: motion.interpolate({
-                inputRange: [0, 0.62, 0.64, 0.68, 0.74, 0.78, 0.84, 1],
-                outputRange: [0.43, 0.43, 0.48, 0.62, 0.87, 0.98, 1, 1],
-              }),
-            },
-          ],
+          left: 44,
+          right: 0,
+          top: 0,
+          bottom: 0,
+          overflow: "hidden",
         }}
       >
-        <View
+        <Animated.View
           style={{
-            padding: portraitBorder,
-            borderRadius: portraitDiameter / 2,
-            backgroundColor: "rgba(0,0,0,0.06)",
+            position: "absolute",
+            top: height * (402 / 1720),
+            left: width * (375 / 786) - portraitDiameter / 2 - 44,
+            opacity: motion.interpolate({
+              inputRange: [0, 0.14, 0.15, 1],
+              outputRange: [0, 0, 1, 1],
+            }),
+            transform: [
+              {
+                translateX: motion.interpolate({
+                  inputRange: [0, 0.14, 0.16, 0.235, 1],
+                  outputRange: [
+                    -width * 0.6,
+                    -width * 0.6,
+                    -width * (298 / 786),
+                    0,
+                    0,
+                  ],
+                }),
+              },
+              {
+                translateY: motion.interpolate({
+                  inputRange: [0, 0.62, 0.64, 0.68, 0.74, 0.78, 0.84, 1],
+                  outputRange: [-45, -45, -41, -30, -10, -1.5, 0, 0],
+                }),
+              },
+              {
+                scale: motion.interpolate({
+                  inputRange: [0, 0.62, 0.64, 0.68, 0.74, 0.78, 0.84, 1],
+                  outputRange: [0.43, 0.43, 0.48, 0.62, 0.87, 0.98, 1, 1],
+                }),
+              },
+            ],
           }}
         >
-          <Avatar
-            path={avatarPath ?? undefined}
-            version={avatarVersion ?? undefined}
-            name={name}
-            size={portraitDiameter - 2 * portraitBorder}
-          />
-        </View>
-      </Animated.View>
+          <View
+            style={{
+              padding: portraitBorder,
+              borderRadius: portraitDiameter / 2,
+              backgroundColor: "rgba(0,0,0,0.06)",
+            }}
+          >
+            <Avatar
+              path={avatarPath ?? undefined}
+              version={avatarVersion ?? undefined}
+              name={name}
+              size={portraitDiameter - 2 * portraitBorder}
+            />
+          </View>
+        </Animated.View>
+      </View>
       <Animated.View
         style={{
           position: "absolute",
