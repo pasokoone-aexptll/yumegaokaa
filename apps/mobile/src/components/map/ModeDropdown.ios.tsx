@@ -52,7 +52,11 @@ export function ModeDropdown({
                   width: 12,
                   height: 12,
                   borderRadius: 6,
-                  backgroundColor: ghost ? "rgba(255,255,255,0.45)" : "#01AE6B",
+                  backgroundColor: ghost
+                    ? dark
+                      ? "rgba(255,255,255,0.45)"
+                      : "#77777C"
+                    : "#01AE6B",
                 }}
               />
               <View style={{ transform: [{ rotate: "90deg" }] }}>

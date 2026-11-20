@@ -1481,3 +1481,11 @@ avatar.tsはlaunchImageLibraryAsyncを最初に呼び、画像変換/通信は�
 2026-11-20 21:31 R03/R19：独立UIKit PickerProbe PID50079のボタンを操作、21:30:15.751 initialized229.1ms、21:30:19.350 presented3832.0ms。写真一覧の表示も確認し、写真を選ばずprobe終了、本体PID51188のHomeへ復帰をAXで確認。RN/Expo/本体画面構成を含まない環境でも同程度の遅延が再現する証拠。実機の遅延原因やOS内部の待ち先を断定しない。R03/R10：Homeチケットの案内15→14pt、残数14→12pt、行高/上下paddingでカプセル28ptを維持。型検査/通常Release成功、`/tmp/home-ticket-type-final.png`で表示確認。招待枠/発行処理は変更なし。
 
 2026-11-20 21:34 R10/R11：MapChat実表示と原本132を再照合し、1行の高さが50pt対原本約45pt、アバター32pt対35ptの差を修正。message上下paddingを4→1.5pt（単行45pt）、アバターと入街円35pt、本文gap9pt。型検査/通常Release成功、PID52799で最新会話/入街ログの横位置と入力欄の固定位置を確認。`/tmp/mapchat-row-spacing-final.png`。複数行本文は引き続き自然な高さ、スクロール追従ロジックは変更なし。投稿操作なし。
+
+## 2026-11-21 最新指定のUI修正（R12/R15/R19）
+
+Home空セクション非表示、pin-none原本追加/両方空の中央表示、Home ghost灰色を#77777C、通知の非常口素材をpin_joinedのみへ限定。PIN作成は入力外枠とTextInputを分けて縦中央、continuous角、地図行を高さ56/半径28、toggle行上下左右16へ調整。チャット下地を#242424、NFC地点は追加黒塗りを撤去しultraThinMaterialDarkへ変更。ロゴの抜き部分は単なるfill:noneでは白い下地が残ることをSimulatorで検出し、luminance maskへ修正。残招待背景は原本133の画素(230,1495)をffmpeg rgb24で採色し#F13450。
+
+型検査・通常Release成功。PID84800でHomeのghost視認/空予約セクション非表示、Home+→Map作成、入力欄縦中央/地図カプセルを確認。両方空の実表示、NFC地点の最終透け方、通知mention/参加の並列表示は未確認。ロゴmaskと採色の最終ビルド確認を継続。33タスクの達成数は変更しない。
+
+後続PID86627でMapロゴの文字・輪郭と内部透過を確認。元SVGの輪郭を外周maskに、文字pathを白で分け、入れ子maskの文字消失を解消。チャットの灰色下地も確認。最後のtoggle行16pt変更は型検査のみで、Simulatorは12pt版。NFC地点は画面上端で一部見える状態までで、原本との最終照合は未完。

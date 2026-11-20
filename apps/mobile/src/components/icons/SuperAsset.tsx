@@ -50,10 +50,7 @@ export function DenshinLogo({
   width?: number;
 }) {
   const xml = dark
-    ? assets["電信"]
-        .replace(/stroke="#01AE6B"/gi, 'stroke="white"')
-        .replace(/fill="#01AE6B"/gi, 'fill="white"')
-        .replace(/#E6F7F0/gi, "black")
+    ? assets["電信透過白"]
     : monochrome
       ? assets["電信"]
           .replace(/stroke="#01AE6B"/gi, 'stroke="rgba(0,0,0,0.2)"')

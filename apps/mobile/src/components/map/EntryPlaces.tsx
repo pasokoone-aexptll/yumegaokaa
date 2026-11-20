@@ -27,8 +27,8 @@ export function EntryPlaces({ map }: { map: EntryMap }) {
           >
             <BlurView
               pointerEvents="none"
-              intensity={100}
-              tint="systemThinMaterialDark"
+              intensity={65}
+              tint="systemUltraThinMaterialDark"
               style={StyleSheet.absoluteFill}
             />
             <View style={styles.pinBorder}>
@@ -47,9 +47,10 @@ export function EntryPlaces({ map }: { map: EntryMap }) {
 }
 const styles = StyleSheet.create({
   pin: {
-    backgroundColor: "rgba(0,0,0,0.12)",
+    backgroundColor: "transparent",
     padding: 3,
     borderRadius: 14,
+    borderCurve: "continuous",
     overflow: "hidden",
   },
   pinBorder: {
@@ -58,6 +59,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     borderRadius: 11,
+    borderCurve: "continuous",
     borderWidth: 2.5,
     borderColor: "rgba(255,255,255,0.25)",
   },

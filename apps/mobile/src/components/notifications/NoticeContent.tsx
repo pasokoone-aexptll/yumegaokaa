@@ -54,9 +54,9 @@ export function NoticeHeading({
             PIN
           </Text>
         </View>
-      ) : (
+      ) : notice.kind === "pin_joined" ? (
         <SuperAsset name="非常口から人が出るrounded" width={40} height={58} />
-      )}
+      ) : null}
       <Text
         style={{
           flexShrink: 1,

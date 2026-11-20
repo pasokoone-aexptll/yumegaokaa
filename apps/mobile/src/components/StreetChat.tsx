@@ -275,7 +275,7 @@ export function StreetChat({
                   StyleSheet.absoluteFill,
                   {
                     experimental_backgroundImage:
-                      "linear-gradient(180deg, rgba(23,27,35,0) 0%, rgba(23,27,35,0.32) 50%, rgba(23,27,35,0.82) 100%)",
+                      "linear-gradient(180deg, rgba(36,36,36,0) 0%, rgba(36,36,36,0.32) 50%, rgba(36,36,36,0.82) 100%)",
                   },
                 ]}
               />
@@ -288,9 +288,9 @@ export function StreetChat({
               >
                 <Defs>
                   <LinearGradient id="chatShade" x1="0" y1="0" x2="0" y2="100%">
-                    <Stop offset="0" stopColor="black" stopOpacity={0} />
-                    <Stop offset="0.45" stopColor="black" stopOpacity={0.5} />
-                    <Stop offset="1" stopColor="black" stopOpacity={0.88} />
+                    <Stop offset="0" stopColor="#242424" stopOpacity={0} />
+                    <Stop offset="0.45" stopColor="#242424" stopOpacity={0.5} />
+                    <Stop offset="1" stopColor="#242424" stopOpacity={0.88} />
                   </LinearGradient>
                 </Defs>
                 <Rect width="100%" height="100%" fill="url(#chatShade)" />

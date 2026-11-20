@@ -118,91 +118,98 @@ export default function Home() {
           <SuperAsset name="add" tint="black" size={24} />
         </Pressable>
       </View>
-      <View style={s.content}>
+      <View style={[s.content, !pins.items.length && { flex: 1 }]}>
         {waiting && (
           <Text accessibilityLiveRegion="polite" style={s.refreshStatus}>
             PINを更新しています…
           </Text>
         )}
         {pins.loading && <ActivityIndicator />}
-        {[true, false].map((recruiting) => (
-          <View key={String(recruiting)} style={s.section}>
-            <SpeechBubble>
-              <SuperAsset
-                name="非常口rounded"
-                size={21}
-                tint={recruiting ? green : "rgba(0,0,0,0.65)"}
-              />
-              <Text style={[s.sectionTitle, recruiting && { color: green }]}>
-                {recruiting ? "募集中" : "PIN / 予約募集"}
-              </Text>
-            </SpeechBubble>
-            {!pins.loading &&
-              !pins.error &&
-              !pins.items.some((p) => p.recruiting === recruiting) && (
-                <Text style={s.muted}>まだありません</Text>
-              )}
-            {pins.items
-              .filter((p) => p.recruiting === recruiting)
-              .map((p, index) => (
-                <View key={p.id} style={s.row}>
-                  {index > 0 && <View style={s.separator} />}
-                  <Pressable
-                    style={s.main}
-                    onPress={() =>
-                      openMapAt(router, p.longitude, p.latitude, {
-                        kind: "denshin",
-                        id: p.id,
-                      })
-                    }
-                    accessibilityRole="button"
-                    accessibilityLabel={`${p.body}の詳細`}
-                  >
-                    <Avatar
-                      shape="square"
-                      path={p.avatar_path}
-                      name={p.display_name}
-                      size={49}
-                    />
-                    <View style={{ flex: 1, gap: 3 }}>
-                      <Text style={s.metadata}>
-                        {p.mine ? "自分" : p.display_name}
-                        {p.recruiting && (
-                          <Text>
-                            {" "}
-                            ・ {p.count}
-                            <Text style={{ fontSize: 9 }}>
-                              {p.capacity === null ? "人" : `/${p.capacity}人`}
-                            </Text>
-                          </Text>
-                        )}
-                        {p.attendance === "planned"
-                          ? " ・ 参加予定"
-                          : p.attendance === "arrived"
-                            ? " ・ 現地にいます"
-                            : ""}
-                      </Text>
-                      <Text style={s.body} numberOfLines={2}>
-                        {p.body}
-                      </Text>
-                      <View style={s.location}>
-                        <SuperAsset
-                          name="nav"
-                          tint="black"
-                          opacity={0.3}
-                          size={10}
-                        />
-                        <Text style={s.locationText}>位置を確認する</Text>
-                      </View>
-                    </View>
-                    <View style={{ alignSelf: "center" }}>
-                      <PeopleStack people={onsitePeople(p)} />
-                    </View>
-                  </Pressable>
-                </View>
-              ))}
+        {!pins.loading && !pins.error && !pins.items.length && (
+          <View style={s.empty}>
+            <SuperAsset name="pin-none" width={102} height={92} />
+            <Text style={s.emptyText}>PINがまだありません</Text>
           </View>
-        ))}
+        )}
+        {[true, false]
+          .filter((recruiting) =>
+            pins.items.some((p) => p.recruiting === recruiting),
+          )
+          .map((recruiting) => (
+            <View key={String(recruiting)} style={s.section}>
+              <SpeechBubble>
+                <SuperAsset
+                  name="非常口rounded"
+                  size={21}
+                  tint={recruiting ? green : "rgba(0,0,0,0.65)"}
+                />
+                <Text style={[s.sectionTitle, recruiting && { color: green }]}>
+                  {recruiting ? "募集中" : "PIN / 予約募集"}
+                </Text>
+              </SpeechBubble>
+              {pins.items
+                .filter((p) => p.recruiting === recruiting)
+                .map((p, index) => (
+                  <View key={p.id} style={s.row}>
+                    {index > 0 && <View style={s.separator} />}
+                    <Pressable
+                      style={s.main}
+                      onPress={() =>
+                        openMapAt(router, p.longitude, p.latitude, {
+                          kind: "denshin",
+                          id: p.id,
+                        })
+                      }
+                      accessibilityRole="button"
+                      accessibilityLabel={`${p.body}の詳細`}
+                    >
+                      <Avatar
+                        shape="square"
+                        path={p.avatar_path}
+                        name={p.display_name}
+                        size={49}
+                      />
+                      <View style={{ flex: 1, gap: 3 }}>
+                        <Text style={s.metadata}>
+                          {p.mine ? "自分" : p.display_name}
+                          {p.recruiting && (
+                            <Text>
+                              {" "}
+                              ・ {p.count}
+                              <Text style={{ fontSize: 9 }}>
+                                {p.capacity === null
+                                  ? "人"
+                                  : `/${p.capacity}人`}
+                              </Text>
+                            </Text>
+                          )}
+                          {p.attendance === "planned"
+                            ? " ・ 参加予定"
+                            : p.attendance === "arrived"
+                              ? " ・ 現地にいます"
+                              : ""}
+                        </Text>
+                        <Text style={s.body} numberOfLines={2}>
+                          {p.body}
+                        </Text>
+                        <View style={s.location}>
+                          <SuperAsset
+                            name="nav"
+                            tint="black"
+                            opacity={0.3}
+                            size={10}
+                          />
+                          <Text style={s.locationText}>位置を確認する</Text>
+                        </View>
+                      </View>
+                      <View style={{ alignSelf: "center" }}>
+                        <PeopleStack people={onsitePeople(p)} />
+                      </View>
+                    </Pressable>
+                  </View>
+                ))}
+            </View>
+          ))}
         {pins.hidden_attendance.map((p) => (
           <View key={p.id} style={s.row}>
             <Text style={s.muted}>非表示の電信PINに参加中</Text>
@@ -216,7 +223,7 @@ export default function Home() {
           </View>
         ))}
       </View>
-      <View style={{ flex: 1, minHeight: 40 }} />
+      <View style={{ flex: pins.items.length ? 1 : 0, minHeight: 40 }} />
       <Pressable
         accessibilityRole="button"
         accessibilityLabel="招待QRで友達を招待"
@@ -259,7 +266,7 @@ export default function Home() {
                 paddingVertical: 6,
                 paddingHorizontal: 10,
                 borderRadius: 20,
-                backgroundColor: "rgba(255,0,45,0.3)",
+                backgroundColor: "#F13450",
                 color: "white",
                 fontFamily: "ui-rounded",
                 fontSize: 12,
@@ -302,6 +309,19 @@ const s = StyleSheet.create({
     justifyContent: "center",
   },
   content: { paddingHorizontal: 20 },
+  empty: {
+    flex: 1,
+    minHeight: 240,
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 20,
+  },
+  emptyText: {
+    fontFamily: "ui-rounded",
+    fontSize: 16,
+    color: "rgba(0,0,0,0.3)",
+    textAlign: "center",
+  },
   section: { marginBottom: 28, gap: 5 },
   sectionTitle: {
     fontSize: 16,

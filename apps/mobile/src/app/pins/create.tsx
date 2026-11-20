@@ -92,17 +92,19 @@ export default function CreatePin() {
             />
           </View>
         </View>
-        <TextInput
-          accessibilityLabel="ステータスメッセージ"
-          placeholder="ステータスメッセージ"
-          placeholderTextColor="#ffffff55"
-          multiline
-          maxLength={500}
-          editable={!disabled}
-          value={draft.body}
-          onChangeText={(body) => updateDenshinDraft({ body })}
-          style={s.input}
-        />
+        <View style={s.inputContainer}>
+          <TextInput
+            accessibilityLabel="ステータスメッセージ"
+            placeholder="ステータスメッセージ"
+            placeholderTextColor="#ffffff55"
+            multiline
+            maxLength={500}
+            editable={!disabled}
+            value={draft.body}
+            onChangeText={(body) => updateDenshinDraft({ body })}
+            style={s.input}
+          />
+        </View>
         <View style={s.group}>
           <View style={s.row}>
             <View
@@ -268,21 +270,27 @@ const s = StyleSheet.create({
   },
   actions: { flexDirection: "row", gap: 10 },
   content: { padding: 20, paddingTop: 16, gap: 24 },
-  input: {
+  inputContainer: {
+    justifyContent: "center",
+    minHeight: 52,
     borderRadius: 26,
+    borderCurve: "continuous",
     backgroundColor: "rgba(255,255,255,0.15)",
     paddingHorizontal: 18,
     paddingVertical: 13,
+  },
+  input: {
+    padding: 0,
     fontFamily: "ui-rounded",
     fontSize: 18,
     lineHeight: 26,
     color: "white",
-    minHeight: 52,
-    maxHeight: 190,
-    textAlignVertical: "top",
+    maxHeight: 164,
+    textAlignVertical: "center",
   },
   group: {
     borderRadius: 26,
+    borderCurve: "continuous",
     backgroundColor: "rgba(255,255,255,0.15)",
     overflow: "hidden",
   },
@@ -291,7 +299,7 @@ const s = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-between",
     paddingHorizontal: 16,
-    paddingVertical: 8,
+    paddingVertical: 16,
     minHeight: 52,
     gap: 12,
   },
@@ -327,7 +335,13 @@ const s = StyleSheet.create({
     color: "rgba(255,255,255,0.65)",
   },
   stepperGlyph: { height: 18, justifyContent: "center", gap: -4 },
-  mapRow: { minHeight: 56, paddingHorizontal: 16, paddingVertical: 16 },
+  mapRow: {
+    height: 56,
+    borderRadius: 28,
+    borderCurve: "circular",
+    justifyContent: "center",
+    paddingHorizontal: 18,
+  },
   hint: { fontSize: 13, color: "#ffffff88", marginTop: 5 },
   counter: {
     flexDirection: "row",
