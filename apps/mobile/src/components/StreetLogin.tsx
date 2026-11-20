@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { useRouter } from "expo-router";
 import {
   Animated,
@@ -61,6 +61,48 @@ export function StreetLogin({
   const [sendingCode, setSendingCode] = useState(false);
   const [formMotion] = useState(() => new Animated.Value(1));
   const stage = sent ? "code" : started ? "email" : "welcome";
+  const title =
+    stage === "welcome"
+      ? "ようこそ"
+      : existing
+        ? "ログイン"
+        : "アカウントを作成する";
+  const [displayedTitle, setDisplayedTitle] = useState(title);
+  const firstTitleEffect = useRef(true);
+  const [titleMotion] = useState(() => new Animated.Value(1));
+  useEffect(() => {
+    if (firstTitleEffect.current) {
+      firstTitleEffect.current = false;
+      return;
+    }
+    let live = true;
+    if (reduced) {
+      setDisplayedTitle(title);
+      titleMotion.setValue(1);
+      return;
+    }
+    // Keep the outgoing heading until it has faded, then reveal the new one.
+    const fadeOut = Animated.timing(titleMotion, {
+      toValue: 0,
+      duration: 150,
+      useNativeDriver: true,
+    });
+    const fadeIn = Animated.timing(titleMotion, {
+      toValue: 1,
+      duration: 300,
+      useNativeDriver: true,
+    });
+    fadeOut.start(({ finished }) => {
+      if (!finished || !live) return;
+      setDisplayedTitle(title);
+      fadeIn.start();
+    });
+    return () => {
+      live = false;
+      fadeOut.stop();
+      fadeIn.stop();
+    };
+  }, [title, reduced, titleMotion]);
   useEffect(() => {
     formMotion.setValue(reduced ? 1 : 0);
     const move = Animated.sequence([
@@ -131,10 +173,11 @@ export function StreetLogin({
         style={s.root}
         onLayout={(e) => setHeight(e.nativeEvent.layout.height)}
       >
-        <Text
+        <Animated.Text
           style={[
             s.title,
             {
+              opacity: titleMotion,
               fontFamily: "OnboardingDot",
               fontSize: 32,
               lineHeight: 40,
@@ -144,12 +187,8 @@ export function StreetLogin({
             },
           ]}
         >
-          {stage === "welcome"
-            ? "ようこそ"
-            : existing
-              ? "ログイン"
-              : "アカウントを作成する"}
-        </Text>
+          {displayedTitle}
+        </Animated.Text>
         <View style={{ position: "absolute", top: top + 86, left: 44 }}>
           <OnboardingArtwork stage={stage} scale={compact ? 0.65 : 1} />
         </View>
@@ -230,7 +269,12 @@ export function StreetLogin({
                     accessible
                     accessibilityRole="progressbar"
                     accessibilityLabel="コードの再送まで"
-                    accessibilityValue={{ min: 0, max: 60, now: remaining, text: `再送まで${remaining}秒` }}
+                    accessibilityValue={{
+                      min: 0,
+                      max: 60,
+                      now: remaining,
+                      text: `再送まで${remaining}秒`,
+                    }}
                     style={s.resendGauge}
                   >
                     {Array.from({ length: 54 }, (_, index) => (
@@ -238,9 +282,18 @@ export function StreetLogin({
                         key={index}
                         style={[
                           s.resendTick,
-                          { opacity: 0.08 + 0.55 * Math.max(0, Math.min(1,
-                            (nextSendAt - now) / 60000 * 54 - index,
-                          )) },
+                          {
+                            opacity:
+                              0.08 +
+                              0.55 *
+                                Math.max(
+                                  0,
+                                  Math.min(
+                                    1,
+                                    ((nextSendAt - now) / 60000) * 54 - index,
+                                  ),
+                                ),
+                          },
                         ]}
                       />
                     ))}
@@ -290,12 +343,20 @@ export function StreetLogin({
                     <EntryProgress
                       success={authSuccess}
                       light
-                      label={authSuccess ? "認証成功" : sendingCode ? "コード送信中" : "認証中"}
+                      label={
+                        authSuccess
+                          ? "認証成功"
+                          : sendingCode
+                            ? "コード送信中"
+                            : "認証中"
+                      }
                     />
                     <Text style={[s.note, authSuccess && { color: "#01AE6B" }]}>
                       {authSuccess
                         ? "authentication successful"
-                        : sendingCode ? "コードを送信しています…" : "認証しています…"}
+                        : sendingCode
+                          ? "コードを送信しています…"
+                          : "認証しています…"}
                     </Text>
                   </>
                 ) : (

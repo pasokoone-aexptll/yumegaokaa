@@ -4,6 +4,8 @@
 
 ## 現在の再開点（2026-11-20・Figma最終照合を継続中）
 
+22:12：StreetLogin見出しの即時置換を150ms消去→300ms出現へ。型検査/確認版Release成功、PID61686の録画で元動画の旧見出し→新見出し→入力欄の順序を確認。`/tmp/onboarding-heading-transition.mp4`。通常Release再ビルド成功・Simulatorへ通常版再インストール済み。認証送信/実機転送なし。
+
 21:56：Block検索欄の説明前gap24→14pt・下padding16→12pt・クリア右16ptへ。原本163への下部配置修正、型検査/通常Release成功、PID60001で確認。メール入力のクリアも確認し検証文字は消去済み。送信/ブロック/実機転送なし。
 
 21:52：Profile編集を原本157へ合わせ、写真枠5pt・Change Photo19pt・名前16pt・クリア右16ptへ。型検査/通常Release成功、PID58675の編集表示確認、`/tmp/profile-input-spacing-final.png`。保存/実機転送なし。
