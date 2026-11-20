@@ -1,13 +1,15 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Animated } from "react-native";
 import { Notice, type BannerProps } from "./StatusNotice";
 // Keep the outgoing notice mounted until its exit animation finishes.
 export function MapStatusBanner(props: BannerProps) {
-  const [displayed, setDisplayed] = useState(props.message);
+  const [displayed, setDisplayed] = useState(props);
+  const latest = useRef(props);
+  latest.current = props;
   const [exit] = useState(() => new Animated.Value(1));
-  if (!displayed && props.message) setDisplayed(props.message);
+  if (!displayed.message && props.message) setDisplayed(props);
   useEffect(() => {
-    if (props.message === displayed) {
+    if (props.message === displayed.message) {
       exit.setValue(1);
       return;
     }
@@ -17,11 +19,11 @@ export function MapStatusBanner(props: BannerProps) {
       useNativeDriver: true,
     });
     motion.start(({ finished }) => {
-      if (finished) setDisplayed(props.message);
+      if (finished) setDisplayed(latest.current);
     });
     return () => motion.stop();
   }, [props.message, displayed, exit]);
-  return displayed ? (
+  return displayed.message ? (
     <Animated.View
       style={{
         transform: [
@@ -34,7 +36,10 @@ export function MapStatusBanner(props: BannerProps) {
         ],
       }}
     >
-      <Notice key={displayed} {...props} message={displayed} />
+      <Notice
+        key={displayed.message}
+        {...(props.message === displayed.message ? props : displayed)}
+      />
     </Animated.View>
   ) : null;
 }

@@ -371,11 +371,11 @@ export default function Street() {
                   ? ""
                   : state.status)
               }
-              actionLabel={chatRead ? "再読み込み" : undefined}
-              onAction={chatRead?.reload}
-              autoDismiss={!chatRead}
+              actionLabel={chatRead?.error ? "再読み込み" : undefined}
+              onAction={chatRead?.error ? chatRead.reload : undefined}
+              autoDismiss={!chatRead?.error}
             >
-              {!chatRead &&
+              {!chatRead?.error &&
                 !modeNotice &&
                 state.visit.can_update === false &&
                 state.visit.state === "active" && (
