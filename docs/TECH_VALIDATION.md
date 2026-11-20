@@ -1,3 +1,9 @@
+## 2026-11-21 読取失敗→回復のSimulator確認（R04/R10/R19）
+
+APIClientにSimulator専用・明示起動環境変数YUMEGAOKA_SIMULATE_READ_OUTAGE=1の試験を追加。開始10秒後〜60秒まで読取6操作のみURLError.networkConnectionLostを返す。認証・書込み・実機には適用されず、変数なしの通常起動は無効。PID79454でget_presence_snapshot/chat_list/denshin_listの模擬失敗ログを確認。Mapは既存会話/PINを保持しAlertなし、30秒後「新着を待っています…」のみ表示。60秒後の自動取得で状態文が消え、街人数の「最終取得時」も解除されることをAX/画像で確認。実際の回線障害原因の特定ではなく同じ読取エラー経路の検証。
+
+同試験でHomeの即時エラー文を発見し、同じ30秒待機の小さな状態表示へ変更。予約された余白へabsolute配置し本文を押し下げない。空の取得結果と取得失敗を区別する既存条件は維持。型検査/通常Release成功。 PID80537でHomeへの遷移直後に即時エラー文が出ないことを確認。長時間表示確認中にユーザーによるPIN編集（本文「ああ」）を観測し、入力を守るため操作/再起動を中止。Home長時間状態の実表示は未確認。起動限定の模擬失敗は60秒で終了し、環境変数は次の通常起動へ永続しない。
+
 ## 2026-11-21 自動更新失敗を操作エラーから分離（R04/R10/R19）
 
 useStreetMapのrefreshErrorをerror合成から分離。MapErrorDialogへは操作errorのみ渡し、人数のstale表示はconnectionUnavailableで維持。チャットreadErrorを反復toastへ渡す経路を撤去。30秒連続失敗時のみ予約領域へ12ptの状態文、成功時は即消去。取得済みデータ保持/認可失効時のクリア/自動再取得間隔/書込みの確定条件は変更なし。scripts/test-delayed-refresh.cjsで一過性失敗非表示・30秒継続表示・回復後リセット・unmount取消を確認。型検査/通常Release成功。通常版PID78027でMap/チャット取得を確認。続いて明示的なchat操作失敗をactionErrorへ分離し、読み取り待機へ隠れず入力欄側へ伝えるよう変更（型検査成功、後段変更のSimulator反映は未完）。実際の回線断からの復旧は未確認。

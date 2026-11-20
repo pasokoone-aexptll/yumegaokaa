@@ -1,3 +1,4 @@
+import { useDelayedRefreshStatus } from "../../../hooks/useDelayedRefreshStatus";
 import { HomeModeDropdown } from "../../../components/HomeModeDropdown";
 import { useInviteQuota } from "../../../hooks/useInviteQuota";
 import { useState } from "react";
@@ -35,6 +36,7 @@ export default function Home() {
   const router = useRouter(),
     insets = useSafeAreaInsets();
   const pins = useDenshinPins();
+  const waiting = useDelayedRefreshStatus(!!pins.error);
   const remaining = useInviteQuota();
   const { width } = useWindowDimensions();
   const [refreshing, setRefreshing] = useState(false),
@@ -117,9 +119,9 @@ export default function Home() {
         </Pressable>
       </View>
       <View style={s.content}>
-        {!!pins.error && (
-          <Text accessibilityRole="alert" style={s.error}>
-            {pins.error}
+        {waiting && (
+          <Text accessibilityLiveRegion="polite" style={s.refreshStatus}>
+            PINを更新しています…
           </Text>
         )}
         {pins.loading && <ActivityIndicator />}
@@ -351,5 +353,12 @@ const s = StyleSheet.create({
     height: StyleSheet.hairlineWidth,
     backgroundColor: "rgba(0,0,0,0.08)",
   },
-  error: { color: "#b22", paddingVertical: 12 },
+  refreshStatus: {
+    position: "absolute",
+    top: -22,
+    left: 20,
+    color: "rgba(0,0,0,0.45)",
+    fontSize: 12,
+    fontFamily: "ui-rounded",
+  },
 });

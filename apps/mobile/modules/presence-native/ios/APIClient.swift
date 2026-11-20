@@ -4,6 +4,9 @@ import CryptoKit
 
 actor APIClient {
  static let shared = APIClient()
+ #if targetEnvironment(simulator)
+ private let readProbeStarted=ProcessInfo.processInfo.systemUptime
+ #endif
  private var base = "", key = ""
  private var credentials: [String:Any] = [:]
  private var authGeneration=0
@@ -99,6 +102,18 @@ actor APIClient {
   guard let newToken=r["access_token"] as? String else {throw ServiceError(code:"login_required")};return newToken
  }
  func rpc(_ operation:String,_ payload:[String:Any]=[:]) async throws -> [String:Any] {
+  #if targetEnvironment(simulator)
+  // Explicit launch-only test: initial reads succeed, then fail, then recover.
+  // No auth/write operations or physical-device builds are affected.
+  if ProcessInfo.processInfo.environment["YUMEGAOKA_SIMULATE_READ_OUTAGE"] == "1",
+     ["chat_list","get_presence_snapshot","get_entry_map","denshin_list","event_list","recruitment_list"].contains(operation) {
+   let elapsed=ProcessInfo.processInfo.systemUptime-readProbeStarted
+   if elapsed>=10 && elapsed<60 {
+    NSLog("Yumegaoka simulated read outage operation=%@",operation)
+    throw URLError(.networkConnectionLost)
+   }
+  }
+  #endif
   let generation=authGeneration
   let bearer=try await token()
   guard generation==authGeneration else {throw ServiceError(code:"login_required")}
