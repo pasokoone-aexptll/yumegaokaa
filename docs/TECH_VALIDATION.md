@@ -1387,3 +1387,5 @@ avatar.tsはlaunchImageLibraryAsyncを最初に呼び、画像変換/通信は�
 2026-11-20 20:01（R03/R04/R10/R12/R14）：状態復元変更後のtests/entry-state.test.mjsを実行、7/7成功。重複入街/遅延成功の取消、権限/更新元拒否、退出通信失敗、Simulator待機と試験タグ認可を対象とし、モードtoastの直接試験ではない（そちらはPID21162の表示確認）。合意境界をコード再照合：StreetLoginは既存ログインでlogin(false,!existing)→sendOTP createAccount→iOS create_user:false、053は未使用QRの同一招待再発行とcurrent再表示、055は未使用revokedの枠返却と登録済みrecipient停止を保持。map-pinの空一覧条件とonsitePeopleの主催者除外も保持。今回実認証/相手停止/DB変更はなし。
 
 2026-11-20 20:03（R19、Figma154/166）：共通戻るボタンのchevron図柄を36→32ptへ調整。提供SVGは24枠内で線端含む高さ14のため可視高さ21→18.7ptとなり原本約18ptへ近づく。外側49pt Hostと36ptラベル枠は保持、円径/タップ領域は縮めない。TypeScript/通常Release成功、PID22488のAccount settingsで余白と中央配置、戻る→Settingsを確認。
+
+2026-11-20 20:27 R03/R19：完了演出の人物出現を扉から分離。元動画49.0秒は空の扉、49.1〜49.25秒で人物が現れるため、Welcomeのみ0.845秒待機後0.26秒で人物を表示。共通認証画面の人物表示は維持。型検査/通常Release成功。通常版PID31420の録画 `/tmp/welcome-figure-delay.mp4` の1.7秒で扉のみ、2.5秒で人物と本人画像を確認。元動画と扉の開く方向・形状の一致はなお未達（現状は白矩形の横移動）、次の比較対象。実データ更新/実機インストールなし。

@@ -27,9 +27,11 @@ const person = original.replace(paths[0] ?? "", "");
 export function OnboardingArtwork({
   stage,
   scale = 1,
+  codeFigureOpacity,
 }: {
   stage: "welcome" | "email" | "code";
   scale?: number;
+  codeFigureOpacity?: Animated.AnimatedInterpolation<number>;
 }) {
   const reduced = useContext(ReducedIconMotion);
   const [phase] = useState(
@@ -129,10 +131,12 @@ export function OnboardingArtwork({
             position: "absolute",
             top: -6,
             left: -69,
-            opacity: phase.interpolate({
-              inputRange: [0, 1, 2],
-              outputRange: [0, 0, 1],
-            }),
+            opacity:
+              codeFigureOpacity ??
+              phase.interpolate({
+                inputRange: [0, 1, 2],
+                outputRange: [0, 0, 1],
+              }),
             transform: [
               {
                 translateX: phase.interpolate({

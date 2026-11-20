@@ -79,7 +79,13 @@ export function WelcomeView({
           }),
         }}
       >
-        <OnboardingArtwork stage="code" />
+        <OnboardingArtwork
+          stage="code"
+          codeFigureOpacity={motion.interpolate({
+            inputRange: [0, 0.13, 0.17, 1],
+            outputRange: [0, 0, 1, 1],
+          })}
+        />
         <Animated.View
           style={{
             position: "absolute",
