@@ -4,7 +4,7 @@
 
 ## 現在の再開点（2026-11-20・Figma最終照合を継続中）
 
-最新：停止後のdidFailWithErrorが状態を上書きする経路へenabled guard追加、通常Releaseコンパイル成功。遅延エラーの動的注入は未確認。DerivedDataはこの最新版、SimulatorはPID35609の直前版のまま。ゴースト中の測位失敗文言変更は質問回答待ち。現在Simulatorは実PINのExpanded。
+最新：停止後のdidFailWithErrorが状態を上書きする経路へenabled guard追加、通常Releaseコンパイル成功。抽出した実コールバックの停止/観測/再停止回帰テスト成功、ガード除去で失敗することも確認。OS側の通知タイミング再現は未確認。DerivedDataはこの最新版、SimulatorはPID35609の直前版のまま。ゴースト中の測位失敗文言変更は質問回答待ち。現在Simulatorは実PINのExpanded。
 
 20:45：Welcome開閉を60fps走査線で実測しkeyframe調整。原本0.450/保持2.200/閉0.633秒、現通常版PID35609は0.383/2.217/0.617秒。録画 `/tmp/welcome-door-timed.mp4`、解析 `/tmp/measure-welcome-timed.py`。開口0.067秒残差あり、遷移中の初期フレーム影響を含む。型検査/Release成功。通常版、実機転送なし。
 

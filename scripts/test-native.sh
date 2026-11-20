@@ -4,3 +4,5 @@ swiftc -module-cache-path /tmp/yumegaoka-swift-cache apps/mobile/modules/presenc
 /tmp/yumegaoka-core-tests
 swiftc -parse-as-library -module-cache-path /tmp/yumegaoka-swift-cache apps/mobile/modules/presence-native/ios/ServiceError.swift apps/mobile/modules/presence-native/ios/VisitLifecycle.swift tests/lifecycle/main.swift -o /tmp/yumegaoka-lifecycle-tests
 /tmp/yumegaoka-lifecycle-tests
+
+python3 tests/native/location-failure.py
