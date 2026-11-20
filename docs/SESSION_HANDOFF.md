@@ -4,6 +4,8 @@
 
 ## 現在の再開点（2026-11-20・Figma最終照合を継続中）
 
+21:26：写真遅延の独立UIKit検証アプリをexperiments/photo-picker-iosへ追加。ビルド/Simulator起動PID50079、ボタン表示のスクリーンショット確認済み。まだボタン実行/時間比較なし。Device HubがcgWindowNotFoundで操作不能になり、ユーザーにiPhone 18 Proウインドウの表示をasync依頼中。検証アプリは写真を保存/送信しない。本体変更なし。
+
 21:22：写真遅延の対象はPhotosUIServiceでなくPhotoPicker.appex（PID48632）。再表示時も初期化後2.853秒のログ空白、10秒sampleでmain93.3%runloop待機。`/tmp/yumegaoka-photopicker.log` と `.sample.txt`。原因は未確定、次はhost/extension間scene受け渡し。通常版PID48212、写真を選ばず閉じてProfile編集。コード変更なし。
 
 21:18：通知一覧の補助本文を原本152に合わせ14pt/500へ（詳細16pt/600は維持）。型検査/確認版Release成功、PID47613の `/tmp/notices-type-final.png` で照合。通常版Release成功、Simulatorへ上書き・起動済み。

@@ -1413,3 +1413,5 @@ avatar.tsはlaunchImageLibraryAsyncを最初に呼び、画像変換/通信は�
 2026-11-20 21:18 R13：通知一覧の補助本文が原本152の約14ptに対し16pt/600だった差を修正。一覧14pt/500、詳細カード16pt/600を分離。型検査/確認版Release成功、Simulator PID47613の実表示部品fixtureを `/tmp/notices-type-final.png` に取得して見出しとの大小関係を照合。通知データ/既読操作は変更なし。
 
 2026-11-20 21:22 R03/R19 写真一覧遅延追加調査：通常版PID48212のProfile編集→Change PhotoでシステムPhotoPicker.appex PID48632を特定。従来PhotosUIService/PhotosViewService指定では対象を採取できていなかった。`/tmp/yumegaoka-photopicker.log` の再表示時21:20:56.505→59.358に2.853秒のログ空白。既存プロセス再利用でも発生し、初回プロセス起動だけでは説明できない。10秒sample `/tmp/yumegaoka-photopicker.sample.txt` はメイン7504標本中7002（93.3%）がrunloop/mach待機。集計は表示前後を含むため空白時間全体の待ち先を特定した証拠ではない。写真選択/送信なし、キャンセルして編集へ戻った。コード変更/再ビルドなし。次の切り分けはホストと拡張間のscene表示受け渡し。アニメーション無効化/ピッカー種別比較の再試行は不要。
+
+2026-11-20 21:26 R03/R19：ホスト/OSログも採取（`/tmp/yumegaoka-picker-host.log`）したが、2.85秒の待ちを特定できず。既存構成を除外するUIKit単体probeをexperiments/photo-picker-iosに作成。UIImagePickerController/photoLibrary/public.image/allowsEditing=trueで初期化とpresent completionを計測、選択しても保存/送信せず閉じる。UIScene必須の初回起動失敗を修正し、Simulator PID50079のボタン画面を確認。比較計測はDevice Hubウインドウ取得不可のため未実行。製品アプリの遅延を修正済みとは扱わない。
