@@ -87,17 +87,31 @@ export function ProfileSetup({
             <View
               style={{
                 position: "absolute",
-                right: 10,
-                bottom: 6,
-                width: 38,
-                height: 38,
-                borderRadius: 19,
-                backgroundColor: "rgba(0,0,0,0.04)",
+                right: -7,
+                bottom: 4,
+                width: 56,
+                height: 56,
+                borderRadius: 28,
+                overflow: "hidden",
+                backgroundColor: "white",
                 alignItems: "center",
                 justifyContent: "center",
               }}
             >
-              <SuperAsset name="user-fill" size={27} tint="rgba(0,0,0,0.5)" />
+              <View
+                style={{
+                  ...StyleSheet.absoluteFill,
+                  backgroundColor: "rgba(0,0,0,0.1)",
+                }}
+              />
+              <View style={{ position: "absolute", top: 0, left: -9 }}>
+                <SuperAsset
+                  name="user-fill"
+                  size={74}
+                  tint="black"
+                  opacity={0.55}
+                />
+              </View>
             </View>
           )}
         </View>

@@ -4,6 +4,8 @@
 
 ## 現在の再開点（2026-11-20・Figma最終照合を継続中）
 
+21:14：ProfileSetupの@人物badgeを38→56pt、提供user-fillを74ptで円内クリップ。塗り/線の二重半透明を黒＋全体opacityへ変更し、@の透過を白下地で防止。型検査/確認版Release成功、PID46101で人物の均一な塗りと配置をSimulator確認。通常版Releaseも成功しSimulatorへ上書き・起動済み。写真選択処理は変更なし。
+
 21:04：ProfileSetup photo/poolボタン文字18→22pt、name18pt維持。型検査/確認版Release成功、PID42310で写真ステップ確認。次の差分：@右下人物badgeが原本約55ptに対し現38ptで小さい。通常版復帰ビルド成功、Simulatorへ上書き・起動済み。
 
 20:59：Welcome本人画像を扉左端44ptでクリップし、元動画49.5秒の扉内からの出現へ調整。中央到達1.5275秒、最終位置維持。型検査/通常Release成功。PID40917、`/tmp/welcome-avatar-door.mp4` 2.15/2.7/7.5秒で途中/中央/最終を確認。最新通常版をSimulatorへ反映、実機転送なし。
