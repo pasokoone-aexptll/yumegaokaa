@@ -198,7 +198,7 @@ export function StreetMapMarkers({
                 </View>
               </PinBubble>
               {pin.recruiting ? (
-                <View style={{ alignItems: "center" }}>
+                <View style={{ alignItems: "center", marginTop: -30 }}>
                   <View
                     style={{
                       position: "absolute",

@@ -1353,3 +1353,5 @@ avatar.tsはlaunchImageLibraryAsyncを最初に呼び、画像変換/通信は�
 2026-11-20 19:44追加計測PID14846：present開始46980.464080、次のmain queue46980.489741（25.7ms）、completion46984.067785（3603.7ms）。present直後のtransitionCoordinatorはnilでduration/alongsideログなし。この手法では準備待ちとアニメーションの内訳は未確定。Expo公開issue38424は画像選択後のcrop停止であり今回の選択前遅延と異なる（https://github.com/expo/expo/issues/38424）。バージョン更新やcrop削除の根拠にはしない。計測依存ソース復元・ログ32557停止済み。通常版復帰ビルドを開始。
 
 2026-11-20 19:47：計測コードを含まない通常Release PID15849へ復帰。Home→実募集PIN→ExpandedをDevice Hubで確認。本文24pt維持、現地/予定0人の見出し非表示、主催者別枠とglass背景を確認。実データの更新なし。写真一覧の起動遅延は未解決。
+
+2026-11-20 19:51（R10/R12、Figma 132/137）：Map募集PINの吹き出し下端と看板の隙間を修正。LabelShadowの7ptと看板PNG上端の透明領域（alpha>180のy1=66/485、表示125ptで約17pt）が加算されていた。看板ラッパーのmarginTopを-30ptにし、先端が看板に重なる配置へ。TypeScript成功、通常Release成功、PID18166の実クラウドPIN2件で配置とHome→Map詳細→閉じるをSimulator確認。データ/操作仕様変更なし。通常PINの配置は変更していない。
