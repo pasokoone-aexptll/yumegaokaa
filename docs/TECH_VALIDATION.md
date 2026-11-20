@@ -1357,3 +1357,7 @@ avatar.tsはlaunchImageLibraryAsyncを最初に呼び、画像変換/通信は�
 2026-11-20 19:51（R10/R12、Figma 132/137）：Map募集PINの吹き出し下端と看板の隙間を修正。LabelShadowの7ptと看板PNG上端の透明領域（alpha>180のy1=66/485、表示125ptで約17pt）が加算されていた。看板ラッパーのmarginTopを-30ptにし、先端が看板に重なる配置へ。TypeScript成功、通常Release成功、PID18166の実クラウドPIN2件で配置とHome→Map詳細→閉じるをSimulator確認。データ/操作仕様変更なし。通常PINの配置は変更していない。
 
 2026-11-20 19:53（R03/R19、Figma155/160）：通常版PID18166でSettings→Inviteを再照合。Settingsのピンク境界/アバター重なり/グループ配置を視認。Invite読込後、798px幅Device Hub画像の端末内容x61〜736（675px、402pt換算）、上端135pxを基準に、QR可視上端445px→約184.6pt（原本362/2=181pt、差約4pt）、ゲージ上端831px→約414.5pt（原本831/2=415.5pt、差約1pt）、History上端約1260px→約670pt（原本1340/2=670pt）を照合。QR全体の白いquiet zoneは緑の可視領域と区別。既存QRが再表示され、実履歴/Toggleを確認。発行/削除/停止は行っていない。概算座標でありピクセル一致の証明ではない。
+
+2026-11-20 19:55（R10/R11、Figma132）：review-map?scene=presenceをSimulator限定確認画面に追加。本番StreetMapMarkers/liveCellsへ画像null×3の固定セルを渡し、通信/入街/API操作なしで描画。PID19506で提供user-fillアイコン（白60%）、白15%背景、白枠、3人の重なり、気配吹き出しの表示を確認。以前未確認だったfallback分岐の実描画を確認済み。型検査/確認版Release成功。
+
+19:56追記：確認後に通常Releaseを再ビルド・Simulatorへ復帰（PID20042）、実Map/4タブ表示を確認。
