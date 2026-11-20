@@ -150,6 +150,7 @@ export function DetailRow({
   leading,
   title,
   subtitle,
+  titleStyle,
   icon,
   onPress,
   danger = false,
@@ -158,6 +159,7 @@ export function DetailRow({
 }: {
   title: string;
   subtitle?: string;
+  titleStyle?: TextStyle;
   leading?: React.ReactNode;
   icon?: React.ComponentProps<typeof DetailIcon>["name"];
   onPress?: () => void;
@@ -176,7 +178,9 @@ export function DetailRow({
         />
       )}
       <View style={{ flex: 1, gap: 4 }}>
-        <Text style={[detail.rowTitle, danger && { color: "#c52836" }]}>
+        <Text
+          style={[detail.rowTitle, titleStyle, danger && { color: "#c52836" }]}
+        >
           {title}
         </Text>
         {subtitle && <Text style={detail.secondary}>{subtitle}</Text>}

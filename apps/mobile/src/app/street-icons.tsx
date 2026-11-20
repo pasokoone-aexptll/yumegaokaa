@@ -132,6 +132,7 @@ export default function StreetIcons() {
           <Section>
             <DetailRow
               title="画像を差し替える"
+              titleStyle={{ fontWeight: "400" }}
               leading={<SuperAsset name="myCityPoolIcon" size={30} />}
               onPress={() =>
                 router.push({

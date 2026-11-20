@@ -218,6 +218,7 @@ export function AccountView({
             <Section>
               <DetailRow
                 title="メールアドレスを変更"
+                titleStyle={{ fontWeight: "400" }}
                 leading={<SuperAsset name="accountAtmark" size={30} />}
                 onPress={() =>
                   router.push({
