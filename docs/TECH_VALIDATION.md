@@ -1343,3 +1343,5 @@ R12〜R14/R16〜R19。最新ユーザー指示により、詳細のステータ�
 通常版PID10493、Profile編集のChange Photoから写真一覧を2回開き、いずれも選択せず閉じた。初回は操作/AX取得795ms時点で編集画面のbusy状態、次の観測6366ms時点で写真一覧表示。途中に観測間隔があるため「6.3秒かかった」とは断定しない。再度の起動は操作ツール開始から758/953/1142msの画像が編集画面のまま、後続観測で一覧表示。これは遅延の存在を示すが厳密なタップ→表示の測定ではない。写真/名前の更新なし。
 
 avatar.tsはlaunchImageLibraryAsyncを最初に呼び、画像変換/通信は選択後のみ。インストール済みExpo ImagePickerのallowsEditing分岐によりUIImagePickerControllerを使用。起動はmain queue、currentViewController.present(animated:true)。旧picker使用と遅さの因果は未証明。次の検証はJS呼出時点・ネイティブ初期化・present完了の計測で分離し、正方形切抜きを無断で削除しない。
+
+2026-11-20 19:35区間計測：一時的にローカルnode_modulesのExpo ImagePickerへ処理名/単調時刻のみのNSLogを追加し、Simulator PID11835で計測。native_entry46480.492429、init_start46480.495659、init_end46480.732318、present_start46480.732892、present_return46480.740509、present_complete46484.284499。初期化236.7ms、present呼出7.6ms、present開始→completion3551.6ms。初期化のみを遅延原因とは扱えない。completionはサムネイルの初回表示時点とは必ずしも同一ではない。写真未選択でキャンセル。ログ取得終了、依存ソースは元へ復元済み。現在インストール版には計測ログが残るため、比較実験後に通常ビルドへ戻す。新しいPHPickerとの対照計測は未実施。
