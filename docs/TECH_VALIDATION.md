@@ -1399,3 +1399,5 @@ avatar.tsはlaunchImageLibraryAsyncを最初に呼び、画像変換/通信は�
 2026-11-20 R04/R10：Core LocationのdidFailWithErrorがenabledを見ず、clearObservation後にも状態文言を上書きできることをコード監査で確認。didUpdateLocationsと同じくenabled=falseでは無視するguardを追加。通常Simulator ReleaseのSwiftコンパイル成功。遅延エラーの実注入・停止直後レースの動的再現は未確認、ビルド成功を不具合の動的合格としない。今回の新バイナリは未インストール（Simulatorは直前PID35609）。ゴースト中の測位失敗文言はユーザーへ意味確認中で未変更。
 
 2026-11-20 追検証 R04/R10：`python3 tests/native/location-failure.py` 成功。実PresenceEngineのdidFailWithError本文を抽出してSwiftコンパイルし、初期停止中/観測中/観測停止直後の3状態を実行。停止時はemit/resetなし、観測中は1回通知を確認。guardを除去した負の比較はassertionで失敗し回帰検出を確認。test-native.shへ接続。Core Location本体の配送タイミングは模擬していないためOS起因のレース再現とは区別。
+
+2026-11-20 20:53 R12〜R14：通常版PID35609で実PIN詳細Expanded→編集を操作。旧詳細が積み重ならず編集半高へ置換、数値10のタップで0.77detentへ拡大、52pt入力/設定行・26pt角丸・21ptアイコン・16ptラベルの配置を原本141/142と照合。編集内の赤glass削除ボタンを目視、×で確認なしにMapへ復帰。数値/本文/募集状態の変更・保存・削除はなし。追加の外観修正は今回不要。
