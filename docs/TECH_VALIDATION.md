@@ -1347,3 +1347,5 @@ avatar.tsはlaunchImageLibraryAsyncを最初に呼び、画像変換/通信は�
 2026-11-20 19:35区間計測：一時的にローカルnode_modulesのExpo ImagePickerへ処理名/単調時刻のみのNSLogを追加し、Simulator PID11835で計測。native_entry46480.492429、init_start46480.495659、init_end46480.732318、present_start46480.732892、present_return46480.740509、present_complete46484.284499。初期化236.7ms、present呼出7.6ms、present開始→completion3551.6ms。初期化のみを遅延原因とは扱えない。completionはサムネイルの初回表示時点とは必ずしも同一ではない。写真未選択でキャンセル。ログ取得終了、依存ソースは元へ復元済み。現在インストール版には計測ログが残るため、比較実験後に通常ビルドへ戻す。新しいPHPickerとの対照計測は未実施。
 
 2026-11-20 19:38対照：一時的にPHPickerを選ぶ同条件ビルドPID12813で測定。init_start46623.301311、init_end46623.325033、present_start46623.325360、present_complete46626.884601。初期化23.7ms、present区間3559.2ms。旧UIImagePickerの3551.6msとほぼ同じで、Picker種別の置換だけでは主遅延を解消できない。両測定は各1回であり一般化しない。写真一覧を表示して未選択キャンセル。依存ソースを元へ戻し、ログsession92614停止。切抜き省略は採用しない。通常版復帰ビルドを開始。
+
+2026-11-20 19:40：比較変更を除去した通常版PID13530で写真一覧の起動中をsampleで12秒採取。/tmp/yumegaoka-picker-main-thread.sample.txt。main-thread7992標本中7463がCFRunLoopのmach_msg待機（約93.4%）、UIImagePicker初期化286標本。採取窓は起動前後も含むため、遅延区間そのもののCPU率とは扱わない。長時間のアプリ内CPU占有の根拠は得られていない。Device Hub Controlsには速度変更項目なし（他の設定まで否定する証拠ではない）。写真未選択でキャンセル、通常版の切抜き仕様と依存ソースは復元済み。

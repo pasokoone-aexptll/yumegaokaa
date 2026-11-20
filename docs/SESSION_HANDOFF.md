@@ -4,6 +4,8 @@
 
 ## 現在の再開点（2026-11-20・Figma最終照合を継続中）
 
+19:40：通常版PID13530へ復帰済み。写真起動中の12秒sampleは/tmp/yumegaoka-picker-main-thread.sample.txt。メイン標本の約93%がrunloop待機（前後を含む）、アプリCPU占有の証拠なし。写真未選択で閉じた。次はpresentationの準備待ちと遷移を区別。
+
 19:38：PHPicker対照PID12813もpresent区間3559ms（旧3552ms）で改善せず。初期化のみ24msへ短縮。単純なPicker置換は不採用、切抜き保持。依存ソース復元済み・ログ92614停止。通常版ビルド進行中。次はpresentation/システム遷移待ちの要因確認。
 
 19:35：写真Picker計測版PID11835をSimulatorへ導入。初期化236.7ms、present開始→完了3551.6ms。遅延は主にpresent区間。NSLog付き依存ソースは/tmp/yumegaoka-ImagePickerModule-original.swiftから復元済み（インストールバイナリは計測版のまま）。ログsession23594は停止済み。次は一時的なPHPicker対照で表示時間を比較し、最後に通常版へ復帰する。写真選択/保存は行わない。
