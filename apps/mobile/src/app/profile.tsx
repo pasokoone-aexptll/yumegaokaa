@@ -1,3 +1,4 @@
+import { AccountHeaderBackground } from "../components/AccountHeaderBackground";
 import { native } from "../lib/native";
 import { useContext, useState } from "react";
 import { useLocalSearchParams, useRouter } from "expo-router";
@@ -61,13 +62,13 @@ export default function Profile() {
       <View
         style={{
           height: 200,
-          backgroundColor: "rgba(255,45,85,0.2)",
           paddingTop: insets.top,
           paddingHorizontal: 24,
           flexDirection: "row",
           justifyContent: "space-between",
         }}
       >
+        <AccountHeaderBackground />
         {!onboarding ? (
           <NativeIconButton
             icon="chevron-base"

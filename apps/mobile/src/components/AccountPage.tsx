@@ -1,6 +1,7 @@
 import { type ReactNode, useSyncExternalStore, useState } from "react";
 import { Animated, StyleSheet, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { AccountHeaderBackground } from "./AccountHeaderBackground";
 import { Avatar } from "./Avatar";
 import { sessionState } from "../lib/sessionState";
 export function AccountPage({
@@ -41,14 +42,15 @@ export function AccountPage({
           style={[
             StyleSheet.absoluteFill,
             {
-              backgroundColor: "rgba(255,45,85,0.2)",
               transform: [
                 { translateY: Animated.multiply(pull, -0.5) },
                 { scaleY: Animated.add(1, Animated.divide(pull, 200)) },
               ],
             },
           ]}
-        />
+        >
+          <AccountHeaderBackground />
+        </Animated.View>
       </View>
       <View style={s.identity}>
         <View style={s.avatar}>

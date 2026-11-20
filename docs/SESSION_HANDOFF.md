@@ -4,6 +4,8 @@
 
 ## 現在の再開点（2026-11-20・Figma最終照合を継続中）
 
+21:49：Settings/Profileのピンクを白下地＋半透明色へ共通化。原本155/157の背景RGBA255,206,221と通常版PID57614の同領域が一致。型検査/通常Release成功、Settings→Profileを目視確認。`/tmp/account-header-pink-final.png`。現在通常版Profile、保存/実機転送なし。
+
 21:45：Settings本人画像左21pt/外径106pt/枠5pt・メール左135ptへ原本155に合わせて修正。型検査/通常Release成功、PID55758で設定表示確認。`/tmp/settings-identity-alignment.png`。通常版Settings、保存/実機転送なし。
 
 21:42：通常版PID52799で他者募集PINの半高/全高/…標準Menu/閉鎖→Mapを確認。本文24pt維持・主催者別枠・空名簿非表示・blur背景が継続。参加/通報/ブロック実行なし。新しいコード修正なし。写真遅延の単体再現は確認済みだが未解消。

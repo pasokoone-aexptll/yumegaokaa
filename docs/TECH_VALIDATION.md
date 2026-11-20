@@ -1,5 +1,9 @@
 ## 2026-11-20 完了画面の最終静止配置（R03/R19）
 
+## 2026-11-20 Account背景の合成下地（R19）
+
+原本155/157のピンク領域をNSBitmapImageRepで測定するとRGBA=(255,206,221,255)、直前Simulatorは(248,206,214,255)。灰色ページへの直接合成を、共通AccountHeaderBackgroundの白下地＋20%ピンクへ変更。Settingsの伸縮用Animated.View内とProfileヘッダー内で共用し、位置/操作は維持。型検査/通常Release成功、通常版PID57614でSettings→ProfileをCUA確認。`/tmp/account-header-pink-final.png`の同じ背景位置は原本と同じ(255,206,221,255)になった。背景の一点の測色一致であり、画面全体の完全一致とはしない。写真変更/保存/実機転送なし。
+
 ## 2026-11-20 Settings本人画像・メールの横位置（R19）
 
 Figma155の2px/pt基準で本人画像左21pt・外径106pt・内径96pt・枠5pt、メール左135ptへAccountPageを合わせた（旧24/108/100/4pt、メール142pt）。上端147pt、画像からメール8pt。名前前の余白を3pt補正し、下のグループ位置は維持。型検査・通常Release成功。通常版PID55758のSettingsで画像・メールの移動と一覧配置をCUA確認、`/tmp/settings-identity-alignment.png`。写真/アカウント情報の保存なし、実機転送なし。全画面一致の保証ではない。
