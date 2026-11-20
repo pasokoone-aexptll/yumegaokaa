@@ -106,7 +106,7 @@ export default function Profile() {
         }}
       >
         <View
-          style={{ borderRadius: 26, padding: 4, backgroundColor: "#F6F6F6" }}
+          style={{ borderRadius: 26, padding: 5, backgroundColor: "#F6F6F6" }}
         >
           <Avatar
             shape="square"
@@ -126,7 +126,7 @@ export default function Profile() {
               style={{
                 fontFamily: "ui-rounded",
                 color: "#FF3DA5",
-                fontSize: 20,
+                fontSize: 19,
                 fontWeight: "700",
               }}
             >
@@ -145,21 +145,22 @@ export default function Profile() {
           </Text>
         )}
         {editing && (
-          <View style={{ width: "100%", marginTop: 13 }}>
+          <View style={{ width: "100%", marginTop: 12 }}>
             <View
               style={{
                 backgroundColor: "white",
                 borderRadius: 30,
                 flexDirection: "row",
                 alignItems: "center",
-                paddingHorizontal: 24,
+                paddingLeft: 26,
+                paddingRight: 16,
               }}
             >
               <TextInput
                 accessibilityLabel="名前"
                 style={{
                   fontFamily: "ui-rounded",
-                  fontSize: 18,
+                  fontSize: 16,
                   fontWeight: "600",
                   flex: 1,
                   height: 54,

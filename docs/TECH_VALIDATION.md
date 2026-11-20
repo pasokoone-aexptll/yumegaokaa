@@ -1,5 +1,9 @@
 ## 2026-11-20 完了画面の最終静止配置（R03/R19）
 
+## 2026-11-20 Profile編集の文字・クリア余白（R19）
+
+Figma157に合わせ、本人画像枠4→5pt（外径106pt）、Change Photo20→19pt、名前18→16pt、入力欄左余白24→26pt・右24→16ptへ。20ptクリア円の上下17ptに対し右16ptとなり、以前の右24ptの偏りを除去。写真枠/文字の高さ変更に合わせ欄前余白13→12pt。型検査/通常Release成功、通常版PID58675の`/settings/profile?edit=1`をCUA確認、`/tmp/profile-input-spacing-final.png`。入力・写真選択・保存なし。背景は直前の原本測色一致を維持。実機転送なし。
+
 ## 2026-11-20 Account背景の合成下地（R19）
 
 原本155/157のピンク領域をNSBitmapImageRepで測定するとRGBA=(255,206,221,255)、直前Simulatorは(248,206,214,255)。灰色ページへの直接合成を、共通AccountHeaderBackgroundの白下地＋20%ピンクへ変更。Settingsの伸縮用Animated.View内とProfileヘッダー内で共用し、位置/操作は維持。型検査/通常Release成功、通常版PID57614でSettings→ProfileをCUA確認。`/tmp/account-header-pink-final.png`の同じ背景位置は原本と同じ(255,206,221,255)になった。背景の一点の測色一致であり、画面全体の完全一致とはしない。写真変更/保存/実機転送なし。
