@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { NativeToggle as Switch } from "../components/denshin/NativeToggle";
 import { NativeAction } from "../components/denshin/NativeAction";
 import { SuperAsset } from "../components/icons/SuperAsset";
@@ -10,6 +10,7 @@ import {
   StyleSheet,
   Text,
   View,
+  useWindowDimensions,
 } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -59,6 +60,8 @@ export function PinDetailView({
       router.push({ pathname: "/pin-confirmed", params: { id } });
     }
   }, [confirmed, setConfirmed, router, id, readOnly]);
+  const { height: windowHeight } = useWindowDimensions();
+  const [expanded, setExpanded] = useState(false);
   const p = d.pin;
   const disabled = d.busy || !!d.pending;
   function mode(next: boolean) {
@@ -110,7 +113,11 @@ export function PinDetailView({
     </View>
   );
   return (
-    <PinSheet>
+    <PinSheet
+      onLayout={(event) =>
+        setExpanded(event.nativeEvent.layout.height > windowHeight * 0.75)
+      }
+    >
       {d.confirmed && p ? (
         <View style={s.confirm}>
           <RoundAction label="閉じる" glyph="×" onPress={() => router.back()} />
@@ -164,7 +171,9 @@ export function PinDetailView({
                 </View>
                 <View style={s.summary}>
                   <View style={{ flex: 1, gap: 4 }}>
-                    <Text style={s.title}>{p.body}</Text>
+                    <Text style={[s.title, expanded ? s.expandedTitle : s.halfTitle]}>
+                      {p.body}
+                    </Text>
                     <Text style={s.muted}>
                       {p.mine ? "自分" : p.display_name}
                       {p.recruiting && (
@@ -387,6 +396,8 @@ const s = StyleSheet.create({
     fontWeight: "600",
     lineHeight: 29,
   },
+  halfTitle: { fontSize: 24, lineHeight: 32 },
+  expandedTitle: { fontSize: 18, lineHeight: 25 },
   muted: {
     fontFamily: "ui-rounded",
     color: "rgba(255,255,255,0.5)",

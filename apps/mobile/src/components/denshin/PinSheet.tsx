@@ -9,10 +9,14 @@ const Appearance =
         "NativeSheetAppearance",
       )
     : null;
-export function PinSheet({ children }: { children: ReactNode }) {
+export function PinSheet({ children, onLayout }: {
+  children: ReactNode;
+  onLayout?: ViewProps["onLayout"];
+}) {
   return (
     <KeyboardAvoidingView
       style={s.root}
+      onLayout={onLayout}
       behavior={Platform.OS === "ios" ? "padding" : undefined}
     >
       {children}
