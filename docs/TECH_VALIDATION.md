@@ -1349,3 +1349,7 @@ avatar.tsはlaunchImageLibraryAsyncを最初に呼び、画像変換/通信は�
 2026-11-20 19:38対照：一時的にPHPickerを選ぶ同条件ビルドPID12813で測定。init_start46623.301311、init_end46623.325033、present_start46623.325360、present_complete46626.884601。初期化23.7ms、present区間3559.2ms。旧UIImagePickerの3551.6msとほぼ同じで、Picker種別の置換だけでは主遅延を解消できない。両測定は各1回であり一般化しない。写真一覧を表示して未選択キャンセル。依存ソースを元へ戻し、ログsession92614停止。切抜き省略は採用しない。通常版復帰ビルドを開始。
 
 2026-11-20 19:40：比較変更を除去した通常版PID13530で写真一覧の起動中をsampleで12秒採取。/tmp/yumegaoka-picker-main-thread.sample.txt。main-thread7992標本中7463がCFRunLoopのmach_msg待機（約93.4%）、UIImagePicker初期化286標本。採取窓は起動前後も含むため、遅延区間そのもののCPU率とは扱わない。長時間のアプリ内CPU占有の根拠は得られていない。Device Hub Controlsには速度変更項目なし（他の設定まで否定する証拠ではない）。写真未選択でキャンセル、通常版の切抜き仕様と依存ソースは復元済み。
+
+2026-11-20 19:44追加計測PID14846：present開始46980.464080、次のmain queue46980.489741（25.7ms）、completion46984.067785（3603.7ms）。present直後のtransitionCoordinatorはnilでduration/alongsideログなし。この手法では準備待ちとアニメーションの内訳は未確定。Expo公開issue38424は画像選択後のcrop停止であり今回の選択前遅延と異なる（https://github.com/expo/expo/issues/38424）。バージョン更新やcrop削除の根拠にはしない。計測依存ソース復元・ログ32557停止済み。通常版復帰ビルドを開始。
+
+2026-11-20 19:47：計測コードを含まない通常Release PID15849へ復帰。Home→実募集PIN→ExpandedをDevice Hubで確認。本文24pt維持、現地/予定0人の見出し非表示、主催者別枠とglass背景を確認。実データの更新なし。写真一覧の起動遅延は未解決。

@@ -4,6 +4,8 @@
 
 ## 現在の再開点（2026-11-20・Figma最終照合を継続中）
 
+19:44：追加計測PID14846。present→次main25.7ms、completion3603.7ms、直後coordinator=nil。内訳未確定。依存ソース復元済み・ログ32557終了。通常版復帰ビルド成功、PID15849で起動済み（計測コードなし）。19:47にHomeから実PINを開き半高→全高を再確認。本文サイズ維持、0人の現地/予定欄非表示、主催者別枠、glass背景を確認。写真遅延は未解決。
+
 19:40：通常版PID13530へ復帰済み。写真起動中の12秒sampleは/tmp/yumegaoka-picker-main-thread.sample.txt。メイン標本の約93%がrunloop待機（前後を含む）、アプリCPU占有の証拠なし。写真未選択で閉じた。次はpresentationの準備待ちと遷移を区別。
 
 19:38：PHPicker対照PID12813もpresent区間3559ms（旧3552ms）で改善せず。初期化のみ24msへ短縮。単純なPicker置換は不採用、切抜き保持。依存ソース復元済み・ログ92614停止。通常版ビルド進行中。次はpresentation/システム遷移待ちの要因確認。
