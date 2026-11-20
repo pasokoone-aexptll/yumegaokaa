@@ -26,7 +26,12 @@ export function RollingNumber({
       toValue: 1,
       duration: reduced ? 0 : 280,
       useNativeDriver: true,
-    }).start();
+    }).start(({ finished }) => {
+      // Drop the outgoing leading column after a digit-count decrease (10 → 9).
+      // Interrupted animations must not overwrite the next value.
+      if (finished) setTransition({ from: value, to: value });
+    });
+    return () => progress.stopAnimation();
   }, [value, reduced, progress]);
   const direction = transition.to >= transition.from ? 1 : -1;
   const layer = (incoming: boolean) => ({
