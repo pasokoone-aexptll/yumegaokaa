@@ -176,7 +176,7 @@ export function ProfileSetup({
               labelStyle={{
                 color: "rgba(255,255,255,0.65)",
                 fontWeight: "400",
-                fontSize: 18,
+                fontSize: stage === "name" ? 18 : 22,
               }}
               disabled={busy || (stage === "name" && !name?.trim())}
               onPress={() => {
