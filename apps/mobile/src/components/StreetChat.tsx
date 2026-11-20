@@ -424,7 +424,7 @@ export function StreetChat({
                               path={m.avatar_path}
                               version={m.avatar_updated_at}
                               name={m.display_name}
-                              size={32}
+                              size={35}
                               shape="square"
                             />
                           )}
@@ -712,7 +712,7 @@ export function StreetChat({
 }
 const styles = StyleSheet.create({
   history: { flex: 1, backgroundColor: "transparent", overflow: "hidden" },
-  message: { paddingVertical: 4, flexDirection: "row", gap: 8 },
+  message: { paddingVertical: 1.5, flexDirection: "row", gap: 9 },
   author: {
     color: "#ffffff61",
     fontFamily: Platform.OS === "ios" ? "ui-rounded" : undefined,

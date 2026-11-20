@@ -4,9 +4,9 @@ export function ArrivalIcon() {
   return (
     <View
       style={{
-        width: 32,
-        height: 32,
-        borderRadius: 16,
+        width: 35,
+        height: 35,
+        borderRadius: 17.5,
         backgroundColor: "#ffffff1a",
         alignItems: "center",
         justifyContent: "center",

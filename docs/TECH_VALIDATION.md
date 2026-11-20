@@ -1417,3 +1417,5 @@ avatar.tsはlaunchImageLibraryAsyncを最初に呼び、画像変換/通信は�
 2026-11-20 21:26 R03/R19：ホスト/OSログも採取（`/tmp/yumegaoka-picker-host.log`）したが、2.85秒の待ちを特定できず。既存構成を除外するUIKit単体probeをexperiments/photo-picker-iosに作成。UIImagePickerController/photoLibrary/public.image/allowsEditing=trueで初期化とpresent completionを計測、選択しても保存/送信せず閉じる。UIScene必須の初回起動失敗を修正し、Simulator PID50079のボタン画面を確認。比較計測はDevice Hubウインドウ取得不可のため未実行。製品アプリの遅延を修正済みとは扱わない。
 
 2026-11-20 21:31 R03/R19：独立UIKit PickerProbe PID50079のボタンを操作、21:30:15.751 initialized229.1ms、21:30:19.350 presented3832.0ms。写真一覧の表示も確認し、写真を選ばずprobe終了、本体PID51188のHomeへ復帰をAXで確認。RN/Expo/本体画面構成を含まない環境でも同程度の遅延が再現する証拠。実機の遅延原因やOS内部の待ち先を断定しない。R03/R10：Homeチケットの案内15→14pt、残数14→12pt、行高/上下paddingでカプセル28ptを維持。型検査/通常Release成功、`/tmp/home-ticket-type-final.png`で表示確認。招待枠/発行処理は変更なし。
+
+2026-11-20 21:34 R10/R11：MapChat実表示と原本132を再照合し、1行の高さが50pt対原本約45pt、アバター32pt対35ptの差を修正。message上下paddingを4→1.5pt（単行45pt）、アバターと入街円35pt、本文gap9pt。型検査/通常Release成功、PID52799で最新会話/入街ログの横位置と入力欄の固定位置を確認。`/tmp/mapchat-row-spacing-final.png`。複数行本文は引き続き自然な高さ、スクロール追従ロジックは変更なし。投稿操作なし。

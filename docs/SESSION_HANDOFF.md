@@ -4,6 +4,8 @@
 
 ## 現在の再開点（2026-11-20・Figma最終照合を継続中）
 
+21:34：MapChat行をFigma132の約45ptへ（上下4→1.5pt）、角丸アバター/入街円32→35pt、本文まで8→9pt。型検査/通常Release成功。PID52799で最新会話/入街ログの横位置、入力欄との間隔を確認、`/tmp/mapchat-row-spacing-final.png`。通常版Map、投稿/入街状態変更なし。
+
 21:31：ユーザーのウインドウ再表示後、UIKit単体PickerProbe PID50079で初期化229.1ms/表示完了3832.0msを計測。RN/本体画面なしでも同程度の遅延を再現。実機原因まで証明しない。写真選択なし、検証アプリ終了→通常版Home PID51188へ復帰をAX確認。Home招待チケットを原本に合わせ案内14pt/残数12pt・カプセル高さ28ptへ修正、型検査/通常Release成功、`/tmp/home-ticket-type-final.png`で確認。
 
 21:26：写真遅延の独立UIKit検証アプリをexperiments/photo-picker-iosへ追加。ビルド/Simulator起動PID50079、ボタン表示のスクリーンショット確認済み。まだボタン実行/時間比較なし。Device HubがcgWindowNotFoundで操作不能になり、ユーザーにiPhone 18 Proウインドウの表示をasync依頼中。検証アプリは写真を保存/送信しない。本体変更なし。
