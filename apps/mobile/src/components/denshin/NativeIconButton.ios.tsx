@@ -43,7 +43,7 @@ export function NativeIconButton({
       <SuperAsset
         name={icon}
         size={
-          icon === "chevron-base" ? 36 : icon === "x" ? 16 : size > 49 ? 26 : 22
+          icon === "chevron-base" ? 32 : icon === "x" ? 16 : size > 49 ? 26 : 22
         }
         tint={dark ? "white" : "black"}
       />
