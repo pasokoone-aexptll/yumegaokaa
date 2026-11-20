@@ -1,3 +1,4 @@
+import { ReadRetry } from "../lib/readRetry";
 import { chatAuthors } from "../lib/chatMentions";
 import {
   readSpacingMs,
@@ -42,10 +43,12 @@ export function useStreetChat() {
     lastRead = useRef(0),
     pendingRefresh = useRef(false),
     mounted = useRef(true);
+  const retry = useRef(new ReadRetry(5000, 30_000));
   const consecutiveFailures = useRef(0);
   const hasLoaded = useRef(false);
-  const load = useCallback(async (more = false) => {
-    if (!mounted.current) return;
+  const load = useCallback(async (more = false, manual = false) => {
+    if (!mounted.current || !retry.current.canAttempt(Date.now(), manual))
+      return;
     if (fetching.current) {
       if (!more) pendingRefresh.current = true;
       return;
@@ -94,10 +97,12 @@ export function useStreetChat() {
       itemsRef.current = next.filter((m) => !localBlocks.hidden(m.author_id));
       setItems(itemsRef.current);
       reconcileEchoes.current(itemsRef.current.map((m) => m.id));
+      retry.current.succeeded();
       hasLoaded.current = true;
       consecutiveFailures.current = 0;
       setError("");
     } catch {
+      if (gen === generation.current) retry.current.failed(Date.now());
       if (
         gen === generation.current &&
         showReadFailure(hasLoaded.current, more, ++consecutiveFailures.current)
@@ -175,7 +180,7 @@ export function useStreetChat() {
       }
       setItems(itemsRef.current);
       older.current = false;
-      await loadRef.current();
+      await loadRef.current(false, true);
     } catch {
       setActionError("操作できませんでした。もう一度お試しください。");
     }
@@ -197,12 +202,12 @@ export function useStreetChat() {
   }
   function loadMore() {
     older.current = true;
-    void loadRef.current(true);
+    void loadRef.current(true, true);
   }
   const reload = useCallback(async () => {
     setLoading(true);
     try {
-      await loadRef.current();
+      await loadRef.current(false, true);
     } finally {
       setLoading(false);
     }

@@ -1,3 +1,4 @@
+import { ReadRetry } from "../lib/readRetry";
 import type { DenshinPin } from "../lib/denshin";
 import type { EntryMap } from "../components/map/EntryPlaces";
 import { localBlocks } from "../lib/localBlocks";
@@ -96,7 +97,9 @@ export function useStreetMap() {
     snapshotGeneration.current++;
     refreshQueued.current = false;
   }, []);
-  const refresh = useCallback(async (): Promise<void> => {
+  const readRetry = useRef(new ReadRetry(10_000));
+  const refresh = useCallback(async (manual = false): Promise<void> => {
+    if (!readRetry.current.canAttempt(Date.now(), manual)) return;
     if (fetching.current) {
       refreshQueued.current = true;
       return;
@@ -140,9 +143,11 @@ export function useStreetMap() {
       setRecruitments(
         recruiting.items.filter((p) => !localBlocks.hidden(p.author_id)),
       );
+      readRetry.current.succeeded();
       setRefreshError("");
     } catch (e) {
       if (generation !== snapshotGeneration.current) return;
+      readRetry.current.failed(Date.now());
       setRefreshError(friendly(e));
       if (
         ["membership_required", "unauthorized", "login_required"].some((x) =>
@@ -351,7 +356,7 @@ export function useStreetMap() {
           state.visit.can_update ? state.visit.visit_id : undefined,
         ),
       );
-      await refresh();
+      await refresh(true);
     } catch {
       setError("端末の観測は停止しました。退出は通信回復後に反映します。");
     }
@@ -365,7 +370,7 @@ export function useStreetMap() {
       if (!canceled.current) {
         setState(result);
         setSheet("success");
-        await refresh();
+        await refresh(true);
       }
     } catch (e) {
       if (!canceled.current) {
@@ -445,7 +450,7 @@ export function useStreetMap() {
       if (!canceled.current) {
         setState(s);
         setSheet("success");
-        await refresh();
+        await refresh(true);
       }
     } catch (e) {
       if (!canceled.current) {
@@ -520,7 +525,7 @@ export function useStreetMap() {
     setBusy(true);
     try {
       setState(await native.setGhost(ghost));
-      await refresh();
+      await refresh(true);
     } catch (e) {
       setError(friendly(e));
     } finally {

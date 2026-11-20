@@ -1,3 +1,7 @@
+## 2026-11-21 自動再取得の失敗時待機（R04/R10）
+
+診断導入後30分の実API失敗ログは0件で、元の失敗原因は依然未確定。失敗時も固定頻度で自動取得する実装を改善し、ReadRetryでチャット5→10→20→最大30秒、Map10→20→40→最大60秒の待機を適用。成功時リセット、手動チャット更新/履歴追加/操作後のMap更新は待機を迂回。Realtime通知やqueued refreshも自動取得の待機を迂回しない。scripts/test-read-retry.cjsで待機境界/手動迂回/上限/回復/読取間独立を確認、既存遅延表示テスト/型検査/通常Release成功。ユーザーのPIN入力保護のためSimulatorへ未インストール、実回線での改善確認は未完。
+
 ## 2026-11-21 読取失敗→回復のSimulator確認（R04/R10/R19）
 
 APIClientにSimulator専用・明示起動環境変数YUMEGAOKA_SIMULATE_READ_OUTAGE=1の試験を追加。開始10秒後〜60秒まで読取6操作のみURLError.networkConnectionLostを返す。認証・書込み・実機には適用されず、変数なしの通常起動は無効。PID79454でget_presence_snapshot/chat_list/denshin_listの模擬失敗ログを確認。Mapは既存会話/PINを保持しAlertなし、30秒後「新着を待っています…」のみ表示。60秒後の自動取得で状態文が消え、街人数の「最終取得時」も解除されることをAX/画像で確認。実際の回線障害原因の特定ではなく同じ読取エラー経路の検証。
