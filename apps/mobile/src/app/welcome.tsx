@@ -37,6 +37,9 @@ export function WelcomeView({
 }) {
   const { width, height } = useWindowDimensions(),
     reduced = useContext(ReducedIconMotion);
+  // Final portrait geometry from the 786 × 1720 reference video.
+  const portraitDiameter = width * (478 / 786);
+  const portraitBorder = portraitDiameter * (34 / 478);
   const [remaining, setRemaining] = useState(10),
     [motion] = useState(() => new Animated.Value(0));
   useEffect(() => {
@@ -99,8 +102,8 @@ export function WelcomeView({
       <Animated.View
         style={{
           position: "absolute",
-          top: height * 0.237,
-          left: (width - 232) / 2,
+          top: height * (402 / 1720),
+          left: width * (375 / 786) - portraitDiameter / 2,
           opacity: motion.interpolate({
             inputRange: [0, 0.12, 0.2, 1],
             outputRange: [0, 0, 1, 1],
@@ -129,8 +132,8 @@ export function WelcomeView({
       >
         <View
           style={{
-            padding: 15,
-            borderRadius: 116,
+            padding: portraitBorder,
+            borderRadius: portraitDiameter / 2,
             backgroundColor: "rgba(0,0,0,0.06)",
           }}
         >
@@ -138,16 +141,16 @@ export function WelcomeView({
             path={avatarPath ?? undefined}
             version={avatarVersion ?? undefined}
             name={name}
-            size={202}
+            size={portraitDiameter - 2 * portraitBorder}
           />
         </View>
       </Animated.View>
       <Animated.View
         style={{
           position: "absolute",
-          left: 46,
+          left: width * (94 / 786),
           right: 24,
-          top: height * 0.58,
+          top: height * 0.57,
           opacity: motion.interpolate({
             inputRange: [0, 0.78, 1],
             outputRange: [0, 0, 1],
@@ -163,7 +166,7 @@ export function WelcomeView({
         }}
       >
         <Text
-          style={{ fontFamily: "ui-rounded", fontSize: 25, lineHeight: 32 }}
+          style={{ fontFamily: "ui-rounded", fontSize: 28, lineHeight: 34 }}
         >
           {name}さん{`\n`}利用を始めましょう！
         </Text>
