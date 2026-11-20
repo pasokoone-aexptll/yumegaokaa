@@ -1304,3 +1304,10 @@ Homeチケット→招待→戻る→Home→Settingsでアカウントメニュ�
 ## 2026-11-20 PIN半高・全高のタイトル照合
 
 電信PIN（R対応はDENSHIN_PIN_SPECの詳細表示要件）の本文タイトルをFigma137/143に合わせ、半高24pt/32行高、全高18pt/25行高へ変更。PinSheet実測高で切り替え、固定アクションと主催者別枠の合意は維持。Simulator確認版PID89950で標準Grabber操作により半高→全高→半高を確認し、文字サイズが復帰し背景glassも維持された。座標dragは動作せず、AXの標準Grabberで検証。TypeScript・diffcheck・Simulator Release成功。実会員への参加操作なし。通常版への戻しは次工程。
+
+
+## 2026-11-20 登録コード・招待受取の最終配置（R03）
+
+確認版PID89950で登録用コード送信中ラベル→6桁入力画面と緑の再送待ちゲージを表示。左右32pt配置と、コード欄・ゲージ・再送/訂正導線を照合。30-code-resend-final.pngに保存。招待受け取りは提供こたつ素材の最終left=-16配置を30-invite-receive-final.pngへ記録。fixtureの送信であり、実メールは送らない。再送期限切れ/再送後リセットは先のPID83444の検証を再利用。
+
+通常版Releaseを再ビルド（exit 0）・Simulator上書き・PID91691で起動。Mapの実データ表示→Settings、確認専用メニュー非表示を確認。実機への転送なし。
