@@ -1,5 +1,9 @@
 import { chatAuthors } from "../lib/chatMentions";
-import { readSpacingMs, refreshIntervalMs, showReadFailure } from "./chatReadPolicy";
+import {
+  readSpacingMs,
+  refreshIntervalMs,
+  showReadFailure,
+} from "./chatReadPolicy";
 import { localBlocks } from "../lib/localBlocks";
 import { readChatWindow, ChatCursor } from "../lib/chatWindow";
 import { streetChanges } from "../lib/streetChanges";
@@ -26,6 +30,7 @@ export function useStreetChat() {
   const { chatRestrictedUntil } = useContext(AccountAccessContext);
   const [items, setItems] = useState<Message[]>([]),
     [error, setError] = useState(""),
+    [actionError, setActionError] = useState(""),
     [expanded, setExpanded] = useState(false),
     [loading, setLoading] = useState(true),
     [hasNew, setHasNew] = useState(false);
@@ -52,7 +57,10 @@ export function useStreetChat() {
       const last = previous.at(-1);
       const page = async (cursor?: ChatCursor) => {
         // Leave margin under the server's five reads / ten seconds limit.
-        const wait = Math.max(0, readSpacingMs - (Date.now() - lastRead.current));
+        const wait = Math.max(
+          0,
+          readSpacingMs - (Date.now() - lastRead.current),
+        );
         if (wait) await new Promise((resolve) => setTimeout(resolve, wait));
         if (gen !== generation.current) return [];
         lastRead.current = Date.now();
@@ -90,7 +98,10 @@ export function useStreetChat() {
       consecutiveFailures.current = 0;
       setError("");
     } catch {
-      if (gen === generation.current && showReadFailure(hasLoaded.current, more, ++consecutiveFailures.current))
+      if (
+        gen === generation.current &&
+        showReadFailure(hasLoaded.current, more, ++consecutiveFailures.current)
+      )
         setError("チャットを取得できません。再読み込みしてください。");
     } finally {
       fetching.current = false;
@@ -134,15 +145,20 @@ export function useStreetChat() {
       clearInterval(timer);
     };
   }, []);
-  const composer = useChatComposer(() => {
-    older.current = false;
-    void loadRef.current();
-  }, !!chatRestrictedUntil, chatAuthors(items));
+  const composer = useChatComposer(
+    () => {
+      older.current = false;
+      void loadRef.current();
+    },
+    !!chatRestrictedUntil,
+    chatAuthors(items),
+  );
   useEffect(() => {
     reconcileEchoes.current = composer.reconcileEchoes;
   }, [composer.reconcileEchoes]);
   async function action(op: string, p: Record<string, unknown>) {
     generation.current++;
+    setActionError("");
     try {
       await native.rpc(op, p);
       if (op === "chat_delete") {
@@ -161,7 +177,7 @@ export function useStreetChat() {
       older.current = false;
       await loadRef.current();
     } catch {
-      setError("操作できませんでした。再試行してください。");
+      setActionError("操作できませんでした。もう一度お試しください。");
     }
   }
 
@@ -202,7 +218,7 @@ export function useStreetChat() {
     readingHistory: older,
     items,
     ...composer,
-    error: composer.error,
+    error: composer.error || actionError,
     readError: error,
     expanded,
     loading,

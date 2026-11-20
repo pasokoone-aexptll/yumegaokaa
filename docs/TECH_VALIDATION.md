@@ -1,3 +1,7 @@
+## 2026-11-21 自動更新失敗を操作エラーから分離（R04/R10/R19）
+
+useStreetMapのrefreshErrorをerror合成から分離。MapErrorDialogへは操作errorのみ渡し、人数のstale表示はconnectionUnavailableで維持。チャットreadErrorを反復toastへ渡す経路を撤去。30秒連続失敗時のみ予約領域へ12ptの状態文、成功時は即消去。取得済みデータ保持/認可失効時のクリア/自動再取得間隔/書込みの確定条件は変更なし。scripts/test-delayed-refresh.cjsで一過性失敗非表示・30秒継続表示・回復後リセット・unmount取消を確認。型検査/通常Release成功。通常版PID78027でMap/チャット取得を確認。続いて明示的なchat操作失敗をactionErrorへ分離し、読み取り待機へ隠れず入力欄側へ伝えるよう変更（型検査成功、後段変更のSimulator反映は未完）。実際の回線断からの復旧は未確認。
+
 ## 2026-11-21 通信通知の原因調査（R04/R10/R19）
 
 ユーザー指摘の反復toast/通信Alertを優先調査。チャットはiOSで5秒周期、showReadFailureが常にtrue。地図は10秒周期の複数取得を1つのcatchで扱い、refreshErrorを操作errorと合成してAlertへ渡す。取得失敗の分類を失っており、画像時点の真因は未確定。APIClientへ端末内の失敗診断（操作名、HTTP status/短いエラーコード、URLエラー番号）を追加。本文/URL/認証情報/個人識別子は記録しない。通常Release成功、PID76449で地図/チャット取得を確認。log stream観測中に失敗ログなし。診断導入は再発の解消を意味しない。表示方針・再試行頻度・API制限は未変更。

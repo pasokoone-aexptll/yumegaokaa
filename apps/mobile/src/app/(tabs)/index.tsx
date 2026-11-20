@@ -1,3 +1,4 @@
+import { useDelayedRefreshStatus } from "../../hooks/useDelayedRefreshStatus";
 import { liveHeaderIcons } from "../../lib/presenceHeader";
 import { SplashPlayingContext } from "../../components/LaunchSplash";
 import { initialPitch } from "../../components/map/headerLayout";
@@ -78,6 +79,7 @@ export default function Street() {
   const {
     ready,
     stateRestored,
+    connectionUnavailable,
     signed,
     email,
     setEmail,
@@ -106,6 +108,8 @@ export default function Street() {
     active,
     changeMode,
   } = useStreetMap();
+  const chatWaiting = useDelayedRefreshStatus(!!chatRead?.error);
+  const mapWaiting = useDelayedRefreshStatus(connectionUnavailable);
   const { visible: showPlaces, toggle: togglePlaces } =
     useEntryPlacesPreference();
   const ghost = state.visit.ghost ?? state.ghost_preference ?? false;
@@ -338,7 +342,7 @@ export default function Street() {
         </View>
         <MapHeader
           count={snapshot?.checked_in_count}
-          stale={!!error}
+          stale={connectionUnavailable}
           active={active}
           placesVisible={showPlaces}
           onTogglePlaces={togglePlaces}
@@ -361,39 +365,52 @@ export default function Street() {
               zIndex: 2,
             }}
           >
-            <MapStatusBanner
-              message={
-                chatRead?.error ||
-                modeNotice ||
-                (["未参加", "気配を観測中"].includes(state.status) ||
-                /^(ゴーストモード|公開への切替待ち|非公開への切替待ち)/.test(
-                  state.status,
-                )
-                  ? ""
-                  : state.status)
-              }
-              actionLabel={chatRead?.error ? "再読み込み" : undefined}
-              onAction={chatRead?.error ? chatRead.reload : undefined}
-              autoDismiss={!chatRead?.error}
-            >
-              {!chatRead?.error &&
-                !modeNotice &&
-                state.visit.can_update === false &&
-                state.visit.state === "active" && (
-                  <Pressable
-                    accessibilityRole="button"
-                    onPress={() => setSheet("explain")}
-                  >
-                    <Text style={styles.link}>
-                      {fieldTrial
-                        ? "現地試験で入街"
-                        : localEntry
-                          ? "開発用の入街を開始"
-                          : "この端末でNFCを読む"}
-                    </Text>
-                  </Pressable>
-                )}
-            </MapStatusBanner>
+            {(chatWaiting || mapWaiting) && !modeNotice ? (
+              <Text
+                accessibilityLiveRegion="polite"
+                style={{
+                  color: "rgba(255,255,255,0.6)",
+                  fontSize: 12,
+                  fontFamily: "ui-rounded",
+                  paddingHorizontal: 16,
+                  paddingTop: 12,
+                }}
+              >
+                {chatWaiting
+                  ? "新着を待っています…"
+                  : "街の情報を更新しています…"}
+              </Text>
+            ) : (
+              <MapStatusBanner
+                message={
+                  modeNotice ||
+                  (["未参加", "気配を観測中"].includes(state.status) ||
+                  /^(ゴーストモード|公開への切替待ち|非公開への切替待ち)/.test(
+                    state.status,
+                  )
+                    ? ""
+                    : state.status)
+                }
+                autoDismiss
+              >
+                {!modeNotice &&
+                  state.visit.can_update === false &&
+                  state.visit.state === "active" && (
+                    <Pressable
+                      accessibilityRole="button"
+                      onPress={() => setSheet("explain")}
+                    >
+                      <Text style={styles.link}>
+                        {fieldTrial
+                          ? "現地試験で入街"
+                          : localEntry
+                            ? "開発用の入街を開始"
+                            : "この端末でNFCを読む"}
+                      </Text>
+                    </Pressable>
+                  )}
+              </MapStatusBanner>
+            )}
           </View>
         </View>
         <View style={{ alignSelf: "flex-end", gap: 10, marginTop: 14 }}>

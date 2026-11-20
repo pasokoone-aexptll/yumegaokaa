@@ -178,7 +178,7 @@ export function StreetChat({
           }
         : error
           ? {
-              title: "通信エラー",
+              title: "操作を完了できませんでした",
               message: error,
               actions: [{ title: "再読み込み", onPress: reload }],
             }

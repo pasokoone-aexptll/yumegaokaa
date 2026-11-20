@@ -561,7 +561,7 @@ export function useStreetMap() {
     snapshot,
     now,
     name,
-    error: error || refreshError,
+    error,
     connectionUnavailable: !!refreshError,
     setError,
     busy,
