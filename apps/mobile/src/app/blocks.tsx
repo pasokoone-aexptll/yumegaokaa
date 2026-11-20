@@ -44,13 +44,14 @@ export function BlocksView({
       {data.loading ? (
         <ActivityIndicator />
       ) : data.items.length === 0 ? (
-        <View style={{ alignItems: "center", gap: 20, paddingTop: 60 }}>
-          <SuperAsset name="非常口から人が出る" width={280} height={335} />
+        <View style={{ alignItems: "center", paddingTop: 74 }}>
+          <SuperAsset name="非常口から人が出る" width={271} height={325} />
           <Text
             style={{
               fontFamily: "ui-rounded",
               color: "rgba(0,0,0,0.2)",
               fontSize: 17,
+              marginTop: -7,
             }}
           >
             {name
