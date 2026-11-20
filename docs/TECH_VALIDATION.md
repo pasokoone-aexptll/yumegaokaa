@@ -1363,3 +1363,5 @@ avatar.tsはlaunchImageLibraryAsyncを最初に呼び、画像変換/通信は�
 19:56追記：確認後に通常Releaseを再ビルド・Simulatorへ復帰（PID20042）、実Map/4タブ表示を確認。
 
 2026-11-20 19:59（R04/R10/R19）：通常版起動だけで「ゴーストモードに切り替えました」が出る回帰をPID20042で観測。auth ready後、native.resume完了前の初期public状態をモード履歴へ入れていた。useStreetMapにstateRestoredを追加しresume成功後にtrue、logoutでfalseへ戻す。Mapのモード通知比較は復元後から開始。TypeScript/通常Release成功。修正版PID21162でスプラッシュ→実Map復元を続けて観測し、ゴースト表示が復元されても切替成功toastが出ないことを確認。他の状態通知は維持され「測位待ち」が表示された。公開範囲/モードは操作していない。
+
+2026-11-20 20:01（R03/R04/R10/R12/R14）：状態復元変更後のtests/entry-state.test.mjsを実行、7/7成功。重複入街/遅延成功の取消、権限/更新元拒否、退出通信失敗、Simulator待機と試験タグ認可を対象とし、モードtoastの直接試験ではない（そちらはPID21162の表示確認）。合意境界をコード再照合：StreetLoginは既存ログインでlogin(false,!existing)→sendOTP createAccount→iOS create_user:false、053は未使用QRの同一招待再発行とcurrent再表示、055は未使用revokedの枠返却と登録済みrecipient停止を保持。map-pinの空一覧条件とonsitePeopleの主催者除外も保持。今回実認証/相手停止/DB変更はなし。
