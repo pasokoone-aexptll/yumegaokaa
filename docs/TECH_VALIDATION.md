@@ -1495,3 +1495,7 @@ Home空セクション非表示、pin-none原本追加/両方空の中央表示�
 reviewEnabled（明示ビルドフラグ＋Simulator）でのみHomeの表示用空一覧を選べるfixtureを追加。実データ/認可/書込は変更しない。PID87983でHomeのpin-none原本・中央文言・空見出し非表示を確認（/tmp/home-empty-20261121.png）。通知fixtureへmentionを追加し、参加だけ非常口、mentionは文言＋本文/画像であることを確認（/tmp/notice-kinds-20261121.png）。本番EntryPlacesを使うreview-mapで薄いmaterialの表示、タップ後カメラ停止2/地図タップ0が不変であることを確認（/tmp/nfc-material-20261121.png）。地図背景全条件/全倍率での原本完全一致を証明するものではない。
 
 作成シートの16pt外側余白を表示確認したところ、NativeToggleの固定64×36ホストが内部に不均等な余白を持つことを発見。標準Toggleの自然寸法にHost matchContentsを合わせる修正へ移行。型検査/Release成功。PID89432で固定ホストを除いた作成シートのスイッチ表示と余白を確認。次の操作前にシートが閉じられMapへ戻ったため、追加の展開操作は未確認。
+
+## 2026-11-21 U01 メンション通知（R15/R19）
+
+accountAtmark.svg＋投稿者からメンション＋右36pt画像へ変更。本文プレビューを一覧から外し、詳細データは維持。型検査/Release成功。PID94115の通知fixtureで参加との素材分離と指定配置を確認（/tmp/u01-mention-verified.png）。iPhone未反映。新しい指摘はUSER_UI_FIX_QUEUEで逐次処理。

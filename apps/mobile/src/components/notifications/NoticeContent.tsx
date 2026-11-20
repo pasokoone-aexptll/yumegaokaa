@@ -14,7 +14,7 @@ export function noticeTitle(n: Notice) {
     case "pin_changed":
       return "が変更されました";
     case "mention":
-      return "メンションされました";
+      return `${n.display_name ?? "ユーザー"}からメンション`;
     case "canceled":
       return "イベントが中止されました";
     default:
@@ -133,6 +133,29 @@ export function NoticeSubject({
 }
 
 export function NoticeListContent({ notice }: { notice: Notice }) {
+  if (notice.kind === "mention")
+    return (
+      <View style={{ flexDirection: "row", alignItems: "center", gap: 12 }}>
+        <SuperAsset name="accountAtmark" size={36} />
+        <Text
+          style={{
+            flex: 1,
+            fontFamily: "ui-rounded",
+            fontSize: 18,
+            fontWeight: "600",
+            color: "rgba(0,0,0,0.7)",
+          }}
+        >
+          {noticeTitle(notice)}
+        </Text>
+        <Avatar
+          shape="square"
+          path={notice.avatar_path}
+          name={notice.display_name ?? ""}
+          size={36}
+        />
+      </View>
+    );
   const joined = notice.kind === "pin_joined";
   if (!joined)
     return (
