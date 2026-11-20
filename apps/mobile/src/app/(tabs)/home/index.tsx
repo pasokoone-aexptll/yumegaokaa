@@ -244,7 +244,8 @@ export default function Home() {
               fontFamily: "ui-rounded",
               fontWeight: "600",
               color: "white",
-              fontSize: 15,
+              fontSize: 14,
+              lineHeight: 18,
             }}
           >
             招待QRで友達を招待しよう！
@@ -253,13 +254,14 @@ export default function Home() {
             <Text
               style={{
                 alignSelf: "flex-start",
-                paddingVertical: 4,
+                paddingVertical: 6,
                 paddingHorizontal: 10,
                 borderRadius: 20,
                 backgroundColor: "rgba(255,0,45,0.3)",
                 color: "white",
                 fontFamily: "ui-rounded",
-                fontSize: 14,
+                fontSize: 12,
+                lineHeight: 16,
               }}
             >
               残り{remaining}招待
