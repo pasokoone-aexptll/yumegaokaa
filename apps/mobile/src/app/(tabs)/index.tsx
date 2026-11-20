@@ -77,6 +77,7 @@ export default function Street() {
   }>();
   const {
     ready,
+    stateRestored,
     signed,
     email,
     setEmail,
@@ -109,7 +110,7 @@ export default function Street() {
     useEntryPlacesPreference();
   const ghost = state.visit.ghost ?? state.ghost_preference ?? false;
   const mode = state.pending_mode || (ghost ? "ghostActive" : "publicActive");
-  const currentMode = signed && ready ? mode : undefined;
+  const currentMode = signed && ready && stateRestored ? mode : undefined;
   const [previousMode, setPreviousMode] = useState(currentMode);
   const [modeNotice, setModeNotice] = useState("");
   if (previousMode !== currentMode) {

@@ -66,6 +66,7 @@ export function useStreetMap() {
     [email, setEmail] = useState(""),
     [code, setCode] = useState(""),
     [sent, setSent] = useState(false);
+  const [stateRestored, setStateRestored] = useState(false);
   const [state, setState] = useState(initial),
     [snapshot, setSnapshot] = useState<Snapshot>(),
     [now, setNow] = useState(0),
@@ -193,6 +194,7 @@ export function useStreetMap() {
       .resume()
       .then((s) => {
         setState(s);
+        setStateRestored(true);
         void refresh();
       })
       .catch((e) => setError(friendly(e)));
@@ -537,6 +539,7 @@ export function useStreetMap() {
     setEvents([]);
     setRecruitments([]);
     setState(initial);
+    setStateRestored(false);
     setSigned(false);
     setSettings(false);
     setSent(false);
@@ -545,6 +548,7 @@ export function useStreetMap() {
   }
   return {
     entryMap,
+    stateRestored,
     ready,
     signed,
     email,

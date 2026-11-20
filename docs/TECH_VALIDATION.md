@@ -1361,3 +1361,5 @@ avatar.tsはlaunchImageLibraryAsyncを最初に呼び、画像変換/通信は�
 2026-11-20 19:55（R10/R11、Figma132）：review-map?scene=presenceをSimulator限定確認画面に追加。本番StreetMapMarkers/liveCellsへ画像null×3の固定セルを渡し、通信/入街/API操作なしで描画。PID19506で提供user-fillアイコン（白60%）、白15%背景、白枠、3人の重なり、気配吹き出しの表示を確認。以前未確認だったfallback分岐の実描画を確認済み。型検査/確認版Release成功。
 
 19:56追記：確認後に通常Releaseを再ビルド・Simulatorへ復帰（PID20042）、実Map/4タブ表示を確認。
+
+2026-11-20 19:59（R04/R10/R19）：通常版起動だけで「ゴーストモードに切り替えました」が出る回帰をPID20042で観測。auth ready後、native.resume完了前の初期public状態をモード履歴へ入れていた。useStreetMapにstateRestoredを追加しresume成功後にtrue、logoutでfalseへ戻す。Mapのモード通知比較は復元後から開始。TypeScript/通常Release成功。修正版PID21162でスプラッシュ→実Map復元を続けて観測し、ゴースト表示が復元されても切替成功toastが出ないことを確認。他の状態通知は維持され「測位待ち」が表示された。公開範囲/モードは操作していない。
