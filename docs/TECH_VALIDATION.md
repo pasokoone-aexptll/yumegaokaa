@@ -1323,3 +1323,8 @@ Figma163と通常版の比較で、非常口が約13pt高く、空状態文が�
 ユーザー承認後、募集OFFの他者投稿のみ本文の通報/ブロック行を除去し、作者画像へExpo UI SwiftUI ContextMenuを接続。各操作は既存確認Alert→既存APIを維持、確認fixtureはreadOnlyで送信なし。型検査成功、Simulator Release成功。PID95354の12-pin-author-menu.pngで画像/本文/作者とglass背景が残り本文操作行がないことを確認。Device Hub cgWindowNotFoundで長押し開閉/確認Alertは未検証。
 
 アイコン参照監査で現行Mapの画像未提供時にだけ旧presence-starが残ることを発見。提供user-fillと白15%背景へ置換。通常入街者画像/匿名性/人数/位置に変更なし。legacyイベント/募集用のclock等は旧ルートに残っており、現行29画面とは別。fallback描画のSimulator確認は未取得。
+
+
+## 2026-11-20 投稿者メニューの操作再開（R16/R17/R19）
+
+ユーザーがDevice Hubを開いて再接続。投稿者画像へaccessibilityElement/Label/Hintを追加し、型検査・Simulator確認版Release成功。PID98065で「投稿者の操作」を長押しし、通報/ブロックの標準メニュー表示を確認。ブロック→既存の確認Alert→戻るで元PINへ戻ることを確認（実ブロックなし）。通報は画面には見えるが、ツールAXでは直後に項目が消えelement ID invalid、座標入力もwindowNotFoundAtPositionで失敗。ユーザーへ通報を押して確認Alertで止めるよう依頼中。通報送信は行わない。
