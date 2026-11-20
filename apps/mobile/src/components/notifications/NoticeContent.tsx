@@ -112,9 +112,9 @@ export function NoticeSubject({
         )}
         <Text
           style={{
-            fontSize: 16,
+            fontSize: detail ? 16 : 14,
             color: detail ? "black" : "rgba(0,0,0,0.5)",
-            fontWeight: "600",
+            fontWeight: detail ? "600" : "500",
           }}
         >
           {notice.title}

@@ -1409,3 +1409,5 @@ avatar.tsはlaunchImageLibraryAsyncを最初に呼び、画像変換/通信は�
 2026-11-20 21:04 R03/R19：元動画39秒の写真選択ボタンに合わせ、ProfileSetup photo/poolの文字18→22pt（nameの次へ18pt維持）。型検査/確認版Release成功、PID42310で本番ProfileSetup写真ステップの黒glassボタン・22pt文字を確認。カメラ/写真選択/保存なし。追加発見：@右下の人物マークが原本より小さい（現38pt円、原本は約55pt円）、次の修正対象。通常版復帰ビルド成功、Simulatorへ上書き・起動済み。
 
 2026-11-20 21:14 R03/R19：ProfileSetup photo/poolの@人物badgeを元動画39秒に合わせ56ptへ拡大、右下位置を調整。提供user-fillを74ptで円内クリップし、個々のfill/strokeへの半透明色による濃い輪郭を、黒＋全体opacityへ修正。白下地で@が透ける問題を解消。型検査と確認版Release成功、Simulator PID46101の写真ステップで均一な人物塗り/円内クリップを確認。画像選択/アップロードなし。全画面完全一致の証拠ではない。
+
+2026-11-20 21:18 R13：通知一覧の補助本文が原本152の約14ptに対し16pt/600だった差を修正。一覧14pt/500、詳細カード16pt/600を分離。型検査/確認版Release成功、Simulator PID47613の実表示部品fixtureを `/tmp/notices-type-final.png` に取得して見出しとの大小関係を照合。通知データ/既読操作は変更なし。
