@@ -68,7 +68,7 @@ export function WelcomeView({
     if (remaining === 0) onComplete();
   }, [remaining, onComplete]);
   const opening = motion.interpolate({
-    inputRange: [0, 0.13, 0.45, 0.6, 1],
+    inputRange: [0, 0.073, 0.411, 0.513, 1],
     outputRange: [0, 1, 1, 0, 0],
   });
   return (
@@ -127,8 +127,8 @@ export function WelcomeView({
           hideDoorway
           stage="code"
           codeFigureOpacity={motion.interpolate({
-            inputRange: [0, 0.13, 0.17, 1],
-            outputRange: [0, 0, 1, 1],
+            inputRange: [0, 0.095, 0.12, 0.411, 0.513, 1],
+            outputRange: [0, 0, 1, 1, 0, 0],
           })}
         />
       </Animated.View>
