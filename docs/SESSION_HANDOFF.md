@@ -10,7 +10,7 @@
 - 055/056をローカルとクラウドへ適用済み。055は未使用revokedを枠計算から除外、056は全滞在の匿名画像集約をヘッダーへ追加。地図セルの10分条件/名前/座標非公開は維持。専用DB試験成功。Simulatorで実QR発行/残数/再表示と入街者画像を確認。
 - Home/Map/チャット/toast/招待QR/History、PINの標準sheet余白/固定編集、設定/Profile/Pool/通知/Blocks/Account/運営Formを照合・修正。Map背景のPIN半高→全高→半高でglassが維持されることを再確認。
 - 登録/ログインを分離し6桁で自動認証、本人写真も必須。元動画のドット書体・扉/人物/影・GIF・こたつ・プロフィール登録・完了演出を修正。実Authの成功前に画面を進めない。確認fixtureは実APIへ送信しない。
-- 画面別の到達状況は `frontend-redesign/UI_REVIEW_STATUS.md`。最新画像/録画は `/tmp/yumegaoka-final-figma-20261120/`。UI_REVIEWなしの通常版をSimulatorへ上書き・起動済み（PID65624）。Home招待→戻る→Settings、確認メニュー非表示、Home/Mapのモード表示整合、実PINへのMap移動・詳細開閉を確認。実機は今回追加変更を転送しない。
+- 画面別の到達状況は `frontend-redesign/UI_REVIEW_STATUS.md`。最新画像/録画は `/tmp/yumegaoka-final-figma-20261120/`。UI_REVIEWなしの通常版をSimulatorへ上書き・起動済み（最新PID84483、再送ゲージ修正を含む）。Home招待→戻る→Settings、確認メニュー非表示、Home/Mapのモード表示整合、実PINへのMap移動・詳細開閉を確認。実機は今回追加変更を転送しない。
 - Q-UI01は再送待ち時間と回答済み。緑ゲージを既存の再送可能時刻へ接続。Simulator確認版PID83444でゲージ減少・再送可能・リセットを確認。その他の視覚照合を継続する。全29画面完全一致・実メール/カメラ/NFC/運営MFA/実会員参加の成功は未宣言。
 - TypeScript、対象認証/初期設定/QR/ヘッダー14試験成功。Native Simulator Release成功。通常版のMapドラッグ動作は確認できたが、NFCマーカー直接タップのカメラ比較中にDevice HubがnoWindowsAvailable/cgWindowNotFoundとなり操作不可。未確認を合格にしない。現在地ボタンはSimulatorの位置未取得で標準Alertを表示。既定33タスクと固定残量は変更しない。
 

@@ -1,6 +1,6 @@
 # 2026-11-20 登録コードの再送ゲージ（R03/R19）
 
-Q-UI01回答に基づき、StreetLoginのコード欄下へ元動画の54目盛りの緑ゲージを追加。既存nextSendAt（60秒）から残量を計算し、再送後に戻す。AppState復帰時にも再計算。レビュー用登録画面も同じ再送時刻を渡す。TypeScript・diff check成功。Simulator確認版PID83444で57→19→2→0秒、再送有効化、再送後49秒へ戻る表示を確認。実メールは送らないfixture。実メール再送は未確認。左右32ptへ微調整し、再送中に認証中と表示する誤りも修正。最後の微調整は次回ビルドで確認する。固定33タスクの達成率は変更しない。
+Q-UI01回答に基づき、StreetLoginのコード欄下へ元動画の54目盛りの緑ゲージを追加。既存nextSendAt（60秒）から残量を計算し、再送後に戻す。AppState復帰時にも再計算。レビュー用登録画面も同じ再送時刻を渡す。TypeScript・diff check成功。Simulator確認版PID83444で57→19→2→0秒、再送有効化、再送後49秒へ戻る表示を確認。実メールは送らないfixture。実メール再送は未確認。左右32ptへ微調整し、再送中に認証中と表示する誤りも修正。最後の微調整も通常版Releaseへ収録してビルド成功。Simulatorへ上書きしPID84483のMap起動を確認。微調整後のコード画面の実表示は未再確認。認証回帰6試験成功。固定33タスクの達成率は変更しない。
 
 # 技術検証と実装状況
 
@@ -20,7 +20,7 @@ Simulatorで現在地取得失敗時に表示された「接続アプリの版�
 - PIN：編集をrouter.replaceして詳細と重ねない。実PINでHome→Map詳細→編集→×→Mapを確認。赤いnative glass削除を編集内に表示、削除実行なし。上/右16ptの閉じる余白と右/下28ptの固定編集、編集52pt（実円は約49pt）へ。募集行52pt/16pt文字/21pt素材を維持。募集バッジ本文17pt・PeopleStack33pt/重なり20pt・+人数のnative blurで画像の透け過ぎを修正。Map背景のfixture半高→全高→半高を実操作し、背景色が灰色に固定されないことを確認。
 - 画面照合：通知一覧/実ドラッグの日付固定/詳細、Block候補/一覧、Account6桁入力→自動成功、運営Formをfixtureで確認。運営Toggle内RNHostViewの提供SVGが消える問題を、外側HStackへの配置で修正し実描画を確認。Profile編集の戻る位置、Pool見出し、薄色説明、QR/History間隔を修正。QR中央人物を拡大し、H訂正/白い保護領域/quiet zoneを維持。サンプルUUIDのQRはApple Visionで一致したpayloadへ復号できた。実カメラ読取の代用にはしない。
 - 登録：Swift/AndroidのOTP送信へcreateAccountを渡し、既存ログインではfalse。6桁の実認証後だけ成功演出を表示し、1100ms後にセッション変化を通知。本人写真必須・Pool必須を保持し、定期account_access取得で写真未選択を飛ばさない。新規/既存の文言と操作を分ける。実メール/実アカウント作成は今回未実行。
-- 元動画：原本56.627秒/60fps。ドット書体は端末原本KH-Dot-Kodenmachou-16-Kiと動画の字形を比較して採用。配布元の付属README/SIL OFL1.1を同梱しexpo-fontへ登録。開始の人物/開口/影は提供SVGを変形・透過、メールのGIFと招待こたつは提供素材の拡大/切取りを修正。名前/写真登録の@/雲/ドット見出しを再配置。完了の録画116〜128秒を元動画48〜54秒等と並べ、扉→中央→画像拡大→名前の6.5秒とホームゲージを照合。登録コード下のゲージの意味はQ-UI01回答待ち、独断で認証期限を設定しない。
+- 元動画：原本56.627秒/60fps。ドット書体は端末原本KH-Dot-Kodenmachou-16-Kiと動画の字形を比較して採用。配布元の付属README/SIL OFL1.1を同梱しexpo-fontへ登録。開始の人物/開口/影は提供SVGを変形・透過、メールのGIFと招待こたつは提供素材の拡大/切取りを修正。名前/写真登録の@/雲/ドット見出しを再配置。完了の録画116〜128秒を元動画48〜54秒等と並べ、扉→中央→画像拡大→名前の6.5秒とホームゲージを照合。当時保留した登録コード下のゲージは、その後Q-UI01の回答で再送待ち時間と確定（本書冒頭）。
 - 検証：TypeScript成功（最後のHomeMode/こたつ位置変更後も再確認）、Lint0 errors/既存2 warnings（PlacementHandle import/first、usePushNotifications router依存）。login-auth/profile-setup-access/account-onboarding/account-access-offline/invite-qr/presence-headerの14試験成功。055/056のDB試験各1件成功。既存6桁自動認証/メール状態試験結果も再利用。Swiftを含むSimulator Releaseビルド成功。diff --check成功。
 - 通常版：確認フラグを外してSimulatorへ上書き・起動（PID65624）。Homeチケット→招待QR→戻る→Home→Settings、確認メニュー非表示、Home/Mapでpending_mode優先の表示整合、Home PIN→Map詳細→閉じるを確認。地図ドラッグも動作。現在地取得はSimulatorで失敗し標準Alertを表示。NFC地点の直接タップによるカメラ不動はDevice HubのnoWindowsAvailable/cgWindowNotFoundで未確認のまま。`normal-map-final.png`を保存し、端末の既存セッション/データは保持。
 - 証拠：`/tmp/yumegaoka-final-figma-20261120/` のHome/Map/PIN/通知/Profile/Pool/Invite/Block/メール/運営画像、`onboarding-review.mp4`、`30-onboarding-email.png`、`30-invite-receive.png`。実招待QR画像は実トークンを含むためGitへ格納しない。29状態の対応はUI_REVIEW_STATUS。
