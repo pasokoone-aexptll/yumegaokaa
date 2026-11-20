@@ -28,10 +28,12 @@ export function OnboardingArtwork({
   stage,
   scale = 1,
   codeFigureOpacity,
+  hideDoorway = false,
 }: {
   stage: "welcome" | "email" | "code";
   scale?: number;
   codeFigureOpacity?: Animated.AnimatedInterpolation<number>;
+  hideDoorway?: boolean;
 }) {
   const reduced = useContext(ReducedIconMotion);
   const [phase] = useState(
@@ -83,7 +85,12 @@ export function OnboardingArtwork({
           transform: [{ scale }],
         }}
       >
-        <Svg width={220} height={250} viewBox="0 0 220 250">
+        <Svg
+          width={220}
+          height={250}
+          viewBox="0 0 220 250"
+          opacity={hideDoorway ? 0 : 1}
+        >
           <Defs>
             <LinearGradient
               id="entry-floor"

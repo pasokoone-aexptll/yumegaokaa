@@ -7,6 +7,7 @@ import {
   View,
   useWindowDimensions,
 } from "react-native";
+import Svg, { Defs, LinearGradient, Rect, Stop } from "react-native-svg";
 import { useRouter } from "expo-router";
 import { useProfile } from "../hooks/useProfile";
 import { Avatar } from "../components/Avatar";
@@ -66,6 +67,10 @@ export function WelcomeView({
   useEffect(() => {
     if (remaining === 0) onComplete();
   }, [remaining, onComplete]);
+  const opening = motion.interpolate({
+    inputRange: [0, 0.13, 0.45, 0.6, 1],
+    outputRange: [0, 1, 1, 0, 0],
+  });
   return (
     <View style={{ flex: 1, backgroundColor: "white" }}>
       <Animated.View
@@ -79,30 +84,52 @@ export function WelcomeView({
           }),
         }}
       >
+        <Animated.View
+          style={{
+            position: "absolute",
+            width: 78,
+            height: 116,
+            backgroundColor: "#00AF6B",
+            transformOrigin: "right center",
+            transform: [{ scaleX: opening }],
+          }}
+        />
+        <View
+          style={{
+            position: "absolute",
+            top: 116,
+            width: 78,
+            height: 131,
+            transformOrigin: "top left",
+            transform: [{ skewX: "45deg" }],
+          }}
+        >
+          <Animated.View
+            style={{
+              width: 78,
+              height: 131,
+              transformOrigin: "right center",
+              transform: [{ scaleX: opening }],
+            }}
+          >
+            <Svg width={78} height={131}>
+              <Defs>
+                <LinearGradient id="welcome-floor" x1="0" y1="0" x2="0" y2="1">
+                  <Stop stopColor="#00AF6B" stopOpacity={0.55} />
+                  <Stop offset="1" stopColor="#00AF6B" stopOpacity={0} />
+                </LinearGradient>
+              </Defs>
+              <Rect width={78} height={131} fill="url(#welcome-floor)" />
+            </Svg>
+          </Animated.View>
+        </View>
         <OnboardingArtwork
+          hideDoorway
           stage="code"
           codeFigureOpacity={motion.interpolate({
             inputRange: [0, 0.13, 0.17, 1],
             outputRange: [0, 0, 1, 1],
           })}
-        />
-        <Animated.View
-          style={{
-            position: "absolute",
-            top: 0,
-            left: 0,
-            width: 220,
-            height: 250,
-            backgroundColor: "white",
-            transform: [
-              {
-                translateX: motion.interpolate({
-                  inputRange: [0, 0.13, 0.45, 0.6, 1],
-                  outputRange: [0, 220, 220, 0, 0],
-                }),
-              },
-            ],
-          }}
         />
       </Animated.View>
       <Animated.View
