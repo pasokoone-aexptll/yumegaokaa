@@ -1316,3 +1316,10 @@ Homeチケット→招待→戻る→Home→Settingsでアカウントメニュ�
 ## 2026-11-20 ブロック空状態の縦配置（R19）
 
 Figma163と通常版の比較で、非常口が約13pt高く、空状態文が約30pt低い差を確認。素材を280×335から原本比率の271×325pt、上余白74ptへ調整し、素材内の透明な末尾とテキスト間隔を詰めた。TypeScript・diffcheck・通常版Simulator Release成功。PID92780の23-block-empty-final.pngで非常口上端227pt（原本227pt）、説明文の縦位置を照合。ブロック操作/検索/API仕様は変更なし。Device Hubのウインドウが取得不能になったため、simctlのアプリリンクと実レンダリング画像で検証した。
+
+
+## 2026-11-20 通常PINの長押しメニュー（R16/R17/R19）
+
+ユーザー承認後、募集OFFの他者投稿のみ本文の通報/ブロック行を除去し、作者画像へExpo UI SwiftUI ContextMenuを接続。各操作は既存確認Alert→既存APIを維持、確認fixtureはreadOnlyで送信なし。型検査成功、Simulator Release成功。PID95354の12-pin-author-menu.pngで画像/本文/作者とglass背景が残り本文操作行がないことを確認。Device Hub cgWindowNotFoundで長押し開閉/確認Alertは未検証。
+
+アイコン参照監査で現行Mapの画像未提供時にだけ旧presence-starが残ることを発見。提供user-fillと白15%背景へ置換。通常入街者画像/匿名性/人数/位置に変更なし。legacyイベント/募集用のclock等は旧ルートに残っており、現行29画面とは別。fallback描画のSimulator確認は未取得。

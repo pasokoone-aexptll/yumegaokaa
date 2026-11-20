@@ -5,7 +5,7 @@ import {
   RecruitmentGlyph,
 } from "./denshin/PinParts";
 import { RecruitmentIcon } from "./RecruitmentIcon";
-import { UIIcon } from "./icons/UIIcon";
+import { SuperAsset } from "./icons/SuperAsset";
 import {
   PinBubble,
   PinCountdown,
@@ -109,14 +109,7 @@ export function StreetMapMarkers({
                         styles.orb,
                         {
                           opacity,
-                          backgroundColor: [
-                            "#b8d6ff",
-                            "#d8c4ff",
-                            "#ffd0df",
-                            "#bde5dc",
-                            "#ffe1ad",
-                            "#c8d3f7",
-                          ][slot % 6],
+                          backgroundColor: "rgba(255,255,255,0.15)",
                         },
                       ]}
                     >
@@ -128,7 +121,12 @@ export function StreetMapMarkers({
                           size={38}
                         />
                       ) : (
-                        <UIIcon name="presence-star" size={30} />
+                        <SuperAsset
+                          name="user-fill"
+                          size={30}
+                          tint="white"
+                          opacity={0.6}
+                        />
                       )}
                     </View>
                   ))}

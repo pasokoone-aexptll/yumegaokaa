@@ -16,6 +16,7 @@ import { useLocalSearchParams, useRouter } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useDenshinDetail } from "../hooks/useDenshinDetail";
 import { Avatar } from "../components/Avatar";
+import { PinAuthorMenu } from "../components/denshin/PinAuthorMenu";
 import { PinSheet } from "../components/denshin/PinSheet";
 import {
   PeopleStack,
@@ -101,6 +102,28 @@ export function PinDetailView({
       Alert.alert("ブロックできませんでした");
     }
   }
+  const confirmReport = () =>
+    Alert.alert("この電信PINを通報しますか？", "内容を運営へ送信します。", [
+      { text: "戻る", style: "cancel" },
+      { text: "通報", onPress: () => void report() },
+    ]);
+  const confirmBlock = () =>
+    Alert.alert(
+      "このユーザーをブロックしますか？",
+      "PINを非表示にします。参加中の場合はHomeから取消できます。",
+      [
+        { text: "戻る", style: "cancel" },
+        { text: "ブロック", onPress: () => void block() },
+      ],
+    );
+  const authorAvatar = p && (
+    <Avatar
+      path={p.avatar_path}
+      name={p.display_name}
+      size={64}
+      shape="square"
+    />
+  );
   const person = (x: PinPerson) => (
     <View key={x.account_id} style={s.person}>
       <Avatar
@@ -157,12 +180,16 @@ export function PinDetailView({
             {p && !d.ended && (
               <>
                 <View style={s.identity}>
-                  <Avatar
-                    path={p.avatar_path}
-                    name={p.display_name}
-                    size={64}
-                    shape="square"
-                  />
+                  {!p.mine && !p.recruiting ? (
+                    <PinAuthorMenu
+                      onReport={confirmReport}
+                      onBlock={confirmBlock}
+                    >
+                      {authorAvatar}
+                    </PinAuthorMenu>
+                  ) : (
+                    authorAvatar
+                  )}
                   {p.recruiting && (
                     <View style={s.identityBadge}>
                       <RecruitBadge />
@@ -171,7 +198,12 @@ export function PinDetailView({
                 </View>
                 <View style={s.summary}>
                   <View style={{ flex: 1, gap: 4 }}>
-                    <Text style={[s.title, expanded ? s.expandedTitle : s.halfTitle]}>
+                    <Text
+                      style={[
+                        s.title,
+                        expanded ? s.expandedTitle : s.halfTitle,
+                      ]}
+                    >
                       {p.body}
                     </Text>
                     <Text style={s.muted}>
@@ -262,7 +294,7 @@ export function PinDetailView({
                     <Text style={s.link}>マップで見る</Text>
                   </Pressable>
                 )}
-                {!p.mine && (
+                {!p.mine && p.recruiting && (
                   <View style={s.management}>
                     <Pressable
                       onPress={() =>

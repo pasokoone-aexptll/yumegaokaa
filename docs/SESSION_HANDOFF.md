@@ -6,6 +6,7 @@
 
 ユーザーは起床し、登録コード下のゲージを再送待ち時間と回答。全29画面と登録動画の差分を自律修正する依頼。意味変更は確認し、独立作業は止めない。細部ごとのiPhone再インストールは不要。現行4tabs・提供SVG・標準Sheet/実UIGlassEffectを維持する。
 
+- 最新：通常PINの通報/ブロックは投稿者画像の標準長押しメニューへ移すと承認。PinAuthorMenuを実装し、確認版PID95354で本文行が消え、画像/本文/作者が表示されることを確認。型検査/Release成功。Device Hub cgWindowNotFoundで実長押しは未確認。現在Simulatorは確認版。通常版バックアップ `/tmp/yumegaoka-final-normal.app` は今回メニュー/気配fallback置換前。
 - 直近の合意：未使用QR削除で発行枠返却、登録済みは返却せず相手停止。街ロゴ下は10分観測で消さず入街中全員の匿名Pool画像列を常設。NFCマーカーは表示専用。
 - 055/056をローカルとクラウドへ適用済み。055は未使用revokedを枠計算から除外、056は全滞在の匿名画像集約をヘッダーへ追加。地図セルの10分条件/名前/座標非公開は維持。専用DB試験成功。Simulatorで実QR発行/残数/再表示と入街者画像を確認。
 - Home/Map/チャット/toast/招待QR/History、PINの標準sheet余白/固定編集、設定/Profile/Pool/通知/Blocks/Account/運営Formを照合・修正。Map背景のPIN半高→全高→半高でglassが維持されることを再確認。
