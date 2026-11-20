@@ -39,8 +39,9 @@ export const LaunchSplash = memo(function LaunchSplash({
   const { width, height } = useWindowDimensions();
   const [progress] = useState(() => new Animated.Value(0));
   const [finished, setFinished] = useState(false);
+  const [laidOut, setLaidOut] = useState(false);
   useEffect(() => {
-    if (reduced === null) return;
+    if (reduced === null || !laidOut) return;
     progress.setValue(0);
     const motion = Animated.sequence([
       Animated.delay(reduced ? 0 : 100),
@@ -52,19 +53,21 @@ export const LaunchSplash = memo(function LaunchSplash({
       }),
     ]);
     // Start only after the initial SVG/layout commit and accessibility preference resolve.
-    const frame = requestAnimationFrame(() =>
-      motion.start(({ finished: done }) => {
-        if (done) {
-          setFinished(true);
-          onComplete();
-        }
-      }),
-    );
+    let frame = requestAnimationFrame(() => {
+      frame = requestAnimationFrame(() =>
+        motion.start(({ finished: done }) => {
+          if (done) {
+            setFinished(true);
+            onComplete();
+          }
+        }),
+      );
+    });
     return () => {
       cancelAnimationFrame(frame);
       motion.stop();
     };
-  }, [progress, reduced, onComplete]);
+  }, [laidOut, progress, reduced, onComplete]);
   if (finished) return null;
   const doorWidth = width * 0.244;
   const doorHeight = doorWidth * 1.49;
@@ -81,6 +84,7 @@ export const LaunchSplash = memo(function LaunchSplash({
       });
   return (
     <Animated.View
+      onLayout={() => setLaidOut(true)}
       accessibilityElementsHidden
       importantForAccessibility="no-hide-descendants"
       style={[styles.cover, { opacity }]}
