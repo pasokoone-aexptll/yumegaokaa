@@ -4,6 +4,8 @@
 
 ## 現在の再開点（2026-11-20・Figma最終照合を継続中）
 
+11/21 継続：PID87983レビュー版でHome両方空・指定SVG中央、参加/mention素材の分離、NFC地点の薄いmaterialとタップ非遷移を確認。証拠は/tmp/home-empty-20261121.png、notice-kinds-20261121.png、nfc-material-20261121.png。NativeToggle固定64×36をmatchContentsへ変更しPID89432で作成欄の余白を確認。現在はレビュー版がSimulatorに入り、Mapへ戻っている。実機未更新。詳細TECH_VALIDATION末尾。
+
 11/21 最新ユーザー指定のHome/Map/PIN/通知を修正中。ユーザーが入力を閉じたと回答したため通常版PID84800へ更新済み。Home空セクション非表示/ghost視認、PIN作成中央揃えとカプセルをSimulator確認。ロゴfill:noneの白塗り回帰と入れ子maskの文字消失を修正し、PID86627で文字/輪郭/透過を確認。最終16pt行paddingはまだSimulator未反映。両方空/NFC素材/通知種別の最終照合は未完。TECH_VALIDATION末尾参照。
 
 11/21：診断導入後30分の実API失敗ログは0件で、元の失敗原因は依然未確定。失敗時も固定頻度で自動取得する実装を改善し、ReadRetryでチャット5→10→20→最大30秒、Map10→20→40→最大60秒の待機を適用。成功時リセット、手動チャット更新/履歴追加/操作後のMap更新は待機を迂回。Realtime通知やqueued refreshも自動取得の待機を迂回しない。scripts/test-read-retry.cjsで待機境界/手動迂回/上限/回復/読取間独立を確認、既存遅延表示テスト/型検査/通常Release成功。ユーザーのPIN入力保護のためSimulatorへ未インストール、実回線での改善確認は未完。

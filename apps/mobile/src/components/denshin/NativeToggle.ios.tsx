@@ -15,7 +15,7 @@ export function NativeToggle({
 }: SwitchProps) {
   return (
     <Host
-      style={{ width: 64, height: 36 }}
+      matchContents
       alignment="center"
       ignoreSafeArea="all"
     >

@@ -210,3 +210,9 @@ HomeチケットはHome内のネイティブStackへ招待画面を開く。戻�
 ## 2026-11-21 最新Home/Map/PIN/通知の修正
 
 R12/R15/R19。Home空セクション非表示/ghostコントラスト、PIN入力中央/カプセルをPID84800で確認。Mapロゴの原本形状による透明化とチャット灰色下地をPID86627で確認。pin-none空状態、参加限定の通知素材、NFC ultraThin material、toggle上下左右16ptもコード反映済みだが該当状態の最終Simulator照合は未完。全29画面完全一致の完了判定は維持しない。詳細はTECH_VALIDATION末尾。
+
+### 2026-11-21 直近未確認状態のSimulator照合（R12/R15/R19）
+
+reviewEnabled（明示ビルドフラグ＋Simulator）でのみHomeの表示用空一覧を選べるfixtureを追加。実データ/認可/書込は変更しない。PID87983でHomeのpin-none原本・中央文言・空見出し非表示を確認（/tmp/home-empty-20261121.png）。通知fixtureへmentionを追加し、参加だけ非常口、mentionは文言＋本文/画像であることを確認（/tmp/notice-kinds-20261121.png）。本番EntryPlacesを使うreview-mapで薄いmaterialの表示、タップ後カメラ停止2/地図タップ0が不変であることを確認（/tmp/nfc-material-20261121.png）。地図背景全条件/全倍率での原本完全一致を証明するものではない。
+
+作成シートの16pt外側余白を表示確認したところ、NativeToggleの固定64×36ホストが内部に不均等な余白を持つことを発見。標準Toggleの自然寸法にHost matchContentsを合わせる修正へ移行。型検査/Release成功。PID89432で固定ホストを除いた作成シートのスイッチ表示と余白を確認。次の操作前にシートが閉じられMapへ戻ったため、追加の展開操作は未確認。

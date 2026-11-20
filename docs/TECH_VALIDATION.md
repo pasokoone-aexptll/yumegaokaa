@@ -1489,3 +1489,9 @@ Home空セクション非表示、pin-none原本追加/両方空の中央表示�
 型検査・通常Release成功。PID84800でHomeのghost視認/空予約セクション非表示、Home+→Map作成、入力欄縦中央/地図カプセルを確認。両方空の実表示、NFC地点の最終透け方、通知mention/参加の並列表示は未確認。ロゴmaskと採色の最終ビルド確認を継続。33タスクの達成数は変更しない。
 
 後続PID86627でMapロゴの文字・輪郭と内部透過を確認。元SVGの輪郭を外周maskに、文字pathを白で分け、入れ子maskの文字消失を解消。チャットの灰色下地も確認。最後のtoggle行16pt変更は型検査のみで、Simulatorは12pt版。NFC地点は画面上端で一部見える状態までで、原本との最終照合は未完。
+
+### 2026-11-21 直近未確認状態のSimulator照合（R12/R15/R19）
+
+reviewEnabled（明示ビルドフラグ＋Simulator）でのみHomeの表示用空一覧を選べるfixtureを追加。実データ/認可/書込は変更しない。PID87983でHomeのpin-none原本・中央文言・空見出し非表示を確認（/tmp/home-empty-20261121.png）。通知fixtureへmentionを追加し、参加だけ非常口、mentionは文言＋本文/画像であることを確認（/tmp/notice-kinds-20261121.png）。本番EntryPlacesを使うreview-mapで薄いmaterialの表示、タップ後カメラ停止2/地図タップ0が不変であることを確認（/tmp/nfc-material-20261121.png）。地図背景全条件/全倍率での原本完全一致を証明するものではない。
+
+作成シートの16pt外側余白を表示確認したところ、NativeToggleの固定64×36ホストが内部に不均等な余白を持つことを発見。標準Toggleの自然寸法にHost matchContentsを合わせる修正へ移行。型検査/Release成功。PID89432で固定ホストを除いた作成シートのスイッチ表示と余白を確認。次の操作前にシートが閉じられMapへ戻ったため、追加の展開操作は未確認。

@@ -14,7 +14,8 @@ import {
   Image,
   useWindowDimensions,
 } from "react-native";
-import { useRouter } from "expo-router";
+import { useRouter, useLocalSearchParams } from "expo-router";
+import { reviewEnabled } from "../../../components/debug/reviewEnabled";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useDenshinPins } from "../../../hooks/useDenshinPins";
 import { Avatar } from "../../../components/Avatar";
@@ -35,7 +36,19 @@ import { SpeechBubble } from "../../../components/denshin/SpeechBubble";
 export default function Home() {
   const router = useRouter(),
     insets = useSafeAreaInsets();
-  const pins = useDenshinPins();
+  const livePins = useDenshinPins();
+  const { reviewEmpty } = useLocalSearchParams<{ reviewEmpty?: string }>();
+  // Opt-in Simulator presentation only; neither writes nor changes server data.
+  const pins =
+    reviewEnabled && reviewEmpty === "1"
+      ? {
+          ...livePins,
+          items: [],
+          hidden_attendance: [],
+          loading: false,
+          error: "",
+        }
+      : livePins;
   const waiting = useDelayedRefreshStatus(!!pins.error);
   const remaining = useInviteQuota();
   const { width } = useWindowDimensions();

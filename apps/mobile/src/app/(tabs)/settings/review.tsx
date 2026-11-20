@@ -46,6 +46,12 @@ function Scenes() {
       <NotificationsView
         data={noticeData([
           ...notices,
+          {
+            ...notices[0],
+            id: "review-mention",
+            kind: "mention",
+            title: "@nyan_x 今日どうする？",
+          },
           ...notices.map((n) => ({
             ...n,
             id: n.id + "-older",
