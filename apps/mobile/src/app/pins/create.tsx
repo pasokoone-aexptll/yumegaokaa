@@ -298,8 +298,8 @@ const s = StyleSheet.create({
   label: {
     fontFamily: "ui-rounded",
     color: "rgba(255,255,255,0.65)",
-    fontSize: 16,
-    lineHeight: 22,
+    fontSize: 18,
+    lineHeight: 24,
     fontWeight: "500",
   },
   divider: {
