@@ -190,8 +190,21 @@ export const LaunchSplash = memo(function LaunchSplash({
                     translateX: reduced
                       ? doorWidth * 2.8
                       : progress.interpolate({
-                          inputRange: [0, 0.28, 1],
-                          outputRange: [0, doorWidth * 2.8, doorWidth * 2.8],
+                          // Reference opening: fixed left edge, accelerating reveal
+                          // across the door in 250ms, then across its floor projection.
+                          inputRange: [
+                            0, 0.028, 0.056, 0.083, 0.111, 0.139, 0.39, 1,
+                          ],
+                          outputRange: [
+                            0,
+                            doorWidth * 0.14,
+                            doorWidth * 0.32,
+                            doorWidth * 0.57,
+                            doorWidth * 0.85,
+                            doorWidth,
+                            doorWidth * 2.8,
+                            doorWidth * 2.8,
+                          ],
                         }),
                   },
                 ],
