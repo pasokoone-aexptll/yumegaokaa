@@ -92,14 +92,17 @@ export default function StreetIcons() {
             top: 0,
             left: 0,
             right: 0,
-            height: 390,
+            height: 380,
           }}
         >
           <Svg width="100%" height="100%">
             <Defs>
               <LinearGradient id="pool-sky" x1="0" y1="0" x2="0" y2="1">
-                <Stop offset="0" stopColor="#008CFF" stopOpacity={0.9} />
-                <Stop offset="1" stopColor="#008CFF" stopOpacity={0} />
+                {/* Figma 159: one blue hue, fading through opacity into the page. */}
+                <Stop offset="0" stopColor="#0084FA" stopOpacity={0.93} />
+                <Stop offset="0.35" stopColor="#0084FA" stopOpacity={0.56} />
+                <Stop offset="0.6" stopColor="#0084FA" stopOpacity={0.31} />
+                <Stop offset="1" stopColor="#0084FA" stopOpacity={0} />
               </LinearGradient>
             </Defs>
             <Rect width="100%" height="100%" fill="url(#pool-sky)" />
