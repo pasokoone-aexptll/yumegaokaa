@@ -35,12 +35,25 @@ actor APIClient {
   req.setValue("application/json",forHTTPHeaderField:"Content-Type");req.setValue(key,forHTTPHeaderField:"apikey")
   if let bearer { req.setValue("Bearer "+bearer,forHTTPHeaderField:"Authorization") }
   if method != "GET" {req.httpBody=try JSONSerialization.data(withJSONObject:body)}
-  let (data,response)=try await URLSession.shared.data(for:req)
+  // Local failure diagnostics contain no URL, payload, account identifier or credentials.
+  let candidate=body["operation"] as? String ?? "auth"
+  let operation=candidate.range(of:"^[a-z_]{1,60}$",options:.regularExpression) != nil ? candidate : "unknown"
+  let data:Data
+  let response:URLResponse
+  do {
+   (data,response)=try await URLSession.shared.data(for:req)
+  } catch {
+   let failure=error as NSError
+   let category=failure.domain==NSURLErrorDomain ? "url" : "other"
+   NSLog("Yumegaoka API failure operation=%@ category=%@ code=%ld",operation,category,failure.code)
+   throw error
+  }
   let json=(try? JSONSerialization.jsonObject(with:data)) as? [String:Any] ?? [:]
   guard let http=response as? HTTPURLResponse,(200..<300).contains(http.statusCode) else {
    // Only allow known short server errors across the bridge; never log HTTP bodies.
    let raw=json["error_code"] as? String ?? json["message"] as? String ?? "request_failed"
    let safe=raw.range(of:"^[a-z_]{1,60}$",options:.regularExpression) != nil ? raw : "request_failed"
+   NSLog("Yumegaoka API failure operation=%@ category=http status=%ld code=%@",operation,(response as? HTTPURLResponse)?.statusCode ?? 0,safe)
    throw ServiceError(code:safe)
   }
   return json
