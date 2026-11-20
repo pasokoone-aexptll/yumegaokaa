@@ -170,7 +170,15 @@ export default function Invitations() {
               {Array.from({ length: 36 }, (_, i) => (
                 <View
                   key={i}
-                  style={[s.tick, { opacity: i / 36 < remaining ? 1 : 0.12 }]}
+                  style={[
+                    s.tick,
+                    {
+                      opacity: Math.max(
+                        0.12,
+                        Math.min(1, (remaining * 36 - i) / 8),
+                      ),
+                    },
+                  ]}
                 />
               ))}
             </View>

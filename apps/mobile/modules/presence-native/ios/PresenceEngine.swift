@@ -161,7 +161,7 @@ import Darwin
  func locationManager(_ manager:CLLocationManager,didFailWithError error:Error){
   // Core Location may deliver a queued failure after observation has stopped.
   guard enabled else{return}
-  outside.reset();emit("測位待ち。新しい気配はまだ送っていません")
+  outside.reset();emit(visit?["ghost"] as? Bool == true ? "現在地を取得できません" : "測位待ち。新しい気配はまだ送っていません")
  }
  func locationManager(_ manager:CLLocationManager,didUpdateLocations locations:[CLLocation]){
   guard enabled,!processing,let location=locations.last else{return}

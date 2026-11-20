@@ -10,6 +10,7 @@ fixture='''import Foundation
 final class CLLocationManager {}
 struct Outside { var resets = 0; mutating func reset() { resets += 1 } }
 final class Engine {
+ var visit: [String: Any]?
  var enabled = false
  var outside = Outside()
  var messages: [String] = []
@@ -27,7 +28,14 @@ precondition(engine.messages.count == 1 && engine.outside.resets == 1, "Active f
 engine.enabled = false
 engine.locationManager(manager, didFailWithError: error)
 precondition(engine.messages.count == 1 && engine.outside.resets == 1, "Queued failure after stop changed state")
-print("PASS: disabled / active / stopped-after-active")
+engine.enabled = true
+engine.visit = ["ghost": true]
+engine.locationManager(manager, didFailWithError: error)
+precondition(engine.messages.last == "現在地を取得できません")
+engine.visit = ["ghost": false]
+engine.locationManager(manager, didFailWithError: error)
+precondition(engine.messages.last == "測位待ち。新しい気配はまだ送っていません")
+print("PASS: disabled / active / stopped-after-active / ghost / public")
 '''
 with tempfile.TemporaryDirectory(prefix='location-failure-') as directory:
  for name,body in [('fixed',method),('regression',method.replace('guard enabled else{return}',''))]:

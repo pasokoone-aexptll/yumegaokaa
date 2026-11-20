@@ -1401,3 +1401,5 @@ avatar.tsはlaunchImageLibraryAsyncを最初に呼び、画像変換/通信は�
 2026-11-20 追検証 R04/R10：`python3 tests/native/location-failure.py` 成功。実PresenceEngineのdidFailWithError本文を抽出してSwiftコンパイルし、初期停止中/観測中/観測停止直後の3状態を実行。停止時はemit/resetなし、観測中は1回通知を確認。guardを除去した負の比較はassertionで失敗し回帰検出を確認。test-native.shへ接続。Core Location本体の配送タイミングは模擬していないためOS起因のレース再現とは区別。
 
 2026-11-20 20:53 R12〜R14：通常版PID35609で実PIN詳細Expanded→編集を操作。旧詳細が積み重ならず編集半高へ置換、数値10のタップで0.77detentへ拡大、52pt入力/設定行・26pt角丸・21ptアイコン・16ptラベルの配置を原本141/142と照合。編集内の赤glass削除ボタンを目視、×で確認なしにMapへ復帰。数値/本文/募集状態の変更・保存・削除はなし。追加の外観修正は今回不要。
+
+2026-11-20 20:57 R03/R04/R10：招待QRゲージの目盛りを二値opacityから末尾8目盛りの段階的opacityへ変更（残り時間計算は維持）。通常版PID39248でQR再表示・段階的な薄まり・History・Homeチケットから戻る動作を確認。再発行/取消なし。ユーザー承認によりゴースト中の測位エラーは「現在地を取得できません」へ、公開時は従来文言を維持。実コールバック回帰にghost/publicを追加して成功、型検査/通常Release成功。文言変更を含む通常版もSimulatorへ上書き済み。OS側の実測位エラー表示は未再現。
