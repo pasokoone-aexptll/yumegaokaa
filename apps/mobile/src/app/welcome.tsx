@@ -113,9 +113,15 @@ export function WelcomeView({
               }),
             },
             {
+              translateY: motion.interpolate({
+                inputRange: [0, 0.62, 0.64, 0.68, 0.74, 0.78, 0.84, 1],
+                outputRange: [-45, -45, -41, -30, -10, -1.5, 0, 0],
+              }),
+            },
+            {
               scale: motion.interpolate({
                 inputRange: [0, 0.62, 0.64, 0.68, 0.74, 0.78, 0.84, 1],
-                outputRange: [0.35, 0.35, 0.4, 0.55, 0.85, 0.98, 1, 1],
+                outputRange: [0.43, 0.43, 0.48, 0.62, 0.87, 0.98, 1, 1],
               }),
             },
           ],
