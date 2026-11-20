@@ -4,6 +4,8 @@
 
 ## 現在の再開点（2026-11-20・Figma最終照合を継続中）
 
+21:22：写真遅延の対象はPhotosUIServiceでなくPhotoPicker.appex（PID48632）。再表示時も初期化後2.853秒のログ空白、10秒sampleでmain93.3%runloop待機。`/tmp/yumegaoka-photopicker.log` と `.sample.txt`。原因は未確定、次はhost/extension間scene受け渡し。通常版PID48212、写真を選ばず閉じてProfile編集。コード変更なし。
+
 21:18：通知一覧の補助本文を原本152に合わせ14pt/500へ（詳細16pt/600は維持）。型検査/確認版Release成功、PID47613の `/tmp/notices-type-final.png` で照合。通常版Release成功、Simulatorへ上書き・起動済み。
 
 21:14：ProfileSetupの@人物badgeを38→56pt、提供user-fillを74ptで円内クリップ。塗り/線の二重半透明を黒＋全体opacityへ変更し、@の透過を白下地で防止。型検査/確認版Release成功、PID46101で人物の均一な塗りと配置をSimulator確認。通常版Releaseも成功しSimulatorへ上書き・起動済み。写真選択処理は変更なし。
