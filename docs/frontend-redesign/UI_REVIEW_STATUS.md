@@ -25,7 +25,7 @@
 | 13 / 150 通知空 | 提供非常口/薄色テキスト、不要な下からの移動なし | 実データで確認済み |
 | 14 / 152 通知一覧 | 日付・通知種別素材・本人画像・行間 | fixture。14-notifications.png。後続PID47613で補助本文を16pt/600から14pt/500へ原本に合わせて修正、`/tmp/notices-type-final.png`で確認（詳細16pt/600は維持） |
 | 15 / 153 日付固定 | 実ドラッグで日付が上へ固定、gradientで本文を隠す | fixture。15-notifications-scrolled.png |
-| 16 / 154 通知詳細 | 戻る、ロゴ/本文、カード、了解ボタン幅と縦位置 | fixture。16-notice-detail.png |
+| 16 / 154 通知詳細 | 戻る、ロゴ/本文、カード、了解ボタン幅と縦位置 | fixture。16-notice-detail.png。後続PID65569で了解ボタン文字/戻る図柄を再確認、`/tmp/notice-detail-current-2221.png`。旧最終画像の欠落は再現せず |
 | 17 / 155 Settings | ピンク内のメール、アバター/名前/グループ、4tabs再タップ | 実データ。PID55758で本人画像左21pt/外径106pt・メール左135ptを原本へ合わせて確認。PID57614で白下地＋半透明ピンクを共通化し原本と背景測色一致。確認用メニューは通常版で非表示 |
 | 18 / 157 Profile編集 | 写真106pt、Change Photo19pt、名前16pt/補助文、戻る上端 | 通常版PID84483で最終配置を再確認。18-profile-edit-final.png。後続通常版PID58675で写真枠5pt・文字サイズ・クリア右16ptを照合（`/tmp/profile-input-spacing-final.png`）。写真/名前の保存は行わない |
 | 19 / 158 City pool | ヘッダー、見出し、差替え行、今日の画像、下部説明 | 実データ。19-city-pool.png。見出しの8pt差を修正。通常版PID23385で差替え行を原本と同じ標準ウェイトに調整・確認 |
