@@ -4,6 +4,8 @@
 
 ## 現在の再開点（2026-11-20・Figma最終照合を継続中）
 
+21:56：Block検索欄の説明前gap24→14pt・下padding16→12pt・クリア右16ptへ。原本163への下部配置修正、型検査/通常Release成功、PID60001で確認。メール入力のクリアも確認し検証文字は消去済み。送信/ブロック/実機転送なし。
+
 21:52：Profile編集を原本157へ合わせ、写真枠5pt・Change Photo19pt・名前16pt・クリア右16ptへ。型検査/通常Release成功、PID58675の編集表示確認、`/tmp/profile-input-spacing-final.png`。保存/実機転送なし。
 
 21:49：Settings/Profileのピンクを白下地＋半透明色へ共通化。原本155/157の背景RGBA255,206,221と通常版PID57614の同領域が一致。型検査/通常Release成功、Settings→Profileを目視確認。`/tmp/account-header-pink-final.png`。現在通常版Profile、保存/実機転送なし。

@@ -35,7 +35,7 @@ export function BlocksView({
   };
   return (
     <DetailPage
-      bottomPadding={16}
+      bottomPadding={12}
       title="Block settings"
       refreshing={data.loading}
       onRefresh={data.refresh}
@@ -135,7 +135,8 @@ export function BlocksView({
               backgroundColor: "white",
               borderRadius: 30,
               minHeight: 54,
-              paddingHorizontal: 14,
+              paddingLeft: 14,
+              paddingRight: 16,
               flexDirection: "row",
               alignItems: "center",
               gap: 10,
@@ -179,6 +180,7 @@ export function BlocksView({
           </View>
           <Text
             style={{
+              marginTop: -10,
               color: "rgba(0,0,0,0.25)",
               textAlign: "center",
               fontFamily: "ui-rounded",
