@@ -9,7 +9,7 @@ import { chatGeometry } from "../lib/chatGeometry";
 import { useKeyboardOverlap } from "../hooks/useKeyboardOverlap";
 import { ChatFade } from "./map/ChatFade";
 import { useEffect, useRef, useState, type ComponentRef } from "react";
-import Svg, { Defs, LinearGradient, Stop, Rect } from "react-native-svg";
+import { MapEdgeShade } from "./map/MapEdgeShade";
 import {
   SafeAreaView,
   useSafeAreaInsets,
@@ -269,33 +269,7 @@ export function StreetChat({
             {Platform.OS !== "android" && (
               <ProgressiveBlur edge="bottom" intensity={24} />
             )}
-            {Platform.OS === "android" ? (
-              <View
-                style={[
-                  StyleSheet.absoluteFill,
-                  {
-                    experimental_backgroundImage:
-                      "linear-gradient(180deg, rgba(36,36,36,0) 0%, rgba(36,36,36,0.32) 50%, rgba(36,36,36,0.82) 100%)",
-                  },
-                ]}
-              />
-            ) : (
-              <Svg
-                pointerEvents="none"
-                style={StyleSheet.absoluteFill}
-                width="100%"
-                height="100%"
-              >
-                <Defs>
-                  <LinearGradient id="chatShade" x1="0" y1="0" x2="0" y2="100%">
-                    <Stop offset="0" stopColor="#242424" stopOpacity={0} />
-                    <Stop offset="0.45" stopColor="#242424" stopOpacity={0.5} />
-                    <Stop offset="1" stopColor="#242424" stopOpacity={0.88} />
-                  </LinearGradient>
-                </Defs>
-                <Rect width="100%" height="100%" fill="url(#chatShade)" />
-              </Svg>
-            )}
+            <MapEdgeShade edge="bottom" />
           </View>
           <Animated.View
             pointerEvents="box-none"

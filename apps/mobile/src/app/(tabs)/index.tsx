@@ -1,3 +1,4 @@
+import { MapEdgeShade } from "../../components/map/MapEdgeShade";
 import { useDenshinDraft } from "../../lib/denshinDraft";
 import { DenshinPlacementPreview } from "../../components/pins/DenshinPlacementPreview";
 import { useProfile } from "../../hooks/useProfile";
@@ -346,10 +347,13 @@ export default function Street() {
             top: 0,
             left: 0,
             right: 0,
-            height: 190,
+            height: height * 0.45,
           }}
         >
-          <ProgressiveBlur edge="top" intensity={30} />
+          <View style={{ height: 190 }}>
+            <ProgressiveBlur edge="top" intensity={30} />
+          </View>
+          <MapEdgeShade edge="top" />
         </View>
         <MapHeader
           count={snapshot?.checked_in_count}

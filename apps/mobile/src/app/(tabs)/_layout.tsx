@@ -92,7 +92,7 @@ export default function StreetTabs() {
                     pointerEvents="none"
                     style={[
                       StyleSheet.absoluteFill,
-                      { overflow: "hidden", backgroundColor: "#151518" },
+                      { overflow: "hidden", backgroundColor: "#242321" },
                     ]}
                   >
                     <MapBlurView
@@ -103,7 +103,7 @@ export default function StreetTabs() {
                     <View
                       style={[
                         StyleSheet.absoluteFill,
-                        { backgroundColor: "#18181be6" },
+                        { backgroundColor: "#242321" },
                       ]}
                     />
                   </View>
@@ -116,7 +116,7 @@ export default function StreetTabs() {
                       {
                         backgroundColor: themeProgress.interpolate({
                           inputRange: [0, 1],
-                          outputRange: ["rgb(250,250,250)", "rgb(26,26,26)"],
+                          outputRange: ["rgb(250,250,250)", "rgb(36,35,33)"],
                         }),
                         borderTopWidth: StyleSheet.hairlineWidth,
                         borderTopColor: themeProgress.interpolate({
