@@ -75,7 +75,7 @@ export function RoundAction({
 }
 export function PeopleStack({
   people,
-  borderColor = "white",
+  borderColor = "rgba(255,255,255,0.2)",
 }: {
   people: PinPerson[];
   borderColor?: string;
@@ -156,7 +156,7 @@ const s = StyleSheet.create({
   overlap: {
     marginLeft: -20,
     borderWidth: 2,
-    borderColor: "white",
+    borderColor: "rgba(255,255,255,0.2)",
     borderRadius: 19,
   },
   moreShade: { backgroundColor: "rgba(0,0,0,0.2)" },

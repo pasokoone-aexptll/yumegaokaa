@@ -1586,3 +1586,6 @@ PeopleStackの+NをUltraThinMaterial BlurView＋黒opacity0.2へ変更。白下�
 
 ## 2026-11-21 U20 シート終了時プレビュー（R19）
 ×以外のnative dismissalで残るdraftをuseDenshinEditorのcleanupで消去。地図選択中だけ保持。型検査、scripts/test-denshin-dismiss.cjsの終了/地図選択保持/復帰後終了3試験成功。Simulator PID44795で作成→マップ挿入→地図タップ→完了（マップ変更表示）→標準dismiss popupを操作しプレビュー消失確認。投稿なし。直接deep link直後は操作エラーが一度出たため、通常の＋から確認。スワイプ動作そのものではなく同じnative dismissのAX操作。
+
+## 2026-11-21 U21 PIN参加者外線（R19）
+PeopleStack既定外線をrgba(255,255,255,0.2)へ変更。Homeの明示背景色は保持。型検査/Release成功。PID45902のreview-map短文で外線の弱まり確認（/tmp/u21-map.png）。review-pin直リンクは白背景で表示され通常sheet背景比較には不適なため、その画像を全体合格証拠には使用しない。
