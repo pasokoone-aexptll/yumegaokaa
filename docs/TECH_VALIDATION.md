@@ -1556,3 +1556,10 @@ Map上端は画面高さ45%で黒63%→黒0%、既存上端190ptのぼかしを�
 ## 2026-11-21 U12 Accountタブ濃度
 
 他3タブの原本SVGにはopacity0.7がある一方、AccountのSuperAssetはtintで内在opacityを除去していた。Account非選択時へopacity0.7、選択時1を適用。共通のtab色指定は保持。型検査/Release成功、Simulator PID25590の通常Homeで非選択のchat/bell/accountが同程度の灰色になることを目視確認（/tmp/u12-tabs.png）。この通常Homeでは実APIの参加中PINと募集中PINが別欄へ表示され、U10の実データ表示も確認。参加操作/投稿なし。
+
+
+## 2026-11-21 U15 招待QR配色とゲージ
+
+招待SVGのモジュール/quiet zoneを緑地・白模様へ反転。中央人物と白下地、H訂正、4module quiet zoneは保持。QR可視幅を画面0.547倍（上限240pt）へ。白ゲージを同幅、flex目盛り、QRとの間隔15ptへ変更。型検査/Release成功、Simulator PID26772の実招待画面で配置確認（/tmp/u15-invite.png、招待情報を含むためrepoへ保存しない）。固定ダミーUUIDのSVGをQuickLookで描画しApple Vision復号成功。新規発行/再発行/取消/招待消費は実行していない。実カメラ試験とは区別する。
+
+同PIDの実画面スクリーンショットもApple Visionで招待URL1件の復号成功。token本文はログへ出力せず、接頭辞と件数のみ検証。

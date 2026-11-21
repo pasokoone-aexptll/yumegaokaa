@@ -20,7 +20,7 @@ export function parseInviteQR(value: string): string | null {
     return null;
   }
 }
-/** Four-module quiet zone; H correction; central white backing, no finder coverage. */
+/** Inverted green quiet zone; H correction; central white backing, no finder coverage. */
 export function inviteSvg(code: string): string {
   const { modules } = QRCode.create(invitePayload(code), {
     errorCorrectionLevel: "H",
@@ -29,7 +29,7 @@ export function inviteSvg(code: string): string {
     q = 4,
     side = n + q * 2;
   const parts = [
-    `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${side} ${side}"><rect width="${side}" height="${side}" rx="4" fill="white"/>`,
+    `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${side} ${side}"><rect width="${side}" height="${side}" rx="4" fill="#00AF6B"/>`,
   ];
   for (let y = 0; y < n; y++)
     for (let x = 0; x < n; x++) {
@@ -47,7 +47,7 @@ export function inviteSvg(code: string): string {
       const br = !dark(x + 1, y) && !dark(x, y + 1) ? r : 0;
       const bl = !dark(x - 1, y) && !dark(x, y + 1) ? r : 0;
       parts.push(
-        `<path d="M${X + tl} ${Y}H${X + 1 - tr}Q${X + 1} ${Y} ${X + 1} ${Y + tr}V${Y + 1 - br}Q${X + 1} ${Y + 1} ${X + 1 - br} ${Y + 1}H${X + bl}Q${X} ${Y + 1} ${X} ${Y + 1 - bl}V${Y + tl}Q${X} ${Y} ${X + tl} ${Y}Z" fill="#00AF6B"/>`,
+        `<path d="M${X + tl} ${Y}H${X + 1 - tr}Q${X + 1} ${Y} ${X + 1} ${Y + tr}V${Y + 1 - br}Q${X + 1} ${Y + 1} ${X + 1 - br} ${Y + 1}H${X + bl}Q${X} ${Y + 1} ${X} ${Y + 1 - bl}V${Y + tl}Q${X} ${Y} ${X + tl} ${Y}Z" fill="white"/>`,
       );
     }
   for (const [x, y] of [
@@ -56,7 +56,7 @@ export function inviteSvg(code: string): string {
     [q, q + n - 7],
   ]) {
     parts.push(
-      `<rect x="${x}" y="${y}" width="7" height="7" rx="1.5" fill="#00AF6B"/><rect x="${x + 1}" y="${y + 1}" width="5" height="5" rx="1" fill="white"/><rect x="${x + 2}" y="${y + 2}" width="3" height="3" rx="0.6" fill="#00AF6B"/>`,
+      `<rect x="${x}" y="${y}" width="7" height="7" rx="1.5" fill="white"/><rect x="${x + 1}" y="${y + 1}" width="5" height="5" rx="1" fill="#00AF6B"/><rect x="${x + 2}" y="${y + 2}" width="3" height="3" rx="0.6" fill="white"/>`,
     );
   }
   const size = Math.floor(n * 0.28),

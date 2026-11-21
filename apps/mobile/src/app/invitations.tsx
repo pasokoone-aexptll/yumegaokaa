@@ -23,7 +23,7 @@ import { ReceiveInvitation } from "../components/onboarding/ReceiveInvitation";
 export default function Invitations() {
   const d = useInvitations();
   const { width } = useWindowDimensions();
-  const qrSize = Math.min(260, width * 0.647);
+  const qrSize = Math.min(240, width * 0.547);
   const { profile } = useProfile();
   const [permission, requestPermission] = useCameraPermissions();
   const [scanning, setScanning] = useState(false);
@@ -166,7 +166,7 @@ export default function Invitations() {
             )}
           </View>
           {!!svg && (
-            <View style={s.gauge}>
+            <View style={[s.gauge, { width: qrSize }]}>
               {Array.from({ length: 36 }, (_, i) => (
                 <View
                   key={i}
@@ -262,9 +262,10 @@ const s = StyleSheet.create({
     borderColor: "rgba(0,175,107,0.12)",
     borderRadius: 10,
     marginBottom: 0,
-    marginTop: -36,
+    marginTop: -9,
+    backgroundColor: "white",
   },
-  tick: { width: 4, height: 18, borderRadius: 4, backgroundColor: "#00AF6B" },
+  tick: { flex: 1, height: 18, borderRadius: 4, backgroundColor: "#00AF6B" },
   row: {
     flexDirection: "row",
     alignItems: "center",
