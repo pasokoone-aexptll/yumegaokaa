@@ -1665,3 +1665,6 @@ U42はchatの翻訳座標に追従する#242321の延長面を下端から画面
 
 ## 2026-11-21 21時指定のUIとiPhone更新（R19/U44）
 chat下端/keyboard背後#161515、alpha maskで下ほど見える既存blurの最大intensity10、Map tab#1B1B1B/境界#393939。通知参加SVGの絵の幅36ptをmentionと統一。PIN吹き出し白90%、単一輪郭の尾をQ曲線で滑らかにしmask境界へ余白追加。型検査/両Release成功、Simulator短長文で右端欠けなし・尾curve確認、通知/Map色確認。証拠/tmp/u44-short.png、u44-long.png、u44-notices.png、u44-chat.png。iPhone17へインストール成功（初回RSD接続失敗、再試行成功）。キーボード表示の実機視覚確認は未実施。
+
+## 2026-11-21 PIN尾の文字数比例（R19/U45）
+DenshinMapPinからtrim後文字数をPinBubbleへ渡す。3文字65%〜7文字100%へ線形補間し上下限固定。尾の全制御点/幅/高さと予約高さを同倍率に変更し、単一輪郭のmask/影は共有。型検査/diffチェック成功。Simulator/実機視覚確認は未実施、iPhoneはU44のまま。

@@ -127,17 +127,21 @@ function LabelShadow({
 export function PinBubble({
   children,
   minWidth,
+  textLength = 7,
 }: {
   children: ReactNode;
   minWidth?: number;
+  textLength?: number;
 }) {
   const [size, setSize] = useState({ width: 0, height: 0 });
   const id = `bubbleShadow${useId().replace(/[^a-zA-Z0-9]/g, "")}`;
   const { width: w, height: h } = size;
   const r = h / 2;
   const center = w / 2;
+  const tailScale =
+    0.65 + (Math.min(7, Math.max(3, textLength)) - 3) * (0.35 / 4);
   // One silhouette: the tail shares its contour and shadow with the capsule.
-  const outline = `M${r} 0H${w - r}A${r} ${r} 0 0 1 ${w} ${r}A${r} ${r} 0 0 1 ${w - r} ${h}H${center + 18}Q${center + 14} ${h} ${center + 10} ${h + 3}L${center - 7} ${h + 17}Q${center - 12} ${h + 21} ${center - 12} ${h + 15}V${h + 5}Q${center - 12} ${h} ${center - 17} ${h}H${r}A${r} ${r} 0 0 1 0 ${r}A${r} ${r} 0 0 1 ${r} 0Z`;
+  const outline = `M${r} 0H${w - r}A${r} ${r} 0 0 1 ${w} ${r}A${r} ${r} 0 0 1 ${w - r} ${h}H${center + 18 * tailScale}Q${center + 14 * tailScale} ${h} ${center + 10 * tailScale} ${h + 3 * tailScale}L${center - 7 * tailScale} ${h + 17 * tailScale}Q${center - 12 * tailScale} ${h + 21 * tailScale} ${center - 12 * tailScale} ${h + 15 * tailScale}V${h + 5 * tailScale}Q${center - 12 * tailScale} ${h} ${center - 17 * tailScale} ${h}H${r}A${r} ${r} 0 0 1 0 ${r}A${r} ${r} 0 0 1 ${r} 0Z`;
   return (
     <View collapsable={false} style={s.shadowFrame}>
       <View style={s.bubbleWrapper}>
@@ -199,7 +203,7 @@ export function PinBubble({
         >
           {children}
         </View>
-        <View style={{ height: 19 }} />
+        <View style={{ height: 19 * tailScale }} />
       </View>
     </View>
   );

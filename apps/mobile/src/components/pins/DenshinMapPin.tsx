@@ -55,7 +55,7 @@ export function DenshinMapPin({
             alignItems: "center",
           }}
         >
-          <PinBubble>
+          <PinBubble textLength={Array.from(pin.body.trim()).length}>
             <View
               style={{
                 flexDirection: "row",
