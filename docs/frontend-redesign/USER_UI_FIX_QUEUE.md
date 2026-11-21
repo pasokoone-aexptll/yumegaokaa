@@ -101,3 +101,5 @@ U41追加指定：Map吹き出しは白80%＋背景blur、文字のopacityは維
 U41実装/Simulator確認：通常PIN外縁をBlurViewへ、Map吹き出しは単一輪郭＋同輪郭のGaussian shadow、白80%＋blur。型検査/Release成功。review-map通常PINで透過背景・縁・尾を含む影を確認。画像fixtureはfallback、実画像/実機確認は未実施。
 
 U42実装済み：移動するchatの下端から画面高分#242321を延長、キーボードの透明面/角の背後を覆う。型検査/Release成功。Simulator通常表示を確認。フォーカスのみでsoftware keyboardが出ず、keyboard表示の視覚確認は未完。
+
+U43完了：参加SVGの透明余白6.83643ptと行padding2ptを除き、描画された左端を共通26ptへ整列。型検査/Release成功。Simulator /tmp/u43-notices.pngで参加/mention/電信ロゴの左端が78pxで一致。iPhone未更新。

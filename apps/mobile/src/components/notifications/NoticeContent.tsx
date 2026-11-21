@@ -169,11 +169,16 @@ export function NoticeListContent({ notice }: { notice: Notice }) {
       style={{
         flexDirection: "row",
         gap: 11,
-        paddingHorizontal: 2,
         alignItems: "flex-start",
       }}
     >
-      <SuperAsset name="非常口から人が出るrounded" width={53} height={62} />
+      {/* Original SVG has 6.83643pt of transparent space on both sides.
+          Align the painted doorway with the other notification icons. */}
+      <View style={{ width: 39.3269, height: 62, overflow: "hidden" }}>
+        <View style={{ width: 53, marginLeft: -6.83643 }}>
+          <SuperAsset name="非常口から人が出るrounded" width={53} height={62} />
+        </View>
+      </View>
       <View style={{ flex: 1, gap: 7 }}>
         <Text
           style={{

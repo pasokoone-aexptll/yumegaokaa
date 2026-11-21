@@ -1659,3 +1659,6 @@ PlacementHandleから移動量/drag状態をpreviewへ接続。zoom倍率を補�
 
 ## 2026-11-21 Map PINの素材（R19/U41）
 通常PIN外縁は白枠から45 intensityの背景blurへ。吹き出し輪郭を1pathに統合しstdDeviation4/黒16%/下2ptの影を共有、同輪郭maskにblurと白80%を配置。型検査/Simulator Release成功。review-map?scene=pin&normal=1で地図になじむ外縁・透過吹き出し/尾の影を確認。fixture本人画像はfallback。実機は未更新。
+
+## 2026-11-21 チャット下端・通知整列（R19/U42–43）
+U42はchatの翻訳座標に追従する#242321の延長面を下端から画面高さ分配置。型検査/Releaseと通常画面確認成功。Simulatorはfocusしてもsoftware keyboardが出ず、keyboard背後の実表示は未確認。U43は通知参加素材のclip領域x6.83643/width39.3269に合わせて透明余白のみを除去、左右2pt行padding撤去。Simulator fixture /tmp/u43-notices.pngで参加/mention/電信ロゴの見える左端78pxを確認。実機未更新。
