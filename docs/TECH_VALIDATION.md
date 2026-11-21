@@ -1544,3 +1544,10 @@ R12の作成/編集欄。StatusMessageInputへ表示責務を抽出し、iOSの�
 ## 2026-11-21 U10 Home参加中
 
 R12〜R14。既存denshin_listのattendance planned/arrivedをHome先頭「参加中」へ分類。他セクションには重複させず、leftは募集/通常へ分類。空セクション非表示、hidden_attendanceの取消導線・期限除去・APIは維持。scripts/test-home-pin-sections.cjsで参加予定/現地/取消/空配列を確認。型検査/Release成功、Simulator PID23076のhome?reviewAttending=1で実Home部品の吹き出し/本文/位置導線を目視確認（/tmp/u10-home-attending.png）。確認用画像は未取得で代替表示。実参加更新/取消通信は実行せず。
+
+
+## 2026-11-21 U11 Map上下グラデーション
+
+Map上端は画面高さ45%で黒63%→黒0%、既存上端190ptのぼかしを保持。下端は黒0%→#242321/100%のSVG、tab色補間終点rgb(36,35,33)。型検査/Release成功。Simulator PID24347の/tmp/u11-map-shade.pngで上端から中央への連続変化とチャットからtabへの連続性を目視確認。既存色切替animationは保持、録画再計測なし。PIL未導入のためpixel抽出は実行できておらず、色値はソース確認。
+
+追加指摘：「+N」は#000/20%＋背景blur。U18として末尾へ保存。
