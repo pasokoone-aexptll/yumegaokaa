@@ -1580,3 +1580,6 @@ PeopleStackの+NをUltraThinMaterial BlurView＋黒opacity0.2へ変更。白下�
 
 ### U13 起動確認の完了
 ユーザーからロック解除の回答後、同じ本人iPhoneへ `devicectl device process launch` を実行し終了0、Launched application with jp.yumegaoka.development bundle identifierを確認。再ビルド・再インストールなし。今回の逐次修正と実機更新を完了。起動成功と全画面の実機外観合格は区別する。
+
+## 2026-11-21 U19 自然幅PIN（R19）
+固定最小幅150/134を撤去し、吹き出しwrapperを自然幅とし参加者列をその右端へ追従。看板は中央へ。配置プレビューも同じ変更。型検査/Release成功。Simulator長文/tmp/u19-natural.pngは吹き出し約442px、短文/tmp/u19-short.pngは約253px、参加者列も追従。fixture画像未取得、外線は次U21で調整。

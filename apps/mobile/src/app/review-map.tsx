@@ -17,7 +17,10 @@ export default function MapReview() {
 }
 function Scene() {
   const router = useRouter();
-  const { scene } = useLocalSearchParams<{ scene?: string }>();
+  const { scene, short } = useLocalSearchParams<{
+    scene?: string;
+    short?: string;
+  }>();
   const [now] = useState(() => Date.now());
   const cells = liveCells(
     {
@@ -74,6 +77,7 @@ function Scene() {
                 ? [
                     {
                       ...reviewPin,
+                      body: short === "1" ? "テスト" : reviewPin.body,
                       longitude: 139.7109,
                       latitude: 35.7295,
                       count: 5,

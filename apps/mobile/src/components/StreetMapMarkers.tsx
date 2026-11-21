@@ -163,7 +163,6 @@ export function StreetMapMarkers({
               style={{
                 alignItems: "center",
                 maxWidth: 210,
-                minWidth: pin.recruiting ? 150 : undefined,
                 padding: 8,
               }}
             >
@@ -190,11 +189,11 @@ export function StreetMapMarkers({
               <View
                 style={{
                   zIndex: 3,
-                  alignSelf: "stretch",
+                  alignSelf: "center",
                   alignItems: "center",
                 }}
               >
-                <PinBubble minWidth={pin.recruiting ? 134 : undefined}>
+                <PinBubble>
                   <View
                     style={{
                       flexDirection: "row",
@@ -230,8 +229,7 @@ export function StreetMapMarkers({
               {pin.recruiting ? (
                 <View
                   style={{
-                    alignSelf: "flex-start",
-                    marginLeft: 8,
+                    alignSelf: "center",
                     marginTop: -30,
                   }}
                 >

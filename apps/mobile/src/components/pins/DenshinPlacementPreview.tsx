@@ -19,7 +19,6 @@ export function DenshinPlacementPreview({
       style={{
         alignItems: "center",
         maxWidth: 210,
-        minWidth: draft.recruiting ? 150 : undefined,
         padding: 8,
       }}
     >
@@ -44,8 +43,8 @@ export function DenshinPlacementPreview({
         </Text>
       )}
       {!!draft.body.trim() && (
-        <View style={{ zIndex: 3, alignSelf: "stretch", alignItems: "center" }}>
-          <PinBubble minWidth={draft.recruiting ? 134 : undefined}>
+        <View style={{ zIndex: 3, alignSelf: "center", alignItems: "center" }}>
+          <PinBubble>
             <View
               style={{ flexDirection: "row", alignItems: "center", gap: 4 }}
             >
@@ -64,8 +63,7 @@ export function DenshinPlacementPreview({
       {draft.recruiting ? (
         <View
           style={{
-            alignSelf: "flex-start",
-            marginLeft: 8,
+            alignSelf: "center",
             marginTop: draft.body.trim() ? -30 : 0,
           }}
         >
