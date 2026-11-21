@@ -11,6 +11,7 @@ export type CameraRef = { flyTo: (view: ViewState) => void | Promise<void> };
 export type CameraProps = { initialViewState: ViewState; ref?: Ref<CameraRef> };
 export type MapProps = {
   historyBlur?: boolean;
+  showUserLocation?: boolean;
   bottomInset?: number;
   onMapReady?: () => void;
   onMovingChange?: (moving: boolean) => void;

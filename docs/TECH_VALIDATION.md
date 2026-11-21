@@ -1628,3 +1628,11 @@ LaunchSplashは白い人物pathの背後に緑stroke-width1.5の複製を描い�
 ## 2026-11-21 U25 最終スクロール確認（R19）
 
 PID82425のSimulator専用home?reviewAttending=1&reviewScroll=1に12行fixtureを表示。本文が200ptスクロールした状態と上端の状態の両方で、チケット上端/下端が同じ位置、DreamCloud背景も固定であることを画像比較確認。実DBには何も追加していない。型検査/Release成功。U19〜U27の対象Simulator確認まで完了。今回のiPhoneインストールは行っていない。
+
+## 2026-11-21 U28〜31 Map現在地・境界・Home（R12/R19）
+
+PIN詳細の自動load/reconcile失敗は操作errorから分離し、30秒継続時のみ更新中の文へ。作成/編集・詳細の操作errorはAlertを廃止し画面内に残す。破壊操作確認は維持。Home本文16→17.5pt。位置選択時にEntryPlaces全体を除外していた条件を修正し、境界/NFC地点を維持。
+
+Map表示中・前景のみApple Maps標準showsUserLocationを有効にし、別タブ/背景で停止。既存の訪問/気配送信機構とは別の端末内描画。指定#005EFFをtintへ設定するが、#005EFF→#57B0FFの独自グラデーション一致は保証しない。ユーザーが許可した標準機能を先行採用。型検査/Simulator Release成功、PID87109で立体青点表示と模擬座標更新後の移動表示確認。実地GPSと実機確認は転送後。境界の表示条件はコード照合済み、位置選択操作の最終外観確認は未完。
+
+同Simulator PID87109で実操作の「作成→マップを挿入」に入り、街の境界線と内側の塗り/NFC地点を保持したまま場所選択できることを確認。保存せず閉じた。iPhone Releaseビルド成功、上書き転送中。実際のGPS追従は未確認。

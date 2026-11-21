@@ -50,9 +50,7 @@ export function PinDetailView({
 }) {
   const router = useRouter(),
     insets = useSafeAreaInsets();
-  useEffect(() => {
-    if (d.error) Alert.alert("操作できませんでした", d.error);
-  }, [d.error]);
+
   const { confirmed, setConfirmed } = d;
   useEffect(() => {
     if (confirmed && !readOnly) {
@@ -176,6 +174,11 @@ export function PinDetailView({
               </View>
             </View>
             {d.loading && <ActivityIndicator color="white" />}
+            {!!d.error && (
+              <Text accessibilityLiveRegion="polite" style={s.muted}>
+                {d.error}
+              </Text>
+            )}
             {d.ended && (
               <Text style={s.muted}>
                 この電信PINは終了したか、表示できなくなりました。

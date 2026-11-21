@@ -280,6 +280,7 @@ export default function Street() {
       <Map
         onMapReady={() => setAndroidMapReady(true)}
         historyBlur={historyExpanded}
+        showUserLocation={mapFocused || placement.active}
         bottomInset={detailInset}
         onMovingChange={setMapMoving}
         style={StyleSheet.absoluteFill}
@@ -315,7 +316,7 @@ export default function Street() {
             pitch: initialPitch,
           }}
         />
-        {entryMap && (!active || showPlaces) && !placement.active && (
+        {entryMap && (!active || showPlaces || placement.active) && (
           <EntryPlaces map={entryMap} />
         )}
         <StreetMapMarkers

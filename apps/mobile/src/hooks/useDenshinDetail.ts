@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useFocusEffect } from "expo-router";
+import { useDelayedRefreshStatus } from "./useDelayedRefreshStatus";
 import { AppState } from "react-native";
 import { native } from "../lib/native";
 import {
@@ -14,6 +15,8 @@ import { sessionState } from "../lib/sessionState";
 export function useDenshinDetail(id: string) {
   const [pin, setPin] = useState<DenshinPin>();
   const [error, setError] = useState("");
+  const [refreshFailed, setRefreshFailed] = useState(false);
+  const waiting = useDelayedRefreshStatus(refreshFailed);
   const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState(false);
   const [ended, setEnded] = useState(false);
@@ -37,11 +40,12 @@ export function useDenshinDetail(id: string) {
         server: Date.parse(result.server_time),
         local: native.monotonicTime(),
       };
+      setRefreshFailed(false);
       setPin(result);
       setEnded(false);
     } catch (e) {
       if (gen === generation.current && seq === sequence.current) {
-        setError(denshinError(e));
+        setRefreshFailed(true);
         if (String(e).includes("not_found")) {
           setEnded(true);
           setPin(undefined);
@@ -77,7 +81,7 @@ export function useDenshinDetail(id: string) {
             }
           })
           .catch((e) => {
-            if (live) setError(denshinError(e));
+            if (live) setRefreshFailed(true);
           })
           .finally(() => {
             if (live) setRestoring(false);
@@ -192,7 +196,7 @@ export function useDenshinDetail(id: string) {
     pin,
     loading,
     busy: busy || restoring,
-    error,
+    error: error || (waiting && !ended ? "PINを更新しています…" : ""),
     ended,
     confirmed,
     setConfirmed,

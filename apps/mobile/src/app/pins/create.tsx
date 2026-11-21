@@ -31,9 +31,7 @@ export default function CreatePin() {
     insets = useSafeAreaInsets();
   const { draft, busy, locked, error, save, discard, remove } =
     useDenshinEditor();
-  useEffect(() => {
-    if (error) Alert.alert("操作できませんでした", error);
-  }, [error]);
+
   const disabled = busy || locked;
   const [expanded, setExpanded] = useState(false);
   const reduced = useContext(ReducedIconMotion);
@@ -92,6 +90,14 @@ export default function CreatePin() {
             />
           </View>
         </View>
+        {!!error && (
+          <Text
+            accessibilityLiveRegion="polite"
+            style={{ color: "#ffffffb3", marginBottom: 12 }}
+          >
+            {error}
+          </Text>
+        )}
         <StatusMessageInput
           editable={!disabled}
           value={draft.body}

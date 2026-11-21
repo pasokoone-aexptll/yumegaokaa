@@ -1,6 +1,6 @@
 import { PlacementPreviewMotion } from "../pins/PlacementPreviewMotion";
 import { MarkerScale, useMarkerScale } from "./markerScale";
-import { View, useWindowDimensions } from "react-native";
+import { AppState, View, useWindowDimensions } from "react-native";
 import { PlacementHandle } from "../pins/PlacementHandle";
 import {
   createContext,
@@ -38,8 +38,18 @@ export function Map({
   onMovingChange,
   placement,
   bottomInset = 0,
+  showUserLocation = false,
 }: MapProps) {
   const map = useRef<MapView>(null);
+  const [foreground, setForeground] = useState(
+    AppState.currentState === "active",
+  );
+  useEffect(() => {
+    const sub = AppState.addEventListener("change", (state) =>
+      setForeground(state === "active"),
+    );
+    return () => sub.remove();
+  }, []);
   const { width } = useWindowDimensions();
   const [scale, updateZoom] = useMarkerScale();
   const regionZoom = (longitudeDelta: number) => {
@@ -61,7 +71,9 @@ export function Map({
             showsBuildings
             pitchEnabled
             rotateEnabled
-            showsUserLocation={false}
+            showsUserLocation={showUserLocation && foreground}
+            userLocationCalloutEnabled={false}
+            tintColor="#005EFF"
             initialCamera={appleCamera({
               center: [139.7109, 35.7295],
               zoom: 17,

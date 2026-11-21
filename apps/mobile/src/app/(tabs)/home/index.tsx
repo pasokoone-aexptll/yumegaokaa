@@ -383,7 +383,7 @@ const s = StyleSheet.create({
   main: { flexDirection: "row", alignItems: "flex-start", gap: 12 },
   body: {
     fontFamily: "ui-rounded",
-    fontSize: 16,
+    fontSize: 17.5,
     fontWeight: "500",
     color: "black",
     lineHeight: 22,
