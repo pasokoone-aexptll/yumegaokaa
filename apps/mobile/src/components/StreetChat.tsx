@@ -33,6 +33,7 @@ import {
   Easing,
   Platform,
   Keyboard,
+  Linking,
   Alert,
   ActivityIndicator,
   StyleSheet,
@@ -521,6 +522,39 @@ export function StreetChat({
                 </ChatTouchRegion>
               </Animated.View>
 
+              {Platform.OS === "ios" && (
+                <View
+                  style={{
+                    position: "absolute",
+                    right: 17,
+                    bottom: 10,
+                    flexDirection: "row",
+                    alignItems: "center",
+                    gap: 10,
+                  }}
+                >
+                  <Text style={{ color: "#b8b8b8", fontSize: 12 }}>Maps</Text>
+                  <Pressable
+                    accessibilityRole="link"
+                    accessibilityLabel="Apple Maps Legal"
+                    onPress={() =>
+                      void Linking.openURL(
+                        "https://www.apple.com/legal/internet-services/maps/",
+                      )
+                    }
+                  >
+                    <Text
+                      style={{
+                        color: "#b8b8b8",
+                        fontSize: 11,
+                        textDecorationLine: "underline",
+                      }}
+                    >
+                      Legal
+                    </Text>
+                  </Pressable>
+                </View>
+              )}
               {(hasNew || awayFromLatest) && (
                 <View pointerEvents="box-none" style={styles.new}>
                   <LatestChatButton

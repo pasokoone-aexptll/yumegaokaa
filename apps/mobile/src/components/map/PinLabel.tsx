@@ -128,10 +128,12 @@ export function PinBubble({
   children,
   minWidth,
   textLength = 7,
+  accessory,
 }: {
   children: ReactNode;
   minWidth?: number;
   textLength?: number;
+  accessory?: ReactNode;
 }) {
   const [size, setSize] = useState({ width: 0, height: 0 });
   const id = `bubbleShadow${useId().replace(/[^a-zA-Z0-9]/g, "")}`;
@@ -204,6 +206,18 @@ export function PinBubble({
           {children}
         </View>
         <View style={{ height: 19 * tailScale }} />
+        {accessory && h > 0 && (
+          <View
+            style={{
+              position: "absolute",
+              right: -10,
+              top: h * 0.6,
+              zIndex: 4,
+            }}
+          >
+            {accessory}
+          </View>
+        )}
       </View>
     </View>
   );

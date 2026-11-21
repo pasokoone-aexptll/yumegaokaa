@@ -1697,3 +1697,12 @@ U45実機反映追記：ユーザーの「反映して」によりfa0859dのiPho
 Simulatorで通信しないfixtureを操作し、QR展開→読み取り枠→問い合わせ→名前、名前→写真→Pool→利用開始を確認。写真段階で雲が消える不具合を検出して修正後に再確認。完了演出は `/tmp/u48-welcome-fresh.mp4` で扉開口→アイコン出現→扉閉鎖→アイコン拡大→歓迎文を確認し、元動画48〜56秒と視覚比較。QR録画 `/tmp/u48-scan.mp4`、認証録画 `/tmp/u48-auth.mp4`（この録画でゲージ重なりを検出）。型検査・Simulator Release成功。カメラ映像はSimulatorの専用fixtureで代替しており、実カメラ認識・実OTP送信・写真アップロード・iPhone転送は今回の検証に含めない。QRのみ維持、実際の写真選択UIは維持（原動画の写真選択箇所は説明用プレースホルダ）。全ピクセル一致や本番の通信待ち時間一致を保証した記録ではない。
 
 U48最終版確認：ゲージ重なり修正後、Simulatorで6桁入力→数字の緑変化/成功リング（再送ゲージなし）→招待→QR読み取り→戻るを再操作して確認。小さい読み取り枠から四隅へのパス補間も最終バンドルに含まれることを点検。写真設定の雲保持は修正後の名前→写真で再確認済み。Simulatorへ最終検証版反映済み。
+
+## 2026-11-22 U49 — Map配置・現地入街（R04〜R09/R12〜R15/R19）
+
+- PeopleStackをPinBubbleの実測本体高さに対して60%の位置に配置。尾/影の外枠下端基準を廃止。分母10ptのweightを900へ。Apple Maps/Legalをchat右下に追加し、既存MapKit帰属は維持。
+- 実機失敗原因：StreetEntryの試験判定がSimulator/nfcDisabledを必須としていた。FIELD_TRIAL（特定project＋明示env）では実機も試験導線とし、シート表示から既存scan(default)を一度開始する。通常版はscan(tag)。本人限定の既存試験タグ、サーバー成功後の状態変更、実測位を維持。
+- cloud read-onlyで試験grant有効（2026-11-26まで）/tag activeを確認。DB変更なし。
+- 型検査成功。entry-state.test.mjsは既存ReadRetry依存追加にharnessが追従していなかったため実クラスを読み込むよう修正。入街確認前非active/重複開始/拒否/退出/実機試験タグの計8件成功。
+- Simulator/iPhone Release成功。Simulator長文PINの重なりと人数、通常Mapチャットの帰属を画像確認。PIN写真fixtureはfallbackで、実写真の新規収録はなし。
+- iPhone初回転送はremote connect error。ユーザーのケーブル再接続後インストール成功。起動要求は端末ロックで拒否（Locked）。現地GPS気配更新・実NFCは未確認。

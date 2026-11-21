@@ -6,6 +6,13 @@ const source = ts.transpileModule(
   readFileSync("apps/mobile/src/hooks/useStreetMap.ts", "utf8"),
   { compilerOptions: { module: ts.ModuleKind.CommonJS } },
 ).outputText;
+const retryExports = {};
+new Function(
+  "exports",
+  ts.transpileModule(readFileSync("apps/mobile/src/lib/readRetry.ts", "utf8"), {
+    compilerOptions: { module: ts.ModuleKind.CommonJS },
+  }).outputText,
+)(retryExports);
 function harness(checkin, stop, simulator = false, fieldTrial = false) {
   const slots = [];
   let index = 0,
@@ -50,6 +57,7 @@ function harness(checkin, stop, simulator = false, fieldTrial = false) {
         useCallback: (v) => v,
         useEffect() {},
       };
+    if (id.includes("readRetry")) return retryExports;
     if (id.includes("development"))
       return { localEntry: !fieldTrial, nfcDisabled: !fieldTrial, fieldTrial };
     if (id.includes("nfc-manager"))
@@ -148,7 +156,6 @@ test("OFF immediately stays off while exit is pending and when transport fails",
   assert.match(h.render().error, /通信回復後/);
 });
 
-
 test("Simulator NFC wait neither attempts checkin nor displays a connection error", async () => {
   const h = harness(async () => active, undefined, true);
   await h.render().scan("tag");
@@ -160,10 +167,15 @@ test("Simulator NFC wait neither attempts checkin nor displays a connection erro
 
 test("Simulator ring uses the account-bound trial tag and waits for server acceptance", async () => {
   let resolve;
-  const h = harness((tagId) => {
-    assert.equal(tagId, "14fdc906-3ff4-4576-a212-35c42642dd49");
-    return new Promise((r) => (resolve = r));
-  }, undefined, true, true);
+  const h = harness(
+    (tagId) => {
+      assert.equal(tagId, "14fdc906-3ff4-4576-a212-35c42642dd49");
+      return new Promise((r) => (resolve = r));
+    },
+    undefined,
+    true,
+    true,
+  );
   await h.render().scan("tag");
   assert.equal(h.calls, 0);
   const entering = h.render().scan("default");
@@ -178,9 +190,32 @@ test("Simulator ring uses the account-bound trial tag and waits for server accep
 });
 
 test("Simulator ring preserves the trial grant check instead of fabricating success", async () => {
-  const h = harness(async () => { throw Error("inactive_tag"); }, undefined, true, true);
+  const h = harness(
+    async () => {
+      throw Error("inactive_tag");
+    },
+    undefined,
+    true,
+    true,
+  );
   await h.render().scan("default");
   assert.equal(h.render().active, false);
   assert.equal(h.render().sheet, "explain");
   assert.match(h.render().entryError, /入街許可がありません/);
+});
+
+test("Physical field trial checks in through server without an NFC reader", async () => {
+  const h = harness(
+    async (tag) => {
+      assert.equal(tag, "14fdc906-3ff4-4576-a212-35c42642dd49");
+      return active;
+    },
+    undefined,
+    false,
+    true,
+  );
+  await h.render().scan("default");
+  assert.equal(h.calls, 1);
+  assert.equal(h.render().active, true);
+  assert.equal(h.render().sheet, "success");
 });

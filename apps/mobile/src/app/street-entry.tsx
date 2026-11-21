@@ -26,8 +26,7 @@ import { fieldTrial, localEntry, nfcDisabled } from "../lib/development";
 export default function StreetEntry() {
   const trialRing =
     Platform.OS === "ios" &&
-    (nfcDisabled || native.isSimulator?.()) &&
-    (fieldTrial || localEntry);
+    (fieldTrial || (localEntry && (nfcDisabled || native.isSimulator?.())));
   const started = useRef(false);
   const lastError = useRef("");
   const value = useSyncExternalStore(
@@ -76,9 +75,13 @@ export default function StreetEntry() {
   // Space for the centered 90pt sign and its visit-count bubble.
   const diameter = width * (0.82 / 0.975);
   useEffect(() => {
-    if (!trialRing && value?.sheet === "explain" && !started.current) {
+    if (
+      (fieldTrial || !trialRing) &&
+      value?.sheet === "explain" &&
+      !started.current
+    ) {
       started.current = true;
-      void value.scan("tag");
+      void value.scan(fieldTrial ? "default" : "tag");
     }
   }, [trialRing, value]);
   useEffect(() => {

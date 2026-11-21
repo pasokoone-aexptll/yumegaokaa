@@ -42,7 +42,7 @@ export function DenshinMapPin({
         >
           {pin.display_name} ・{" "}
           <Text style={{ fontSize: 16 }}>{pin.count}</Text>
-          <Text style={{ fontSize: 10 }}>
+          <Text style={{ fontSize: 10, fontWeight: "900" }}>
             {pin.capacity === null ? "人" : `/${pin.capacity}人`}
           </Text>
         </Text>
@@ -55,7 +55,12 @@ export function DenshinMapPin({
             alignItems: "center",
           }}
         >
-          <PinBubble textLength={Array.from(pin.body.trim()).length}>
+          <PinBubble
+            textLength={Array.from(pin.body.trim()).length}
+            accessory={
+              pin.recruiting ? <PeopleStack people={people} /> : undefined
+            }
+          >
             <View
               style={{
                 flexDirection: "row",
@@ -73,18 +78,6 @@ export function DenshinMapPin({
               </View>
             </View>
           </PinBubble>
-          {pin.recruiting && (
-            <View
-              style={{
-                position: "absolute",
-                right: -10,
-                bottom: -5,
-                zIndex: 4,
-              }}
-            >
-              <PeopleStack people={people} />
-            </View>
-          )}
         </View>
       )}
       {pin.recruiting ? (
