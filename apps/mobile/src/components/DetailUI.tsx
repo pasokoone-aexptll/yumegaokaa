@@ -1,7 +1,10 @@
+import { BlurView } from "expo-blur";
+import NativeMaskedView from "@react-native-masked-view/masked-view";
+import Svg, { Defs, LinearGradient, Stop, Rect } from "react-native-svg";
 import { SheetChrome } from "./SheetChrome";
 
 import { IconPressable as Pressable } from "./icons/IconMotion";
-import type { ReactNode } from "react";
+import type { ReactNode, ComponentType, ReactElement } from "react";
 import { Children, Fragment, useState } from "react";
 import {
   ActivityIndicator,
@@ -11,6 +14,7 @@ import {
   StyleSheet,
   Text,
   type TextStyle,
+  type ViewProps,
   View,
 } from "react-native";
 import {
@@ -20,6 +24,10 @@ import {
 import { useRouter } from "expo-router";
 import { NativeIconButton } from "./denshin/NativeIconButton";
 import { DetailIcon } from "./DetailIcon";
+
+const MaskedView = NativeMaskedView as unknown as ComponentType<
+  ViewProps & { maskElement: ReactElement }
+>;
 
 export function DetailPage({
   title,
@@ -46,6 +54,7 @@ export function DetailPage({
 }) {
   const router = useRouter();
   const [reloading, setReloading] = useState(false);
+  const [headerHeight, setHeaderHeight] = useState(61);
   const insets = useSafeAreaInsets();
   const edgeToEdge = Platform.OS === "ios" && !root;
   const materialSheet = mapSheet && Platform.OS === "android";
@@ -77,6 +86,7 @@ export function DetailPage({
         nestedScrollEnabled={materialSheet}
         contentContainerStyle={[
           detail.content,
+          { paddingTop: headerHeight + 24 },
           edgeToEdge && {
             paddingBottom: detail.content.paddingBottom + insets.bottom,
           },
@@ -86,7 +96,54 @@ export function DetailPage({
         automaticallyAdjustKeyboardInsets
         keyboardDismissMode="interactive"
       >
-        <View style={detail.navigation}>
+        {children}
+      </ScrollView>
+      <View
+        pointerEvents="box-none"
+        style={{
+          position: "absolute",
+          top: materialSheet ? 0 : insets.top,
+          left: 0,
+          right: 0,
+          zIndex: 2,
+        }}
+      >
+        <View
+          pointerEvents="none"
+          style={{
+            position: "absolute",
+            left: 0,
+            right: 0,
+            top: -insets.top,
+            height: insets.top + headerHeight + 36,
+          }}
+        >
+          <MaskedView
+            style={StyleSheet.absoluteFill}
+            maskElement={
+              <Svg width="100%" height="100%">
+                <Defs>
+                  <LinearGradient id="detailEdge" x1="0" y1="0" x2="0" y2="1">
+                    <Stop offset="0" stopColor="white" />
+                    <Stop offset="0.65" stopColor="white" />
+                    <Stop offset="1" stopColor="white" stopOpacity={0} />
+                  </LinearGradient>
+                </Defs>
+                <Rect width="100%" height="100%" fill="url(#detailEdge)" />
+              </Svg>
+            }
+          >
+            <BlurView
+              tint="light"
+              intensity={65}
+              style={StyleSheet.absoluteFill}
+            />
+          </MaskedView>
+        </View>
+        <View
+          onLayout={(event) => setHeaderHeight(event.nativeEvent.layout.height)}
+          style={[detail.navigation, { marginHorizontal: 22 }]}
+        >
           {!root ? (
             <NativeIconButton
               icon="chevron-base"
@@ -111,8 +168,7 @@ export function DetailPage({
           </Text>
           <View style={{ width: 49 }} />
         </View>
-        {children}
-      </ScrollView>
+      </View>
     </SafeAreaView>
   );
 }
