@@ -1,3 +1,5 @@
+import { ownProfile } from "../lib/ownProfile";
+import { sessionState } from "../lib/sessionState";
 import { useCallback, useState } from "react";
 import { useFocusEffect } from "expo-router";
 import { native } from "../lib/native";
@@ -10,10 +12,12 @@ export function useProfile() {
   useFocusEffect(
     useCallback(() => {
       let live = true;
+      const session = sessionState.get().revision;
       void native
         .rpc<Profile>("profile_get", {})
         .then((p) => {
           if (live) {
+            ownProfile.publish(p, session);
             setProfile(p);
             setName(p.display_name);
           }
@@ -27,11 +31,13 @@ export function useProfile() {
     }, []),
   );
   async function perform(action: () => Promise<Profile | null>) {
+    const session = sessionState.get().revision;
     setBusy(true);
     setStatus("");
     try {
       const p = await action();
       if (p) {
+        ownProfile.publish(p, session);
         setProfile(p);
         setStatus("保存しました");
         return true;

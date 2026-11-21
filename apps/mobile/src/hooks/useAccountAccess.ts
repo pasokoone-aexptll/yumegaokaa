@@ -1,3 +1,5 @@
+import { ownProfile } from "../lib/ownProfile";
+import { sessionState } from "../lib/sessionState";
 import { createContext, useCallback, useEffect, useRef, useState } from "react";
 import { AppState } from "react-native";
 import { native, streetID } from "../lib/native";
@@ -29,6 +31,7 @@ export function useAccountAccess(signed: boolean, revision: number) {
     if (!signed || inFlight.current) return;
     inFlight.current = true;
     const gen = generation.current;
+    const session = sessionState.get().revision;
     try {
       const result = await native.rpc<{
         status: AccessStatus;
@@ -39,7 +42,9 @@ export function useAccountAccess(signed: boolean, revision: number) {
         const profile = await native.rpc<{
           display_name: string;
           avatar_path?: string;
+          avatar_updated_at?: string;
         }>("profile_get", {});
+        ownProfile.publish(profile, session);
         if (!profile.display_name.trim() || !profile.avatar_path)
           status = "profile_required";
         else {

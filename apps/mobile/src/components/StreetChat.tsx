@@ -1,3 +1,5 @@
+import { ownProfile } from "../lib/ownProfile";
+import { chatRows } from "../lib/chatRows";
 import { ChatMessageReveal } from "./map/ChatMessageReveal";
 import { SuperAsset } from "./icons/SuperAsset";
 import { mentionParts } from "../lib/chatMentions";
@@ -9,7 +11,13 @@ import { ChatTouchRegion } from "./map/ChatTouchRegion";
 import { chatGeometry } from "../lib/chatGeometry";
 import { useKeyboardOverlap } from "../hooks/useKeyboardOverlap";
 import { ChatFade } from "./map/ChatFade";
-import { useEffect, useRef, useState, type ComponentRef } from "react";
+import {
+  useEffect,
+  useRef,
+  useState,
+  useSyncExternalStore,
+  type ComponentRef,
+} from "react";
 import { MapEdgeShade } from "./map/MapEdgeShade";
 import {
   SafeAreaView,
@@ -74,10 +82,16 @@ export function StreetChat({
   }) => void;
 }) {
   const router = useRouter();
+  const selfProfile = useSyncExternalStore(
+    ownProfile.subscribe,
+    ownProfile.get,
+  );
   const {
     readError,
     pending,
     pendingText,
+    pendingRow,
+    rowKeys,
     confirmedEchoes,
     mentions,
     toggleMention,
@@ -387,9 +401,16 @@ export function StreetChat({
                       {!loading && !error && !items.length && (
                         <Text style={styles.more}>まだ会話はありません</Text>
                       )}
-                      {[...items].reverse().map((m) => (
+                      {chatRows(
+                        items,
+                        confirmedEchoes,
+                        pendingRow,
+                        pendingText,
+                        rowKeys,
+                        selfProfile,
+                      ).map((m) => (
                         <ChatMessageReveal
-                          key={m.id}
+                          key={m.rowKey}
                           waitForImage={m.kind !== "arrival" && !!m.avatar_path}
                           animate={
                             !!initialLatest.current &&
@@ -398,7 +419,7 @@ export function StreetChat({
                         >
                           {(imageReady) => (
                             <Pressable
-                              onLongPress={() => menu(m)}
+                              onLongPress={m.local ? undefined : () => menu(m)}
                               style={styles.message}
                             >
                               {m.kind === "arrival" ? (
@@ -441,14 +462,17 @@ export function StreetChat({
                                           : ""}
                                       </Text>
                                     )}
-                                    {new Date(m.created_at).toLocaleTimeString(
-                                      [],
-                                      {
-                                        hour: "2-digit",
-                                        minute: "2-digit",
-                                        second: "2-digit",
-                                      },
-                                    )}
+                                    {m.sending
+                                      ? busy
+                                        ? "送信中"
+                                        : "結果未確認"
+                                      : new Date(
+                                          m.created_at,
+                                        ).toLocaleTimeString([], {
+                                          hour: "2-digit",
+                                          minute: "2-digit",
+                                          second: "2-digit",
+                                        })}
                                   </Text>
                                   <Text
                                     textBreakStrategy="simple"
@@ -479,70 +503,6 @@ export function StreetChat({
                           )}
                         </ChatMessageReveal>
                       ))}
-                      {confirmedEchoes
-                        .filter((e) => !items.some((m) => m.id === e.id))
-                        .map((e) => (
-                          <View
-                            key={`confirmed-${e.id}`}
-                            style={styles.message}
-                          >
-                            <View style={{ width: 32 }} />
-                            <View style={{ flex: 1 }}>
-                              <Text style={styles.author}>自分</Text>
-                              <ChatTouchRegion
-                                style={{
-                                  alignSelf: "flex-start",
-                                  maxWidth: "100%",
-                                }}
-                              >
-                                <Text
-                                  textBreakStrategy="simple"
-                                  android_hyphenationFrequency="none"
-                                  style={styles.body}
-                                >
-                                  {e.body}
-                                </Text>
-                              </ChatTouchRegion>
-                            </View>
-                          </View>
-                        ))}
-                      {pendingText !== null && (
-                        <View
-                          style={[styles.message, { opacity: 0.45 }]}
-                          accessibilityLabel={`${busy ? "送信中" : "結果未確認"}：${pendingText}`}
-                        >
-                          <View
-                            style={{
-                              width: 32,
-                              alignItems: "center",
-                              justifyContent: "center",
-                            }}
-                          >
-                            {busy && (
-                              <ActivityIndicator size="small" color="white" />
-                            )}
-                          </View>
-                          <View style={{ flex: 1 }}>
-                            <Text style={styles.author}>
-                              自分 · {busy ? "送信中" : "結果未確認"}
-                            </Text>
-                            <ChatTouchRegion
-                              style={{
-                                alignSelf: "flex-start",
-                                maxWidth: "100%",
-                              }}
-                            >
-                              <Text
-                                textBreakStrategy="simple"
-                                android_hyphenationFrequency="none"
-                                style={styles.body}
-                              >
-                                {pendingText}
-                              </Text>
-                            </ChatTouchRegion>
-                          </View>
-                        </View>
-                      )}
                     </ScrollView>
                   </ChatFade>
                 </ChatTouchRegion>
