@@ -4,7 +4,7 @@
 
 ## 現在の再開点（2026-11-21・ユーザー指定キュー）
 
-現在はUSER_UI_FIX_QUEUEのU13（実機更新）。U01〜U12/U14〜U16は対象確認と記録済み。U16 Simulator PID30505、通常Home、実下書きなし。U18「+N」黒20%＋背景blurを追加。新しい指摘は末尾に追加し1件ずつ完了・commit。自主的な全29画面微調整は停止。U15〜17も含む指定修正後にU13実機ビルド/インストール。実機はまだ更新していない。以下は過去の経過記録。
+現在はUSER_UI_FIX_QUEUEのU13起動確認待ち。U01〜U12/U14〜U18は保存済み。5facb13を実機Releaseビルド・署名検証し、iPhone 17（00008150-0002059A3488C01C）へ上書きインストール成功。起動は端末Lockedで拒否。ユーザーへ解除を依頼済み、解除後devicectlで起動確認しU13を閉じる。自主的な全29画面微調整は停止。
 
 11/21 継続：PID87983レビュー版でHome両方空・指定SVG中央、参加/mention素材の分離、NFC地点の薄いmaterialとタップ非遷移を確認。証拠は/tmp/home-empty-20261121.png、notice-kinds-20261121.png、nfc-material-20261121.png。NativeToggle固定64×36をmatchContentsへ変更しPID89432で作成欄の余白を確認。現在はレビュー版がSimulatorに入り、Mapへ戻っている。実機未更新。詳細TECH_VALIDATION末尾。
 

@@ -1574,3 +1574,6 @@ Homeと招待の画像をScrollView外の固定背景へ移動。ProfileSetup/Re
 
 ## 2026-11-21 U18 人数バッジ（R19）
 PeopleStackの+NをUltraThinMaterial BlurView＋黒opacity0.2へ変更。白下地撤去。人数条件・外線・寸法維持。型検査/Release成功、Simulator PID36889 review-map?scene=pinで+2表示を確認（/tmp/u18-more.png）。写真fixtureは未取得。Map markerの動的背景追従は静止画では未確認。実機更新は次のU13。
+
+## 2026-11-21 U13 iPhone更新（R19）
+5facb13の通常Release（UI_REVIEW無効）を/tmp/build-yumegaoka-iphone-20261120.pyでビルド成功。codesign --verify --deep --strict成功。devicectlで接続中の本人iPhone17へ上書きインストール成功。起動はCoreDevice10002/FBS Lockedで拒否。ロック解除をユーザーへ依頼し、起動確認は未完。全画面実機確認済みとは扱わない。
