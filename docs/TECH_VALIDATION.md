@@ -1706,3 +1706,5 @@ U48最終版確認：ゲージ重なり修正後、Simulatorで6桁入力→数�
 - 型検査成功。entry-state.test.mjsは既存ReadRetry依存追加にharnessが追従していなかったため実クラスを読み込むよう修正。入街確認前非active/重複開始/拒否/退出/実機試験タグの計8件成功。
 - Simulator/iPhone Release成功。Simulator長文PINの重なりと人数、通常Mapチャットの帰属を画像確認。PIN写真fixtureはfallbackで、実写真の新規収録はなし。
 - iPhone初回転送はremote connect error。ユーザーのケーブル再接続後インストール成功。起動要求は端末ロックで拒否（Locked）。現地GPS気配更新・実NFCは未確認。
+
+2026-11-22 U49追補（R04〜R09）：実機拒否後、ユーザーが本人アカウントはomyと明示。前回確認したgrantはyumeg用であり対象確認が不足していた。cloudでomyのUUIDを照合し、試験タグ14fd…の既存許可1件をomyへ付け替え。期限2026-11-26 17:08:43 UTCを維持。通常NFC/測位/入街ロジックの変更なし、再ビルド不要。実機からの再試行は未確認。
