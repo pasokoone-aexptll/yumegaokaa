@@ -4,7 +4,7 @@
 
 ## 現在の再開点（2026-11-21・ユーザー指定キュー）
 
-現在はUSER_UI_FIX_QUEUEのU13起動確認待ち。U01〜U12/U14〜U18は保存済み。5facb13を実機Releaseビルド・署名検証し、iPhone 17（00008150-0002059A3488C01C）へ上書きインストール成功。起動は端末Lockedで拒否。ユーザーへ解除を依頼済み、解除後devicectlで起動確認しU13を閉じる。自主的な全29画面微調整は停止。
+USER_UI_FIX_QUEUEのU01〜U18を対象確認・保存・iPhone更新まで完了。5facb13の通常Releaseを本人iPhone17（00008150-0002059A3488C01C）へ上書きインストールし、ユーザーのロック解除後devicectlで起動成功。全UIの実機操作一巡・全29画面完全一致を確認済みとは扱わない。各行の確認限界と過去残件P01〜P05を保持。自主的な全29画面微調整は停止し、次のユーザー指摘を待つ。
 
 11/21 継続：PID87983レビュー版でHome両方空・指定SVG中央、参加/mention素材の分離、NFC地点の薄いmaterialとタップ非遷移を確認。証拠は/tmp/home-empty-20261121.png、notice-kinds-20261121.png、nfc-material-20261121.png。NativeToggle固定64×36をmatchContentsへ変更しPID89432で作成欄の余白を確認。現在はレビュー版がSimulatorに入り、Mapへ戻っている。実機未更新。詳細TECH_VALIDATION末尾。
 

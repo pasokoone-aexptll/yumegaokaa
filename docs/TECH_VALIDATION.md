@@ -1577,3 +1577,6 @@ PeopleStackの+NをUltraThinMaterial BlurView＋黒opacity0.2へ変更。白下�
 
 ## 2026-11-21 U13 iPhone更新（R19）
 5facb13の通常Release（UI_REVIEW無効）を/tmp/build-yumegaoka-iphone-20261120.pyでビルド成功。codesign --verify --deep --strict成功。devicectlで接続中の本人iPhone17へ上書きインストール成功。起動はCoreDevice10002/FBS Lockedで拒否。ロック解除をユーザーへ依頼し、起動確認は未完。全画面実機確認済みとは扱わない。
+
+### U13 起動確認の完了
+ユーザーからロック解除の回答後、同じ本人iPhoneへ `devicectl device process launch` を実行し終了0、Launched application with jp.yumegaoka.development bundle identifierを確認。再ビルド・再インストールなし。今回の逐次修正と実機更新を完了。起動成功と全画面の実機外観合格は区別する。
