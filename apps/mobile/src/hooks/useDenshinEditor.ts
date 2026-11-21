@@ -1,3 +1,4 @@
+import { canSaveDenshinBody } from "../lib/denshinBody";
 import { isDenshinPlacementActive } from "../lib/pinPlacement";
 import { streetChanges } from "../lib/streetChanges";
 import { useEffect, useRef, useState } from "react";
@@ -68,7 +69,15 @@ export function useDenshinEditor() {
   }, []);
   async function save(confirmClose = false) {
     if (running.current || restoring) return;
-    if (!draft.body.trim() || !draft.location) {
+    if (!pending && !canSaveDenshinBody(draft.body, !!draft.id)) {
+      setError(
+        draft.id
+          ? "ステータスメッセージを入力してください。"
+          : "ステータスメッセージは3文字以上で入力してください。",
+      );
+      return;
+    }
+    if (!draft.location) {
       setError("メッセージを入力し、マップ上の場所を選んでください。");
       return;
     }

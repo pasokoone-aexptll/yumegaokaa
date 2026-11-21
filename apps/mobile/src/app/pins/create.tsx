@@ -1,7 +1,8 @@
+import { canSaveDenshinBody } from "../../lib/denshinBody";
 import { StatusMessageInput } from "../../components/denshin/StatusMessageInput";
 import { NativeToggle as Switch } from "../../components/denshin/NativeToggle";
 import { NativeAction } from "../../components/denshin/NativeAction";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useState } from "react";
 import { ReducedIconMotion } from "../../components/icons/IconMotion";
 import { RollingNumber } from "../../components/denshin/RollingNumber";
 import { SuperAsset } from "../../components/icons/SuperAsset";
@@ -33,6 +34,8 @@ export default function CreatePin() {
     useDenshinEditor();
 
   const disabled = busy || locked;
+  const canSave =
+    canSaveDenshinBody(draft.body, !!draft.id) && !!draft.location;
   const [expanded, setExpanded] = useState(false);
   const reduced = useContext(ReducedIconMotion);
   function close() {
@@ -85,8 +88,8 @@ export default function CreatePin() {
               label="保存"
               glyph="✓"
               onPress={publish}
-              disabled={busy}
-              active={!!draft.body.trim() && !!draft.location}
+              disabled={busy || (!locked && !canSave)}
+              active={canSave}
             />
           </View>
         </View>

@@ -192,7 +192,7 @@ export function NotificationsView({
           <Pressable
             accessibilityRole="button"
             onPress={() => onOpen(item.id)}
-            style={{ paddingBottom: 44, paddingRight: 34 }}
+            style={{ paddingBottom: 44 }}
           >
             <NoticeListContent notice={item} />
           </Pressable>
