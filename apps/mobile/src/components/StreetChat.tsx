@@ -17,7 +17,7 @@ import {
 import { Avatar } from "./Avatar";
 import { ProgressiveBlur } from "./map/ProgressiveBlur";
 import { MapFeedback, type MapNotice } from "./map/MapFeedback";
-import { SmoothSurface } from "./map/SmoothSurface";
+import { LatestChatButton } from "./map/LatestChatButton";
 import { useRouter } from "expo-router";
 import {
   Animated,
@@ -558,8 +558,7 @@ export function StreetChat({
 
               {(hasNew || awayFromLatest) && (
                 <View pointerEvents="box-none" style={styles.new}>
-                  <Pressable
-                    accessibilityRole="button"
+                  <LatestChatButton
                     onPress={() => {
                       Keyboard.dismiss();
                       if (Platform.OS === "android") {
@@ -572,37 +571,7 @@ export function StreetChat({
                         animated: Platform.OS !== "android",
                       });
                     }}
-                  >
-                    <SmoothSurface
-                      color="#ffffff01"
-                      blurIntensity={35}
-                      radius={26}
-                      style={{
-                        paddingHorizontal: 14,
-                        paddingVertical: 10,
-                        flexDirection: "row",
-                        alignItems: "center",
-                        gap: 8,
-                      }}
-                    >
-                      <Text
-                        style={{
-                          color: "rgba(255,255,255,0.85)",
-                          fontFamily: "ui-rounded",
-                          fontSize: 14,
-                        }}
-                      >
-                        最新へ
-                      </Text>
-                      <SuperAsset
-                        name="chevron-base"
-                        size={22}
-                        rotation={90}
-                        tint="white"
-                        opacity={0.85}
-                      />
-                    </SmoothSurface>
-                  </Pressable>
+                  />
                 </View>
               )}
             </View>

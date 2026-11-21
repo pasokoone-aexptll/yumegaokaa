@@ -1,3 +1,4 @@
+import { LatestChatButton } from "../components/map/LatestChatButton";
 import { pin as reviewPin } from "../components/debug/figmaFixtures";
 import { useState } from "react";
 import { useLocalSearchParams, useRouter } from "expo-router";
@@ -62,7 +63,18 @@ function Scene() {
         {scene === "presence" || scene === "pin" ? (
           <StreetMapMarkers
             cells={scene === "presence" ? cells : []}
-            pins={scene === "pin" ? [{ ...reviewPin, longitude: 139.7109, latitude: 35.7295, count: 5 }] : []}
+            pins={
+              scene === "pin"
+                ? [
+                    {
+                      ...reviewPin,
+                      longitude: 139.7109,
+                      latitude: 35.7295,
+                      count: 5,
+                    },
+                  ]
+                : []
+            }
             events={[]}
             recruitments={[]}
             now={now}
@@ -80,6 +92,13 @@ function Scene() {
           />
         )}
       </Map>
+      {scene === "latest" && (
+        <View
+          style={{ position: "absolute", bottom: 160, alignSelf: "center" }}
+        >
+          <LatestChatButton onPress={() => setPresses((n) => n + 1)} />
+        </View>
+      )}
       <View
         style={{
           position: "absolute",

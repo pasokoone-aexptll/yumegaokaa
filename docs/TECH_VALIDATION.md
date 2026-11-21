@@ -1529,3 +1529,8 @@ MapHeaderの赤色Viewをexpo-glass-effect GlassView regular/dark、tint #AF52DE
 ## 2026-11-21 U07 募集PIN近接配置
 
 R12〜R14のMap表示。募集吹き出しをzIndex3へ、参加者列を看板基準から吹き出し右下基準へ移動。名前は1行/左揃え、短文の最小幅134pt、看板は左寄せ。配置プレビューも同じ最小幅/前後関係/左寄せ。型検査/Release成功、Simulator PID19304の/tmp/u07-pin-final.pngで同文面/5・7人のfixtureを照合。写真は未取得の代替アイコンであり実写真描画の確認とはしない。実PIN作成・参加・保存なし、iPhoneは一括更新待ち。
+
+
+## 2026-11-21 U08 最新へボタン
+
+StreetChatのSmoothSurfaceと文言をLatestChatButtonへ置換。GlassView regular/dark、48×30pt、下向きchevron26pt/灰色、hitSlop8、AX名「最新へ」。表示条件/最新へ戻るhandlerは変更なし。型検査/Release成功。Simulator PID20513のreview-map?scene=latestで同一部品を表示、AXボタン押下で確認カウンター0→1、/tmp/u08-latest.pngで文字なし・中央chevron・ガラスカプセルを確認。実チャット履歴のスクロール復帰そのものは今回未再操作。R16の表示操作、投稿/データ更新なし。
