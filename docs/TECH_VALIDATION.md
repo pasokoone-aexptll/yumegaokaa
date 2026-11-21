@@ -1662,3 +1662,6 @@ PlacementHandleから移動量/drag状態をpreviewへ接続。zoom倍率を補�
 
 ## 2026-11-21 チャット下端・通知整列（R19/U42–43）
 U42はchatの翻訳座標に追従する#242321の延長面を下端から画面高さ分配置。型検査/Releaseと通常画面確認成功。Simulatorはfocusしてもsoftware keyboardが出ず、keyboard背後の実表示は未確認。U43は通知参加素材のclip領域x6.83643/width39.3269に合わせて透明余白のみを除去、左右2pt行padding撤去。Simulator fixture /tmp/u43-notices.pngで参加/mention/電信ロゴの見える左端78pxを確認。実機未更新。
+
+## 2026-11-21 21時指定のUIとiPhone更新（R19/U44）
+chat下端/keyboard背後#161515、alpha maskで下ほど見える既存blurの最大intensity10、Map tab#1B1B1B/境界#393939。通知参加SVGの絵の幅36ptをmentionと統一。PIN吹き出し白90%、単一輪郭の尾をQ曲線で滑らかにしmask境界へ余白追加。型検査/両Release成功、Simulator短長文で右端欠けなし・尾curve確認、通知/Map色確認。証拠/tmp/u44-short.png、u44-long.png、u44-notices.png、u44-chat.png。iPhone17へインストール成功（初回RSD接続失敗、再試行成功）。キーボード表示の実機視覚確認は未実施。

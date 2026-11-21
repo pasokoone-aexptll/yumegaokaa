@@ -4,6 +4,8 @@
 
 ## 現在の再開点（2026-11-21・ユーザー指定キュー）
 
+U44：21時指定のchat/Mapタブ色、通知同幅、吹き出し90%/曲線/右端欠けを修正しSimulator確認。iPhone17へU33〜44を含む最新版を上書きインストール済み。詳細TECH_VALIDATION末尾。
+
 U40：PINドラッグ復旧をSimulator/ユーザー確認済み。U41通常PIN外縁blur/80%白吹き出し/統合影をSimulator確認、U43通知アイコン左端整列も確認。U42キーボード背後#242321延長は実装済み、software keyboard表示の確認待ち。実機未更新。
 
 U38/U39：PIN新規作成3文字以上と通知左右余白修正を実装、Simulator確認済み。実機は未更新。詳細TECH_VALIDATION先頭。

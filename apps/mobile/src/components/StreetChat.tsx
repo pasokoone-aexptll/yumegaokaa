@@ -272,7 +272,7 @@ export function StreetChat({
             left: 0,
             right: 0,
             height: height + insets.bottom,
-            backgroundColor: "#242321",
+            backgroundColor: "#161515",
           }}
         />
         <SafeAreaView
@@ -291,7 +291,7 @@ export function StreetChat({
             }}
           >
             {Platform.OS !== "android" && (
-              <ProgressiveBlur edge="bottom" intensity={24} />
+              <ProgressiveBlur edge="bottom" intensity={10} />
             )}
             <MapEdgeShade edge="bottom" />
           </View>

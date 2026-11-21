@@ -15,12 +15,12 @@ export function MapEdgeShade({ edge }: { edge: "top" | "bottom" }) {
         <LinearGradient id={id} x1="0" x2="0" y1="0%" y2="100%">
           <Stop
             offset="0"
-            stopColor="#000000"
+            stopColor={edge === "top" ? "#000000" : "#161515"}
             stopOpacity={edge === "top" ? 0.63 : 0}
           />
           <Stop
             offset="1"
-            stopColor={edge === "top" ? "#000000" : "#242321"}
+            stopColor={edge === "top" ? "#000000" : "#161515"}
             stopOpacity={edge === "top" ? 0 : 1}
           />
         </LinearGradient>

@@ -137,7 +137,7 @@ export function PinBubble({
   const r = h / 2;
   const center = w / 2;
   // One silhouette: the tail shares its contour and shadow with the capsule.
-  const outline = `M${r} 0H${w - r}A${r} ${r} 0 0 1 ${w} ${r}A${r} ${r} 0 0 1 ${w - r} ${h}H${center + 12}L${center - 8.6} ${h + 14.1}Q${center - 12} ${h + 16.1} ${center - 12} ${h + 12.6}V${h}H${r}A${r} ${r} 0 0 1 0 ${r}A${r} ${r} 0 0 1 ${r} 0Z`;
+  const outline = `M${r} 0H${w - r}A${r} ${r} 0 0 1 ${w} ${r}A${r} ${r} 0 0 1 ${w - r} ${h}H${center + 18}Q${center + 14} ${h} ${center + 10} ${h + 3}L${center - 7} ${h + 17}Q${center - 12} ${h + 21} ${center - 12} ${h + 15}V${h + 5}Q${center - 12} ${h} ${center - 17} ${h}H${r}A${r} ${r} 0 0 1 0 ${r}A${r} ${r} 0 0 1 ${r} 0Z`;
   return (
     <View collapsable={false} style={s.shadowFrame}>
       <View style={s.bubbleWrapper}>
@@ -145,8 +145,8 @@ export function PinBubble({
           <Svg
             pointerEvents="none"
             width={w + 24}
-            height={h + 39}
-            viewBox={`-12 -12 ${w + 24} ${h + 39}`}
+            height={h + 44}
+            viewBox={`-12 -12 ${w + 24} ${h + 44}`}
             style={{ position: "absolute", left: -12, top: -12 }}
           >
             <Defs>
@@ -163,13 +163,17 @@ export function PinBubble({
             pointerEvents="none"
             style={{
               position: "absolute",
-              top: 0,
-              left: 0,
-              width: w,
-              height: h + 15,
+              top: -1,
+              left: -1,
+              width: w + 2,
+              height: h + 23,
             }}
             maskElement={
-              <Svg width={w} height={h + 15}>
+              <Svg
+                width={w + 2}
+                height={h + 23}
+                viewBox={`-1 -1 ${w + 2} ${h + 23}`}
+              >
                 <Path d={outline} fill="white" />
               </Svg>
             }
@@ -182,7 +186,7 @@ export function PinBubble({
             <View
               style={[
                 StyleSheet.absoluteFill,
-                { backgroundColor: "rgba(255,255,255,0.8)" },
+                { backgroundColor: "rgba(255,255,255,0.9)" },
               ]}
             />
           </Mask>
@@ -195,7 +199,7 @@ export function PinBubble({
         >
           {children}
         </View>
-        <View style={{ height: 14 }} />
+        <View style={{ height: 19 }} />
       </View>
     </View>
   );
