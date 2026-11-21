@@ -20,15 +20,6 @@ import { MapAsset } from "./map/MapAsset";
 
 // Reuse the supplied running figure, including its original silhouette.
 const figure = assets["非常口の人物"].replace(/fill="#[^"]*"/g, 'fill="white"');
-// Draw the outline behind the original silhouette so the white figure keeps its size.
-const outlinedFigure = figure.replace(
-  /(<path\b[^>]*\/>)/,
-  (path) =>
-    path.replace(
-      "<path",
-      '<path stroke="#00AF6B" stroke-width="1.5" stroke-linejoin="round"',
-    ) + path,
-);
 export const SplashPlayingContext = createContext(false);
 export const LaunchSplash = memo(function LaunchSplash({
   onComplete,
@@ -173,7 +164,7 @@ export const LaunchSplash = memo(function LaunchSplash({
             }}
           >
             <SvgXml
-              xml={outlinedFigure}
+              xml={figure}
               width={doorWidth * 1.15}
               height={doorHeight * 0.95}
             />
