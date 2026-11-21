@@ -1,8 +1,21 @@
+import { sessionState } from "../lib/sessionState";
 import { SuperAsset } from "./icons/SuperAsset";
 import { RefreshMarker } from "./map/markerScale";
-import { createContext, useContext, useEffect, useRef, useState } from "react";
-import { Image, View, type ImageSourcePropType } from "react-native";
-import { native, key, url } from "../lib/native";
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+  useSyncExternalStore,
+} from "react";
+import {
+  Image as LocalImage,
+  View,
+  type ImageSourcePropType,
+} from "react-native";
+import { Image, type ImageRef } from "expo-image";
+import { cachedAvatar, loadAvatar } from "../lib/avatarImages";
+
 // Scoped local image sources for isolated presentation previews; no auth adapter override.
 export const AvatarImageContext = createContext<
   Record<string, ImageSourcePropType>
@@ -15,6 +28,7 @@ export function Avatar({
   size = 40,
   bucket = "avatars",
   shape = "circle",
+  onReady,
 }: {
   path?: string;
   version?: string;
@@ -22,53 +36,45 @@ export function Avatar({
   size?: number;
   bucket?: "avatars" | "street-icons";
   shape?: "circle" | "square";
+  onReady?: () => void;
 }) {
   const refreshMarker = useContext(RefreshMarker);
   const localImage = useContext(AvatarImageContext)[name];
-  const identity = JSON.stringify([bucket, path, version]);
-  const [image, setImage] = useState({ identity: "", token: "", attempt: 0 });
+  const session = useSyncExternalStore(
+    sessionState.subscribe,
+    () => sessionState.get().revision,
+  );
+  const identity = JSON.stringify([session, bucket, path, version]);
+  const [image, setImage] = useState<{ identity: string; source?: ImageRef }>(
+    () => ({
+      identity,
+      source: path ? cachedAvatar(bucket, path, version) : undefined,
+    }),
+  );
   const [failed, setFailed] = useState("");
-  const generation = useRef(0);
-  const retried = useRef(false);
-  const currentIdentity = useRef(identity);
   useEffect(() => {
-    const lifecycle = generation;
-    const current = ++lifecycle.current;
-    currentIdentity.current = identity;
-    retried.current = false;
-    if (path) {
-      void native
-        .realtimeToken()
-        .then((token) => {
-          if (current === generation.current) {
-            setFailed("");
-            setImage({ identity, token, attempt: 0 });
-          }
+    let live = true;
+    if (path && !localImage) {
+      void loadAvatar(bucket, path, version)
+        .then((source) => {
+          if (live) setImage({ identity, source });
         })
-        .catch(() => {});
+        .catch(() => {
+          if (live) setFailed(identity);
+        });
     }
     return () => {
-      lifecycle.current++;
-      currentIdentity.current = "";
+      live = false;
     };
-  }, [identity, path]);
-
-  async function retry() {
-    if (currentIdentity.current !== identity) return;
-    if (retried.current) {
-      setFailed(identity);
-      return;
-    }
-    retried.current = true;
-    const current = generation.current;
-    try {
-      const token = await native.realtimeToken();
-      if (current === generation.current)
-        setImage({ identity, token, attempt: 1 });
-    } catch {
-      if (current === generation.current) setFailed(identity);
-    }
-  }
+  }, [identity, path, bucket, version, localImage]);
+  useEffect(() => {
+    if (
+      (!path && !localImage) ||
+      failed === identity ||
+      (image.identity === identity && image.source)
+    )
+      onReady?.();
+  }, [path, localImage, failed, identity, image, onReady]);
 
   const style = {
     width: size,
@@ -95,31 +101,25 @@ export function Avatar({
         opacity={0.25}
       />
       {localImage && (
-        <Image source={localImage} style={[style, { position: "absolute" }]} />
+        <LocalImage
+          source={localImage}
+          onLoad={onReady}
+          onError={onReady}
+          style={[style, { position: "absolute" }]}
+        />
       )}
-      {path &&
-        image.identity === identity &&
-        image.token &&
-        failed !== identity && (
-          <Image
-            key={identity + ":" + image.attempt}
-            style={[style, { position: "absolute" }]}
-            onLoadEnd={refreshMarker}
-            onError={() => void retry()}
-            source={{
-              uri:
-                url +
-                "/storage/v1/object/authenticated/" +
-                bucket +
-                "/" +
-                path +
-                "?v=" +
-                encodeURIComponent(version ?? ""),
-              headers: { apikey: key, Authorization: "Bearer " + image.token },
-              cache: "reload",
-            }}
-          />
-        )}
+      {path && image.identity === identity && image.source && (
+        <Image
+          source={image.source}
+          style={[style, { position: "absolute" }]}
+          contentFit="cover"
+          transition={0}
+          onDisplay={() => {
+            refreshMarker?.();
+            onReady?.();
+          }}
+        />
+      )}
     </View>
   );
 }

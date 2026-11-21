@@ -4,7 +4,7 @@
 
 ## 現在の再開点（2026-11-21・ユーザー指定キュー）
 
-追加キューU19〜U21完了。次U22チャット画像再利用/読込後表示/新着演出。Avatar.tsxは毎mount realtimeToken待ち＋Image cache reloadで再取得。StreetChatはitems逆順描画、latestIdとcontentSizeでanimated:falseの末尾移動。ここを調査・修正。PID45902はreview-map短文（review-pin上に重なった検証画面、通常遷移ではない）。実下書きなし。
+追加キューU19〜U22完了。U22は共有ImageRef、同時取得統合、画像準備後の新着フェード/末尾スクロールを実装。型検査・キャッシュ試験・Release成功。Simulator PID56008 review-chatで送信なし新着追加とスクロールを録画確認（/tmp/u22-newchat-verified.mp4）。実機未確認。次はU23チャット左右余白17。U26は全体1.1倍ではなく位置確認文字/アイコン1.2倍・画像1.3倍。
 
 11/21 継続：PID87983レビュー版でHome両方空・指定SVG中央、参加/mention素材の分離、NFC地点の薄いmaterialとタップ非遷移を確認。証拠は/tmp/home-empty-20261121.png、notice-kinds-20261121.png、nfc-material-20261121.png。NativeToggle固定64×36をmatchContentsへ変更しPID89432で作成欄の余白を確認。現在はレビュー版がSimulatorに入り、Mapへ戻っている。実機未更新。詳細TECH_VALIDATION末尾。
 
@@ -337,3 +337,5 @@ MR02〜04も進める依頼の直後、ユーザーが待機を指示しログ�
 ## 現在のiPhone版（11月5日・一回更新許可後）
 
 「一回更新して」によりe0bb1e1＋17b6f4aのStreetLogin修正を上書き済み。ゴースト79234d6は実機未収録・039もDB未適用。開発HEADにはゴースト実装を保持しているため、次回ビルド時に実機との差分へ注意。今回限りの許可であり、以降のiPhone更新は再び明示指示待ち。
+
+11/21 U22継続：PID48655 review-chatで新着追加5→6、画像と本文表示・末尾スクロールを確認。録画/tmp/u22-reveal.mp4は操作前に停止したためアニメーション証拠にしない。AvatarのsessionState購読を追加したコードは最新ビルド未収録、型検査と最終ビルドが必要。U26は最新指示で「位置を確認する」文字/横アイコン1.2倍、ユーザー画像1.3倍に置換。全体1.1倍は取りやめ。現在ユーザーが確認再開を許可済み。

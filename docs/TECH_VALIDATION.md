@@ -1589,3 +1589,8 @@ PeopleStackの+NをUltraThinMaterial BlurView＋黒opacity0.2へ変更。白下�
 
 ## 2026-11-21 U21 PIN参加者外線（R19）
 PeopleStack既定外線をrgba(255,255,255,0.2)へ変更。Homeの明示背景色は保持。型検査/Release成功。PID45902のreview-map短文で外線の弱まり確認（/tmp/u21-map.png）。review-pin直リンクは白背景で表示され通常sheet背景比較には不適なため、その画像を全体合格証拠には使用しない。
+
+
+## 2026-11-21 U22 チャット画像と新着（R15/R19）
+
+Avatarはセッション・bucket/path/version別にデコード済みImageRefを最大128件共有し、同時取得を統合。新着行は画像準備後に260msフェード＋8pt移動、末尾追従をアニメーション化。読んでいる履歴は追従させない。取得失敗は1回再試行後に既存fallbackで本文を表示し、会話を永久に隠さない。test-avatar-images.cjsで共有・更新・セッション切替・再試行を確認、型検査/Release成功。Simulatorの実チャット画像とreview-chatの送信なし追加5→6を確認。録画/tmp/u22-newchat-verified.mp4、連続フレーム/tmp/u22-contact.pngで末尾への移動と画像/本文の表示を確認。実ネットワーク新着のタイミングとiPhone実機は未確認。

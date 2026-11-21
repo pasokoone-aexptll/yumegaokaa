@@ -1,3 +1,4 @@
+import { ChatMessageReveal } from "./map/ChatMessageReveal";
 import { SuperAsset } from "./icons/SuperAsset";
 import { mentionParts } from "../lib/chatMentions";
 import { ComposerSurface } from "./ComposerSurface";
@@ -148,14 +149,10 @@ export function StreetChat({
   // finger drag should reopen history after the user chooses the latest post.
   const jumpingToLatest = useRef(false);
   const scroll = useRef<ComponentRef<typeof ScrollView>>(null);
-  const latestId = items[0]?.id;
-  useEffect(() => {
-    const frame = requestAnimationFrame(() => {
-      if (!readingHistory.current)
-        scroll.current?.scrollToEnd({ animated: false });
-    });
-    return () => cancelAnimationFrame(frame);
-  }, [latestId, readingHistory]);
+  const initialLatest = useRef<string | null>(null);
+  if (initialLatest.current === null && items.length)
+    initialLatest.current = items[0].created_at;
+  const contentLaidOut = useRef(false);
   const notice: MapNotice | null = busy
     ? null
     : restoreFailed
@@ -320,8 +317,13 @@ export function StreetChat({
                       contentInsetAdjustmentBehavior="never"
                       maintainVisibleContentPosition={{ minIndexForVisible: 1 }}
                       onContentSizeChange={() => {
-                        if (!readingHistory.current)
-                          scroll.current?.scrollToEnd({ animated: false });
+                        if (!readingHistory.current) {
+                          jumpingToLatest.current = true;
+                          scroll.current?.scrollToEnd({
+                            animated: contentLaidOut.current,
+                          });
+                        }
+                        contentLaidOut.current = true;
                       }}
                       scrollEventThrottle={32}
                       onScroll={({
@@ -386,80 +388,96 @@ export function StreetChat({
                         <Text style={styles.more}>まだ会話はありません</Text>
                       )}
                       {[...items].reverse().map((m) => (
-                        <Pressable
+                        <ChatMessageReveal
                           key={m.id}
-                          onLongPress={() => menu(m)}
-                          style={styles.message}
+                          waitForImage={m.kind !== "arrival" && !!m.avatar_path}
+                          animate={
+                            !!initialLatest.current &&
+                            m.created_at > initialLatest.current
+                          }
                         >
-                          {m.kind === "arrival" ? (
-                            <ArrivalIcon />
-                          ) : (
-                            <Avatar
-                              path={m.avatar_path}
-                              version={m.avatar_updated_at}
-                              name={m.display_name}
-                              size={35}
-                              shape="square"
-                            />
-                          )}
-                          <View style={{ flex: 1, minWidth: 0 }}>
-                            <ChatTouchRegion
-                              style={{
-                                alignSelf: "flex-start",
-                                maxWidth: "100%",
-                              }}
+                          {(imageReady) => (
+                            <Pressable
+                              onLongPress={() => menu(m)}
+                              style={styles.message}
                             >
-                              <Text style={styles.author}>
-                                {m.kind !== "arrival" && (
-                                  <Text
-                                    style={styles.authorName}
-                                    accessibilityHint="タップしてメンションの宛先に追加"
-                                    onPress={
-                                      !m.mine && !m.deleted && m.author_id
-                                        ? () =>
-                                            toggleMention(
-                                              m.author_id!,
-                                              m.display_name,
-                                            )
-                                        : undefined
-                                    }
-                                  >
-                                    {m.display_name}{" "}
-                                    {m.stay_level ? `Lv${m.stay_level} ` : ""}
+                              {m.kind === "arrival" ? (
+                                <ArrivalIcon />
+                              ) : (
+                                <Avatar
+                                  onReady={imageReady}
+                                  path={m.avatar_path}
+                                  version={m.avatar_updated_at}
+                                  name={m.display_name}
+                                  size={35}
+                                  shape="square"
+                                />
+                              )}
+                              <View style={{ flex: 1, minWidth: 0 }}>
+                                <ChatTouchRegion
+                                  style={{
+                                    alignSelf: "flex-start",
+                                    maxWidth: "100%",
+                                  }}
+                                >
+                                  <Text style={styles.author}>
+                                    {m.kind !== "arrival" && (
+                                      <Text
+                                        style={styles.authorName}
+                                        accessibilityHint="タップしてメンションの宛先に追加"
+                                        onPress={
+                                          !m.mine && !m.deleted && m.author_id
+                                            ? () =>
+                                                toggleMention(
+                                                  m.author_id!,
+                                                  m.display_name,
+                                                )
+                                            : undefined
+                                        }
+                                      >
+                                        {m.display_name}{" "}
+                                        {m.stay_level
+                                          ? `Lv${m.stay_level} `
+                                          : ""}
+                                      </Text>
+                                    )}
+                                    {new Date(m.created_at).toLocaleTimeString(
+                                      [],
+                                      {
+                                        hour: "2-digit",
+                                        minute: "2-digit",
+                                        second: "2-digit",
+                                      },
+                                    )}
                                   </Text>
-                                )}
-                                {new Date(m.created_at).toLocaleTimeString([], {
-                                  hour: "2-digit",
-                                  minute: "2-digit",
-                                  second: "2-digit",
-                                })}
-                              </Text>
-                              <Text
-                                textBreakStrategy="simple"
-                                android_hyphenationFrequency="none"
-                                style={styles.body}
-                              >
-                                {m.deleted ? (
-                                  "削除されたメッセージ"
-                                ) : m.kind === "arrival" ? (
-                                  <>
-                                    <Text
-                                      style={[
-                                        styles.authorName,
-                                        { color: "#ffffffb3" },
-                                      ]}
-                                    >
-                                      {m.display_name}
-                                    </Text>{" "}
-                                    が街に参加しました
-                                  </>
-                                ) : (
-                                  <MentionBody message={m} />
-                                )}
-                              </Text>
-                            </ChatTouchRegion>
-                          </View>
-                        </Pressable>
+                                  <Text
+                                    textBreakStrategy="simple"
+                                    android_hyphenationFrequency="none"
+                                    style={styles.body}
+                                  >
+                                    {m.deleted ? (
+                                      "削除されたメッセージ"
+                                    ) : m.kind === "arrival" ? (
+                                      <>
+                                        <Text
+                                          style={[
+                                            styles.authorName,
+                                            { color: "#ffffffb3" },
+                                          ]}
+                                        >
+                                          {m.display_name}
+                                        </Text>{" "}
+                                        が街に参加しました
+                                      </>
+                                    ) : (
+                                      <MentionBody message={m} />
+                                    )}
+                                  </Text>
+                                </ChatTouchRegion>
+                              </View>
+                            </Pressable>
+                          )}
+                        </ChatMessageReveal>
                       ))}
                       {confirmedEchoes
                         .filter((e) => !items.some((m) => m.id === e.id))
