@@ -4,6 +4,8 @@
 
 ## 現在の再開点（2026-11-21・ユーザー指定キュー）
 
+U40：PINドラッグ復旧をSimulator/ユーザー確認済み。U41通常PIN外縁と吹き出し統合影に着手。実機未更新。
+
 U38/U39：PIN新規作成3文字以上と通知左右余白修正を実装、Simulator確認済み。実機は未更新。詳細TECH_VALIDATION先頭。
 
 U19〜37の今回指定修正を保存。iPhoneはeb13334（U19〜32）を11/21上書き・起動済み。SimulatorはU36まで、最後はreview-chat fixture。U33扉clip退場/Native戻る/ゼロから数字演出を確認。U34未使用旧部品4件削除、CODE_UI_AUDIT_20261121参照。U35リングをnative preview内の背面/下へ、仮置きと確定位置一致を確認。U36送信中→receipt→一覧を同じkeyで更新、本人profile/decoded画像を共有、fixture録画確認。U37制限エラー分類は型/単体試験のみ（Simulator/iPhone未収録）。実クラウドchat送信・実OTP・実GPS追従は未確認。全29画面/動画の完全一致は未宣言。最新キューの項目別記録参照。

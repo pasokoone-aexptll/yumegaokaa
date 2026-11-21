@@ -1653,3 +1653,6 @@ PIN詳細の自動load/reconcile失敗は操作errorから分離し、30秒継�
 Map表示中・前景のみApple Maps標準showsUserLocationを有効にし、別タブ/背景で停止。既存の訪問/気配送信機構とは別の端末内描画。指定#005EFFをtintへ設定するが、#005EFF→#57B0FFの独自グラデーション一致は保証しない。ユーザーが許可した標準機能を先行採用。型検査/Simulator Release成功、PID87109で立体青点表示と模擬座標更新後の移動表示確認。実地GPSと実機確認は転送後。境界の表示条件はコード照合済み、位置選択操作の最終外観確認は未完。
 
 同Simulator PID87109で実操作の「作成→マップを挿入」に入り、街の境界線と内側の塗り/NFC地点を保持したまま場所選択できることを確認。保存せず閉じた。iPhone Releaseビルド成功、上書き転送中。実際のGPS追従は未確認。
+
+## 2026-11-21 PINドラッグ復旧（R19/U40）
+PlacementHandleから移動量/drag状態をpreviewへ接続。zoom倍率を補正した指追従、リング拡大、release時の座標更新を復旧。Simulator Releaseと型検査成功。alignment fixtureの実ドラッグでリングが397,928から519,1107へ移動。録画/tmp/pin-drag-restored.mp4。ユーザーが「いい感じ」と確認。DB投稿なし、実機未更新。

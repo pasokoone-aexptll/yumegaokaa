@@ -26,10 +26,12 @@ export function PlacementHandle({
   active = true,
   previewOnMap = false,
   previewGroundOffset = 0,
+  onDragChange,
 }: {
   preview?: ReactNode;
   previewOnMap?: boolean;
   previewGroundOffset?: number;
+  onDragChange?: (offset: Pixel | null) => void;
   active?: boolean;
   map: React.RefObject<PlacementProjection | null>;
   point: [number, number];
@@ -60,10 +62,10 @@ export function PlacementHandle({
   const [position, setPosition] = useState<{ x: number; y: number }>();
   const [pitch, setPitch] = useState(45);
   const [dragging, setDragging] = useState(false);
-  const latest = useRef({ position, onDrop });
+  const latest = useRef({ position, onDrop, onDragChange });
   useEffect(() => {
-    latest.current = { position, onDrop };
-  }, [position, onDrop]);
+    latest.current = { position, onDrop, onDragChange };
+  }, [position, onDrop, onDragChange]);
   const draggingRef = useRef(false);
   const origin = useRef({ x: 0, y: 0 });
   const moved = useRef({ x: 0, y: 0 });
@@ -111,11 +113,13 @@ export function PlacementHandle({
           origin.current = latest.current.position ?? { x: 0, y: 0 };
           moved.current = origin.current;
           setDragging(true);
+          latest.current.onDragChange?.({ x: 0, y: 0 });
         },
         onPanResponderMove: (_, g) => {
           const p = { x: origin.current.x + g.dx, y: origin.current.y + g.dy };
           moved.current = p;
           setPosition(p);
+          latest.current.onDragChange?.({ x: g.dx, y: g.dy });
         },
         onPanResponderRelease: () => {
           void map.current
@@ -127,12 +131,14 @@ export function PlacementHandle({
             .finally(() => {
               draggingRef.current = false;
               setDragging(false);
+              latest.current.onDragChange?.(null);
             });
         },
         onPanResponderTerminate: () => {
           draggingRef.current = false;
           setPosition(origin.current);
           setDragging(false);
+          latest.current.onDragChange?.(null);
         },
         onPanResponderTerminationRequest: () => false,
       }),
@@ -141,6 +147,8 @@ export function PlacementHandle({
   if (!position) return null;
   return (
     <View
+      collapsable={false}
+      hitSlop={12}
       {...(active ? pan.panHandlers : {})}
       pointerEvents={active ? "auto" : "none"}
       accessibilityLabel="ピンをドラッグして場所を調整"

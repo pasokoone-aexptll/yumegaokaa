@@ -60,6 +60,10 @@ export function Map({
   const [cameraRevision, setCameraRevision] = useState(0);
   const [previewHeight, setPreviewHeight] = useState(0);
   const [previewPitch, setPreviewPitch] = useState(55);
+  const [placementDrag, setPlacementDrag] = useState<{
+    x: number;
+    y: number;
+  } | null>(null);
   return (
     <MarkerScale.Provider value={scale}>
       <Context.Provider value={{ map, ready }}>
@@ -111,14 +115,24 @@ export function Map({
             {children}
             {placement?.preview && (
               <Marker lngLat={placement.point} passive>
-                <PlacementPreviewMotion
-                  revision={placement.revision}
-                  onHeight={setPreviewHeight}
-                  pitch={previewPitch}
-                  active={placement.active ?? true}
+                <View
+                  style={{
+                    transform: [
+                      { translateX: (placementDrag?.x ?? 0) / scale },
+                      { translateY: (placementDrag?.y ?? 0) / scale },
+                    ],
+                  }}
                 >
-                  {placement.preview}
-                </PlacementPreviewMotion>
+                  <PlacementPreviewMotion
+                    revision={placement.revision}
+                    onHeight={setPreviewHeight}
+                    pitch={previewPitch}
+                    dragging={placementDrag !== null}
+                    active={placement.active ?? true}
+                  >
+                    {placement.preview}
+                  </PlacementPreviewMotion>
+                </View>
               </Marker>
             )}
           </MapView>
@@ -129,6 +143,7 @@ export function Map({
               revision={placement.revision}
               preview={placement.preview}
               previewOnMap
+              onDragChange={setPlacementDrag}
               previewGroundOffset={(previewHeight / 2 - 16.5) * scale}
               active={placement.active}
               onDrop={placement.onDrop}

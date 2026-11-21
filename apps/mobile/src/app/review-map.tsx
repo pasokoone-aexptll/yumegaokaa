@@ -24,6 +24,9 @@ function Scene() {
   }>();
   const [previewOnly, setPreviewOnly] = useState(true);
   const [dropRevision, setDropRevision] = useState(0);
+  const [placementPoint, setPlacementPoint] = useState<[number, number]>([
+    139.7109, 35.7295,
+  ]);
   const [now] = useState(() => Date.now());
   const cells = liveCells(
     {
@@ -63,10 +66,13 @@ function Scene() {
         placement={
           scene === "alignment" && previewOnly
             ? {
-                point: [139.7109, 35.7295],
+                point: placementPoint,
                 revision: dropRevision,
                 active: true,
-                onDrop: () => {},
+                onDrop: (point) => {
+                  setPlacementPoint(point);
+                  setDropRevision((r) => r + 1);
+                },
                 preview: (
                   <DenshinPlacementPreview
                     draft={{
@@ -104,8 +110,8 @@ function Scene() {
                     {
                       ...reviewPin,
                       body: short === "1" ? "テスト" : reviewPin.body,
-                      longitude: 139.7109,
-                      latitude: 35.7295,
+                      longitude: placementPoint[0],
+                      latitude: placementPoint[1],
                       count: scene === "alignment" ? reviewPin.count : 5,
                     },
                   ]

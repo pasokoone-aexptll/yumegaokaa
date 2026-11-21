@@ -10,17 +10,19 @@ export function PlacementPreviewMotion({
   active,
   pitch = 55,
   onHeight,
+  dragging = false,
 }: {
   children: ReactNode;
   revision: number;
   active: boolean;
   pitch?: number;
   onHeight?: (height: number) => void;
+  dragging?: boolean;
 }) {
   const reduced = useContext(ReducedIconMotion);
   const [fall] = useState(() => new Animated.Value(0));
   useEffect(() => {
-    if (!active || reduced) {
+    if (!active || reduced || dragging) {
       fall.setValue(0);
       return;
     }
@@ -33,7 +35,7 @@ export function PlacementPreviewMotion({
     });
     animation.start();
     return () => animation.stop();
-  }, [revision, active, reduced, fall]);
+  }, [revision, active, reduced, dragging, fall]);
   return (
     <View onLayout={(event) => onHeight?.(event.nativeEvent.layout.height)}>
       {active && (
@@ -41,7 +43,12 @@ export function PlacementPreviewMotion({
           pointerEvents="none"
           style={{ position: "absolute", bottom: -16, alignSelf: "center" }}
         >
-          <PlacementRing revision={revision} pitch={pitch} showPin={false} />
+          <PlacementRing
+            revision={revision}
+            pitch={pitch}
+            dragging={dragging}
+            showPin={false}
+          />
         </View>
       )}
       <Animated.View
