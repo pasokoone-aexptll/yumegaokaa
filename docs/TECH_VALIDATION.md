@@ -1571,3 +1571,6 @@ PeopleStackへborderColor prop（既定white）を追加し、Homeのみs.page.b
 
 ## 2026-11-21 U17 DreamCloud固定（R19）
 Homeと招待の画像をScrollView外の固定背景へ移動。ProfileSetup/ReceiveInvitationは既に非スクロールのため変更なし。型検査とSimulator Release成功。PID33460、/invitations?reviewScroll=1で本文を300pt移動し、Historyが上がっても背景は右側の同じ位置を保持（/tmp/u17-offset2.png）。旧初期画像との比較。操作ツールのドラッグは変位せず、確認専用の初期スクロール位置を使用。Homeの固定は親子構造を確認、手動スクロールは未確認。実機更新はU13待ち。
+
+## 2026-11-21 U18 人数バッジ（R19）
+PeopleStackの+NをUltraThinMaterial BlurView＋黒opacity0.2へ変更。白下地撤去。人数条件・外線・寸法維持。型検査/Release成功、Simulator PID36889 review-map?scene=pinで+2表示を確認（/tmp/u18-more.png）。写真fixtureは未取得。Map markerの動的背景追従は静止画では未確認。実機更新は次のU13。

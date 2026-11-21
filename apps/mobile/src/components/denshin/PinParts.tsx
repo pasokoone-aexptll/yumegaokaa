@@ -92,8 +92,12 @@ export function PeopleStack({
           <BlurView
             pointerEvents="none"
             intensity={70}
-            tint="systemThinMaterialDark"
+            tint="systemUltraThinMaterial"
             style={StyleSheet.absoluteFill}
+          />
+          <View
+            pointerEvents="none"
+            style={[StyleSheet.absoluteFill, s.moreShade]}
           />
           <Text
             style={{ color: "white", fontSize: 17, fontFamily: "ui-rounded" }}
@@ -155,11 +159,12 @@ const s = StyleSheet.create({
     borderColor: "white",
     borderRadius: 19,
   },
+  moreShade: { backgroundColor: "rgba(0,0,0,0.2)" },
   more: {
     width: 37,
     height: 37,
     overflow: "hidden",
-    backgroundColor: "rgba(255,255,255,0.2)",
+    backgroundColor: "transparent",
     alignItems: "center",
     justifyContent: "center",
   },
