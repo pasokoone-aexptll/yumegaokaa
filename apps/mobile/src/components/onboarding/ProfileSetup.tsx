@@ -1,7 +1,7 @@
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import {
   Animated,
-  Image,
+  Easing,
   Keyboard,
   KeyboardAvoidingView,
   Platform,
@@ -45,17 +45,99 @@ export function ProfileSetup({
   const { width, height } = useWindowDimensions();
   const insets = useSafeAreaInsets(),
     reduced = useContext(ReducedIconMotion);
-  const [motion] = useState(() => new Animated.Value(1));
+  const [sceneEntrance] = useState(() => new Animated.Value(0));
   useEffect(() => {
-    motion.setValue(reduced ? 1 : 0);
-    const a = Animated.timing(motion, {
+    const animation = Animated.timing(sceneEntrance, {
       toValue: 1,
-      duration: reduced ? 0 : 450,
+      duration: reduced ? 0 : 650,
+      easing: Easing.linear,
       useNativeDriver: true,
     });
-    a.start();
-    return () => a.stop();
+    animation.start();
+    return () => animation.stop();
+  }, [sceneEntrance, reduced]);
+  const [displayedStage, setDisplayedStage] = useState(stage);
+  const previousStage = useRef(stage);
+  const [motion] = useState(() => new Animated.Value(550));
+  const [enteringScene, setEnteringScene] = useState(true);
+  const [leaving, setLeaving] = useState(false);
+  useEffect(() => {
+    const changed = previousStage.current !== stage;
+    previousStage.current = stage;
+    if (reduced) {
+      setDisplayedStage(stage);
+      setLeaving(false);
+      motion.setValue(1200);
+      return;
+    }
+    let live = true;
+    motion.stopAnimation();
+    setLeaving(changed);
+    setEnteringScene(!changed);
+    motion.setValue(changed ? 0 : 550);
+    const enter = () => {
+      if (!live) return;
+      setDisplayedStage(stage);
+      setLeaving(false);
+      Animated.timing(motion, {
+        toValue: 1200,
+        duration: changed ? 850 : 650,
+        easing: Easing.linear,
+        useNativeDriver: true,
+      }).start();
+    };
+    if (changed) {
+      Animated.timing(motion, {
+        toValue: 350,
+        duration: 350,
+        easing: Easing.linear,
+        useNativeDriver: true,
+      }).start(({ finished }) => {
+        if (finished) enter();
+      });
+    } else enter();
+    return () => {
+      live = false;
+      motion.stopAnimation();
+    };
   }, [stage, reduced, motion]);
+  const bodyOpacity = motion.interpolate({
+    inputRange: leaving
+      ? [0, 200, 350]
+      : enteringScene
+        ? [550, 650, 850, 1200]
+        : [350, 830, 1050, 1200],
+    outputRange: leaving ? [1, 1, 0] : [0, 0, 1, 1],
+    extrapolate: "clamp",
+  });
+  const bodyY = motion.interpolate({
+    inputRange: [0, 150, 200, 250, 300, 350],
+    outputRange: leaving ? [0, 0, 8, 40, 72, 80] : [0, 0, 0, 0, 0, 0],
+    extrapolate: "clamp",
+  });
+  const buttonOpacity = motion.interpolate({
+    inputRange: leaving
+      ? [0, 150, 1200]
+      : enteringScene
+        ? [550, 750, 950]
+        : [350, 1000, 1200],
+    outputRange: leaving ? [1, 0, 0] : [0, 0, 1],
+    extrapolate: "clamp",
+  });
+  const buttonY = motion.interpolate({
+    inputRange: leaving
+      ? [0, 150, 1200]
+      : enteringScene
+        ? [550, 750, 950]
+        : [350, 1000, 1200],
+    outputRange: leaving ? [0, 20, 20] : [20, 20, 0],
+    extrapolate: "clamp",
+  });
+  const badge = motion.interpolate({
+    inputRange: [350, 750, 900, 1200],
+    outputRange: [0, 0, 1, 1],
+    extrapolate: "clamp",
+  });
   const top = Math.max(insets.top + 32, height * 0.145);
   return (
     <KeyboardAvoidingView
@@ -77,12 +159,27 @@ export function ProfileSetup({
             <Text style={s.note}>別のアカウントでログイン</Text>
           </Pressable>
         )}
-        <View style={{ position: "absolute", top: top - 20, left: 12 }}>
+        <Animated.View
+          style={{
+            position: "absolute",
+            top: top - 20,
+            left: 12,
+            opacity: enteringScene
+              ? motion.interpolate({
+                  inputRange: [550, 750],
+                  outputRange: [0, 1],
+                  extrapolate: "clamp",
+                })
+              : 1,
+          }}
+        >
           <SvgXml xml={atmark} width={124} height={124} />
-          {stage !== "name" && (
-            <View
+          {displayedStage !== "name" && (
+            <Animated.View
               style={{
                 position: "absolute",
+                opacity: badge,
+                transform: [{ scale: badge }],
                 right: -7,
                 bottom: 4,
                 width: 56,
@@ -108,10 +205,10 @@ export function ProfileSetup({
                   opacity={0.55}
                 />
               </View>
-            </View>
+            </Animated.View>
           )}
-        </View>
-        <Image
+        </Animated.View>
+        <Animated.Image
           source={require("../../../assets/superassets/DreamCloud.png")}
           style={{
             position: "absolute",
@@ -119,7 +216,18 @@ export function ProfileSetup({
             right: -122,
             width: 360,
             height: 330,
-            opacity: 0.55,
+            opacity: sceneEntrance.interpolate({
+              inputRange: [0, 0.3, 0.92, 1],
+              outputRange: [0, 0, 0.55, 0.55],
+            }),
+            transform: [
+              {
+                translateX: sceneEntrance.interpolate({
+                  inputRange: [0, 0.3, 0.92, 1],
+                  outputRange: [100, 100, 0, 0],
+                }),
+              },
+            ],
           }}
           resizeMode="contain"
         />
@@ -130,51 +238,56 @@ export function ProfileSetup({
             left: 32,
             right: 32,
             gap: 20,
-            opacity: motion,
-            transform: [
-              {
-                translateX: motion.interpolate({
-                  inputRange: [0, 1],
-                  outputRange: [20, 0],
-                }),
-              },
-            ],
           }}
         >
-          <Text style={s.title}>
-            {stage === "name"
-              ? "名前を決める"
-              : stage === "photo"
-                ? "プロフィール写真"
-                : "Pool Random写真を追加"}
-          </Text>
-          <Text style={s.note}>
-            {stage === "name"
-              ? "ユーザー名は街チャットや電信PINに表示されます。"
-              : stage === "photo"
-                ? "この画像はチャットや電信PINで、あなたの発言だとわかる必要がある場合に使われます。"
-                : "地図上で表示されるアイコンはPoolの写真からランダムに選ばれます。匿名性を守るための画像を選んでください。"}
-          </Text>
-          {stage === "name" && (
-            <View style={s.inputRow}>
-              <SuperAsset name="atmark" size={35} tint="rgba(0,0,0,0.45)" />
-              <TextInput
-                accessibilityLabel="名前"
-                value={name}
-                onChangeText={onName}
-                editable={!busy}
-                maxLength={50}
-                placeholder="名前"
-                style={s.input}
-              />
-            </View>
-          )}
-          <View style={{ marginTop: stage === "name" ? 0 : 80 }}>
+          <Animated.View
+            style={{
+              gap: 20,
+              opacity: bodyOpacity,
+              transform: [{ translateY: bodyY }],
+            }}
+          >
+            <Text style={s.title}>
+              {displayedStage === "name"
+                ? "名前を決める"
+                : displayedStage === "photo"
+                  ? "プロフィール写真"
+                  : "Pool Random写真を追加"}
+            </Text>
+            <Text style={s.note}>
+              {displayedStage === "name"
+                ? "ユーザー名は街チャットや電信PINに表示されます。"
+                : displayedStage === "photo"
+                  ? "この画像はチャットや電信PINで、あなたの発言だとわかる必要がある場合に使われます。"
+                  : "地図上で表示されるアイコンはPoolの写真からランダムに選ばれます。匿名性を守るための画像を選んでください。"}
+            </Text>
+            {displayedStage === "name" && (
+              <View style={s.inputRow}>
+                <SuperAsset name="atmark" size={35} tint="rgba(0,0,0,0.45)" />
+                <TextInput
+                  accessibilityLabel="名前"
+                  value={name}
+                  onChangeText={onName}
+                  editable={!busy}
+                  maxLength={50}
+                  placeholder="名前"
+                  style={s.input}
+                />
+              </View>
+            )}
+          </Animated.View>
+          <Animated.View
+            style={{
+              marginTop: displayedStage === "name" ? 0 : 80,
+              opacity: buttonOpacity,
+              transform: [{ translateY: buttonY }],
+            }}
+          >
             <NativeAction
               title={
                 busy
                   ? "保存しています…"
-                  : stage === "name"
+                  : displayedStage === "name"
                     ? "次へ"
                     : "カメラロールを開く"
               }
@@ -188,15 +301,20 @@ export function ProfileSetup({
               labelStyle={{
                 color: "rgba(255,255,255,0.65)",
                 fontWeight: "400",
-                fontSize: stage === "name" ? 18 : 22,
+                fontSize: displayedStage === "name" ? 18 : 22,
               }}
-              disabled={busy || (stage === "name" && !name?.trim())}
+              disabled={
+                busy ||
+                leaving ||
+                stage !== displayedStage ||
+                (displayedStage === "name" && !name?.trim())
+              }
               onPress={() => {
                 Keyboard.dismiss();
                 onNext();
               }}
             />
-          </View>
+          </Animated.View>
           {!!error && (
             <Text
               accessibilityRole="alert"

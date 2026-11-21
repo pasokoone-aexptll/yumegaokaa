@@ -44,6 +44,8 @@ function Scenes() {
   const [busy, setBusy] = useState(false),
     [success, setSuccess] = useState(false),
     [name, setName] = useState("sannlib");
+  const [scanning, setScanning] = useState(false);
+  const [scanChecking, setScanChecking] = useState(false);
   const [nextSendAt, setNextSendAt] = useState(0);
   const live = useRef(true);
   useEffect(() => {
@@ -95,11 +97,12 @@ function Scenes() {
         />
       ) : stage === "invite" ? (
         <ReceiveInvitation
-          scanning={false}
-          busy={false}
+          scanning={scanning}
+          busy={scanChecking}
+          cameraPreview
           status=""
-          onScan={() => setStage("checking")}
-          onCancel={() => {}}
+          onScan={() => setScanning(true)}
+          onCancel={() => setScanning(false)}
           onCode={() => {}}
           onLogout={() => router.back()}
         />
@@ -144,9 +147,15 @@ function Scenes() {
         </Pressable>
         <Pressable
           accessibilityLabel="確認の次の段階"
-          onPress={() =>
-            setStage(stages[(stages.indexOf(stage) + 1) % stages.length])
-          }
+          onPress={() => {
+            if (stage === "invite" && scanning && !scanChecking) {
+              setScanChecking(true);
+              setTimeout(() => {
+                if (live.current) setStage("name");
+              }, 2800);
+            } else
+              setStage(stages[(stages.indexOf(stage) + 1) % stages.length]);
+          }}
           style={{ padding: 8 }}
         >
           <Text style={{ fontSize: 10, color: "rgba(0,0,0,0.3)" }}>NEXT</Text>

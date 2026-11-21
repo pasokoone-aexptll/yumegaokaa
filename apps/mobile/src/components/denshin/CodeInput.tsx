@@ -1,5 +1,19 @@
-import { useRef, type ComponentRef } from "react";
-import { Pressable, TextInput, View } from "react-native";
+import {
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+  type ComponentRef,
+} from "react";
+import {
+  Animated,
+  Easing,
+  Pressable,
+  StyleSheet,
+  TextInput,
+  View,
+} from "react-native";
+import { ReducedIconMotion } from "../icons/IconMotion";
 import { RollingNumber } from "./RollingNumber";
 
 /** One real autofill/paste field; the six visual slots never replace text input semantics. */
@@ -11,6 +25,7 @@ export function CodeInput({
   grouped = true,
   emptyZeros = false,
   groupGap,
+  successWave = false,
 }: {
   value: string;
   onChange: (value: string) => void;
@@ -19,7 +34,22 @@ export function CodeInput({
   grouped?: boolean;
   emptyZeros?: boolean;
   groupGap?: number;
+  successWave?: boolean;
 }) {
+  const reduced = useContext(ReducedIconMotion);
+  const [wave] = useState(() => new Animated.Value(0));
+  useEffect(() => {
+    wave.setValue(0);
+    if (!success || !successWave) return;
+    const animation = Animated.timing(wave, {
+      toValue: 750,
+      duration: reduced ? 0 : 750,
+      easing: Easing.linear,
+      useNativeDriver: true,
+    });
+    animation.start();
+    return () => animation.stop();
+  }, [success, successWave, reduced, wave]);
   const input = useRef<ComponentRef<typeof TextInput>>(null);
   return (
     <Pressable
@@ -48,12 +78,38 @@ export function CodeInput({
             }}
           >
             {(emptyZeros || value[index] !== undefined) && (
-              <RollingNumber
-                value={Number(value[index] ?? 0)}
-                compact
-                light
-                color={success ? "#01AE6B" : undefined}
-              />
+              <>
+                <RollingNumber
+                  value={Number(value[index] ?? 0)}
+                  compact
+                  light
+                  color={success && !successWave ? "#01AE6B" : undefined}
+                />
+                {successWave && success && (
+                  <Animated.View
+                    pointerEvents="none"
+                    accessibilityElementsHidden
+                    importantForAccessibility="no-hide-descendants"
+                    style={[
+                      StyleSheet.absoluteFill,
+                      {
+                        opacity: wave.interpolate({
+                          inputRange: [index * 100, index * 100 + 150],
+                          outputRange: [0, 1],
+                          extrapolate: "clamp",
+                        }),
+                      },
+                    ]}
+                  >
+                    <RollingNumber
+                      value={Number(value[index] ?? 0)}
+                      compact
+                      light
+                      color="#01AE6B"
+                    />
+                  </Animated.View>
+                )}
+              </>
             )}
           </View>
         ))}

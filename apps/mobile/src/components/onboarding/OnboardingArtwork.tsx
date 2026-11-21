@@ -20,18 +20,19 @@ export function OnboardingArtwork({
   scale = 1,
   codeFigureOpacity,
   hideDoorway = false,
+  entrance,
 }: {
   stage: "welcome" | "email" | "code";
   scale?: number;
   codeFigureOpacity?: Animated.AnimatedInterpolation<number>;
   hideDoorway?: boolean;
+  entrance?: Animated.Value;
 }) {
   const reduced = useContext(ReducedIconMotion);
   const [phase] = useState(
     () =>
       new Animated.Value(stage === "welcome" ? 0 : stage === "email" ? 1 : 2),
   );
-  const [float] = useState(() => new Animated.Value(0));
   useEffect(() => {
     const move = Animated.timing(phase, {
       toValue: stage === "welcome" ? 0 : stage === "email" ? 1 : 2,
@@ -42,27 +43,6 @@ export function OnboardingArtwork({
     move.start();
     return () => move.stop();
   }, [stage, reduced, phase]);
-  useEffect(() => {
-    if (stage !== "email" || reduced) return;
-    const loop = Animated.loop(
-      Animated.sequence([
-        Animated.timing(float, {
-          toValue: 1,
-          duration: 1200,
-          easing: Easing.inOut(Easing.sin),
-          useNativeDriver: true,
-        }),
-        Animated.timing(float, {
-          toValue: 0,
-          duration: 1200,
-          easing: Easing.inOut(Easing.sin),
-          useNativeDriver: true,
-        }),
-      ]),
-    );
-    loop.start();
-    return () => loop.stop();
-  }, [stage, reduced, float]);
   return (
     <View
       pointerEvents="none"
@@ -166,8 +146,8 @@ export function OnboardingArtwork({
         <Animated.View
           style={{
             position: "absolute",
-            top: 70,
-            left: 86,
+            top: 67,
+            left: 94,
             opacity: phase.interpolate({
               inputRange: [0, 1, 2],
               outputRange: [0, 1, 0],
@@ -177,12 +157,6 @@ export function OnboardingArtwork({
                 translateX: phase.interpolate({
                   inputRange: [0, 1, 2],
                   outputRange: [-45, 0, 50],
-                }),
-              },
-              {
-                translateY: float.interpolate({
-                  inputRange: [0, 1],
-                  outputRange: [2, -6],
                 }),
               },
             ],
@@ -197,6 +171,27 @@ export function OnboardingArtwork({
             height={43}
           />
         </Animated.View>
+        {entrance && (
+          <View style={{ position: "absolute", inset: 0, overflow: "hidden" }}>
+            <Animated.View
+              style={{
+                transform: [
+                  {
+                    translateX: entrance.interpolate({
+                      inputRange: [0, 0.2, 0.28, 0.38, 0.5, 0.7, 1],
+                      outputRange: [0, 0, 12, 38, 78, 230, 230],
+                      extrapolate: "clamp",
+                    }),
+                  },
+                ],
+              }}
+            >
+              <Svg width={440} height={250} viewBox="0 0 440 250">
+                <Path d="M0 0H440V250H134L0 116Z" fill="white" />
+              </Svg>
+            </Animated.View>
+          </View>
+        )}
       </View>
     </View>
   );

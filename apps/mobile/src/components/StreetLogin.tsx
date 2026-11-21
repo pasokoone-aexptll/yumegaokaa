@@ -1,3 +1,4 @@
+import { SplashPlayingContext } from "./LaunchSplash";
 import { NativeIconButton } from "./denshin/NativeIconButton";
 import { useContext, useEffect, useRef, useState } from "react";
 import { useRouter } from "expo-router";
@@ -57,6 +58,22 @@ export function StreetLogin({
   const router = useRouter(),
     insets = useSafeAreaInsets();
   const reduced = useContext(ReducedIconMotion);
+  const splashPlaying = useContext(SplashPlayingContext);
+  const [entrance] = useState(() => new Animated.Value(0));
+  useEffect(() => {
+    if (splashPlaying) {
+      entrance.setValue(0);
+      return;
+    }
+    const animation = Animated.timing(entrance, {
+      toValue: 1,
+      duration: reduced ? 0 : 1100,
+      easing: Easing.linear,
+      useNativeDriver: true,
+    });
+    animation.start();
+    return () => animation.stop();
+  }, [splashPlaying, reduced, entrance]);
   const [started, setStarted] = useState(false),
     [existing, setExisting] = useState(false);
   const { height, width } = useWindowDimensions();
@@ -64,6 +81,24 @@ export function StreetLogin({
     [now, setNow] = useState(Date.now);
   const [sendingCode, setSendingCode] = useState(false);
   const [formMotion] = useState(() => new Animated.Value(1));
+  const [welcomeExit] = useState(() => new Animated.Value(0));
+  const [authExit] = useState(() => new Animated.Value(1));
+  const [choosing, setChoosing] = useState(false);
+  useEffect(() => () => welcomeExit.stopAnimation(), [welcomeExit]);
+  useEffect(() => {
+    authExit.setValue(1);
+    if (!authSuccess || reduced) return;
+    const animation = Animated.sequence([
+      Animated.delay(800),
+      Animated.timing(authExit, {
+        toValue: 0,
+        duration: 250,
+        useNativeDriver: true,
+      }),
+    ]);
+    animation.start();
+    return () => animation.stop();
+  }, [authSuccess, reduced, authExit]);
   const stage = sent ? "code" : started ? "email" : "welcome";
   const title =
     stage === "welcome"
@@ -159,11 +194,29 @@ export function StreetLogin({
     }
   }
   function choose(isExisting: boolean) {
-    setExisting(isExisting);
-    setStarted(true);
-    setSent(false);
-    setCode("");
-    setError("");
+    if (choosing) return;
+    const enter = () => {
+      setExisting(isExisting);
+      setStarted(true);
+      setSent(false);
+      setCode("");
+      setError("");
+      setChoosing(false);
+      welcomeExit.setValue(0);
+    };
+    if (started || reduced) {
+      enter();
+      return;
+    }
+    setChoosing(true);
+    Animated.timing(welcomeExit, {
+      toValue: 1,
+      duration: 300,
+      easing: Easing.in(Easing.cubic),
+      useNativeDriver: true,
+    }).start(({ finished }) => {
+      if (finished) enter();
+    });
   }
   const top = Math.max(insets.top + 22, height * 0.145);
   const formTop = Math.min(
@@ -175,15 +228,21 @@ export function StreetLogin({
       style={s.root}
       behavior={Platform.OS === "ios" ? "padding" : undefined}
     >
-      <View
-        style={s.root}
+      <Animated.View
+        style={[s.root, { opacity: authExit }]}
         onLayout={(e) => setAvailableHeight(e.nativeEvent.layout.height)}
       >
         <Animated.Text
           style={[
             s.title,
             {
-              opacity: titleMotion,
+              opacity: Animated.multiply(
+                titleMotion,
+                entrance.interpolate({
+                  inputRange: [0, 0.12, 0.36, 1],
+                  outputRange: [0, 0, 1, 1],
+                }),
+              ),
               fontFamily: "OnboardingDot",
               fontSize: 32,
               lineHeight: 40,
@@ -196,10 +255,45 @@ export function StreetLogin({
           {displayedTitle}
         </Animated.Text>
         <View style={{ position: "absolute", top: top + 86, left: 44 }}>
-          <OnboardingArtwork stage={stage} scale={width / 393} />
+          <OnboardingArtwork
+            stage={stage}
+            scale={width / 393}
+            entrance={entrance}
+          />
         </View>
         {stage === "welcome" ? (
-          <View style={[s.welcomeActions, { bottom: insets.bottom + 16 }]}>
+          <Animated.View
+            style={[
+              s.welcomeActions,
+              {
+                bottom: insets.bottom + 16,
+                opacity: Animated.multiply(
+                  entrance.interpolate({
+                    inputRange: [0, 0.5, 0.8, 1],
+                    outputRange: [0, 0, 1, 1],
+                  }),
+                  welcomeExit.interpolate({
+                    inputRange: [0, 1],
+                    outputRange: [1, 0],
+                  }),
+                ),
+                transform: [
+                  {
+                    translateY: Animated.add(
+                      entrance.interpolate({
+                        inputRange: [0, 0.5, 1],
+                        outputRange: [36, 36, 0],
+                      }),
+                      welcomeExit.interpolate({
+                        inputRange: [0, 1],
+                        outputRange: [0, 40],
+                      }),
+                    ),
+                  },
+                ],
+              },
+            ]}
+          >
             <Pressable
               accessibilityRole="button"
               onPress={() => choose(true)}
@@ -224,7 +318,7 @@ export function StreetLogin({
               contentWidth={282}
               onPress={() => choose(false)}
             />
-          </View>
+          </Animated.View>
         ) : (
           <>
             <Animated.View
@@ -268,43 +362,47 @@ export function StreetLogin({
                     value={code}
                     onChange={setCode}
                     disabled={busy || authSuccess}
+                    success={authSuccess}
+                    successWave
                     grouped={false}
                     groupGap={15}
                     emptyZeros
                   />
-                  <View
-                    accessible
-                    accessibilityRole="progressbar"
-                    accessibilityLabel="コードの再送まで"
-                    accessibilityValue={{
-                      min: 0,
-                      max: 60,
-                      now: remaining,
-                      text: `再送まで${remaining}秒`,
-                    }}
-                    style={s.resendGauge}
-                  >
-                    {Array.from({ length: 54 }, (_, index) => (
-                      <View
-                        key={index}
-                        style={[
-                          s.resendTick,
-                          {
-                            opacity:
-                              0.08 +
-                              0.55 *
-                                Math.max(
-                                  0,
-                                  Math.min(
-                                    1,
-                                    ((nextSendAt - now) / 60000) * 54 - index,
+                  {!busy && !authSuccess && (
+                    <View
+                      accessible
+                      accessibilityRole="progressbar"
+                      accessibilityLabel="コードの再送まで"
+                      accessibilityValue={{
+                        min: 0,
+                        max: 60,
+                        now: remaining,
+                        text: `再送まで${remaining}秒`,
+                      }}
+                      style={s.resendGauge}
+                    >
+                      {Array.from({ length: 54 }, (_, index) => (
+                        <View
+                          key={index}
+                          style={[
+                            s.resendTick,
+                            {
+                              opacity:
+                                0.08 +
+                                0.55 *
+                                  Math.max(
+                                    0,
+                                    Math.min(
+                                      1,
+                                      ((nextSendAt - now) / 60000) * 54 - index,
+                                    ),
                                   ),
-                                ),
-                          },
-                        ]}
-                      />
-                    ))}
-                  </View>
+                            },
+                          ]}
+                        />
+                      ))}
+                    </View>
+                  )}
                 </>
               ) : (
                 <>
@@ -340,7 +438,11 @@ export function StreetLogin({
                   position: "absolute",
                   left: 28,
                   right: 28,
-                  bottom: insets.bottom + 34 - (height - availableHeight),
+                  ...(busy || authSuccess
+                    ? { top: height * (authSuccess ? 0.785 : 0.835) }
+                    : {
+                        bottom: insets.bottom + 34 - (height - availableHeight),
+                      }),
                   gap: 18,
                   alignItems: "center",
                 }}
@@ -349,6 +451,7 @@ export function StreetLogin({
                   <>
                     <EntryProgress
                       success={authSuccess}
+                      onboarding
                       light
                       label={
                         authSuccess
@@ -358,13 +461,17 @@ export function StreetLogin({
                             : "認証中"
                       }
                     />
-                    <Text style={[s.note, authSuccess && { color: "#01AE6B" }]}>
-                      {authSuccess
-                        ? "authentication successful"
-                        : sendingCode
-                          ? "コードを送信しています…"
-                          : "認証しています…"}
-                    </Text>
+                    {authSuccess && (
+                      <Text
+                        style={[s.note, { color: "#01AE6B", fontSize: 17 }]}
+                      >
+                        {authSuccess
+                          ? "authentication successful"
+                          : sendingCode
+                            ? "コードを送信しています…"
+                            : "認証しています…"}
+                      </Text>
+                    )}
                   </>
                 ) : (
                   <>
@@ -527,7 +634,7 @@ export function StreetLogin({
             開発用メールはMacのMailpitに届きます。
           </Text>
         )}
-      </View>
+      </Animated.View>
     </KeyboardAvoidingView>
   );
 }
