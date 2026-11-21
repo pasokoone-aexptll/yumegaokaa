@@ -1519,3 +1519,8 @@ Mapのplacement表示条件を、操作中だけでなく電信下書き位置�
 ## 2026-11-21 U05 紫の街人数バッジ
 
 MapHeaderの赤色Viewをexpo-glass-effect GlassView regular/dark、tint #AF52DEへ変更。人数/読み上げ/rounded太字と寸法を保持。型検査/Release成功、Simulator PID14659で紫のガラスカプセルと白い人物/人数表示を確認。人数更新アニメーションはこの変更で追加・検証していない。実機は最終一括更新待ち。
+
+
+## 2026-11-21 U06 入街者吹き出し撤去
+
+最新ユーザー指定に従いMapのPresenceHeaderと専用72pt領域、未使用の派生値/importを撤去。人数バッジとtoastの48pt固定領域は維持。DECISIONSの旧常設指定を置換。型検査/Release成功、Simulator PID15508で吹き出しなし・右操作ボタンの配置を確認。バックエンドの匿名画像情報は他用途を保護し変更なし。

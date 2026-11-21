@@ -2,7 +2,6 @@ import { useDenshinDraft } from "../../lib/denshinDraft";
 import { DenshinPlacementPreview } from "../../components/pins/DenshinPlacementPreview";
 import { useProfile } from "../../hooks/useProfile";
 import { useDelayedRefreshStatus } from "../../hooks/useDelayedRefreshStatus";
-import { liveHeaderIcons } from "../../lib/presenceHeader";
 import { SplashPlayingContext } from "../../components/LaunchSplash";
 import { initialPitch } from "../../components/map/headerLayout";
 import { IconPressable as Pressable } from "../../components/icons/IconMotion";
@@ -21,7 +20,6 @@ import { EntryPlaces } from "../../components/map/EntryPlaces";
 import { MapHeader } from "../../components/map/MapHeader";
 import { NativeIconButton } from "../../components/denshin/NativeIconButton";
 import { StatusBar } from "expo-status-bar";
-import { PresenceHeader } from "../../components/PresenceHeader";
 import { StreetLogin } from "../../components/StreetLogin";
 import { StreetEntrySheet } from "../../components/StreetEntrySheet";
 import { StreetMapMarkers } from "../../components/StreetMapMarkers";
@@ -275,7 +273,6 @@ export default function Street() {
       />
     );
   const cells = snapshot ? liveCells(snapshot, now) : [];
-  const presenceIcons = liveHeaderIcons(snapshot?.checked_in_icon_groups, now);
   return (
     <View style={styles.root}>
       <StatusBar style="light" />
@@ -365,9 +362,6 @@ export default function Street() {
           onModeChange={changeMode}
           onToggle={(value) => (value ? setSheet("explain") : void exit())}
         />
-        <View style={{ height: 72 }}>
-          <PresenceHeader icons={presenceIcons} />
-        </View>
         <View pointerEvents="box-none" style={{ height: 48 }}>
           <View
             pointerEvents="box-none"
