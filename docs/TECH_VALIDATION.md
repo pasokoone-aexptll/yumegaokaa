@@ -1623,3 +1623,8 @@ LaunchSplashは白い人物pathの背後に緑stroke-width1.5の複製を描い�
 型検査・Simulator Release成功。PID60913 review-map?scene=alignmentで同じ座標の仮置き→確定を切替え、名前・吹き出し・PNGの位置/幅一致を確認。実DBに作成していない。下降録画/tmp/u27-pin-drop.mp4、連続画像/tmp/u27-drop-frames.pngで上から下への移動確認。実機/Android未確認。
 
 同版でU23の左右17ptをチャットと入力欄の表示で確認。U24は/tmp/u24-final-splash.mp4の人物退出を抽出（/tmp/u24-figure.png）、白人物に緑縁が残らないことを確認。U26はHomeの画像/位置確認だけが拡大されていることを確認。U25は実データ1行でスクロール範囲不足のため、12行のSimulator専用fixtureを追加して最終確認する。
+
+
+## 2026-11-21 U25 最終スクロール確認（R19）
+
+PID82425のSimulator専用home?reviewAttending=1&reviewScroll=1に12行fixtureを表示。本文が200ptスクロールした状態と上端の状態の両方で、チケット上端/下端が同じ位置、DreamCloud背景も固定であることを画像比較確認。実DBには何も追加していない。型検査/Release成功。U19〜U27の対象Simulator確認まで完了。今回のiPhoneインストールは行っていない。

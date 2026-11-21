@@ -4,7 +4,7 @@
 
 ## 現在の再開点（2026-11-21・ユーザー指定キュー）
 
-追加キューU19〜U22完了。U22は共有ImageRef、同時取得統合、画像準備後の新着フェード/末尾スクロールを実装。型検査・キャッシュ試験・Release成功。Simulator PID56008 review-chatで送信なし新着追加とスクロールを録画確認（/tmp/u22-newchat-verified.mp4）。実機未確認。次はU23チャット左右余白17。U26は全体1.1倍ではなく位置確認文字/アイコン1.2倍・画像1.3倍。
+追加キューU19〜U27は実装・対象Simulator確認・Git保存を完了。U26は最新指示どおり位置確認文字/横アイコン1.2倍、本人画像1.3倍のみ（全体1.1倍は撤回）。U27はiOS仮置きも確定と同じnative Marker/DenshinMapPin描画へ統一、同座標切替で位置/サイズ一致と下降録画を確認。U25はPID82425の12行fixtureでチケット固定を確認。型検査/Release成功。Simulator最新版PID82425、実機は従来の5facb13版のままで今回U19〜27は未転送。これらの完了は全29画面の完全一致や新着実回線・Android・実機の保証ではない。
 
 11/21 継続：PID87983レビュー版でHome両方空・指定SVG中央、参加/mention素材の分離、NFC地点の薄いmaterialとタップ非遷移を確認。証拠は/tmp/home-empty-20261121.png、notice-kinds-20261121.png、nfc-material-20261121.png。NativeToggle固定64×36をmatchContentsへ変更しPID89432で作成欄の余白を確認。現在はレビュー版がSimulatorに入り、Mapへ戻っている。実機未更新。詳細TECH_VALIDATION末尾。
 

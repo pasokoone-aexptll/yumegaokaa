@@ -59,9 +59,15 @@ export default function Home() {
       : reviewEnabled && reviewAttending === "1"
         ? {
             ...livePins,
-            items: [
-              { ...reviewPin, attendance: "arrived" as const, mine: false },
-            ],
+            items: Array.from(
+              { length: reviewScroll === "1" ? 12 : 1 },
+              (_, index) => ({
+                ...reviewPin,
+                id: `${reviewPin.id}-${index}`,
+                attendance: "arrived" as const,
+                mine: false,
+              }),
+            ),
             hidden_attendance: [],
             loading: false,
             error: "",
