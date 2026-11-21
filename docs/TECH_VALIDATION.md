@@ -1583,3 +1583,6 @@ PeopleStackの+NをUltraThinMaterial BlurView＋黒opacity0.2へ変更。白下�
 
 ## 2026-11-21 U19 自然幅PIN（R19）
 固定最小幅150/134を撤去し、吹き出しwrapperを自然幅とし参加者列をその右端へ追従。看板は中央へ。配置プレビューも同じ変更。型検査/Release成功。Simulator長文/tmp/u19-natural.pngは吹き出し約442px、短文/tmp/u19-short.pngは約253px、参加者列も追従。fixture画像未取得、外線は次U21で調整。
+
+## 2026-11-21 U20 シート終了時プレビュー（R19）
+×以外のnative dismissalで残るdraftをuseDenshinEditorのcleanupで消去。地図選択中だけ保持。型検査、scripts/test-denshin-dismiss.cjsの終了/地図選択保持/復帰後終了3試験成功。Simulator PID44795で作成→マップ挿入→地図タップ→完了（マップ変更表示）→標準dismiss popupを操作しプレビュー消失確認。投稿なし。直接deep link直後は操作エラーが一度出たため、通常の＋から確認。スワイプ動作そのものではなく同じnative dismissのAX操作。

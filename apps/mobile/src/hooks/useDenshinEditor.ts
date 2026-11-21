@@ -1,3 +1,4 @@
+import { isDenshinPlacementActive } from "../lib/pinPlacement";
 import { streetChanges } from "../lib/streetChanges";
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "expo-router";
@@ -60,6 +61,9 @@ export function useDenshinEditor() {
       });
     return () => {
       live = false;
+      // Dismissing to the map picker deliberately keeps the draft. A real
+      // sheet dismissal (including the native swipe gesture) must not.
+      if (!isDenshinPlacementActive()) clearDenshinDraft();
     };
   }, []);
   async function save(confirmClose = false) {

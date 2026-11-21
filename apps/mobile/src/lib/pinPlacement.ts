@@ -23,6 +23,9 @@ export function beginPinPlacement(point?: [number, number], eventId?: string) {
 export function beginDenshinPlacement(point?: [number, number]) {
   set({ active: true, denshin: true, point, revision: state.revision + 1 });
 }
+export function isDenshinPlacementActive() {
+  return state.active && state.denshin === true;
+}
 export function placePin(point: [number, number]) {
   set({ ...state, point, revision: state.revision + 1 });
 }

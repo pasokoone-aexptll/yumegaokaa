@@ -4,7 +4,7 @@
 
 ## 現在の再開点（2026-11-21・ユーザー指定キュー）
 
-追加キューU19完了、次U20。短文/長文で自然幅と参加者追従をSimulator確認、PID43665はreview-map短文。U20作成sheet終了時のプレビュー残存を調査する。U27は仮置きと確定座標アンカー一致も含む。追加キューの実機更新はまだ。
+追加キューU19/U20完了、次U21白外線20%。Simulator PID44795、標準dismiss後Mapに戻り下書きなし。U20は地図選択→復帰保持→標準dismissで消失を実操作確認。U27は仮置きと確定の座標アンカー一致も含む。
 
 11/21 継続：PID87983レビュー版でHome両方空・指定SVG中央、参加/mention素材の分離、NFC地点の薄いmaterialとタップ非遷移を確認。証拠は/tmp/home-empty-20261121.png、notice-kinds-20261121.png、nfc-material-20261121.png。NativeToggle固定64×36をmatchContentsへ変更しPID89432で作成欄の余白を確認。現在はレビュー版がSimulatorに入り、Mapへ戻っている。実機未更新。詳細TECH_VALIDATION末尾。
 
