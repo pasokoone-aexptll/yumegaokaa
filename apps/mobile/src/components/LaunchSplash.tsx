@@ -20,6 +20,15 @@ import { MapAsset } from "./map/MapAsset";
 
 // Reuse the supplied running figure, including its original silhouette.
 const figure = assets["非常口の人物"].replace(/fill="#[^"]*"/g, 'fill="white"');
+// Draw the outline behind the original silhouette so the white figure keeps its size.
+const outlinedFigure = figure.replace(
+  /(<path\b[^>]*\/>)/,
+  (path) =>
+    path.replace(
+      "<path",
+      '<path stroke="#00AF6B" stroke-width="1.5" stroke-linejoin="round"',
+    ) + path,
+);
 export const SplashPlayingContext = createContext(false);
 export const LaunchSplash = memo(function LaunchSplash({
   onComplete,
@@ -133,7 +142,7 @@ export const LaunchSplash = memo(function LaunchSplash({
             <SvgXml
               width={doorWidth * 2.8}
               height={doorHeight}
-              xml={`<svg viewBox="0 0 280 149" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="shadowFade" x1="0" y1="0" x2="0" y2="1"><stop stop-color="white" stop-opacity="1"/><stop offset="1" stop-color="white" stop-opacity="0"/></linearGradient><mask id="shadowMask"><rect width="280" height="149" fill="url(#shadowFade)"/></mask></defs><g mask="url(#shadowMask)"><g transform="matrix(1 0 -1 -1 149 149) scale(1.77 1.77) translate(-24 -10)">${figure.replace(/<svg[^>]*>/, "").replace(/<\/svg>$/, "")}</g></g></svg>`}
+              xml={`<svg viewBox="0 0 280 149" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="shadowFade" x1="0" y1="0" x2="0" y2="1"><stop offset="0.8" stop-color="white" stop-opacity="1"/><stop offset="1" stop-color="white" stop-opacity="0"/></linearGradient><mask id="shadowMask"><rect width="280" height="149" fill="url(#shadowFade)"/></mask></defs><g mask="url(#shadowMask)"><g transform="matrix(1 0 -1 -1 149 149) scale(1.77 1.77) translate(-24 -10)">${figure.replace(/<svg[^>]*>/, "").replace(/<\/svg>$/, "")}</g></g></svg>`}
             />
           </View>
           <Animated.View
@@ -164,7 +173,7 @@ export const LaunchSplash = memo(function LaunchSplash({
             }}
           >
             <SvgXml
-              xml={figure}
+              xml={outlinedFigure}
               width={doorWidth * 1.15}
               height={doorHeight * 0.95}
             />
@@ -184,16 +193,15 @@ export const LaunchSplash = memo(function LaunchSplash({
               style={{
                 width: "100%",
                 height: "100%",
-                backgroundColor: "white",
                 transform: [
                   {
                     translateX: reduced
                       ? doorWidth * 2.8
                       : progress.interpolate({
                           // Reference opening: fixed left edge, accelerating reveal
-                          // across the door in 250ms, then across its floor projection.
+                          // across the door in 250ms. The mask follows the diagonal floor.
                           inputRange: [
-                            0, 0.028, 0.056, 0.083, 0.111, 0.139, 0.39, 1,
+                            0, 0.034, 0.067, 0.100, 0.133, 0.167, 0.39, 1,
                           ],
                           outputRange: [
                             0,
@@ -209,7 +217,16 @@ export const LaunchSplash = memo(function LaunchSplash({
                   },
                 ],
               }}
-            />
+            >
+              <Svg
+                width={doorWidth * 2.8}
+                height={doorHeight * 2.2}
+                viewBox="0 0 280 328"
+              >
+                {/* At the threshold, the opening continues along the floor projection. */}
+                <Path d="M0 0H600V328H179L0 149Z" fill="white" />
+              </Svg>
+            </Animated.View>
           </View>
         </Animated.View>
       </Animated.View>
