@@ -1534,3 +1534,8 @@ R12〜R14のMap表示。募集吹き出しをzIndex3へ、参加者列を看板�
 ## 2026-11-21 U08 最新へボタン
 
 StreetChatのSmoothSurfaceと文言をLatestChatButtonへ置換。GlassView regular/dark、48×30pt、下向きchevron26pt/灰色、hitSlop8、AX名「最新へ」。表示条件/最新へ戻るhandlerは変更なし。型検査/Release成功。Simulator PID20513のreview-map?scene=latestで同一部品を表示、AXボタン押下で確認カウンター0→1、/tmp/u08-latest.pngで文字なし・中央chevron・ガラスカプセルを確認。実チャット履歴のスクロール復帰そのものは今回未再操作。R16の表示操作、投稿/データ更新なし。
+
+
+## 2026-11-21 U09 ステータスメッセージ中央配置
+
+R12の作成/編集欄。StatusMessageInputへ表示責務を抽出し、iOSの固定lineHeight26を撤去。自然なUITextViewの文字高さをpadding13/minHeight52の外枠で中央配置。文字サイズ18、複数行/500字/編集可否/下書き更新は維持。型検査/Release成功、Simulator PID21881の同一部品へ空文字/1行/2行を渡して中央表示を確認（/tmp/u09-input.png）。操作ツールで日本語をタイプ/貼付しても反映されず、実入力操作の合格とはしない。空の作成シートは閉じた。保存/公開なし。

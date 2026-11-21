@@ -1,3 +1,4 @@
+import { StatusMessageInput } from "../../components/denshin/StatusMessageInput";
 import { NativeToggle as Switch } from "../../components/denshin/NativeToggle";
 import { NativeAction } from "../../components/denshin/NativeAction";
 import { useContext, useEffect, useState } from "react";
@@ -12,7 +13,6 @@ import {
   ScrollView,
   StyleSheet,
   Text,
-  TextInput,
   View,
 } from "react-native";
 import { Stack, useRouter } from "expo-router";
@@ -92,19 +92,11 @@ export default function CreatePin() {
             />
           </View>
         </View>
-        <View style={s.inputContainer}>
-          <TextInput
-            accessibilityLabel="ステータスメッセージ"
-            placeholder="ステータスメッセージ"
-            placeholderTextColor="#ffffff55"
-            multiline
-            maxLength={500}
-            editable={!disabled}
-            value={draft.body}
-            onChangeText={(body) => updateDenshinDraft({ body })}
-            style={s.input}
-          />
-        </View>
+        <StatusMessageInput
+          editable={!disabled}
+          value={draft.body}
+          onChangeText={(body) => updateDenshinDraft({ body })}
+        />
         <View style={s.group}>
           <View style={s.row}>
             <View
@@ -270,24 +262,6 @@ const s = StyleSheet.create({
   },
   actions: { flexDirection: "row", gap: 10 },
   content: { padding: 20, paddingTop: 16, gap: 24 },
-  inputContainer: {
-    justifyContent: "center",
-    minHeight: 52,
-    borderRadius: 26,
-    borderCurve: "continuous",
-    backgroundColor: "rgba(255,255,255,0.15)",
-    paddingHorizontal: 18,
-    paddingVertical: 13,
-  },
-  input: {
-    padding: 0,
-    fontFamily: "ui-rounded",
-    fontSize: 18,
-    lineHeight: 26,
-    color: "white",
-    maxHeight: 164,
-    textAlignVertical: "center",
-  },
   group: {
     borderRadius: 26,
     borderCurve: "continuous",

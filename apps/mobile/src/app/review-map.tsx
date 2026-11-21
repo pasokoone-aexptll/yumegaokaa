@@ -1,3 +1,4 @@
+import { StatusMessageInput } from "../components/denshin/StatusMessageInput";
 import { LatestChatButton } from "../components/map/LatestChatButton";
 import { pin as reviewPin } from "../components/debug/figmaFixtures";
 import { useState } from "react";
@@ -44,6 +45,11 @@ function Scene() {
   const insets = useSafeAreaInsets();
   const [settled, setSettled] = useState(0);
   const [presses, setPresses] = useState(0);
+  const [reviewBodies, setReviewBodies] = useState([
+    "",
+    "初めての人も歓迎",
+    "初めての人も歓迎\n池袋で会いましょう",
+  ]);
   return (
     <View style={{ flex: 1 }}>
       <Map
@@ -92,6 +98,29 @@ function Scene() {
           />
         )}
       </Map>
+      {scene === "input" && (
+        <View
+          style={{
+            position: "absolute",
+            top: "45%",
+            left: 20,
+            right: 20,
+            gap: 24,
+          }}
+        >
+          {reviewBodies.map((value, index) => (
+            <StatusMessageInput
+              key={index}
+              value={value}
+              onChangeText={(body) =>
+                setReviewBodies((values) =>
+                  values.map((old, i) => (i === index ? body : old)),
+                )
+              }
+            />
+          ))}
+        </View>
+      )}
       {scene === "latest" && (
         <View
           style={{ position: "absolute", bottom: 160, alignSelf: "center" }}
