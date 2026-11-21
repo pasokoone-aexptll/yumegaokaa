@@ -15,6 +15,7 @@ export function TabIcon({
       <SuperAsset
         name={focused ? "user-fill" : "user"}
         size={32}
+        opacity={focused ? 1 : 0.7}
         tint={typeof color === "string" ? color : undefined}
       />
     );

@@ -1551,3 +1551,8 @@ R12〜R14。既存denshin_listのattendance planned/arrivedをHome先頭「参�
 Map上端は画面高さ45%で黒63%→黒0%、既存上端190ptのぼかしを保持。下端は黒0%→#242321/100%のSVG、tab色補間終点rgb(36,35,33)。型検査/Release成功。Simulator PID24347の/tmp/u11-map-shade.pngで上端から中央への連続変化とチャットからtabへの連続性を目視確認。既存色切替animationは保持、録画再計測なし。PIL未導入のためpixel抽出は実行できておらず、色値はソース確認。
 
 追加指摘：「+N」は#000/20%＋背景blur。U18として末尾へ保存。
+
+
+## 2026-11-21 U12 Accountタブ濃度
+
+他3タブの原本SVGにはopacity0.7がある一方、AccountのSuperAssetはtintで内在opacityを除去していた。Account非選択時へopacity0.7、選択時1を適用。共通のtab色指定は保持。型検査/Release成功、Simulator PID25590の通常Homeで非選択のchat/bell/accountが同程度の灰色になることを目視確認（/tmp/u12-tabs.png）。この通常Homeでは実APIの参加中PINと募集中PINが別欄へ表示され、U10の実データ表示も確認。参加操作/投稿なし。
