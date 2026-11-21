@@ -58,6 +58,8 @@ export function Map({
   };
   const [ready, setReady] = useState(false);
   const [cameraRevision, setCameraRevision] = useState(0);
+  const [previewHeight, setPreviewHeight] = useState(0);
+  const [previewPitch, setPreviewPitch] = useState(55);
   return (
     <MarkerScale.Provider value={scale}>
       <Context.Provider value={{ map, ready }}>
@@ -85,6 +87,11 @@ export function Map({
               if (placement) setCameraRevision((r) => r + 1);
             }}
             onRegionChangeComplete={(region) => {
+              if (placement)
+                void map.current
+                  ?.getCamera()
+                  .then((camera) => setPreviewPitch(camera.pitch))
+                  .catch(() => {});
               regionZoom(region.longitudeDelta);
               onMovingChange?.(false);
               if (placement) setCameraRevision((r) => r + 1);
@@ -106,6 +113,8 @@ export function Map({
               <Marker lngLat={placement.point} passive>
                 <PlacementPreviewMotion
                   revision={placement.revision}
+                  onHeight={setPreviewHeight}
+                  pitch={previewPitch}
                   active={placement.active ?? true}
                 >
                   {placement.preview}
@@ -120,6 +129,7 @@ export function Map({
               revision={placement.revision}
               preview={placement.preview}
               previewOnMap
+              previewGroundOffset={(previewHeight / 2 - 16.5) * scale}
               active={placement.active}
               onDrop={placement.onDrop}
               cameraRevision={cameraRevision}

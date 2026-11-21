@@ -25,9 +25,11 @@ export function PlacementHandle({
   preview,
   active = true,
   previewOnMap = false,
+  previewGroundOffset = 0,
 }: {
   preview?: ReactNode;
   previewOnMap?: boolean;
+  previewGroundOffset?: number;
   active?: boolean;
   map: React.RefObject<PlacementProjection | null>;
   point: [number, number];
@@ -145,7 +147,7 @@ export function PlacementHandle({
       style={{
         position: "absolute",
         left: position.x - 40,
-        top: position.y - 32.5,
+        top: position.y - 32.5 + (previewOnMap ? previewGroundOffset : 0),
         width: 80,
         height: 65,
       }}
@@ -171,7 +173,7 @@ export function PlacementHandle({
           {preview}
         </Animated.View>
       )}
-      {active && (
+      {active && !(preview && previewOnMap) && (
         <PlacementRing
           revision={revision}
           dragging={dragging}
