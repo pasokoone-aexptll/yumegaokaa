@@ -142,6 +142,8 @@ export function Map({
           map={projection}
           point={placement.point}
           revision={placement.revision}
+          preview={placement.preview}
+          active={placement.active}
           onDrop={placement.onDrop}
           cameraRevision={cameraRevision}
         />

@@ -17,6 +17,8 @@ export type MapProps = {
   placement?: {
     point: [number, number];
     revision: number;
+    preview?: ReactNode;
+    active?: boolean;
     onDrop: (point: [number, number]) => void;
   };
   children?: ReactNode;

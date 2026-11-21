@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { type ReactNode, useEffect, useMemo, useRef, useState } from "react";
 import { PanResponder, View } from "react-native";
 type Coordinate = { longitude: number; latitude: number };
 type Pixel = { x: number; y: number };
@@ -14,7 +14,11 @@ export function PlacementHandle({
   revision,
   cameraRevision,
   onDrop,
+  preview,
+  active = true,
 }: {
+  preview?: ReactNode;
+  active?: boolean;
   map: React.RefObject<PlacementProjection | null>;
   point: [number, number];
   revision: number;
@@ -105,7 +109,8 @@ export function PlacementHandle({
   if (!position) return null;
   return (
     <View
-      {...pan.panHandlers}
+      {...(active ? pan.panHandlers : {})}
+      pointerEvents={active ? "auto" : "none"}
       accessibilityLabel="ピンをドラッグして場所を調整"
       style={{
         position: "absolute",
@@ -115,7 +120,29 @@ export function PlacementHandle({
         height: 65,
       }}
     >
-      <PlacementRing revision={revision} dragging={dragging} pitch={pitch} />
+      {preview && (
+        <View
+          pointerEvents="none"
+          style={{
+            position: "absolute",
+            bottom: 32.5,
+            left: -70,
+            width: 220,
+            alignItems: "center",
+            opacity: 0.55,
+          }}
+        >
+          {preview}
+        </View>
+      )}
+      {active && (
+        <PlacementRing
+          revision={revision}
+          dragging={dragging}
+          pitch={pitch}
+          showPin={!preview}
+        />
+      )}
     </View>
   );
 }

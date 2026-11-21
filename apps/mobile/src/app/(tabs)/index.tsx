@@ -1,3 +1,6 @@
+import { useDenshinDraft } from "../../lib/denshinDraft";
+import { DenshinPlacementPreview } from "../../components/pins/DenshinPlacementPreview";
+import { useProfile } from "../../hooks/useProfile";
 import { useDelayedRefreshStatus } from "../../hooks/useDelayedRefreshStatus";
 import { liveHeaderIcons } from "../../lib/presenceHeader";
 import { SplashPlayingContext } from "../../components/LaunchSplash";
@@ -45,6 +48,8 @@ import { useStreetMap } from "../../hooks/useStreetMap";
 export default function Street() {
   const router = useRouter();
   const placement = usePinPlacement();
+  const denshinDraft = useDenshinDraft();
+  const { profile: placementProfile } = useProfile();
   const [historyExpanded, setHistoryExpanded] = useState(false);
   const [mapMoving, setMapMoving] = useState(false);
   const { height } = useWindowDimensions();
@@ -282,10 +287,19 @@ export default function Street() {
         style={StyleSheet.absoluteFill}
         mapStyle={mapStyle}
         placement={
-          placement.active && placement.point
+          (placement.active || (placement.denshin && denshinDraft.location)) &&
+          placement.point
             ? {
                 point: placement.point,
                 revision: placement.revision,
+                active: placement.active,
+                preview: placement.denshin ? (
+                  <DenshinPlacementPreview
+                    draft={denshinDraft}
+                    name={placementProfile?.display_name}
+                    avatar={placementProfile?.avatar_path}
+                  />
+                ) : undefined,
                 onDrop: placePin,
               }
             : undefined

@@ -7,10 +7,12 @@ export function PlacementRing({
   revision,
   dragging = false,
   pitch = 45,
+  showPin = true,
 }: {
   revision: number;
   dragging?: boolean;
   pitch?: number;
+  showPin?: boolean;
 }) {
   const flattening = Math.max(0.2, Math.cos((pitch * Math.PI) / 180));
   const [fall] = useState(() => new Animated.Value(0));
@@ -141,29 +143,31 @@ export function PlacementRing({
           </Svg>
         </Animated.View>
       </View>
-      <Animated.Image
-        pointerEvents="none"
-        source={require("../../../assets/illustrations/pin.png")}
-        resizeMode="contain"
-        style={{
-          position: "absolute",
-          width: 84,
-          height: 84,
-          bottom: 32.5,
-          opacity: fall.interpolate({
-            inputRange: [0, 1],
-            outputRange: [0, 0.75],
-          }),
-          transform: [
-            {
-              translateY: fall.interpolate({
-                inputRange: [0, 1],
-                outputRange: [-64, 0],
-              }),
-            },
-          ],
-        }}
-      />
+      {showPin && (
+        <Animated.Image
+          pointerEvents="none"
+          source={require("../../../assets/illustrations/pin.png")}
+          resizeMode="contain"
+          style={{
+            position: "absolute",
+            width: 84,
+            height: 84,
+            bottom: 32.5,
+            opacity: fall.interpolate({
+              inputRange: [0, 1],
+              outputRange: [0, 0.75],
+            }),
+            transform: [
+              {
+                translateY: fall.interpolate({
+                  inputRange: [0, 1],
+                  outputRange: [-64, 0],
+                }),
+              },
+            ],
+          }}
+        />
+      )}
     </Animated.View>
   );
 }
