@@ -4,7 +4,7 @@
 
 ## 現在の再開点（2026-11-21・ユーザー指定キュー）
 
-U19〜32は保存済み。最新実機はeb13334（U28〜32とU19〜27を含む）、11/21に上書きインストール・起動成功。現在地はApple標準blue puckを採用しSimulatorの移動/傾斜表示を確認、実GPS追従と指定グラデーションの完全一致は未確認。PIN選択中の街境界とHome本文+1.5、PIN汎用Alert撤去を収録。Simulator PID87109。U33は人物の緑縁/gradient除去と扉内へのclip移動、Native戻る、000000からのRollingNumberを実装中。U34監査、U35リング重なり、U36自分のchat二重出現、U37送信制限文言が後続。キュー順を維持する。
+U19〜37の今回指定修正を保存。iPhoneはeb13334（U19〜32）を11/21上書き・起動済み。SimulatorはU36まで、最後はreview-chat fixture。U33扉clip退場/Native戻る/ゼロから数字演出を確認。U34未使用旧部品4件削除、CODE_UI_AUDIT_20261121参照。U35リングをnative preview内の背面/下へ、仮置きと確定位置一致を確認。U36送信中→receipt→一覧を同じkeyで更新、本人profile/decoded画像を共有、fixture録画確認。U37制限エラー分類は型/単体試験のみ（Simulator/iPhone未収録）。実クラウドchat送信・実OTP・実GPS追従は未確認。全29画面/動画の完全一致は未宣言。最新キューの項目別記録参照。
 
 11/21 継続：PID87983レビュー版でHome両方空・指定SVG中央、参加/mention素材の分離、NFC地点の薄いmaterialとタップ非遷移を確認。証拠は/tmp/home-empty-20261121.png、notice-kinds-20261121.png、nfc-material-20261121.png。NativeToggle固定64×36をmatchContentsへ変更しPID89432で作成欄の余白を確認。現在はレビュー版がSimulatorに入り、Mapへ戻っている。実機未更新。詳細TECH_VALIDATION末尾。
 

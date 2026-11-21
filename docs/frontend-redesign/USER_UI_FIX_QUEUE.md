@@ -88,3 +88,5 @@ U28〜32：eb13334。型検査・Simulator Release成功、現在地移動/傾�
 U34：参照なし旧部品4件を削除、型検査成功。監査はCODE_UI_AUDIT_20261121.md。U35：リングをnative preview内の背面へ移動、位置/zoom/アンカーは不変。型検査/Simulator Release、alignment fixtureで仮置き→確定の位置一致とリングがPNGの下にあることを確認。
 
 U36：送信中/receipt/取得済みを同じChatMessageRevealのkeyへ統合。本人profileとdecoded画像を共有。型検査、chat rows/画像cache試験成功。Simulator通信なしfixtureと/tmp/u36-own-chat.mp4でphase1→2→3に行が保持されることを確認。実クラウド投稿は送っていない。
+
+U37：総メール送信上限/サーバー指定秒数/短時間リクエスト制限を分類。失敗時は送信済み画面へ進めない。制限値は変更なし。分類試験と型検査成功。実メール送信は行わず、今回のiPhone版には未収録。

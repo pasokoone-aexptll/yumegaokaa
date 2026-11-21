@@ -1,3 +1,10 @@
+## 2026-11-21 U34〜37（R03/R15/R19）
+
+U34：相対importのplatform/index解決と名前検索で参照なし旧部品4件を削除。型検査成功、監査メモCODE_UI_AUDIT_20261121。
+U35：リングをnative preview内の背面/下へ、PNG/座標/アンカーは維持。型検査/Release成功、alignment fixtureで下のリングと確定切替の位置一致を確認。
+U36：chatRowsでpending/receipt/実メッセージのReact keyを共通化。本人profileを入街資格確認/設定から共有しdecoded画像を再利用。型検査/Release、test-chat-rowsとtest-avatar-images成功。review-chat phase1→2→3で行を保持、録画/tmp/u36-own-chat.mp4。実サーバー投稿なし。
+U37：メール送信総量と短時間制限/待ち秒数を分類し、失敗を送信成功画面に変換しない。test-auth-send-limit/型検査成功。クラウド上限は未変更。後段の端末反映なし。iPhoneはU32まで。
+
 ## 2026-11-21 U28〜33（R03/R10/R19）
 
 U28〜32のeb13334をiPhoneへ上書き・起動成功。標準現在地puckをSimulator位置変更で確認、位置選択中の街境界も確認。実GPS追従は未確認。

@@ -1,0 +1,12 @@
+const ts = require('../apps/mobile/node_modules/typescript');
+const fs = require('fs');
+const vm = require('vm');
+const assert = require('assert/strict');
+const out = {};
+vm.runInNewContext(ts.transpileModule(fs.readFileSync('apps/mobile/src/lib/authSendLimit.ts','utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS}}).outputText,{exports:out});
+for (const error of ['over_email_send_rate_limit', 'Email rate limit exceeded']) assert.match(out.authSendLimit(error).message,/送信上限/);
+assert.equal(out.authSendLimit('For security purposes, you can only request this after 42 seconds.').retryAfterSeconds,42);
+assert.match(out.authSendLimit('after 42 seconds').message,/42秒後/);
+assert.doesNotMatch(out.authSendLimit('over_request_rate_limit').message,/メールの送信上限/);
+assert.equal(out.authSendLimit('network unavailable'),null);
+console.log('auth limits: email quota, server retry delay, request rate and network separation passed');

@@ -1,3 +1,4 @@
+import { authSendLimit } from "../lib/authSendLimit";
 import { ReadRetry } from "../lib/readRetry";
 import type { DenshinPin } from "../lib/denshin";
 import type { EntryMap } from "../components/map/EntryPlaces";
@@ -287,8 +288,7 @@ export function useStreetMap() {
     if (authInFlight.current) return;
     const sending = resend || !sent;
     if (sending && Date.now() < nextSendAt) {
-      setSent(true);
-      setError("再送まで少しお待ちください。届いているコードは入力できます。");
+      setError((current) => current || "再送まで少しお待ちください。");
       return;
     }
     authInFlight.current = true;
@@ -311,17 +311,10 @@ export function useStreetMap() {
     } catch (e) {
       setAuthSuccess(false);
       const message = String(e);
-      if (
-        sending &&
-        /over_email_send_rate_limit|over_request_rate_limit|rate limit|after .*seconds/i.test(
-          message,
-        )
-      ) {
-        setSent(true);
-        setNextSendAt(Date.now() + 60000);
-        setError(
-          "メールの送信上限に達しました。届いている最新のコードを入力するか、時間をおいて再送してください。",
-        );
+      const limit = sending ? authSendLimit(e) : null;
+      if (limit) {
+        setNextSendAt(Date.now() + limit.retryAfterSeconds * 1000);
+        setError(limit.message);
       } else if (
         !createAccount &&
         /signup_disabled|user_not_found|not allowed.*signups|signups.*not allowed/i.test(
