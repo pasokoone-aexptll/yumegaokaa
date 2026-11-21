@@ -13,8 +13,10 @@ import {
   Text,
   TextInput,
   View,
+  useWindowDimensions,
 } from "react-native";
 import { Image } from "expo-image";
+import Svg, { Path } from "react-native-svg";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import type { useStreetMap } from "../hooks/useStreetMap";
 import { useAutoVerifyCode } from "../hooks/useAutoVerifyCode";
@@ -57,7 +59,8 @@ export function StreetLogin({
   const reduced = useContext(ReducedIconMotion);
   const [started, setStarted] = useState(false),
     [existing, setExisting] = useState(false);
-  const [height, setHeight] = useState(874),
+  const { height, width } = useWindowDimensions();
+  const [availableHeight, setAvailableHeight] = useState(height),
     [now, setNow] = useState(Date.now);
   const [sendingCode, setSendingCode] = useState(false);
   const [formMotion] = useState(() => new Animated.Value(1));
@@ -162,9 +165,11 @@ export function StreetLogin({
     setCode("");
     setError("");
   }
-  const compact = height < 650;
   const top = Math.max(insets.top + 22, height * 0.145);
-  const formTop = compact ? height * 0.53 : height * (sent ? 0.545 : 0.66);
+  const formTop = Math.min(
+    height * (sent ? 0.545 : 0.66),
+    availableHeight - (sent ? 180 : 118),
+  );
   return (
     <KeyboardAvoidingView
       style={s.root}
@@ -172,7 +177,7 @@ export function StreetLogin({
     >
       <View
         style={s.root}
-        onLayout={(e) => setHeight(e.nativeEvent.layout.height)}
+        onLayout={(e) => setAvailableHeight(e.nativeEvent.layout.height)}
       >
         <Animated.Text
           style={[
@@ -191,7 +196,7 @@ export function StreetLogin({
           {displayedTitle}
         </Animated.Text>
         <View style={{ position: "absolute", top: top + 86, left: 44 }}>
-          <OnboardingArtwork stage={stage} scale={compact ? 0.65 : 1} />
+          <OnboardingArtwork stage={stage} scale={width / 393} />
         </View>
         {stage === "welcome" ? (
           <View style={[s.welcomeActions, { bottom: insets.bottom + 16 }]}>
@@ -263,8 +268,8 @@ export function StreetLogin({
                     value={code}
                     onChange={setCode}
                     disabled={busy || authSuccess}
-                    success={authSuccess}
                     grouped={false}
+                    groupGap={15}
                     emptyZeros
                   />
                   <View
@@ -335,7 +340,7 @@ export function StreetLogin({
                   position: "absolute",
                   left: 28,
                   right: 28,
-                  bottom: insets.bottom + 34,
+                  bottom: insets.bottom + 34 - (height - availableHeight),
                   gap: 18,
                   alignItems: "center",
                 }}
@@ -391,7 +396,7 @@ export function StreetLogin({
                   position: "absolute",
                   left: 28,
                   right: 28,
-                  bottom: insets.bottom + 16,
+                  bottom: insets.bottom + 16 - (height - availableHeight),
                   gap: 16,
                 }}
               >
@@ -416,7 +421,7 @@ export function StreetLogin({
                 style={{
                   position: "absolute",
                   right: 0,
-                  bottom: compact ? 0 : -10,
+                  bottom: -10 - (height - availableHeight),
                   opacity: formMotion,
                   transform: [
                     {
@@ -438,23 +443,37 @@ export function StreetLogin({
                   }}
                   style={{
                     width: 270,
-                    height: compact ? 95 : 176,
+                    height: 176,
                     alignItems: "center",
                   }}
                 >
                   <View
                     style={{
                       position: "absolute",
-                      top: compact ? 0 : 22,
-                      left: 16,
+                      top: 22,
+                      left: -32,
                       zIndex: 1,
-                      backgroundColor: "rgba(0,140,255,0.25)",
-                      borderRadius: 18,
-                      paddingHorizontal: 14,
-                      paddingVertical: 8,
+                      width: 221,
+                      height: 51,
+                      alignItems: "center",
+                      paddingTop: 9,
                     }}
                   >
-                    <Text style={{ color: "white", fontSize: 14 }}>
+                    <Svg
+                      width={221}
+                      height={51}
+                      viewBox="0 0 221 51"
+                      style={StyleSheet.absoluteFill}
+                      pointerEvents="none"
+                    >
+                      <Path
+                        fill="#409FFF"
+                        d="M20.5 0H200.5A20.5 20.5 0 0 1 211 38Q207 42 213 50Q204 47 197 41H20.5A20.5 20.5 0 0 1 20.5 0Z"
+                      />
+                    </Svg>
+                    <Text
+                      style={{ color: "white", fontSize: 17, lineHeight: 23 }}
+                    >
                       {busy
                         ? "メールを送っています…"
                         : "僕をタッチして次へ進む"}
@@ -463,9 +482,9 @@ export function StreetLogin({
                   <Image
                     source={require("../../assets/superassets/onboarding.gif")}
                     style={{
-                      width: compact ? 270 : 350,
-                      height: compact ? 329 : 426,
-                      marginTop: compact ? 0 : -60,
+                      width: 350,
+                      height: 426,
+                      marginTop: -60,
                       opacity: 0.55,
                     }}
                     contentFit="contain"
@@ -557,7 +576,8 @@ const s = StyleSheet.create({
     paddingHorizontal: 18,
     paddingVertical: 15,
     fontFamily: "ui-rounded",
-    fontSize: 17,
+    fontSize: 20,
+    fontWeight: "600",
     height: 54,
   },
   error: { fontSize: 13, lineHeight: 19, color: "#FF3B30", marginTop: 10 },

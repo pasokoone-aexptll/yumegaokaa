@@ -42,11 +42,10 @@ export function ProfileSetup({
   onNext: () => void;
   onExit?: () => void;
 }) {
-  const { width } = useWindowDimensions();
+  const { width, height } = useWindowDimensions();
   const insets = useSafeAreaInsets(),
     reduced = useContext(ReducedIconMotion);
-  const [height, setHeight] = useState(874),
-    [motion] = useState(() => new Animated.Value(1));
+  const [motion] = useState(() => new Animated.Value(1));
   useEffect(() => {
     motion.setValue(reduced ? 1 : 0);
     const a = Animated.timing(motion, {
@@ -63,10 +62,7 @@ export function ProfileSetup({
       style={s.root}
       behavior={Platform.OS === "ios" ? "padding" : undefined}
     >
-      <View
-        style={s.root}
-        onLayout={(e) => setHeight(e.nativeEvent.layout.height)}
-      >
+      <View style={s.root}>
         {onExit && (
           <Pressable
             onPress={onExit}
@@ -119,8 +115,8 @@ export function ProfileSetup({
           source={require("../../../assets/superassets/DreamCloud.png")}
           style={{
             position: "absolute",
-            top: height * 0.38,
-            right: -90,
+            top: height * 0.335,
+            right: -122,
             width: 360,
             height: 330,
             opacity: 0.55,
@@ -185,6 +181,8 @@ export function ProfileSetup({
               tone="black"
               trailingIcon="上矢印"
               trailingRotation={90}
+              trailingSize={14}
+              trailingTint="rgba(255,255,255,0.65)"
               contentWidth={width - 104}
               contentAlign="start"
               labelStyle={{
@@ -219,7 +217,7 @@ const s = StyleSheet.create({
     fontFamily: "ui-rounded",
     fontSize: 16,
     lineHeight: 20,
-    color: "rgba(0,0,0,0.38)",
+    color: "rgba(0,0,0,0.5)",
   },
   inputRow: {
     backgroundColor: "rgba(0,0,0,0.04)",

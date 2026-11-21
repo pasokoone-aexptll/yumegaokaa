@@ -12,6 +12,8 @@ export function NativeAction({
   leadingIcon,
   trailingIcon,
   trailingRotation = 0,
+  trailingSize = 18,
+  trailingTint,
   contentAlign = "center",
   labelStyle,
 }: {
@@ -26,6 +28,8 @@ export function NativeAction({
   leadingIcon?: SuperAssetName;
   trailingIcon?: SuperAssetName;
   trailingRotation?: number;
+  trailingSize?: number;
+  trailingTint?: string;
   contentAlign?: "center" | "start";
   labelStyle?: StyleProp<TextStyle>;
 }) {
@@ -77,8 +81,10 @@ export function NativeAction({
         <SuperAsset
           name={trailingIcon}
           rotation={trailingRotation}
-          size={18}
-          tint={tone === "neutral" && !onDark ? "black" : "white"}
+          size={trailingSize}
+          tint={
+            trailingTint ?? (tone === "neutral" && !onDark ? "black" : "white")
+          }
         />
       )}
     </Pressable>

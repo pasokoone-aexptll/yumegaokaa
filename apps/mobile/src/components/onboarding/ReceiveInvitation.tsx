@@ -13,6 +13,7 @@ import { CameraView } from "expo-camera";
 import Svg, { Path } from "react-native-svg";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { ReducedIconMotion } from "../icons/IconMotion";
+import { NativeIconButton } from "../denshin/NativeIconButton";
 import { NativeAction } from "../denshin/NativeAction";
 export function ReceiveInvitation({
   scanning,
@@ -91,17 +92,16 @@ export function ReceiveInvitation({
               />
             </Svg>
           </View>
-          <Pressable
-            style={{
-              position: "absolute",
-              bottom: insets.bottom + 30,
-              alignSelf: "center",
-              padding: 12,
-            }}
-            onPress={onCancel}
-          >
-            <Text style={{ color: "rgba(255,255,255,0.65)" }}>戻る</Text>
-          </Pressable>
+          <View style={{ position: "absolute", top: insets.top + 4, left: 24 }}>
+            <NativeIconButton
+              icon="chevron-base"
+              rotation={180}
+              dark
+              size={48}
+              label="戻る"
+              onPress={onCancel}
+            />
+          </View>
         </>
       ) : (
         <>

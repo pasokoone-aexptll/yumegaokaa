@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { Pressable, Text, View } from "react-native";
-import { useRouter } from "expo-router";
+import { useRouter, useLocalSearchParams } from "expo-router";
 import { reviewEnabled } from "../components/debug/reviewEnabled";
 import { ReviewAvatars } from "../components/debug/ReviewAvatars";
 import { StreetLogin } from "../components/StreetLogin";
@@ -29,7 +29,14 @@ export default function OnboardingReview() {
 }
 function Scenes() {
   const router = useRouter();
-  const [stage, setStage] = useState<Stage>("auth");
+  const params = useLocalSearchParams<{ stage?: string }>();
+  const initialStage = stages.includes(params.stage as Stage)
+    ? (params.stage as Stage)
+    : "auth";
+  const [stage, setStage] = useState<Stage>(initialStage);
+  useEffect(() => {
+    setStage(initialStage);
+  }, [initialStage]);
   const [email, setEmail] = useState("review@example.test"),
     [code, setCode] = useState(""),
     [sent, setSent] = useState(false),

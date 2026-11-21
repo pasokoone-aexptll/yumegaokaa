@@ -107,3 +107,6 @@ U43完了：参加SVGの透明余白6.83643ptと行padding2ptを除き、描画�
 U44（11/21 21時指定）：chat背景を透明#161515→不透明#161515、既存progressive blurの最大intensity10へ。Map tab#1B1B1B/上線#393939。参加素材は見える幅36ptでmentionと統一。吹き出しは白90%（U41の80%を置換）、尾の根元/先端を曲線化しmaskへ1ptの外余白。型検査/Simulator・iPhone Release成功。Simulator短文/長文の右端・尾、通知幅、Map下端色を確認。証拠/tmp/u44-{short,long,notices,chat}.png。iPhoneへ上書きインストール成功。
 
 U45：PIN本文3文字以下で尾の幅/高さ/曲率をU44の65%、4〜6文字は線形補間（73.75/82.5/91.25%）、7文字以上100%。本文trim後Unicode文字数を使用。仮置き/確定で共有、尾のレイアウト高さも追従。型検査/diffチェック成功。Simulator未反映。11/21ユーザーの反映指示でiPhone Release成功・fa0859dを上書きインストール済み。端末ロックのため起動確認は未完。
+
+
+U46（11/22）：オンボーディング元動画再照合。上側構図をkeyboardに依存しない高さへ、入力/CTA/再送操作の重なりを解消。認証3+3間隔/黒い数字、メール書体、青い案内吹き出し、プロフィール雲/本文/矢印、スキャンのNative戻るを修正。型/Release、Simulatorメール・コードkeyboardと6桁→招待、写真設定を確認。QRのみ維持はユーザー確定。全フレーム一致/実機/プロフィール名keyboardは未完。TECH_VALIDATION U46参照。

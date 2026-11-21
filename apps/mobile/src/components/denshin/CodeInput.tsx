@@ -10,6 +10,7 @@ export function CodeInput({
   success = false,
   grouped = true,
   emptyZeros = false,
+  groupGap,
 }: {
   value: string;
   onChange: (value: string) => void;
@@ -17,6 +18,7 @@ export function CodeInput({
   success?: boolean;
   grouped?: boolean;
   emptyZeros?: boolean;
+  groupGap?: number;
 }) {
   const input = useRef<ComponentRef<typeof TextInput>>(null);
   return (
@@ -38,7 +40,7 @@ export function CodeInput({
             key={index}
             style={{
               flex: 1,
-              marginLeft: grouped && index === 3 ? 15 : 0,
+              marginLeft: index === 3 ? (groupGap ?? (grouped ? 15 : 0)) : 0,
               height: 56,
               borderRadius: grouped ? 12 : 14,
               backgroundColor: "rgba(0,0,0,0.04)",
