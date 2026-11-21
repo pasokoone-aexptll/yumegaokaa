@@ -1,3 +1,5 @@
+import { reviewEnabled } from "../components/debug/reviewEnabled";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { NativeToggle as Switch } from "../components/denshin/NativeToggle";
 import { useEffect, useMemo, useState } from "react";
 import {
@@ -22,6 +24,7 @@ import { Avatar } from "../components/Avatar";
 import { ReceiveInvitation } from "../components/onboarding/ReceiveInvitation";
 export default function Invitations() {
   const d = useInvitations();
+  const insets = useSafeAreaInsets();
   const { width } = useWindowDimensions();
   const qrSize = Math.min(240, width * 0.547);
   const { profile } = useProfile();
@@ -33,7 +36,10 @@ export default function Invitations() {
   const inviteRoute = pathname.startsWith("/home/")
     ? "/home/invitations"
     : "/settings/invitations";
-  const { revoke } = useLocalSearchParams<{ revoke?: string }>();
+  const { revoke, reviewScroll } = useLocalSearchParams<{
+    revoke?: string;
+    reviewScroll?: string;
+  }>();
   useEffect(() => {
     const timer = setInterval(() => setNow(Date.now()), 1000);
     return () => clearInterval(timer);
@@ -83,24 +89,27 @@ export default function Invitations() {
     );
   return (
     <DetailPage
+      initialScrollY={reviewEnabled && reviewScroll === "1" ? 300 : 0}
       root={d.receiving}
       title={d.receiving ? "招待を受け取る" : "Invite friends to the app"}
+      background={
+        !d.receiving && (
+          <Image
+            pointerEvents="none"
+            source={require("../../assets/superassets/DreamCloud背景.png")}
+            style={{
+              position: "absolute",
+              top: 360 + insets.top,
+              right: -12,
+              width: 250,
+              height: 250,
+              opacity: 1,
+            }}
+            resizeMode="contain"
+          />
+        )
+      }
     >
-      {!d.receiving && (
-        <Image
-          pointerEvents="none"
-          source={require("../../assets/superassets/DreamCloud背景.png")}
-          style={{
-            position: "absolute",
-            top: 360,
-            right: -12,
-            width: 250,
-            height: 250,
-            opacity: 1,
-          }}
-          resizeMode="contain"
-        />
-      )}
       {revoke && !target ? (
         <Text style={s.secondary}>
           {d.loading ? "読み込み中…" : "この招待は表示できません。"}

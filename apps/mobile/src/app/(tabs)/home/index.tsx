@@ -1,9 +1,10 @@
+import type { ComponentRef } from "react";
 import { homePinSections } from "../../../lib/homePinSections";
 import { pin as reviewPin } from "../../../components/debug/figmaFixtures";
 import { useDelayedRefreshStatus } from "../../../hooks/useDelayedRefreshStatus";
 import { HomeModeDropdown } from "../../../components/HomeModeDropdown";
 import { useInviteQuota } from "../../../hooks/useInviteQuota";
-import { useState } from "react";
+import { useState, useRef } from "react";
 import {
   ActivityIndicator,
   Alert,
@@ -39,9 +40,11 @@ export default function Home() {
   const router = useRouter(),
     insets = useSafeAreaInsets();
   const livePins = useDenshinPins();
-  const { reviewEmpty, reviewAttending } = useLocalSearchParams<{
+  const scrollRef = useRef<ComponentRef<typeof ScrollView>>(null);
+  const { reviewEmpty, reviewAttending, reviewScroll } = useLocalSearchParams<{
     reviewEmpty?: string;
     reviewAttending?: string;
+    reviewScroll?: string;
   }>();
   // Opt-in Simulator presentation only; neither writes nor changes server data.
   const pins =
@@ -105,20 +108,7 @@ export default function Home() {
     }
   }
   return (
-    <ScrollView
-      style={s.page}
-      contentContainerStyle={{
-        flexGrow: 1,
-        paddingTop: Math.max(0, insets.top - 6),
-        paddingBottom: 0,
-      }}
-      refreshControl={
-        <RefreshControl
-          refreshing={refreshing}
-          onRefresh={() => void refresh()}
-        />
-      }
-    >
+    <View style={s.page}>
       <Image
         pointerEvents="none"
         source={require("../../../../assets/superassets/DreamCloud背景.png")}
@@ -132,191 +122,211 @@ export default function Home() {
         }}
         resizeMode="contain"
       />
-      <View style={s.header}>
-        <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
-          <DenshinLogo />
-          <HomeModeDropdown />
-        </View>
-        <Pressable
-          accessibilityRole="button"
-          accessibilityLabel="電信PINを作成"
-          onPress={() => openMapPinComposer(router)}
-          style={s.add}
-        >
-          <SuperAsset name="add" tint="black" size={24} />
-        </Pressable>
-      </View>
-      <View style={[s.content, !pins.items.length && { flex: 1 }]}>
-        {waiting && (
-          <Text accessibilityLiveRegion="polite" style={s.refreshStatus}>
-            PINを更新しています…
-          </Text>
-        )}
-        {pins.loading && <ActivityIndicator />}
-        {!pins.loading && !pins.error && !pins.items.length && (
-          <View style={s.empty}>
-            <SuperAsset name="pin-none" width={102} height={92} />
-            <Text style={s.emptyText}>PINがまだありません</Text>
-          </View>
-        )}
-        {homePinSections(pins.items).map((section) => (
-          <View key={section.key} style={s.section}>
-            <SpeechBubble>
-              <SuperAsset
-                name="非常口rounded"
-                size={21}
-                tint={section.highlighted ? green : "rgba(0,0,0,0.65)"}
-              />
-              <Text
-                style={[
-                  s.sectionTitle,
-                  section.highlighted && { color: green },
-                ]}
-              >
-                {section.title}
-              </Text>
-            </SpeechBubble>
-            {section.items.map((p, index) => (
-              <View key={p.id} style={s.row}>
-                {index > 0 && <View style={s.separator} />}
-                <Pressable
-                  style={s.main}
-                  onPress={() =>
-                    openMapAt(router, p.longitude, p.latitude, {
-                      kind: "denshin",
-                      id: p.id,
-                    })
-                  }
-                  accessibilityRole="button"
-                  accessibilityLabel={`${p.body}の詳細`}
-                >
-                  <Avatar
-                    shape="square"
-                    path={p.avatar_path}
-                    name={p.display_name}
-                    size={49}
-                  />
-                  <View style={{ flex: 1, gap: 3 }}>
-                    <Text style={s.metadata}>
-                      {p.mine ? "自分" : p.display_name}
-                      {p.recruiting && (
-                        <Text>
-                          {" "}
-                          ・ {p.count}
-                          <Text style={{ fontSize: 9 }}>
-                            {p.capacity === null ? "人" : `/${p.capacity}人`}
-                          </Text>
-                        </Text>
-                      )}
-                      {p.attendance === "planned"
-                        ? " ・ 参加予定"
-                        : p.attendance === "arrived"
-                          ? " ・ 現地にいます"
-                          : ""}
-                    </Text>
-                    <Text style={s.body} numberOfLines={2}>
-                      {p.body}
-                    </Text>
-                    <View style={s.location}>
-                      <SuperAsset
-                        name="nav"
-                        tint="black"
-                        opacity={0.3}
-                        size={10}
-                      />
-                      <Text style={s.locationText}>位置を確認する</Text>
-                    </View>
-                  </View>
-                  <View style={{ alignSelf: "center" }}>
-                    <PeopleStack
-                      people={onsitePeople(p)}
-                      borderColor={s.page.backgroundColor}
-                    />
-                  </View>
-                </Pressable>
-              </View>
-            ))}
-          </View>
-        ))}
-        {pins.hidden_attendance.map((p) => (
-          <View key={p.id} style={s.row}>
-            <Text style={s.muted}>非表示の電信PINに参加中</Text>
-            <Pressable disabled={leaving} onPress={() => void leave(p)}>
-              <Text style={s.body}>
-                {p.attendance === "arrived"
-                  ? "現地を離れる"
-                  : "参加予定を取り消す"}
-              </Text>
-            </Pressable>
-          </View>
-        ))}
-      </View>
-      <View style={{ flex: pins.items.length ? 1 : 0, minHeight: 40 }} />
-      <Pressable
-        accessibilityRole="button"
-        accessibilityLabel="招待QRで友達を招待"
-        onPress={() => router.push("/home/invitations")}
-        style={{
-          margin: 16,
-          marginTop: 12,
-          minHeight: 75,
-          flexDirection: "row",
-          alignItems: "center",
-          borderRadius: 17,
-          overflow: "hidden",
-          backgroundColor: "#FF5577",
+      <ScrollView
+        ref={scrollRef}
+        onContentSizeChange={() => {
+          if (reviewEnabled && reviewScroll === "1")
+            scrollRef.current?.scrollTo({ y: 200, animated: false });
         }}
-      >
-        <View style={{ paddingHorizontal: 13, paddingVertical: 12 }}>
-          <SuperAsset
-            name="非常口rounded"
-            size={49}
-            tint="white"
-            opacity={0.8}
+        style={{ flex: 1 }}
+        contentContainerStyle={{
+          flexGrow: 1,
+          paddingTop: Math.max(0, insets.top - 6),
+          paddingBottom: 0,
+        }}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={() => void refresh()}
           />
-        </View>
-        <View style={{ flex: 1, gap: 4 }}>
-          <Text
-            style={{
-              fontFamily: "ui-rounded",
-              fontWeight: "600",
-              color: "white",
-              fontSize: 14,
-              lineHeight: 18,
-            }}
+        }
+      >
+        <View style={s.header}>
+          <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
+            <DenshinLogo />
+            <HomeModeDropdown />
+          </View>
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel="電信PINを作成"
+            onPress={() => openMapPinComposer(router)}
+            style={s.add}
           >
-            招待QRで友達を招待しよう！
-          </Text>
-          {remaining !== undefined && (
-            <Text
-              style={{
-                alignSelf: "flex-start",
-                paddingVertical: 6,
-                paddingHorizontal: 10,
-                borderRadius: 20,
-                backgroundColor: "#F13450",
-                color: "white",
-                fontFamily: "ui-rounded",
-                fontSize: 12,
-                lineHeight: 16,
-              }}
-            >
-              残り{remaining}招待
+            <SuperAsset name="add" tint="black" size={24} />
+          </Pressable>
+        </View>
+        <View style={[s.content, !pins.items.length && { flex: 1 }]}>
+          {waiting && (
+            <Text accessibilityLiveRegion="polite" style={s.refreshStatus}>
+              PINを更新しています…
             </Text>
           )}
+          {pins.loading && <ActivityIndicator />}
+          {!pins.loading && !pins.error && !pins.items.length && (
+            <View style={s.empty}>
+              <SuperAsset name="pin-none" width={102} height={92} />
+              <Text style={s.emptyText}>PINがまだありません</Text>
+            </View>
+          )}
+          {homePinSections(pins.items).map((section) => (
+            <View key={section.key} style={s.section}>
+              <SpeechBubble>
+                <SuperAsset
+                  name="非常口rounded"
+                  size={21}
+                  tint={section.highlighted ? green : "rgba(0,0,0,0.65)"}
+                />
+                <Text
+                  style={[
+                    s.sectionTitle,
+                    section.highlighted && { color: green },
+                  ]}
+                >
+                  {section.title}
+                </Text>
+              </SpeechBubble>
+              {section.items.map((p, index) => (
+                <View key={p.id} style={s.row}>
+                  {index > 0 && <View style={s.separator} />}
+                  <Pressable
+                    style={s.main}
+                    onPress={() =>
+                      openMapAt(router, p.longitude, p.latitude, {
+                        kind: "denshin",
+                        id: p.id,
+                      })
+                    }
+                    accessibilityRole="button"
+                    accessibilityLabel={`${p.body}の詳細`}
+                  >
+                    <Avatar
+                      shape="square"
+                      path={p.avatar_path}
+                      name={p.display_name}
+                      size={49}
+                    />
+                    <View style={{ flex: 1, gap: 3 }}>
+                      <Text style={s.metadata}>
+                        {p.mine ? "自分" : p.display_name}
+                        {p.recruiting && (
+                          <Text>
+                            {" "}
+                            ・ {p.count}
+                            <Text style={{ fontSize: 9 }}>
+                              {p.capacity === null ? "人" : `/${p.capacity}人`}
+                            </Text>
+                          </Text>
+                        )}
+                        {p.attendance === "planned"
+                          ? " ・ 参加予定"
+                          : p.attendance === "arrived"
+                            ? " ・ 現地にいます"
+                            : ""}
+                      </Text>
+                      <Text style={s.body} numberOfLines={2}>
+                        {p.body}
+                      </Text>
+                      <View style={s.location}>
+                        <SuperAsset
+                          name="nav"
+                          tint="black"
+                          opacity={0.3}
+                          size={10}
+                        />
+                        <Text style={s.locationText}>位置を確認する</Text>
+                      </View>
+                    </View>
+                    <View style={{ alignSelf: "center" }}>
+                      <PeopleStack
+                        people={onsitePeople(p)}
+                        borderColor={s.page.backgroundColor}
+                      />
+                    </View>
+                  </Pressable>
+                </View>
+              ))}
+            </View>
+          ))}
+          {pins.hidden_attendance.map((p) => (
+            <View key={p.id} style={s.row}>
+              <Text style={s.muted}>非表示の電信PINに参加中</Text>
+              <Pressable disabled={leaving} onPress={() => void leave(p)}>
+                <Text style={s.body}>
+                  {p.attendance === "arrived"
+                    ? "現地を離れる"
+                    : "参加予定を取り消す"}
+                </Text>
+              </Pressable>
+            </View>
+          ))}
         </View>
-        <View
+        <View style={{ flex: pins.items.length ? 1 : 0, minHeight: 40 }} />
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel="招待QRで友達を招待"
+          onPress={() => router.push("/home/invitations")}
           style={{
-            alignSelf: "stretch",
-            width: "20%",
-            backgroundColor: "rgba(255,255,255,0.3)",
-            borderLeftWidth: 2,
-            borderColor: "rgba(255,255,255,0.7)",
-            borderStyle: "dashed",
+            margin: 16,
+            marginTop: 12,
+            minHeight: 75,
+            flexDirection: "row",
+            alignItems: "center",
+            borderRadius: 17,
+            overflow: "hidden",
+            backgroundColor: "#FF5577",
           }}
-        />
-      </Pressable>
-    </ScrollView>
+        >
+          <View style={{ paddingHorizontal: 13, paddingVertical: 12 }}>
+            <SuperAsset
+              name="非常口rounded"
+              size={49}
+              tint="white"
+              opacity={0.8}
+            />
+          </View>
+          <View style={{ flex: 1, gap: 4 }}>
+            <Text
+              style={{
+                fontFamily: "ui-rounded",
+                fontWeight: "600",
+                color: "white",
+                fontSize: 14,
+                lineHeight: 18,
+              }}
+            >
+              招待QRで友達を招待しよう！
+            </Text>
+            {remaining !== undefined && (
+              <Text
+                style={{
+                  alignSelf: "flex-start",
+                  paddingVertical: 6,
+                  paddingHorizontal: 10,
+                  borderRadius: 20,
+                  backgroundColor: "#F13450",
+                  color: "white",
+                  fontFamily: "ui-rounded",
+                  fontSize: 12,
+                  lineHeight: 16,
+                }}
+              >
+                残り{remaining}招待
+              </Text>
+            )}
+          </View>
+          <View
+            style={{
+              alignSelf: "stretch",
+              width: "20%",
+              backgroundColor: "rgba(255,255,255,0.3)",
+              borderLeftWidth: 2,
+              borderColor: "rgba(255,255,255,0.7)",
+              borderStyle: "dashed",
+            }}
+          />
+        </Pressable>
+      </ScrollView>
+    </View>
   );
 }
 const s = StyleSheet.create({

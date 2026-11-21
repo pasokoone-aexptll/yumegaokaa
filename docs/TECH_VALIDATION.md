@@ -1568,3 +1568,6 @@ Map上端は画面高さ45%で黒63%→黒0%、既存上端190ptのぼかしを�
 ## 2026-11-21 U16 Home参加者外線
 
 PeopleStackへborderColor prop（既定white）を追加し、Homeのみs.page.backgroundColor=#F2F2F2を渡す。人数バッジ外線も同色へ。型検査/Release成功、Simulator PID30505の通常Homeで実参加者画像の白い外線がなく背景色につながることを確認（/tmp/u16-home-border.png）。Map/詳細の既定外線は変更なし。
+
+## 2026-11-21 U17 DreamCloud固定（R19）
+Homeと招待の画像をScrollView外の固定背景へ移動。ProfileSetup/ReceiveInvitationは既に非スクロールのため変更なし。型検査とSimulator Release成功。PID33460、/invitations?reviewScroll=1で本文を300pt移動し、Historyが上がっても背景は右側の同じ位置を保持（/tmp/u17-offset2.png）。旧初期画像との比較。操作ツールのドラッグは変位せず、確認専用の初期スクロール位置を使用。Homeの固定は親子構造を確認、手動スクロールは未確認。実機更新はU13待ち。
