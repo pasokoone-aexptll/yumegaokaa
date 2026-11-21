@@ -1,3 +1,4 @@
+import { GlassView } from "expo-glass-effect";
 import { ModeDropdown } from "./ModeDropdown";
 import { ParticipationSwitch } from "./ParticipationSwitch";
 import { StyleSheet, View, Text } from "react-native";
@@ -34,7 +35,10 @@ export function MapHeader({
         <DenshinLogo dark />
       </View>
       {
-        <View
+        <GlassView
+          glassEffectStyle="regular"
+          colorScheme="dark"
+          tintColor="#AF52DE"
           accessible
           accessibilityLabel={
             count === undefined
@@ -45,10 +49,11 @@ export function MapHeader({
             flexDirection: "row",
             alignItems: "center",
             gap: 3,
-            backgroundColor: "#FF3B30",
             paddingHorizontal: 10,
             paddingVertical: 7,
             borderRadius: 24,
+            borderCurve: "continuous",
+            overflow: "hidden",
           }}
         >
           <SuperAsset name="user-fill" tint="white" size={21} />
@@ -62,7 +67,7 @@ export function MapHeader({
           >
             {count ?? "—"}
           </Text>
-        </View>
+        </GlassView>
       }
       <View style={{ flex: 1 }} />
       <ModeDropdown

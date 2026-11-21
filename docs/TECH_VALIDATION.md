@@ -1514,3 +1514,8 @@ LaunchSplashの白矩形ワイプを、扉の敷居から床投影へ斜めに�
 ## 2026-11-21 U03/U04 配置プレビュー
 
 Mapのplacement表示条件を、操作中だけでなく電信下書き位置が残る間へ拡張。PlacementHandleを確定後も維持しドラッグとリングのみ無効化。DenshinPlacementPreviewは下書き本文/募集状態/人数/本人画像を使用、透明度0.55。PlacementRingの旧固定看板はプレビュー使用時に撤去。型検査/Release成功。Simulator PID13336でOFF本人画像・旧看板なし、位置確定→シート復帰後も保持、ON看板切替、×破棄後撤去を確認。復帰録画/tmp/u03-placement-return.mp4の末尾3秒10fpsフレームで連続表示。実PINの保存/送信はせず、確認用下書きを破棄。本文の実入力はAX Group操作で反映されず未確認、ドラッグ移動/Android/実機は未検証。R12〜R14の位置編集表示、保存ロジック変更なし。
+
+
+## 2026-11-21 U05 紫の街人数バッジ
+
+MapHeaderの赤色Viewをexpo-glass-effect GlassView regular/dark、tint #AF52DEへ変更。人数/読み上げ/rounded太字と寸法を保持。型検査/Release成功、Simulator PID14659で紫のガラスカプセルと白い人物/人数表示を確認。人数更新アニメーションはこの変更で追加・検証していない。実機は最終一括更新待ち。
