@@ -373,7 +373,7 @@ export function StreetChat({
                       contentContainerStyle={{
                         minHeight: historyViewportHeight,
                         justifyContent: "flex-end",
-                        paddingHorizontal: 12,
+                        paddingHorizontal: 17,
                         paddingTop: historyTopPadding,
                         paddingBottom: 4,
                       }}
@@ -709,7 +709,7 @@ const styles = StyleSheet.create({
   },
   composer: {
     backgroundColor: "transparent",
-    paddingHorizontal: 14,
+    paddingHorizontal: 17,
     paddingVertical: 14,
   },
   inputRow: {
