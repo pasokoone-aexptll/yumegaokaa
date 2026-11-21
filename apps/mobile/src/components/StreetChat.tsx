@@ -528,6 +528,7 @@ export function StreetChat({
                     position: "absolute",
                     right: 17,
                     bottom: 10,
+                    opacity: 0.4,
                     flexDirection: "row",
                     alignItems: "center",
                     gap: 10,

@@ -39,6 +39,19 @@ import Darwin
    Task{@MainActor in await self?.resume()}
   }
  }
+ // Local-only, bounded diagnostics: no coordinates, identifiers, or credentials.
+ private var diagnosticWritten = Date.distantPast
+ private func diagnose(_ stage: String, _ values: [String:Any] = [:], force: Bool = false) {
+  guard force || Date().timeIntervalSince(diagnosticWritten) >= 10 else { return }
+  diagnosticWritten = Date()
+  var record = values
+  record["stage"] = stage; record["time"] = Self.formatter.string(from: Date())
+  record["enabled"] = enabled; record["authorization"] = manager.authorizationStatus.rawValue
+  record["accuracyAuthorization"] = manager.accuracyAuthorization.rawValue
+  guard let directory = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first,
+        let data = try? JSONSerialization.data(withJSONObject: record) else { return }
+  try? data.write(to: directory.appendingPathComponent("presence-diagnostic.json"), options: .atomic)
+ }
  private func emit(_ message:String?=nil){if let message {status=message};onChange?(state())}
  func state()->[String:Any]{["observing":enabled,"status":status,"visit":visit ?? [:],"ghost_preference":lifecycle?.intent.ghostPreference ?? false,"pending_mode":lifecycle?.intent.mode.map { $0.ghost ? "ghost" : "public" } ?? "","pending_exit":(stopRequested && visit?["state"] as? String == "active") || (lifecycle?.intent.stopping ?? false)]}
  private func prepareLifecycle() async throws -> VisitLifecycle {
@@ -74,7 +87,7 @@ import Darwin
  private func start(){
   guard !stopRequested,visit?["can_update"] as? Bool==true,lifecycle?.intent.stopping != true else{return}
   enabled=true;startedWall=Date();wallBase=Date().timeIntervalSince1970;monoBase=Self.mono()
-  manager.requestAlwaysAuthorization();manager.startUpdatingLocation();emit(modeStatus)
+  manager.requestAlwaysAuthorization();manager.startUpdatingLocation();diagnose("started", force:true);emit(modeStatus)
  }
  private var modeStatus:String {
   if let pending=lifecycle?.intent.mode { return pending.ghost ? "非公開への切替待ち" : "公開への切替待ち。新しい位置を確認中" }
@@ -173,7 +186,7 @@ import Darwin
  }
  private func observe(_ location:CLLocation,ticket:Int) async {
   let mono=Self.mono(),wall=Date().timeIntervalSince1970,age=wall-location.timestamp.timeIntervalSince1970
-  guard CLLocationCoordinate2DIsValid(location.coordinate),location.timestamp>=startedWall,location.horizontalAccuracy.isFinite,location.horizontalAccuracy>=0,location.horizontalAccuracy<=50,age>=0,age+uncertainty<=120,lastObserved==nil || location.timestamp>lastObserved! else{outside.reset();return}
+  guard CLLocationCoordinate2DIsValid(location.coordinate),location.timestamp>=startedWall,location.horizontalAccuracy.isFinite,location.horizontalAccuracy>=0,location.horizontalAccuracy<=50,age>=0,age+uncertainty<=120,lastObserved==nil || location.timestamp>lastObserved! else{diagnose("measurement_rejected", ["accuracy":location.horizontalAccuracy,"age":age,"predatesStart":location.timestamp<startedWall]);outside.reset();return}
   if abs((wall-wallBase)-(mono-monoBase))>2 {clockServer=nil;outside.reset();startedWall=Date();try? await syncClock();return}
   do {
    if clockServer==nil || mono-clockMono>900 {try await syncClock()}
@@ -190,6 +203,7 @@ import Darwin
    let polygon=ring.compactMap{q -> Point? in q.count>=2 ? Point(x:q[0],y:q[1]):nil}
    guard p.x.isFinite,p.y.isFinite else{outside.reset();return}
    let d=Grid.signedDistance(p,polygon:polygon),a=location.horizontalAccuracy
+   diagnose("classified", ["boundaryDistance":d.isFinite ? d : 0,"accuracy":a])
    var verdict="inside",cell:String?=nil
    if d>a {
     outside.reset()
@@ -210,18 +224,21 @@ import Darwin
    if let cell, !ghost || publishing {body["cell_id"]=cell;body["grid_version"]=latest["grid_version"]}
    if publishing && verdict=="inside" {
     try await life.publishWithObservation(body)
+    diagnose("published", force:true)
     guard enabled,ticket==generation else{return}
     lastObserved=location.timestamp;lastCell=cell;lastSent=mono;emit(modeStatus);return
    }
    let r=try await api.rpc("observe_visit",body)
+   diagnose("observation_response", ["result":r["result"] as? String ?? "unknown"], force:true)
    guard enabled,ticket==generation else{return}
    try life.observation(r,ticket:lifeTicket);lastObserved=location.timestamp
    if r["result"] as? String=="ended" {clearObservation();emit("街から退出しました")}
    else if r["result"] as? String=="accepted" {lastCell=cell;lastSent=mono;emit(ghost ? "ゴーストモード。街への参加を更新しました" : "新しい気配を共有しました")}
   }catch let e as ServiceError {
+   diagnose("service_error", ["code":e.code], force:true)
    if ["inactive_visit","wrong_writer","membership_required","unauthorized","login_required"].contains(e.code){clearObservation();emit("参加状態を確認してください")}
    else if e.code=="conflict" {clearObservation();await resume()}
    else{outside.reset();emit(lifecycle?.intent.mode != nil ? modeStatus : "更新待ち。古い気配は期限で消えます")}
-  }catch{outside.reset();emit("通信待ち。古い気配は期限で消えます")}
+  }catch{diagnose("transport_error", force:true);outside.reset();emit("通信待ち。古い気配は期限で消えます")}
  }
 }

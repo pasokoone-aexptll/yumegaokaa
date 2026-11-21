@@ -316,7 +316,7 @@ export default function Street() {
             pitch: initialPitch,
           }}
         />
-        {entryMap && (!active || showPlaces || placement.active) && (
+        {entryMap && (showPlaces || placement.active) && (
           <EntryPlaces map={entryMap} />
         )}
         <StreetMapMarkers

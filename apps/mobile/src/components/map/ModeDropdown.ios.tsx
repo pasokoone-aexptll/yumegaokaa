@@ -87,7 +87,7 @@ export function ModeDropdown({
             }}
           />
         </Section>
-        {active && onTogglePlaces && (
+        {onTogglePlaces && (
           <Toggle
             label="ログイン場所・街の範囲"
             isOn={placesVisible}

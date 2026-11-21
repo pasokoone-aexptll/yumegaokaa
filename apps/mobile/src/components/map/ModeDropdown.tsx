@@ -179,7 +179,7 @@ export function ModeDropdown({
               <Text style={styles.note}>
                 ゴースト中は人数に含まれ、気配を隠して募集を終了します。投稿やイベントには名前が表示されます。設定は次の入街にも引き継ぎます。
               </Text>
-              {active && onTogglePlaces && (
+              {onTogglePlaces && (
                 <Pressable
                   accessibilityRole="switch"
                   accessibilityState={{ checked: !!placesVisible }}
