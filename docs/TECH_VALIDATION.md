@@ -1668,3 +1668,5 @@ chat下端/keyboard背後#161515、alpha maskで下ほど見える既存blurの�
 
 ## 2026-11-21 PIN尾の文字数比例（R19/U45）
 DenshinMapPinからtrim後文字数をPinBubbleへ渡す。3文字65%〜7文字100%へ線形補間し上下限固定。尾の全制御点/幅/高さと予約高さを同倍率に変更し、単一輪郭のmask/影は共有。型検査/diffチェック成功。Simulator/実機視覚確認は未実施、iPhoneはU44のまま。
+
+U45実機反映追記：ユーザーの「反映して」によりfa0859dのiPhone Release成功、iPhone17へ上書きインストール成功。起動要求はLockedで拒否され、実表示は未確認。
