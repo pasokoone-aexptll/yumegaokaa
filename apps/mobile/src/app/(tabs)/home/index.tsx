@@ -203,7 +203,7 @@ export default function Home() {
                       shape="square"
                       path={p.avatar_path}
                       name={p.display_name}
-                      size={49}
+                      size={49 * 1.3}
                     />
                     <View style={{ flex: 1, gap: 3 }}>
                       <Text style={s.metadata}>
@@ -231,7 +231,7 @@ export default function Home() {
                           name="nav"
                           tint="black"
                           opacity={0.3}
-                          size={10}
+                          size={10 * 1.2}
                         />
                         <Text style={s.locationText}>位置を確認する</Text>
                       </View>
@@ -398,13 +398,13 @@ const s = StyleSheet.create({
   location: { flexDirection: "row", alignItems: "center", gap: 5 },
   locationText: {
     fontFamily: "ui-rounded",
-    fontSize: 10,
-    lineHeight: 14,
+    fontSize: 10 * 1.2,
+    lineHeight: 14 * 1.2,
     color: "rgba(0,0,0,0.3)",
   },
   separator: {
     position: "absolute",
-    left: 61,
+    left: 49 * 1.3 + 12,
     right: 0,
     top: 0,
     height: StyleSheet.hairlineWidth,
