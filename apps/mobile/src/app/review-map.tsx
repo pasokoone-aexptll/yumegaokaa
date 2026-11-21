@@ -1,3 +1,4 @@
+import { DenshinPlacementPreview } from "../components/pins/DenshinPlacementPreview";
 import { StatusMessageInput } from "../components/denshin/StatusMessageInput";
 import { LatestChatButton } from "../components/map/LatestChatButton";
 import { pin as reviewPin } from "../components/debug/figmaFixtures";
@@ -21,6 +22,8 @@ function Scene() {
     scene?: string;
     short?: string;
   }>();
+  const [previewOnly, setPreviewOnly] = useState(true);
+  const [dropRevision, setDropRevision] = useState(0);
   const [now] = useState(() => Date.now());
   const cells = liveCells(
     {
@@ -57,6 +60,29 @@ function Scene() {
     <View style={{ flex: 1 }}>
       <Map
         style={{ flex: 1 }}
+        placement={
+          scene === "alignment" && previewOnly
+            ? {
+                point: [139.7109, 35.7295],
+                revision: dropRevision,
+                active: true,
+                onDrop: () => {},
+                preview: (
+                  <DenshinPlacementPreview
+                    draft={{
+                      body: reviewPin.body,
+                      recruiting: true,
+                      limited: true,
+                      capacity: reviewPin.capacity ?? 12,
+                      original: reviewPin,
+                    }}
+                    name={reviewPin.display_name}
+                    avatar={reviewPin.avatar_path}
+                  />
+                ),
+              }
+            : undefined
+        }
         onMovingChange={(moving) => {
           if (!moving) setSettled((n) => n + 1);
         }}
@@ -69,18 +95,18 @@ function Scene() {
             pitch: 55,
           }}
         />
-        {scene === "presence" || scene === "pin" ? (
+        {scene === "presence" || scene === "pin" || scene === "alignment" ? (
           <StreetMapMarkers
             cells={scene === "presence" ? cells : []}
             pins={
-              scene === "pin"
+              scene === "pin" || (scene === "alignment" && !previewOnly)
                 ? [
                     {
                       ...reviewPin,
                       body: short === "1" ? "テスト" : reviewPin.body,
                       longitude: 139.7109,
                       latitude: 35.7295,
-                      count: 5,
+                      count: scene === "alignment" ? reviewPin.count : 5,
                     },
                   ]
                 : []
@@ -144,6 +170,26 @@ function Scene() {
           gap: 8,
         }}
       >
+        {scene === "alignment" && (
+          <>
+            <Pressable
+              accessibilityRole="button"
+              onPress={() => setPreviewOnly((v) => !v)}
+            >
+              <Text>
+                {previewOnly
+                  ? "仮置き表示 → 確定表示"
+                  : "確定表示 → 仮置き表示"}
+              </Text>
+            </Pressable>
+            <Pressable
+              accessibilityRole="button"
+              onPress={() => setDropRevision((v) => v + 1)}
+            >
+              <Text>下降を再生</Text>
+            </Pressable>
+          </>
+        )}
         <Text>
           カメラ停止 {settled} / 地図タップ {presses}
         </Text>

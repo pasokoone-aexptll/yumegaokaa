@@ -1,5 +1,13 @@
-import { type ReactNode, useEffect, useMemo, useRef, useState } from "react";
-import { PanResponder, View } from "react-native";
+import { MarkerScale } from "../map/markerScale";
+import {
+  type ReactNode,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
+import { Animated, Easing, PanResponder, View } from "react-native";
 type Coordinate = { longitude: number; latitude: number };
 type Pixel = { x: number; y: number };
 export type PlacementProjection = {
@@ -16,8 +24,10 @@ export function PlacementHandle({
   onDrop,
   preview,
   active = true,
+  previewOnMap = false,
 }: {
   preview?: ReactNode;
+  previewOnMap?: boolean;
   active?: boolean;
   map: React.RefObject<PlacementProjection | null>;
   point: [number, number];
@@ -25,6 +35,26 @@ export function PlacementHandle({
   cameraRevision: number;
   onDrop: (point: [number, number]) => void;
 }) {
+  const scale = useContext(MarkerScale);
+  const [previewHeight, setPreviewHeight] = useState(0);
+  const [fall] = useState(() => new Animated.Value(-64));
+  const hasPreview = !!preview;
+  useEffect(() => {
+    if (!hasPreview || !active) {
+      fall.setValue(0);
+      return;
+    }
+    fall.setValue(-64);
+    if (draggingRef.current) return;
+    const animation = Animated.timing(fall, {
+      toValue: 0,
+      duration: 460,
+      easing: Easing.out(Easing.cubic),
+      useNativeDriver: true,
+    });
+    animation.start();
+    return () => animation.stop();
+  }, [revision, active, fall, hasPreview]);
   const [position, setPosition] = useState<{ x: number; y: number }>();
   const [pitch, setPitch] = useState(45);
   const [dragging, setDragging] = useState(false);
@@ -120,20 +150,26 @@ export function PlacementHandle({
         height: 65,
       }}
     >
-      {preview && (
-        <View
+      {preview && !previewOnMap && (
+        <Animated.View
           pointerEvents="none"
+          onLayout={(event) =>
+            setPreviewHeight(event.nativeEvent.layout.height)
+          }
           style={{
             position: "absolute",
-            bottom: 32.5,
+            // Apple custom annotations are centered on the projected coordinate.
+            // The preview uses that same center, size and zoom scale.
+            top: 32.5 - previewHeight / 2,
             left: -70,
             width: 220,
             alignItems: "center",
             opacity: 0.55,
+            transform: [{ translateY: fall }, { scale }],
           }}
         >
           {preview}
-        </View>
+        </Animated.View>
       )}
       {active && (
         <PlacementRing

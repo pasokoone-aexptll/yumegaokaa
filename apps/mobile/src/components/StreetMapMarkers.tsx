@@ -1,9 +1,5 @@
+import { DenshinMapPin } from "./pins/DenshinMapPin";
 import { onsitePeople, DenshinPin } from "../lib/denshin";
-import {
-  PeopleStack,
-  RecruitmentSign,
-  RecruitmentGlyph,
-} from "./denshin/PinParts";
 import { RecruitmentIcon } from "./RecruitmentIcon";
 import { SuperAsset } from "./icons/SuperAsset";
 import {
@@ -19,7 +15,7 @@ import { Marker } from "./map/PlatformMap";
 import { useRouter, usePathname, useGlobalSearchParams } from "expo-router";
 import { useRef } from "react";
 import { requireNativeModule } from "expo-modules-core";
-import { Platform, View, Text } from "react-native";
+import { Platform, View } from "react-native";
 import { StreetEvent, countdown } from "../lib/events";
 import { Recruitment } from "../lib/recruitments";
 import { liveCells } from "../lib/presence";
@@ -160,97 +156,8 @@ export function StreetMapMarkers({
                   : () =>
                       openDetail("denshin", pin.id, pin.longitude, pin.latitude)
               }
-              style={{
-                alignItems: "center",
-                maxWidth: 210,
-                padding: 8,
-              }}
             >
-              {pin.recruiting && (
-                <Text
-                  numberOfLines={1}
-                  style={{
-                    color: "rgba(255,255,255,0.85)",
-                    fontFamily: "ui-rounded",
-                    fontWeight: "700",
-                    fontSize: 13,
-                    alignSelf: "flex-start",
-                    marginLeft: 8,
-                    marginBottom: 5,
-                  }}
-                >
-                  {pin.display_name} ・{" "}
-                  <Text style={{ fontSize: 16 }}>{pin.count}</Text>
-                  <Text style={{ fontSize: 10 }}>
-                    {pin.capacity === null ? "人" : `/${pin.capacity}人`}
-                  </Text>
-                </Text>
-              )}
-              <View
-                style={{
-                  zIndex: 3,
-                  alignSelf: "center",
-                  alignItems: "center",
-                }}
-              >
-                <PinBubble>
-                  <View
-                    style={{
-                      flexDirection: "row",
-                      alignItems: "center",
-                      gap: 4,
-                    }}
-                  >
-                    {pin.recruiting && <RecruitmentGlyph />}
-                    <View style={{ flexShrink: 1 }}>
-                      <PinGradientText
-                        colors={
-                          pin.recruiting ? undefined : ["#858990", "#a5a7ac"]
-                        }
-                      >
-                        {pin.body}
-                      </PinGradientText>
-                    </View>
-                  </View>
-                </PinBubble>
-                {pin.recruiting && (
-                  <View
-                    style={{
-                      position: "absolute",
-                      right: -10,
-                      bottom: -5,
-                      zIndex: 4,
-                    }}
-                  >
-                    <PeopleStack people={onsitePeople(pin)} />
-                  </View>
-                )}
-              </View>
-              {pin.recruiting ? (
-                <View
-                  style={{
-                    alignSelf: "center",
-                    marginTop: -30,
-                  }}
-                >
-                  <RecruitmentSign />
-                </View>
-              ) : (
-                <View
-                  style={{
-                    borderWidth: 5,
-                    borderColor: "rgba(255,255,255,0.25)",
-                    borderRadius: 18,
-                  }}
-                >
-                  <Avatar
-                    shape="square"
-                    path={pin.avatar_path}
-                    name={pin.display_name}
-                    size={54}
-                  />
-                </View>
-              )}
+              <DenshinMapPin pin={pin} people={onsitePeople(pin)} />
             </MarkerFeedback>
           </Marker>
         ))}

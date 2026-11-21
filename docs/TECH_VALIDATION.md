@@ -1614,3 +1614,12 @@ LaunchSplashは白い人物pathの背後に緑stroke-width1.5の複製を描い�
 ## 2026-11-21 U26 Home選択的な拡大（R19）
 
 最新指示で全体1.1倍を取りやめ、リストの本人画像49→63.7pt、位置確認文字/横アイコン10→12pt、文字行高14→16.8ptのみ変更。区切り線始点は画像幅+既存gap12へ追従。本文/作者名/人数/吹き出し/参加者列/チケットは元サイズを維持。対象差分照合済み、Simulator外観は次回反映で確認。
+
+
+## 2026-11-21 U27 仮置きと確定PIN（R12/R19）
+
+仮置きは画面projectionの下端基準、確定PINはApple annotationの中心基準で、さらにzoom倍率も異なっていた。iOS仮置きは確定と同じPlatformMap Markerへ移し、DenshinMapPinを両方で共有。MarkerFeedbackの影余白8ptも合わせ、座標・中心・倍率・文字/看板サイズを一致させる。ringのドラッグは既存projectionを維持。460msの下降をpreview marker内で再生し、opacity0.55は維持して位置選択中に消さない。通常PINは本人画像、募集PINは看板。空本文は吹き出しを描かない。
+
+型検査・Simulator Release成功。PID60913 review-map?scene=alignmentで同じ座標の仮置き→確定を切替え、名前・吹き出し・PNGの位置/幅一致を確認。実DBに作成していない。下降録画/tmp/u27-pin-drop.mp4、連続画像/tmp/u27-drop-frames.pngで上から下への移動確認。実機/Android未確認。
+
+同版でU23の左右17ptをチャットと入力欄の表示で確認。U24は/tmp/u24-final-splash.mp4の人物退出を抽出（/tmp/u24-figure.png）、白人物に緑縁が残らないことを確認。U26はHomeの画像/位置確認だけが拡大されていることを確認。U25は実データ1行でスクロール範囲不足のため、12行のSimulator専用fixtureを追加して最終確認する。

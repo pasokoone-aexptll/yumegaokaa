@@ -1,3 +1,4 @@
+import { PlacementPreviewMotion } from "../pins/PlacementPreviewMotion";
 import { MarkerScale, useMarkerScale } from "./markerScale";
 import { View, useWindowDimensions } from "react-native";
 import { PlacementHandle } from "../pins/PlacementHandle";
@@ -89,6 +90,16 @@ export function Map({
             }
           >
             {children}
+            {placement?.preview && (
+              <Marker lngLat={placement.point} passive>
+                <PlacementPreviewMotion
+                  revision={placement.revision}
+                  active={placement.active ?? true}
+                >
+                  {placement.preview}
+                </PlacementPreviewMotion>
+              </Marker>
+            )}
           </MapView>
           {ready && placement && (
             <PlacementHandle
@@ -96,6 +107,7 @@ export function Map({
               point={placement.point}
               revision={placement.revision}
               preview={placement.preview}
+              previewOnMap
               active={placement.active}
               onDrop={placement.onDrop}
               cameraRevision={cameraRevision}
