@@ -1,3 +1,4 @@
+import { BlurView } from "expo-blur";
 import NativeMaskedView from "@react-native-masked-view/masked-view";
 import { RefreshMarker } from "./markerScale";
 import { useContext, useState, useId } from "react";
@@ -10,7 +11,16 @@ import {
   View,
   type ViewProps,
 } from "react-native";
-import Svg, { Defs, LinearGradient, Path, Rect, Stop } from "react-native-svg";
+import Svg, {
+  Defs,
+  Filter,
+  FeGaussianBlur,
+  FeOffset,
+  LinearGradient,
+  Path,
+  Rect,
+  Stop,
+} from "react-native-svg";
 
 export const pinRed = ["#FE2E31", "#FFABED"] as const;
 export const pinBlue = ["#2E7BFE", "#ABC9FF"] as const;
@@ -121,17 +131,73 @@ export function PinBubble({
   children: ReactNode;
   minWidth?: number;
 }) {
+  const [size, setSize] = useState({ width: 0, height: 0 });
+  const id = `bubbleShadow${useId().replace(/[^a-zA-Z0-9]/g, "")}`;
+  const { width: w, height: h } = size;
+  const r = h / 2;
+  const center = w / 2;
+  // One silhouette: the tail shares its contour and shadow with the capsule.
+  const outline = `M${r} 0H${w - r}A${r} ${r} 0 0 1 ${w} ${r}A${r} ${r} 0 0 1 ${w - r} ${h}H${center + 12}L${center - 8.6} ${h + 14.1}Q${center - 12} ${h + 16.1} ${center - 12} ${h + 12.6}V${h}H${r}A${r} ${r} 0 0 1 0 ${r}A${r} ${r} 0 0 1 ${r} 0Z`;
   return (
-    <LabelShadow bubble>
+    <View collapsable={false} style={s.shadowFrame}>
       <View style={s.bubbleWrapper}>
-        <View style={[s.bubble, minWidth !== undefined && { minWidth }]}>
+        {w > 0 && h > 0 && (
+          <Svg
+            pointerEvents="none"
+            width={w + 24}
+            height={h + 39}
+            viewBox={`-12 -12 ${w + 24} ${h + 39}`}
+            style={{ position: "absolute", left: -12, top: -12 }}
+          >
+            <Defs>
+              <Filter id={id} x="-30%" y="-60%" width="160%" height="240%">
+                <FeGaussianBlur stdDeviation={4} />
+                <FeOffset dy={2} />
+              </Filter>
+            </Defs>
+            <Path d={outline} fill="rgba(0,0,0,0.16)" filter={`url(#${id})`} />
+          </Svg>
+        )}
+        {w > 0 && h > 0 && (
+          <Mask
+            pointerEvents="none"
+            style={{
+              position: "absolute",
+              top: 0,
+              left: 0,
+              width: w,
+              height: h + 15,
+            }}
+            maskElement={
+              <Svg width={w} height={h + 15}>
+                <Path d={outline} fill="white" />
+              </Svg>
+            }
+          >
+            <BlurView
+              intensity={45}
+              tint="default"
+              style={StyleSheet.absoluteFill}
+            />
+            <View
+              style={[
+                StyleSheet.absoluteFill,
+                { backgroundColor: "rgba(255,255,255,0.8)" },
+              ]}
+            />
+          </Mask>
+        )}
+        <View
+          onLayout={({ nativeEvent: { layout } }) =>
+            setSize({ width: layout.width, height: layout.height })
+          }
+          style={[s.bubble, minWidth !== undefined && { minWidth }]}
+        >
           {children}
         </View>
-        <Svg width={24} height={15} viewBox="0 0 24 15" style={s.tail}>
-          <Path d="M0 0H24L3.4 14.1Q0 16.1 0 12.6Z" fill="white" />
-        </Svg>
+        <View style={{ height: 14 }} />
       </View>
-    </LabelShadow>
+    </View>
   );
 }
 
@@ -175,7 +241,6 @@ const s = StyleSheet.create({
   },
   bubbleWrapper: { alignItems: "center", maxWidth: 240 },
   bubble: {
-    backgroundColor: "white",
     borderRadius: 22,
     borderCurve: "continuous",
     paddingHorizontal: 12,

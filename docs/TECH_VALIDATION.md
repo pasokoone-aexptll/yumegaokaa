@@ -1656,3 +1656,6 @@ Map表示中・前景のみApple Maps標準showsUserLocationを有効にし、�
 
 ## 2026-11-21 PINドラッグ復旧（R19/U40）
 PlacementHandleから移動量/drag状態をpreviewへ接続。zoom倍率を補正した指追従、リング拡大、release時の座標更新を復旧。Simulator Releaseと型検査成功。alignment fixtureの実ドラッグでリングが397,928から519,1107へ移動。録画/tmp/pin-drag-restored.mp4。ユーザーが「いい感じ」と確認。DB投稿なし、実機未更新。
+
+## 2026-11-21 Map PINの素材（R19/U41）
+通常PIN外縁は白枠から45 intensityの背景blurへ。吹き出し輪郭を1pathに統合しstdDeviation4/黒16%/下2ptの影を共有、同輪郭maskにblurと白80%を配置。型検査/Simulator Release成功。review-map?scene=pin&normal=1で地図になじむ外縁・透過吹き出し/尾の影を確認。fixture本人画像はfallback。実機は未更新。

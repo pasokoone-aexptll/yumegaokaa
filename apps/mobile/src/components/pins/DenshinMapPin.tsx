@@ -1,3 +1,4 @@
+import { BlurView } from "expo-blur";
 import { Text, View } from "react-native";
 import { Avatar } from "../Avatar";
 import {
@@ -98,11 +99,24 @@ export function DenshinMapPin({
       ) : (
         <View
           style={{
-            borderWidth: 5,
-            borderColor: "rgba(255,255,255,0.25)",
+            padding: 5,
+            overflow: "hidden",
+            borderCurve: "continuous",
             borderRadius: 18,
           }}
         >
+          <BlurView
+            pointerEvents="none"
+            intensity={45}
+            tint="default"
+            style={{
+              position: "absolute",
+              top: 0,
+              bottom: 0,
+              left: 0,
+              right: 0,
+            }}
+          />
           <Avatar
             shape="square"
             path={pin.avatar_path}

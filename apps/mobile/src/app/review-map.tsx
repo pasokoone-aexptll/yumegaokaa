@@ -18,9 +18,10 @@ export default function MapReview() {
 }
 function Scene() {
   const router = useRouter();
-  const { scene, short } = useLocalSearchParams<{
+  const { scene, short, normal } = useLocalSearchParams<{
     scene?: string;
     short?: string;
+    normal?: string;
   }>();
   const [previewOnly, setPreviewOnly] = useState(true);
   const [dropRevision, setDropRevision] = useState(0);
@@ -109,6 +110,7 @@ function Scene() {
                 ? [
                     {
                       ...reviewPin,
+                      recruiting: normal !== "1",
                       body: short === "1" ? "テスト" : reviewPin.body,
                       longitude: placementPoint[0],
                       latitude: placementPoint[1],
