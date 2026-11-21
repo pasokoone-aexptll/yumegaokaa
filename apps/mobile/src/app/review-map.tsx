@@ -1,3 +1,4 @@
+import { pin as reviewPin } from "../components/debug/figmaFixtures";
 import { useState } from "react";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { Pressable, Text, View } from "react-native";
@@ -58,9 +59,10 @@ function Scene() {
             pitch: 55,
           }}
         />
-        {scene === "presence" ? (
+        {scene === "presence" || scene === "pin" ? (
           <StreetMapMarkers
-            cells={cells}
+            cells={scene === "presence" ? cells : []}
+            pins={scene === "pin" ? [{ ...reviewPin, longitude: 139.7109, latitude: 35.7295, count: 5 }] : []}
             events={[]}
             recruitments={[]}
             now={now}

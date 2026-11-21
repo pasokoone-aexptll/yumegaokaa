@@ -114,11 +114,19 @@ function LabelShadow({
   );
 }
 
-export function PinBubble({ children }: { children: ReactNode }) {
+export function PinBubble({
+  children,
+  minWidth,
+}: {
+  children: ReactNode;
+  minWidth?: number;
+}) {
   return (
     <LabelShadow bubble>
       <View style={s.bubbleWrapper}>
-        <View style={s.bubble}>{children}</View>
+        <View style={[s.bubble, minWidth !== undefined && { minWidth }]}>
+          {children}
+        </View>
         <Svg width={24} height={15} viewBox="0 0 24 15" style={s.tail}>
           <Path d="M0 0H24L3.4 14.1Q0 16.1 0 12.6Z" fill="white" />
         </Svg>

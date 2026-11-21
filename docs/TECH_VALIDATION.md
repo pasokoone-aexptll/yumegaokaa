@@ -1524,3 +1524,8 @@ MapHeaderの赤色Viewをexpo-glass-effect GlassView regular/dark、tint #AF52DE
 ## 2026-11-21 U06 入街者吹き出し撤去
 
 最新ユーザー指定に従いMapのPresenceHeaderと専用72pt領域、未使用の派生値/importを撤去。人数バッジとtoastの48pt固定領域は維持。DECISIONSの旧常設指定を置換。型検査/Release成功、Simulator PID15508で吹き出しなし・右操作ボタンの配置を確認。バックエンドの匿名画像情報は他用途を保護し変更なし。
+
+
+## 2026-11-21 U07 募集PIN近接配置
+
+R12〜R14のMap表示。募集吹き出しをzIndex3へ、参加者列を看板基準から吹き出し右下基準へ移動。名前は1行/左揃え、短文の最小幅134pt、看板は左寄せ。配置プレビューも同じ最小幅/前後関係/左寄せ。型検査/Release成功、Simulator PID19304の/tmp/u07-pin-final.pngで同文面/5・7人のfixtureを照合。写真は未取得の代替アイコンであり実写真描画の確認とはしない。実PIN作成・参加・保存なし、iPhoneは一括更新待ち。

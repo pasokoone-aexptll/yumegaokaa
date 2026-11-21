@@ -15,9 +15,17 @@ export function DenshinPlacementPreview({
   avatar?: string | null;
 }) {
   return (
-    <View style={{ alignItems: "center", maxWidth: 210, padding: 8 }}>
+    <View
+      style={{
+        alignItems: "center",
+        maxWidth: 210,
+        minWidth: draft.recruiting ? 150 : undefined,
+        padding: 8,
+      }}
+    >
       {draft.recruiting && (
         <Text
+          numberOfLines={1}
           style={{
             color: "rgba(255,255,255,0.85)",
             fontFamily: "ui-rounded",
@@ -36,8 +44,8 @@ export function DenshinPlacementPreview({
         </Text>
       )}
       {!!draft.body.trim() && (
-        <View style={{ zIndex: 2 }}>
-          <PinBubble>
+        <View style={{ zIndex: 3, alignSelf: "stretch", alignItems: "center" }}>
+          <PinBubble minWidth={draft.recruiting ? 134 : undefined}>
             <View
               style={{ flexDirection: "row", alignItems: "center", gap: 4 }}
             >
@@ -54,7 +62,13 @@ export function DenshinPlacementPreview({
         </View>
       )}
       {draft.recruiting ? (
-        <View style={{ marginTop: draft.body.trim() ? -30 : 0 }}>
+        <View
+          style={{
+            alignSelf: "flex-start",
+            marginLeft: 8,
+            marginTop: draft.body.trim() ? -30 : 0,
+          }}
+        >
           <RecruitmentSign />
         </View>
       ) : (

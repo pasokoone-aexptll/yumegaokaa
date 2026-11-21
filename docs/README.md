@@ -1,6 +1,6 @@
 # yumegaoka ドキュメントの入口
 
-2026-11-20：募集・オフ会は[電信PIN仕様](DENSHIN_PIN_SPEC.md)へ移行済み。コード・ローカルDB検証、クラウド049〜056/通知ワーカー配備、Simulator部分導線を確認。iPhone 17の署名を更新し、ユーザーの信頼確認後に修正版を上書き・起動済み。全機能の実機確認は未完。Home/MapChat/常設入街画像列/招待枠/QR/Historyと全29画面・登録動画の照合を継続。本人写真必須と登録/ログインの6桁自動認証を反映。登録コード下のゲージは再送までの時間と確定（Q-UI01解決）。Q-DP01〜06は採用済み。画面別の確認範囲は[UI_REVIEW_STATUS](frontend-redesign/UI_REVIEW_STATUS.md)、実装・検証事実はTECH_VALIDATION。
+2026-11-20：募集・オフ会は[電信PIN仕様](DENSHIN_PIN_SPEC.md)へ移行済み。コード・ローカルDB検証、クラウド049〜056/通知ワーカー配備、Simulator部分導線を確認。iPhone 17の署名を更新し、ユーザーの信頼確認後に修正版を上書き・起動済み。全機能の実機確認は未完。最新は[ユーザー指定UI修正キュー](frontend-redesign/USER_UI_FIX_QUEUE.md)を順次処理。入街画像列は11/21指定で撤去。自主的な全29画面微調整は停止し、指摘対象の確認・保存を1件ずつ完了する。本人写真必須と登録/ログインの6桁自動認証を反映。登録コード下のゲージは再送までの時間と確定（Q-UI01解決）。Q-DP01〜06は採用済み。画面別の確認範囲は[UI_REVIEW_STATUS](frontend-redesign/UI_REVIEW_STATUS.md)、実装・検証事実はTECH_VALIDATION。
 
 iOSネイティブUIの初回監査・画面別移行案は[IOS_NATIVE_UI_PLAN](frontend-redesign/IOS_NATIVE_UI_PLAN.md)。初回監査後、ユーザー承認により実装へ移行済み。既存4タブを維持し、SwiftUI操作部品・提供SVG・QR招待・設定画面を段階的に接続中。全画面のFigma一致・実機確認は未完。
 

@@ -160,10 +160,16 @@ export function StreetMapMarkers({
                   : () =>
                       openDetail("denshin", pin.id, pin.longitude, pin.latitude)
               }
-              style={{ alignItems: "center", maxWidth: 210, padding: 8 }}
+              style={{
+                alignItems: "center",
+                maxWidth: 210,
+                minWidth: pin.recruiting ? 150 : undefined,
+                padding: 8,
+              }}
             >
               {pin.recruiting && (
                 <Text
+                  numberOfLines={1}
                   style={{
                     color: "rgba(255,255,255,0.85)",
                     fontFamily: "ui-rounded",
@@ -181,34 +187,54 @@ export function StreetMapMarkers({
                   </Text>
                 </Text>
               )}
-              <PinBubble>
-                <View
-                  style={{ flexDirection: "row", alignItems: "center", gap: 4 }}
-                >
-                  {pin.recruiting && <RecruitmentGlyph />}
-                  <View style={{ flexShrink: 1 }}>
-                    <PinGradientText
-                      colors={
-                        pin.recruiting ? undefined : ["#858990", "#a5a7ac"]
-                      }
-                    >
-                      {pin.body}
-                    </PinGradientText>
+              <View
+                style={{
+                  zIndex: 3,
+                  alignSelf: "stretch",
+                  alignItems: "center",
+                }}
+              >
+                <PinBubble minWidth={pin.recruiting ? 134 : undefined}>
+                  <View
+                    style={{
+                      flexDirection: "row",
+                      alignItems: "center",
+                      gap: 4,
+                    }}
+                  >
+                    {pin.recruiting && <RecruitmentGlyph />}
+                    <View style={{ flexShrink: 1 }}>
+                      <PinGradientText
+                        colors={
+                          pin.recruiting ? undefined : ["#858990", "#a5a7ac"]
+                        }
+                      >
+                        {pin.body}
+                      </PinGradientText>
+                    </View>
                   </View>
-                </View>
-              </PinBubble>
-              {pin.recruiting ? (
-                <View style={{ alignItems: "center", marginTop: -30 }}>
+                </PinBubble>
+                {pin.recruiting && (
                   <View
                     style={{
                       position: "absolute",
-                      right: -45,
-                      top: -12,
-                      zIndex: 2,
+                      right: -10,
+                      bottom: -5,
+                      zIndex: 4,
                     }}
                   >
                     <PeopleStack people={onsitePeople(pin)} />
                   </View>
+                )}
+              </View>
+              {pin.recruiting ? (
+                <View
+                  style={{
+                    alignSelf: "flex-start",
+                    marginLeft: 8,
+                    marginTop: -30,
+                  }}
+                >
                   <RecruitmentSign />
                 </View>
               ) : (
