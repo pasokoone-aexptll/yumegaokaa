@@ -1,3 +1,5 @@
+import { homePinSections } from "../../../lib/homePinSections";
+import { pin as reviewPin } from "../../../components/debug/figmaFixtures";
 import { useDelayedRefreshStatus } from "../../../hooks/useDelayedRefreshStatus";
 import { HomeModeDropdown } from "../../../components/HomeModeDropdown";
 import { useInviteQuota } from "../../../hooks/useInviteQuota";
@@ -37,7 +39,10 @@ export default function Home() {
   const router = useRouter(),
     insets = useSafeAreaInsets();
   const livePins = useDenshinPins();
-  const { reviewEmpty } = useLocalSearchParams<{ reviewEmpty?: string }>();
+  const { reviewEmpty, reviewAttending } = useLocalSearchParams<{
+    reviewEmpty?: string;
+    reviewAttending?: string;
+  }>();
   // Opt-in Simulator presentation only; neither writes nor changes server data.
   const pins =
     reviewEnabled && reviewEmpty === "1"
@@ -48,7 +53,17 @@ export default function Home() {
           loading: false,
           error: "",
         }
-      : livePins;
+      : reviewEnabled && reviewAttending === "1"
+        ? {
+            ...livePins,
+            items: [
+              { ...reviewPin, attendance: "arrived" as const, mine: false },
+            ],
+            hidden_attendance: [],
+            loading: false,
+            error: "",
+          }
+        : livePins;
   const waiting = useDelayedRefreshStatus(!!pins.error);
   const remaining = useInviteQuota();
   const { width } = useWindowDimensions();
@@ -144,85 +159,82 @@ export default function Home() {
             <Text style={s.emptyText}>PINがまだありません</Text>
           </View>
         )}
-        {[true, false]
-          .filter((recruiting) =>
-            pins.items.some((p) => p.recruiting === recruiting),
-          )
-          .map((recruiting) => (
-            <View key={String(recruiting)} style={s.section}>
-              <SpeechBubble>
-                <SuperAsset
-                  name="非常口rounded"
-                  size={21}
-                  tint={recruiting ? green : "rgba(0,0,0,0.65)"}
-                />
-                <Text style={[s.sectionTitle, recruiting && { color: green }]}>
-                  {recruiting ? "募集中" : "PIN / 予約募集"}
-                </Text>
-              </SpeechBubble>
-              {pins.items
-                .filter((p) => p.recruiting === recruiting)
-                .map((p, index) => (
-                  <View key={p.id} style={s.row}>
-                    {index > 0 && <View style={s.separator} />}
-                    <Pressable
-                      style={s.main}
-                      onPress={() =>
-                        openMapAt(router, p.longitude, p.latitude, {
-                          kind: "denshin",
-                          id: p.id,
-                        })
-                      }
-                      accessibilityRole="button"
-                      accessibilityLabel={`${p.body}の詳細`}
-                    >
-                      <Avatar
-                        shape="square"
-                        path={p.avatar_path}
-                        name={p.display_name}
-                        size={49}
+        {homePinSections(pins.items).map((section) => (
+          <View key={section.key} style={s.section}>
+            <SpeechBubble>
+              <SuperAsset
+                name="非常口rounded"
+                size={21}
+                tint={section.highlighted ? green : "rgba(0,0,0,0.65)"}
+              />
+              <Text
+                style={[
+                  s.sectionTitle,
+                  section.highlighted && { color: green },
+                ]}
+              >
+                {section.title}
+              </Text>
+            </SpeechBubble>
+            {section.items.map((p, index) => (
+              <View key={p.id} style={s.row}>
+                {index > 0 && <View style={s.separator} />}
+                <Pressable
+                  style={s.main}
+                  onPress={() =>
+                    openMapAt(router, p.longitude, p.latitude, {
+                      kind: "denshin",
+                      id: p.id,
+                    })
+                  }
+                  accessibilityRole="button"
+                  accessibilityLabel={`${p.body}の詳細`}
+                >
+                  <Avatar
+                    shape="square"
+                    path={p.avatar_path}
+                    name={p.display_name}
+                    size={49}
+                  />
+                  <View style={{ flex: 1, gap: 3 }}>
+                    <Text style={s.metadata}>
+                      {p.mine ? "自分" : p.display_name}
+                      {p.recruiting && (
+                        <Text>
+                          {" "}
+                          ・ {p.count}
+                          <Text style={{ fontSize: 9 }}>
+                            {p.capacity === null ? "人" : `/${p.capacity}人`}
+                          </Text>
+                        </Text>
+                      )}
+                      {p.attendance === "planned"
+                        ? " ・ 参加予定"
+                        : p.attendance === "arrived"
+                          ? " ・ 現地にいます"
+                          : ""}
+                    </Text>
+                    <Text style={s.body} numberOfLines={2}>
+                      {p.body}
+                    </Text>
+                    <View style={s.location}>
+                      <SuperAsset
+                        name="nav"
+                        tint="black"
+                        opacity={0.3}
+                        size={10}
                       />
-                      <View style={{ flex: 1, gap: 3 }}>
-                        <Text style={s.metadata}>
-                          {p.mine ? "自分" : p.display_name}
-                          {p.recruiting && (
-                            <Text>
-                              {" "}
-                              ・ {p.count}
-                              <Text style={{ fontSize: 9 }}>
-                                {p.capacity === null
-                                  ? "人"
-                                  : `/${p.capacity}人`}
-                              </Text>
-                            </Text>
-                          )}
-                          {p.attendance === "planned"
-                            ? " ・ 参加予定"
-                            : p.attendance === "arrived"
-                              ? " ・ 現地にいます"
-                              : ""}
-                        </Text>
-                        <Text style={s.body} numberOfLines={2}>
-                          {p.body}
-                        </Text>
-                        <View style={s.location}>
-                          <SuperAsset
-                            name="nav"
-                            tint="black"
-                            opacity={0.3}
-                            size={10}
-                          />
-                          <Text style={s.locationText}>位置を確認する</Text>
-                        </View>
-                      </View>
-                      <View style={{ alignSelf: "center" }}>
-                        <PeopleStack people={onsitePeople(p)} />
-                      </View>
-                    </Pressable>
+                      <Text style={s.locationText}>位置を確認する</Text>
+                    </View>
                   </View>
-                ))}
-            </View>
-          ))}
+                  <View style={{ alignSelf: "center" }}>
+                    <PeopleStack people={onsitePeople(p)} />
+                  </View>
+                </Pressable>
+              </View>
+            ))}
+          </View>
+        ))}
         {pins.hidden_attendance.map((p) => (
           <View key={p.id} style={s.row}>
             <Text style={s.muted}>非表示の電信PINに参加中</Text>

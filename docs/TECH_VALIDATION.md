@@ -1539,3 +1539,8 @@ StreetChatのSmoothSurfaceと文言をLatestChatButtonへ置換。GlassView regu
 ## 2026-11-21 U09 ステータスメッセージ中央配置
 
 R12の作成/編集欄。StatusMessageInputへ表示責務を抽出し、iOSの固定lineHeight26を撤去。自然なUITextViewの文字高さをpadding13/minHeight52の外枠で中央配置。文字サイズ18、複数行/500字/編集可否/下書き更新は維持。型検査/Release成功、Simulator PID21881の同一部品へ空文字/1行/2行を渡して中央表示を確認（/tmp/u09-input.png）。操作ツールで日本語をタイプ/貼付しても反映されず、実入力操作の合格とはしない。空の作成シートは閉じた。保存/公開なし。
+
+
+## 2026-11-21 U10 Home参加中
+
+R12〜R14。既存denshin_listのattendance planned/arrivedをHome先頭「参加中」へ分類。他セクションには重複させず、leftは募集/通常へ分類。空セクション非表示、hidden_attendanceの取消導線・期限除去・APIは維持。scripts/test-home-pin-sections.cjsで参加予定/現地/取消/空配列を確認。型検査/Release成功、Simulator PID23076のhome?reviewAttending=1で実Home部品の吹き出し/本文/位置導線を目視確認（/tmp/u10-home-attending.png）。確認用画像は未取得で代替表示。実参加更新/取消通信は実行せず。
