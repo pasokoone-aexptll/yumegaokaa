@@ -260,72 +260,71 @@ export default function Home() {
             </View>
           ))}
         </View>
-        <View style={{ flex: pins.items.length ? 1 : 0, minHeight: 40 }} />
-        <Pressable
-          accessibilityRole="button"
-          accessibilityLabel="招待QRで友達を招待"
-          onPress={() => router.push("/home/invitations")}
-          style={{
-            margin: 16,
-            marginTop: 12,
-            minHeight: 75,
-            flexDirection: "row",
-            alignItems: "center",
-            borderRadius: 17,
-            overflow: "hidden",
-            backgroundColor: "#FF5577",
-          }}
-        >
-          <View style={{ paddingHorizontal: 13, paddingVertical: 12 }}>
-            <SuperAsset
-              name="非常口rounded"
-              size={49}
-              tint="white"
-              opacity={0.8}
-            />
-          </View>
-          <View style={{ flex: 1, gap: 4 }}>
+      </ScrollView>
+      <Pressable
+        accessibilityRole="button"
+        accessibilityLabel="招待QRで友達を招待"
+        onPress={() => router.push("/home/invitations")}
+        style={{
+          margin: 16,
+          marginTop: 12,
+          minHeight: 75,
+          flexDirection: "row",
+          alignItems: "center",
+          borderRadius: 17,
+          overflow: "hidden",
+          backgroundColor: "#FF5577",
+        }}
+      >
+        <View style={{ paddingHorizontal: 13, paddingVertical: 12 }}>
+          <SuperAsset
+            name="非常口rounded"
+            size={49}
+            tint="white"
+            opacity={0.8}
+          />
+        </View>
+        <View style={{ flex: 1, gap: 4 }}>
+          <Text
+            style={{
+              fontFamily: "ui-rounded",
+              fontWeight: "600",
+              color: "white",
+              fontSize: 14,
+              lineHeight: 18,
+            }}
+          >
+            招待QRで友達を招待しよう！
+          </Text>
+          {remaining !== undefined && (
             <Text
               style={{
-                fontFamily: "ui-rounded",
-                fontWeight: "600",
+                alignSelf: "flex-start",
+                paddingVertical: 6,
+                paddingHorizontal: 10,
+                borderRadius: 20,
+                backgroundColor: "#F13450",
                 color: "white",
-                fontSize: 14,
-                lineHeight: 18,
+                fontFamily: "ui-rounded",
+                fontSize: 12,
+                lineHeight: 16,
               }}
             >
-              招待QRで友達を招待しよう！
+              残り{remaining}招待
             </Text>
-            {remaining !== undefined && (
-              <Text
-                style={{
-                  alignSelf: "flex-start",
-                  paddingVertical: 6,
-                  paddingHorizontal: 10,
-                  borderRadius: 20,
-                  backgroundColor: "#F13450",
-                  color: "white",
-                  fontFamily: "ui-rounded",
-                  fontSize: 12,
-                  lineHeight: 16,
-                }}
-              >
-                残り{remaining}招待
-              </Text>
-            )}
-          </View>
-          <View
-            style={{
-              alignSelf: "stretch",
-              width: "20%",
-              backgroundColor: "rgba(255,255,255,0.3)",
-              borderLeftWidth: 2,
-              borderColor: "rgba(255,255,255,0.7)",
-              borderStyle: "dashed",
-            }}
-          />
-        </Pressable>
-      </ScrollView>
+          )}
+        </View>
+        <View
+          style={{
+            alignSelf: "stretch",
+            width: "20%",
+            backgroundColor: "rgba(255,255,255,0.3)",
+            borderLeftWidth: 2,
+            borderColor: "rgba(255,255,255,0.7)",
+            borderStyle: "dashed",
+          }}
+        />
+      </Pressable>
     </View>
   );
 }
