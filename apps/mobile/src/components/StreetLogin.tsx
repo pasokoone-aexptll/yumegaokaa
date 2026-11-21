@@ -1,3 +1,4 @@
+import { NativeIconButton } from "./denshin/NativeIconButton";
 import { useContext, useEffect, useRef, useState } from "react";
 import { useRouter } from "expo-router";
 import {
@@ -264,6 +265,7 @@ export function StreetLogin({
                     disabled={busy || authSuccess}
                     success={authSuccess}
                     grouped={false}
+                    emptyZeros
                   />
                   <View
                     accessible
@@ -473,22 +475,23 @@ export function StreetLogin({
               </Animated.View>
             )}
             {!sent && (
-              <Pressable
-                disabled={busy}
-                onPress={() => {
-                  setStarted(false);
-                  setError("");
-                  Keyboard.dismiss();
-                }}
-                style={{
-                  position: "absolute",
-                  top: insets.top + 4,
-                  right: 24,
-                  padding: 10,
-                }}
+              <View
+                style={{ position: "absolute", top: insets.top + 4, left: 24 }}
               >
-                <Text style={s.note}>戻る</Text>
-              </Pressable>
+                <NativeIconButton
+                  icon="chevron-base"
+                  rotation={180}
+                  dark={false}
+                  size={48}
+                  label="戻る"
+                  disabled={busy}
+                  onPress={() => {
+                    setStarted(false);
+                    setError("");
+                    Keyboard.dismiss();
+                  }}
+                />
+              </View>
             )}
           </>
         )}

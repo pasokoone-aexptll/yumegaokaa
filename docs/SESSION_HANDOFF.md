@@ -4,7 +4,7 @@
 
 ## 現在の再開点（2026-11-21・ユーザー指定キュー）
 
-追加キューU19〜U27は実装・対象Simulator確認・Git保存を完了。U26は最新指示どおり位置確認文字/横アイコン1.2倍、本人画像1.3倍のみ（全体1.1倍は撤回）。U27はiOS仮置きも確定と同じnative Marker/DenshinMapPin描画へ統一、同座標切替で位置/サイズ一致と下降録画を確認。U25はPID82425の12行fixtureでチケット固定を確認。型検査/Release成功。Simulator最新版PID82425、実機は従来の5facb13版のままで今回U19〜27は未転送。これらの完了は全29画面の完全一致や新着実回線・Android・実機の保証ではない。
+U19〜32は保存済み。最新実機はeb13334（U28〜32とU19〜27を含む）、11/21に上書きインストール・起動成功。現在地はApple標準blue puckを採用しSimulatorの移動/傾斜表示を確認、実GPS追従と指定グラデーションの完全一致は未確認。PIN選択中の街境界とHome本文+1.5、PIN汎用Alert撤去を収録。Simulator PID87109。U33は人物の緑縁/gradient除去と扉内へのclip移動、Native戻る、000000からのRollingNumberを実装中。U34監査、U35リング重なり、U36自分のchat二重出現、U37送信制限文言が後続。キュー順を維持する。
 
 11/21 継続：PID87983レビュー版でHome両方空・指定SVG中央、参加/mention素材の分離、NFC地点の薄いmaterialとタップ非遷移を確認。証拠は/tmp/home-empty-20261121.png、notice-kinds-20261121.png、nfc-material-20261121.png。NativeToggle固定64×36をmatchContentsへ変更しPID89432で作成欄の余白を確認。現在はレビュー版がSimulatorに入り、Mapへ戻っている。実機未更新。詳細TECH_VALIDATION末尾。
 

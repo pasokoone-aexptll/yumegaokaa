@@ -13,15 +13,6 @@ import { ReducedIconMotion } from "../icons/IconMotion";
 const original = assets["非常口から人が出る"];
 const paths = original.match(/<path\b[^>]*\/>/g) ?? [];
 const figure = assets["非常口の人物"].replace(/fill="#[^"]*"/g, 'fill="white"');
-const welcomeFigure = figure
-  .replace(
-    'fill="white"',
-    'fill="url(#person-light)" stroke="#00AF6B" stroke-width="1.5"',
-  )
-  .replace(
-    "</svg>",
-    '<defs><linearGradient id="person-light" x1="68" y1="26" x2="30" y2="88" gradientUnits="userSpaceOnUse"><stop stop-color="white"/><stop offset="1" stop-color="#00AF6B"/></linearGradient></defs></svg>',
-  );
 const person = original.replace(paths[0] ?? "", "");
 /** The door stays anchored while the supplied figure and letter change independently. */
 export function OnboardingArtwork({
@@ -107,26 +98,42 @@ export function OnboardingArtwork({
           <Rect width={78} height={116} fill="#00AF6B" />
           <Path d="M0 116H78L209 247H131Z" fill="url(#entry-floor)" />
         </Svg>
-        <Animated.View
+        <View
           style={{
             position: "absolute",
             top: 0,
+            left: 0,
+            width: 78,
+            height: 116,
+            overflow: "hidden",
+          }}
+        >
+          <Animated.View
+            style={{
+              transform: [
+                {
+                  translateX: phase.interpolate({
+                    inputRange: [0, 1, 2],
+                    outputRange: [0, -94, -94],
+                  }),
+                },
+              ],
+            }}
+          >
+            <SvgXml xml={figure} width={94} height={116} />
+          </Animated.View>
+        </View>
+        <Animated.View
+          style={{
+            position: "absolute",
+            top: 116,
             left: 0,
             opacity: phase.interpolate({
               inputRange: [0, 1, 2],
               outputRange: [1, 0, 0],
             }),
-            transform: [
-              {
-                translateX: phase.interpolate({
-                  inputRange: [0, 1, 2],
-                  outputRange: [0, -28, -28],
-                }),
-              },
-            ],
           }}
         >
-          <SvgXml xml={welcomeFigure} width={94} height={116} />
           <SvgXml
             width={210}
             height={116}

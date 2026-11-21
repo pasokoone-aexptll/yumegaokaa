@@ -9,12 +9,14 @@ export function CodeInput({
   disabled = false,
   success = false,
   grouped = true,
+  emptyZeros = false,
 }: {
   value: string;
   onChange: (value: string) => void;
   disabled?: boolean;
   success?: boolean;
   grouped?: boolean;
+  emptyZeros?: boolean;
 }) {
   const input = useRef<ComponentRef<typeof TextInput>>(null);
   return (
@@ -43,9 +45,9 @@ export function CodeInput({
               overflow: "hidden",
             }}
           >
-            {value[index] !== undefined && (
+            {(emptyZeros || value[index] !== undefined) && (
               <RollingNumber
-                value={Number(value[index])}
+                value={Number(value[index] ?? 0)}
                 compact
                 light
                 color={success ? "#01AE6B" : undefined}
