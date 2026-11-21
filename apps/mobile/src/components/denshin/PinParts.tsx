@@ -73,16 +73,22 @@ export function RoundAction({
     />
   );
 }
-export function PeopleStack({ people }: { people: PinPerson[] }) {
+export function PeopleStack({
+  people,
+  borderColor = "white",
+}: {
+  people: PinPerson[];
+  borderColor?: string;
+}) {
   return (
     <View style={s.people}>
       {people.slice(0, 3).map((p) => (
-        <View key={p.account_id} style={s.overlap}>
+        <View key={p.account_id} style={[s.overlap, { borderColor }]}>
           <Avatar path={p.avatar_path} name={p.display_name} size={33} />
         </View>
       ))}
       {people.length > 3 && (
-        <View style={[s.overlap, s.more]}>
+        <View style={[s.overlap, s.more, { borderColor }]}>
           <BlurView
             pointerEvents="none"
             intensity={70}

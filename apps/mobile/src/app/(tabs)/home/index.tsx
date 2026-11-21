@@ -228,7 +228,10 @@ export default function Home() {
                     </View>
                   </View>
                   <View style={{ alignSelf: "center" }}>
-                    <PeopleStack people={onsitePeople(p)} />
+                    <PeopleStack
+                      people={onsitePeople(p)}
+                      borderColor={s.page.backgroundColor}
+                    />
                   </View>
                 </Pressable>
               </View>

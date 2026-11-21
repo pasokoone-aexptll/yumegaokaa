@@ -1563,3 +1563,8 @@ Map上端は画面高さ45%で黒63%→黒0%、既存上端190ptのぼかしを�
 招待SVGのモジュール/quiet zoneを緑地・白模様へ反転。中央人物と白下地、H訂正、4module quiet zoneは保持。QR可視幅を画面0.547倍（上限240pt）へ。白ゲージを同幅、flex目盛り、QRとの間隔15ptへ変更。型検査/Release成功、Simulator PID26772の実招待画面で配置確認（/tmp/u15-invite.png、招待情報を含むためrepoへ保存しない）。固定ダミーUUIDのSVGをQuickLookで描画しApple Vision復号成功。新規発行/再発行/取消/招待消費は実行していない。実カメラ試験とは区別する。
 
 同PIDの実画面スクリーンショットもApple Visionで招待URL1件の復号成功。token本文はログへ出力せず、接頭辞と件数のみ検証。
+
+
+## 2026-11-21 U16 Home参加者外線
+
+PeopleStackへborderColor prop（既定white）を追加し、Homeのみs.page.backgroundColor=#F2F2F2を渡す。人数バッジ外線も同色へ。型検査/Release成功、Simulator PID30505の通常Homeで実参加者画像の白い外線がなく背景色につながることを確認（/tmp/u16-home-border.png）。Map/詳細の既定外線は変更なし。
