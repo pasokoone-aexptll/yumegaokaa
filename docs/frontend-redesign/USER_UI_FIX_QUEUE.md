@@ -99,3 +99,5 @@ U41：通常PINのアイコン外縁を地図になじむブラーにし、吹�
 U41追加指定：Map吹き出しは白80%＋背景blur、文字のopacityは維持。U42：チャットキーボード背後まで#242321を延長。U43：通知の素材内余白を考慮してアイコンの見える左端を統一。U41確認後に順次対応。
 
 U41実装/Simulator確認：通常PIN外縁をBlurViewへ、Map吹き出しは単一輪郭＋同輪郭のGaussian shadow、白80%＋blur。型検査/Release成功。review-map通常PINで透過背景・縁・尾を含む影を確認。画像fixtureはfallback、実画像/実機確認は未実施。
+
+U42実装済み：移動するchatの下端から画面高分#242321を延長、キーボードの透明面/角の背後を覆う。型検査/Release成功。Simulator通常表示を確認。フォーカスのみでsoftware keyboardが出ず、keyboard表示の視覚確認は未完。

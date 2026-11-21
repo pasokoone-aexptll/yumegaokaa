@@ -262,6 +262,19 @@ export function StreetChat({
         ]}
         pointerEvents="box-none"
       >
+        {/* Extend the opaque end of the gradient beyond the translated chat,
+            including the keyboard's translucent surface and rounded corners. */}
+        <View
+          pointerEvents="none"
+          style={{
+            position: "absolute",
+            top: "100%",
+            left: 0,
+            right: 0,
+            height: height + insets.bottom,
+            backgroundColor: "#242321",
+          }}
+        />
         <SafeAreaView
           edges={["top"]}
           pointerEvents="box-none"
