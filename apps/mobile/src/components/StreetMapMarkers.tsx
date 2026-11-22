@@ -97,7 +97,7 @@ export function StreetMapMarkers({
                 <PinBubble>
                   <PinGradientText>{`ここに${cluster.count}人の気配`}</PinGradientText>
                 </PinBubble>
-                <View style={styles.clusterRow}>
+                <View style={styles.presenceIcons}>
                   {cluster.opacities.map((opacity, slot) => (
                     <View
                       key={slot}
@@ -105,6 +105,18 @@ export function StreetMapMarkers({
                         styles.orb,
                         {
                           opacity,
+                          marginLeft: slot === 0 ? 0 : -22,
+                          marginTop:
+                            cluster.count === 1
+                              ? 0
+                              : cluster.count === 2
+                                ? slot * 4
+                                : slot % 3 === 1
+                                  ? 0
+                                  : slot % 3 === 0
+                                    ? 5
+                                    : 8,
+                          zIndex: slot + 1,
                           backgroundColor: "rgba(255,255,255,0.15)",
                         },
                       ]}

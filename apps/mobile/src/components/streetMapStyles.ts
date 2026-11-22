@@ -51,6 +51,12 @@ export const streetMapStyles = StyleSheet.create({
   },
   clusterRow: { flexDirection: "row", gap: 8 },
   presence: { alignItems: "center" },
+  presenceIcons: {
+    flexDirection: "row",
+    alignItems: "flex-start",
+    marginTop: -7,
+    paddingBottom: 2,
+  },
   bubble: {
     paddingHorizontal: 9,
     paddingVertical: 5,
@@ -66,7 +72,6 @@ export const streetMapStyles = StyleSheet.create({
     borderColor: "white",
     alignItems: "center",
     justifyContent: "center",
-    marginHorizontal: -6,
   },
   orbSymbol: { color: "#fff", fontSize: 23 },
   bottom: {

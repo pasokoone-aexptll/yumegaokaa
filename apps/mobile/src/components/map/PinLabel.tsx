@@ -141,7 +141,7 @@ export function PinBubble({
   const r = h / 2;
   const center = w / 2;
   const tailScale =
-    0.65 + (Math.min(7, Math.max(3, textLength)) - 3) * (0.35 / 4);
+    0.9 * (0.65 + (Math.min(7, Math.max(3, textLength)) - 3) * (0.35 / 4));
   // One silhouette: the tail shares its contour and shadow with the capsule.
   const outline = `M${r} 0H${w - r}A${r} ${r} 0 0 1 ${w} ${r}A${r} ${r} 0 0 1 ${w - r} ${h}H${center + 18 * tailScale}Q${center + 14 * tailScale} ${h} ${center + 10 * tailScale} ${h + 3 * tailScale}L${center - 7 * tailScale} ${h + 17 * tailScale}Q${center - 12 * tailScale} ${h + 21 * tailScale} ${center - 12 * tailScale} ${h + 15 * tailScale}V${h + 5 * tailScale}Q${center - 12 * tailScale} ${h} ${center - 17 * tailScale} ${h}H${r}A${r} ${r} 0 0 1 0 ${r}A${r} ${r} 0 0 1 ${r} 0Z`;
   return (
