@@ -1724,3 +1724,5 @@ omyの初回入街はghost=true/last_seq=0で観測なし。端末journalもsequ
 2026-11-22：ユーザー明示依頼でxio/おらおらへ本人限定現地試験grantを追加。既存omy保持のためfield_trial_grant主キーを(tag_id,account_id)へ変更、guard関数と通常NFC認可は維持。3アカウントのvalid=trueを確認。期限は既存と同じ2026-11-27 02:08 JST。bootstrap SQLも複合主キーへ追従。各端末の入街操作は未確認、再インストール不要。
 
 2026-11-23 U51（R10/R12/R19）：Map尾は文字数補正を維持し全体0.9倍（3文字58.5%、7文字以上90%）。気配42ptアイコンを20pt送り、2人0/4pt・3人5/0/8ptの段差へ。吹き出し下の余白7ptを除去。型検査/Simulator Release成功、/tmp/u51-presence.pngで3人の配置を確認（写真なしfixture）。実機未更新。
+
+2026-11-23 U51実機反映：ユーザーの更新依頼で32425baを本人iPhone17へReleaseビルド・署名検証・上書きインストール成功。起動は端末Lockedで未確認。ログ/tmp/yumegaoka-iphone17-build.log。SE/13は今回未更新。
