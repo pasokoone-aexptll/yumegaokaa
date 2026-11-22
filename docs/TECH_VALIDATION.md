@@ -1716,3 +1716,5 @@ omyの初回入街はghost=true/last_seq=0で観測なし。端末journalもsequ
 ユーザーが03:02:07 JSTに手動退出し03:02:14に通常モードで再入街。03:03:10にobserve_visitのresult=endedを実機診断で確認。cloud最新visitのend_reason=outsideと一致。青い現在地が街の枠の外側とユーザー確認。測位→エリア外判定→サーバー送信→自動退出は実機確認できた。枠内の気配生成・更新は未確認。last_seq=0/last_observed_at=nullだけで全送信なしとは断定できず、外側観測による退出ではそれらが更新されない点に留意。
 
 表示消失はユーザーの手動OFFも関係していた。後続指示により、地点/境界の表示条件からactiveを除外し、初期ON/保存済みOFFを尊重、入街前にも設定操作を公開。配置中の表示は維持。Apple Maps/Legal opacity0.4。いずれも実機インストール済み。新しい表示設定の実機操作合格は未取得。
+
+2026-11-22：ユーザー指定iPhone SE（第3世代）へ7708446をReleaseビルドしインストール成功。署名検証成功。起動はSecurity（署名/entitlement/端末信頼）で拒否、端末側の開発者App信頼確認待ち。/tmp/yumegaoka-se-build.log。SE画面の実操作は未確認。
