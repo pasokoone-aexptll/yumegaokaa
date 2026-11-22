@@ -356,3 +356,5 @@ MR02〜04も進める依頼の直後、ユーザーが待機を指示しログ�
 2026-11-22 U50：iPhone診断版を上書き・起動済み。omyの実測位→observe_visit→outside自動退出を03:03:10 JSTに確認。ユーザー現在地も枠外。枠内の公開気配生成はまだ未確認。Maps40%と地点/境界の表示設定を入街から独立（初期ON/明示OFF保持）を同梱。ローカル診断は座標なしの単一上書きファイル。TECH_VALIDATION U50参照。
 
 2026-11-22：ユーザー指定iPhone SE（第3世代）へ7708446をReleaseビルドしインストール成功。署名検証成功。起動はSecurity（署名/entitlement/端末信頼）で拒否、端末側の開発者App信頼確認待ち。/tmp/yumegaoka-se-build.log。SE画面の実操作は未確認。
+
+2026-11-22：指定iPhone 13へ最新版7708446のアプリを署名更新してReleaseビルド・インストール成功。初回は端末ロックでdestination待機失敗、ユーザー操作後に解消。codesign検証成功。起動はSecurity拒否で端末側信頼確認待ち、実操作未確認。ログ/tmp/yumegaoka-iphone13-build.log。

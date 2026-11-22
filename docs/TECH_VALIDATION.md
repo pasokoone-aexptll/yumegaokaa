@@ -1718,3 +1718,5 @@ omyの初回入街はghost=true/last_seq=0で観測なし。端末journalもsequ
 表示消失はユーザーの手動OFFも関係していた。後続指示により、地点/境界の表示条件からactiveを除外し、初期ON/保存済みOFFを尊重、入街前にも設定操作を公開。配置中の表示は維持。Apple Maps/Legal opacity0.4。いずれも実機インストール済み。新しい表示設定の実機操作合格は未取得。
 
 2026-11-22：ユーザー指定iPhone SE（第3世代）へ7708446をReleaseビルドしインストール成功。署名検証成功。起動はSecurity（署名/entitlement/端末信頼）で拒否、端末側の開発者App信頼確認待ち。/tmp/yumegaoka-se-build.log。SE画面の実操作は未確認。
+
+2026-11-22：指定iPhone 13へ最新版7708446のアプリを署名更新してReleaseビルド・インストール成功。初回は端末ロックでdestination待機失敗、ユーザー操作後に解消。codesign検証成功。起動はSecurity拒否で端末側信頼確認待ち、実操作未確認。ログ/tmp/yumegaoka-iphone13-build.log。
