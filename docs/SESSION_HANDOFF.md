@@ -358,3 +358,5 @@ MR02〜04も進める依頼の直後、ユーザーが待機を指示しログ�
 2026-11-22：ユーザー指定iPhone SE（第3世代）へ7708446をReleaseビルドしインストール成功。署名検証成功。起動はSecurity（署名/entitlement/端末信頼）で拒否、端末側の開発者App信頼確認待ち。/tmp/yumegaoka-se-build.log。SE画面の実操作は未確認。
 
 2026-11-22：指定iPhone 13へ最新版7708446のアプリを署名更新してReleaseビルド・インストール成功。初回は端末ロックでdestination待機失敗、ユーザー操作後に解消。codesign検証成功。起動はSecurity拒否で端末側信頼確認待ち、実操作未確認。ログ/tmp/yumegaoka-iphone13-build.log。
+
+2026-11-22：ユーザー明示依頼でxio/おらおらへ本人限定現地試験grantを追加。既存omy保持のためfield_trial_grant主キーを(tag_id,account_id)へ変更、guard関数と通常NFC認可は維持。3アカウントのvalid=trueを確認。期限は既存と同じ2026-11-27 02:08 JST。bootstrap SQLも複合主キーへ追従。各端末の入街操作は未確認、再インストール不要。

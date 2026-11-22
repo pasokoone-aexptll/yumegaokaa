@@ -8,7 +8,7 @@ values('11111111-1111-4111-8111-111111111111',1,
 
 insert into app_private.members(account_id) select id from auth.users where id=:'trial_account'::uuid on conflict do nothing;
 insert into app_private.profiles(account_id,display_name) select id,'現地テスター' from auth.users where id=:'trial_account'::uuid on conflict do nothing;
-create table app_private.field_trial_grant(tag_id uuid primary key references app_private.tags, account_id uuid not null references auth.users, expires_at timestamptz not null);
+create table app_private.field_trial_grant(tag_id uuid not null references app_private.tags, account_id uuid not null references auth.users, expires_at timestamptz not null, primary key(tag_id,account_id));
 create or replace function app_private.guard_field_trial() returns trigger language plpgsql set search_path='' as $$
 begin
  if new.tag_id='14fdc906-3ff4-4576-a212-35c42642dd49' and not exists(select 1 from app_private.field_trial_grant g where g.tag_id=new.tag_id and g.account_id=new.account_id and g.expires_at>clock_timestamp()) then raise exception 'inactive_tag'; end if;
