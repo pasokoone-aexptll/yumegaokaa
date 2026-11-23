@@ -1,8 +1,8 @@
 {
   "fill" : {
     "linear-gradient" : [
-      "display-p3:0.75265,0.95000,0.95000,1.00000",
-      "srgb:1.00000,1.00000,1.00000,1.00000"
+      "srgb:0.99765,0.85290,0.69060,1.00000",
+      "display-p3:1.00000,1.00000,1.00000,1.00000"
     ],
     "orientation" : {
       "start" : {
@@ -19,12 +19,12 @@
     {
       "layers" : [
         {
-          "image-name" : "Vector 2.png",
-          "name" : "Vector 2",
+          "image-name" : "Exclude.png",
+          "name" : "Exclude",
           "position" : {
-            "scale" : 1.4600000000000002,
+            "scale" : 1.35,
             "translation-in-points" : [
-              37,
+              0,
               0
             ]
           }
