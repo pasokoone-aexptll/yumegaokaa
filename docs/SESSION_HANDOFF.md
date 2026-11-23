@@ -366,3 +366,5 @@ MR02〜04も進める依頼の直後、ユーザーが待機を指示しログ�
 2026-11-23 U51実機反映：ユーザーの更新依頼で32425baを本人iPhone17へReleaseビルド・署名検証・上書きインストール成功。起動は端末Lockedで未確認。ログ/tmp/yumegaoka-iphone17-build.log。SE/13は今回未更新。
 
 2026-11-24 U52（R02/R19）：ユーザー提供Frame 741.svgを招待QR中央へ組み込み、元SVGのfill=noneを保持。実招待payload/誤り訂正H/周辺QR生成は維持。原本assets/invite-mark.svgと実行用inviteMark.jsonを一致テスト。Apple Visionで生成QRの正しいpayload復号を確認。表示名を電信出口へ変更（Expo設定・生成native設定）。icons/yumegaoka.icon原本をiOSソースへ複製、Icon Composerの素材/レイヤーを維持。iOSコンパイルで新アイコン出力とCFBundleDisplayName=電信出口を確認。実機未更新。
+
+2026-11-24 U52実機反映：8f6bc2eをiPhone17へReleaseビルド・署名検証・インストール成功。ビルド済みCFBundleDisplayName=電信出口を確認。新Icon Composer素材/招待中央SVGを含む。起動確認は端末Lockedで未完。
