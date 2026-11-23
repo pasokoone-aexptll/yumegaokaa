@@ -35,10 +35,10 @@ export default ({ config }: ConfigContext): ExpoConfig => {
   return {
     ...config,
     name: validationRelease
-      ? "夢ヶ丘 検証用"
+      ? "電信出口 検証用"
       : localEntry
-        ? "夢ヶ丘 開発用"
-        : (config.name ?? "夢ヶ丘"),
+        ? "電信出口 開発用"
+        : (config.name ?? "電信出口"),
     slug: "yumegaoka",
     extra: { ...config.extra, localEntry, validationRelease },
     plugins: [
@@ -64,7 +64,7 @@ export default ({ config }: ConfigContext): ExpoConfig => {
       entitlements,
       infoPlist: {
         ...config.ios?.infoPlist,
-        CFBundleDisplayName: "夢ヶ丘",
+        CFBundleDisplayName: "電信出口",
         YumegaokaPushEnvironment: pushEnvironment ?? "",
       },
       ...(process.env.APPLE_TEAM_ID

@@ -124,3 +124,5 @@ U50結果：実機診断でobserve_visit→ended、cloudで03:03:10 JSTのoutsid
 U51（11/23）：Map吹き出しの尾を従来の文字数補正65〜100%ごと0.9倍（58.5〜90%）。気配アイコンを42pt径/20pt送りへ詰め、2人は0/4pt、3人は5/0/8ptの上下段差。吹き出しとの7pt余白を除去。集計/失効/位置判定は変更なし。型検査/Simulator Release成功。/tmp/u51-presence.pngで3人の重なり/段差/尾を確認。画像なしfixtureのため写真内容は未照合。実機未更新。
 
 2026-11-23 U51実機反映：ユーザーの更新依頼で32425baを本人iPhone17へReleaseビルド・署名検証・上書きインストール成功。起動は端末Lockedで未確認。ログ/tmp/yumegaoka-iphone17-build.log。SE/13は今回未更新。
+
+2026-11-24 U52（R02/R19）：ユーザー提供Frame 741.svgを招待QR中央へ組み込み、元SVGのfill=noneを保持。実招待payload/誤り訂正H/周辺QR生成は維持。原本assets/invite-mark.svgと実行用inviteMark.jsonを一致テスト。Apple Visionで生成QRの正しいpayload復号を確認。表示名を電信出口へ変更（Expo設定・生成native設定）。icons/yumegaoka.icon原本をiOSソースへ複製、Icon Composerの素材/レイヤーを維持。iOSコンパイルで新アイコン出力とCFBundleDisplayName=電信出口を確認。実機未更新。

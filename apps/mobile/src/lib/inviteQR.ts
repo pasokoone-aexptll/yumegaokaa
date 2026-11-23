@@ -1,5 +1,5 @@
 import QRCode from "qrcode";
-import assets from "../components/icons/superassets.json";
+import inviteMark from "./inviteMark.json";
 
 export function invitePayload(code: string) {
   return `yumegaoka://invite?code=${encodeURIComponent(code)}`;
@@ -61,18 +61,12 @@ export function inviteSvg(code: string): string {
   }
   const size = Math.floor(n * 0.28),
     left = (side - size) / 2;
-  parts.push(
-    `<rect x="${left - 0.5}" y="${left - 0.5}" width="${size + 1}" height="${size + 1}" rx="1" fill="white"/>`,
-  );
-  // Explicit group transform also works in react-native-svg, where nested SVG
-  // viewport x/y placement differs from browser rendering.
-  const scale = size / 79;
-  const figure = assets["非常口の人物"]
+  // The supplied 63×63 mark includes its own white backing and circular symbol.
+  const figure = inviteMark
     .replace(/<svg[^>]*>/, "")
-    .replace(/<\/svg>$/, "");
-  const x = left + (size - 65 * scale) / 2;
+    .replace(/<\/svg>\s*$/, "");
   parts.push(
-    `<g transform="translate(${x} ${left}) scale(${scale}) translate(-24 -10)">${figure}</g>`,
+    `<g fill="none" transform="translate(${left} ${left}) scale(${size / 63})">${figure}</g>`,
     "</svg>",
   );
   return parts.join("");
