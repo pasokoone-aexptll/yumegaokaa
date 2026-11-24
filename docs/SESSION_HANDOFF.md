@@ -441,3 +441,5 @@ MR02〜04も進める依頼の直後、ユーザーが待機を指示しログ�
 2026-11-25 C03/C04 R03/R15/R17/R18/R19：ユーザーが画像判定導入を撤回し、通報対応と審査デモ準備のみ継続。061を本番へ単独配備し、適用記録・handler・MFA呼出し・private関数のauthenticated実行不可・同意ゲート保持をread-onlyで確認。既存投稿の削除は実行せず。審査専用メール＋パスワードは本人承認、別環境作成は判断待ち。review-demo/README.mdにデータ/操作順/料金と未完を整理。設定validatorは本番・未承認project・非TLS・資格埋込・push有効を拒否する2試験成功。アプリへの環境切替接続と実デモは未実装。iPhone Releaseビルド成功。旧33件達成率は不変、画像フィルタ不足は提出前未解決事項。
 
 同日：通報対応版をiPhone17の既存アプリへ上書き成功（devicectl databaseSequenceNumber 3944）。端末での運営MFAログインと削除UI実操作は未確認。
+
+2026-11-25 C04続行：本人が無料枠での別Supabase/Render作成を承認。審査用Supabase denshin-app-review（eyrdviyebyozsaellopr、ap-northeast-1）作成、独立した/private/tmp/denshin-review-deployで061までschema配備。本番のリンクは変更なし。Renderは公開repo・codex/mvp-integration・Node・npm ci --omit=dev・node scripts/field-gateway.mjs・Free $0で作成フォーム準備。審査用だけの資格登録はブラウザの実行直前確認待ち。秘密はGit/本文に記録しない。
