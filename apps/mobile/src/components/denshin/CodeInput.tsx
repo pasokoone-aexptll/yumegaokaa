@@ -81,6 +81,7 @@ export function CodeInput({
               <>
                 <RollingNumber
                   value={Number(value[index] ?? 0)}
+                  placeholder={value[index] === undefined}
                   compact
                   light
                   color={success && !successWave ? "#01AE6B" : undefined}

@@ -1791,3 +1791,9 @@ Android運営実接続（R03/R18/R19）：ローカル合成本人に一時運�
 ユーザー指定により、Homeプルダウンのghost状態ドットを#77777Cから黒#000・不透明度12%（rgba(0,0,0,0.12)）へ変更。ModeDropdown.ios.tsxのlight側だけが対象で、Map/Android・モード切替処理は維持。型チェックと対象ESLint成功。実機反映・外観確認は未実施。旧33タスクの達成数は不変。
 
 同日実機反映：ユーザー依頼によりghost色変更を含む現在の作業ツリーをiPhone 17向けReleaseビルド。ビルド・codesign検証・上書きインストール成功。起動は端末Lockedで拒否され、外観確認は未実施。ログ/tmp/yumegaoka-iphone17-ghost-build.log。色のみの変更ではLint不要とのユーザー指示を受け、追加Lintは実施していない。
+
+## 2026-11-25 認証コードの未入力表示と入力欄の右余白（R03/R19）
+
+ユーザー添付画像に基づき、CodeInputの未入力0を黒30%の灰色へ変更。RollingNumberは値とplaceholder状態を保持し、未入力0→入力済み0も既存280msの移動/拡大縮小で遷移する。compactの新数字は下から上へ拡大、旧数字は縮小。削除時は灰色へ戻し、Reduce Motionと成功時の緑表示を保持。StreetLoginのメール入力背景を外側Viewへ分離し、標準clearボタンに外側14ptの右余白を確保。認証/API変更なし。
+
+型チェック成功。placeholder→入力0→削除/Reduce Motionと既存自動認証の対象5試験成功。対象LintはRollingNumber/CodeInputで指摘なし、StreetLoginの変更外119行の既存set-state-in-effectで失敗（今回変更せず）。実画面の余白・動きの視覚照合と実機反映は未実施。旧33タスクの達成数は不変。

@@ -411,19 +411,21 @@ export function StreetLogin({
                       ? "登録済みのメールアドレスを入力"
                       : "登録するメールアドレスを入力"}
                   </Text>
-                  <TextInput
-                    value={email}
-                    onChangeText={setEmail}
-                    accessibilityLabel="メールアドレス"
-                    editable={!busy}
-                    keyboardType="email-address"
-                    textContentType="emailAddress"
-                    autoCapitalize="none"
-                    autoCorrect={false}
-                    clearButtonMode="while-editing"
-                    placeholder="メールアドレス"
-                    style={s.input}
-                  />
+                  <View style={s.inputSurface}>
+                    <TextInput
+                      value={email}
+                      onChangeText={setEmail}
+                      accessibilityLabel="メールアドレス"
+                      editable={!busy}
+                      keyboardType="email-address"
+                      textContentType="emailAddress"
+                      autoCapitalize="none"
+                      autoCorrect={false}
+                      clearButtonMode="while-editing"
+                      placeholder="メールアドレス"
+                      style={s.input}
+                    />
+                  </View>
                 </>
               )}
               {!!error && (
@@ -677,10 +679,14 @@ const s = StyleSheet.create({
     lineHeight: 18,
     color: "rgba(0,0,0,0.22)",
   },
-  input: {
+  inputSurface: {
+    paddingRight: 14,
     backgroundColor: "rgba(0,0,0,0.04)",
     borderRadius: 27,
-    paddingHorizontal: 18,
+  },
+  input: {
+    paddingLeft: 18,
+    paddingRight: 4,
     paddingVertical: 15,
     fontFamily: "ui-rounded",
     fontSize: 20,
