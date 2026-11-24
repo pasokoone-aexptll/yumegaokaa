@@ -1836,3 +1836,5 @@ APP_STORE_BUILD、APP_REVIEW_ACCESS、APP_STORE_PRIVACY_EVIDENCEを作成。審�
 ## 2026-11-25 Android原本比較とedge-to-edge / Pixel開発版
 
 R03/R04/R10〜R14/R19。原本33枚の比較と修正根拠は[比較台帳](frontend-redesign/ANDROID_FIGMA_COMPARISON_20261125.md)。Android全高シート背景、PIN detents/行高、専用スイッチ、Pool/運営配置を修正。全画面のedge-to-edge設定を追加し、API35のMap/シートで白いOS帯除去を撮影確認。Pixel 6a(API37)へDebugをデータ保持で上書き、welcome起動とジェスチャー領域を確認。USB＋Metro8083を使用。型/対象Lint/対象11試験/assembleDebug成功。Releaseは審査フックが拒否したため使用していない。SystemUI dumpで暗いシートのmNavigationLight=false/mDarkIntensity=0、HomeのmNavigationLight=true/mDarkIntensity=1を確認。Pixelログイン後/NFC、長時間利用時OOMの原因は未確認。既存33タスクの達成率は変更しない。
+
+2026-11-25 R03/R17/R18/R19・T033：保護者同意の本人申告チェック方式を採用した仕様とAGE01〜09を資料へ反映。メール確認案を現行提案から置換。規約／年齢確認／保存期限／撤回の確認条件を整理。アプリ・DB実装、公開文面、法務確認、実機は未完。文書整合とgit diff --checkのみ確認し、動作変更がないためテスト／ビルドは再実行しない。旧33件の達成率は不変。
