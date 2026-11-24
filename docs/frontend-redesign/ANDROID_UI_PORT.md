@@ -34,7 +34,7 @@ Swift APIClientのcreateAccount指定は既存platformAuth.androidのshouldCreat
 
 前回：5区分とも移植着手前。今回：A01〜A04の必要実装とOS専用差分監査を実施し、利用可能なエミュレーターで対象UIを確認。A05の実データ/実機統合確認は未完。工数は未計測のままで、件数を工数削減率へ換算しない。シートの下端ボタン欠落はA02の既存操作条件に直接関わるため必要修正であり、分母追加はなし。
 
-- テスト不足：複数人のチャット受信・PIN参加/名簿、運営権限内操作、実カメラQR受付。ローカルOTP/プロフィール保存/PIN作成・編集、Home/設定、本人チャット送信とタブ再訪表示、通知詳細・既読操作は確認済み。共通コードがあることを実データ合格に置き換えない。
+- テスト不足：運営権限内操作、実カメラQR受付。別アカウントのチャット受信・PIN参加/名簿は追加確認済み。ローカルOTP/プロフィール保存/PIN作成・編集、Home/設定、本人チャット送信とタブ再訪表示、通知詳細・既読操作は確認済み。共通コードがあることを実データ合格に置き換えない。
 - 実機待ち：物理Androidで画面密度/keyboard/戻る操作、カメラ/NFC、位置・背景、Pushの確認。現在接続はemulator-5554のみ。
 - 配布条件：通常APKも既存ローカル開発用設定と署名。クラウド本番版、Play公開版、iOS再ビルドは含まない。
 
@@ -50,6 +50,8 @@ Colima停止とDB以外のコンテナ停止を切り分けて復旧。CLI migra
 
 ### 実接続で検出したnative競合（R04〜R09/R19）
 
-認証後のlistener.removeで「Received 1 arguments, but 0 was expected」を再現。アプリのstopObservingがExpo EventEmitterの同名ライフサイクルを上書きしていたためstopVisitObservationへ変更。対象4試験/型検査/対象Lint/Debug再ビルド成功。再インストール後にセッション復元、プロフィール・PINの複数遷移を行い、新しい同エラーなし。修正後の通常Releaseも成功（/tmp/android-port-native-final-release.log、1分8秒）。最終Releaseの再インストール・起動は次サイクル。
+認証後のlistener.removeで「Received 1 arguments, but 0 was expected」を再現。アプリのstopObservingがExpo EventEmitterの同名ライフサイクルを上書きしていたためstopVisitObservationへ変更。対象4試験/型検査/対象Lint/Debug再ビルド成功。再インストール後にセッション復元、プロフィール・PINの複数遷移を行い、新しい同エラーなし。修正後の通常Releaseも成功（/tmp/android-port-native-final-release.log、1分8秒）。最終Releaseの再インストール・通常起動と確認範囲のクラッシュログなしを確認。ローカルHTTP保護により実API確認はDebugへ戻して実施。
 
 追加実データ証拠：/tmp/android-local-account-small.png、android-local-profile-settings-small.png、android-local-account-settings2-small.png、android-local-pool-small.png、android-local-invite-small.png、android-local-blocks-small.png、android-local-admin-small.png。Android表示の実招待QRをApple Visionで1件復号（非空payload確認、実カメラ受付とは別）。本人チャット入力・送信・確定・タブ再訪はandroid-local-chat-input-small.png、android-local-chat-sent-small.png、android-local-chat-return-small.png。通知生成・詳細・了解操作はandroid-local-notifications-small.png、android-local-notification-detail-small.png。
+
+追加サイクル：合成相手android-ui-peer-20261124@example.testをローカルだけに準備（プロフィールは検証用fixture）。別セッションのcommand API投稿がAndroidに新着表示されることを確認。相手の募集PINをHomeから開き、半画面の参加ボタン→参加確定→人数1/3→全画面の主催者/参加予定名簿と固定ボタンを実APIで確認。証拠/tmp/android-local-peer-receive-small.png、android-local-peer-home-small.png、android-local-peer-join-small.png、android-local-peer-roster2-small.png。最終Release起動証拠/tmp/android-port-final-release-launch-small.png。

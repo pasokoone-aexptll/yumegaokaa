@@ -1781,3 +1781,5 @@ MapHeader人数/参加切替/公開メニュー/通知切替/最新へを第6版
 追加確認：API35 DebugでHomeの編集済みPIN、プロフィール、Pool保存画像、アカウントの実メール、招待QR/履歴、Block空状態、運営資格なし表示を確認。本人チャットの入力→送信→単一確定行→タブ再訪表示、PIN作成通知→詳細→了解操作を確認。未入街でもチャット送信可能な既存仕様を維持。Androidの招待QR画像はApple Visionで1件復号し非空payloadを確認（カメラ受付とは別）。詳細画像一覧はANDROID_UI_PORT。
 
 修正後の通常arm64 Release成功（/tmp/android-port-native-final-release.log、1分8秒）。UI_REVIEW=0、既存.env.localを維持。最終Releaseの再インストール起動、複数人の受信・参加/名簿、運営資格内操作、物理端末機能は未確認。エミュレーターにはローカルAPI接続用Debugを維持。
+
+Android継続確認（R12〜R15/R19）：最終Releaseの上書き・通常起動成功、確認範囲にAndroidRuntime/ReactNativeJSエラーなし。ローカルHTTP接続制約は維持しDebugへ戻した。ローカル合成相手のプロフィールfixtureを準備し、別セッションの実command APIからチャット/PINを作成。Androidで相手新着、Home募集一覧、PIN半画面から参加→確定→人数1/3→全画面の参加予定名簿を確認。固定footerは展開後も表示。画像はANDROID_UI_PORT末尾。物理端末・運営権限内操作・実カメラ受付は未確認。
