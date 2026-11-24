@@ -14,6 +14,7 @@ const source = ts.transpileModule(
 ).outputText;
 const valid = {
   YUMEGAOKA_STORE_BUILD: "1",
+  EXPO_PUBLIC_REGISTRATION_DECLARATION: "1",
   YUMEGAOKA_STORE_API_ORIGIN: "https://example.supabase.co",
   EXPO_PUBLIC_SUPABASE_URL: "https://example.supabase.co",
   EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY: "sb_publishable_test",

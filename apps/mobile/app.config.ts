@@ -4,6 +4,8 @@ export default ({ config }: ConfigContext): ExpoConfig => {
   const validationRelease = process.env.YUMEGAOKA_VALIDATION_RELEASE === "1";
   const storeBuild = process.env.YUMEGAOKA_STORE_BUILD === "1";
   if (storeBuild) {
+    if (process.env.EXPO_PUBLIC_REGISTRATION_DECLARATION !== "1")
+      throw new Error("Store build requires registration declarations");
     for (const flag of [
       "YUMEGAOKA_LOCAL_ENTRY",
       "YUMEGAOKA_VALIDATION_RELEASE",

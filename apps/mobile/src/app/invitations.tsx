@@ -23,6 +23,8 @@ import { useInvitations } from "../hooks/useInvitations";
 import { useProfile } from "../hooks/useProfile";
 import { Avatar } from "../components/Avatar";
 import { ReceiveInvitation } from "../components/onboarding/ReceiveInvitation";
+import { RegistrationDeclarationForm } from "../components/onboarding/RegistrationDeclarationForm";
+import type { RegistrationDeclaration } from "../lib/registrationDeclaration";
 export default function Invitations() {
   const d = useInvitations();
   const insets = useSafeAreaInsets();
@@ -31,6 +33,7 @@ export default function Invitations() {
   const { profile } = useProfile();
   const [permission, requestPermission] = useCameraPermissions();
   const [scanning, setScanning] = useState(false);
+  const [declaration, setDeclaration] = useState<RegistrationDeclaration>();
   const [now, setNow] = useState(() => Date.now());
   const router = useRouter();
   const pathname = usePathname();
@@ -62,6 +65,12 @@ export default function Invitations() {
       )
     : 0;
   const target = d.items.find((i) => i.id === revoke);
+  if (
+    d.receiving &&
+    process.env.EXPO_PUBLIC_REGISTRATION_DECLARATION === "1" &&
+    !declaration
+  )
+    return <RegistrationDeclarationForm onContinue={setDeclaration} />;
   if (d.receiving)
     return (
       <ReceiveInvitation
@@ -79,7 +88,11 @@ export default function Invitations() {
           const code = parseInviteQR(data);
           if (!code || d.busy) return;
           setScanning(false);
-          void d.act("invite_accept", { code });
+          void d
+            .act("invite_accept", { code, ...declaration })
+            .then((accepted) => {
+              if (!accepted) setDeclaration(undefined);
+            });
         }}
         onLogout={() => {
           void native

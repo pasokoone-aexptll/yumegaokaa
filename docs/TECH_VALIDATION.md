@@ -1838,3 +1838,7 @@ APP_STORE_BUILD、APP_REVIEW_ACCESS、APP_STORE_PRIVACY_EVIDENCEを作成。審�
 R03/R04/R10〜R14/R19。原本33枚の比較と修正根拠は[比較台帳](frontend-redesign/ANDROID_FIGMA_COMPARISON_20261125.md)。Android全高シート背景、PIN detents/行高、専用スイッチ、Pool/運営配置を修正。全画面のedge-to-edge設定を追加し、API35のMap/シートで白いOS帯除去を撮影確認。Pixel 6a(API37)へDebugをデータ保持で上書き、welcome起動とジェスチャー領域を確認。USB＋Metro8083を使用。型/対象Lint/対象11試験/assembleDebug成功。Releaseは審査フックが拒否したため使用していない。SystemUI dumpで暗いシートのmNavigationLight=false/mDarkIntensity=0、HomeのmNavigationLight=true/mDarkIntensity=1を確認。Pixelログイン後/NFC、長時間利用時OOMの原因は未確認。既存33タスクの達成率は変更しない。
 
 2026-11-25 R03/R17/R18/R19・T033：保護者同意の本人申告チェック方式を採用した仕様とAGE01〜09を資料へ反映。メール確認案を現行提案から置換。規約／年齢確認／保存期限／撤回の確認条件を整理。アプリ・DB実装、公開文面、法務確認、実機は未完。文書整合とgit diff --checkのみ確認し、動作変更がないためテスト／ビルドは再実行しない。旧33件の達成率は不変。
+
+2026-11-25 R03/R17/R18/R19・T033：登録時年齢3択＋未成年の保護者同意申告を実装。招待画面へ接続、通常開発はEXPO_PUBLIC_REGISTRATION_DECLARATIONで既定OFF、storeモードはON必須。058は公開規約版／URLが未設定なら新規受領を拒否。一般ユーザーから記録読取不可、招待受領と原子的に保存、再送で重複なし、退会時消去。registration-declaration.test.mjsのUI判定関数と実public API経由のROLLBACK DB試験成功。初回DB接続はsandbox EPERM、昇格再試行で成功。store設定3試験も成功。クラウド／ローカルへの恒久適用なし。公開文面・保持方針の確認・実機・既存会員対応は未完。生年月日・顔写真要求・現地合流の変更なし。
+
+上記変更のTypeScriptと対象ESLint成功。ネイティブ変更なしでビルド未実施、実表示は未検証。旧33件は実装29/33・統合27/33・実機11/33・DONE27/33・BLOCKED3/33を維持。AGE06のコード／DB根拠が追加され、AGE07実機・AGE01法務等は未解消。残工数の減少は未計測。

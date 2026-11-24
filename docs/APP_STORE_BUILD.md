@@ -14,6 +14,7 @@
 | `EXPO_PUBLIC_SUPABASE_URL` | 上のoriginと完全一致。現在は `https://<project>.supabase.co` のみ許可、末尾スラッシュなし |
 | `EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY` | 対応プロジェクトの公開キー。service_roleや秘密キーを入れない |
 | `EXPO_PUBLIC_STREET_ID` | 対象街のUUID。既定fixtureへのフォールバックを使わない |
+| `EXPO_PUBLIC_REGISTRATION_DECLARATION` | `1`。058配備と公開規約設定を先に完了する |
 | `YUMEGAOKA_APNS_ENVIRONMENT` | `production` |
 | `APPLE_TEAM_ID` | ADP加入後の10文字のTeam ID |
 | `EXPO_PUBLIC_GATEWAY_URL` | 設定するならWSS。資格情報・query・fragmentを埋め込まない |
