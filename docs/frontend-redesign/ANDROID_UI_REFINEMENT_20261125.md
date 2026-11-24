@@ -9,8 +9,8 @@
 | 地図の吹き出し欠落 | Androidの画像化されたマーカーで動的寸法/MaskedViewへ依存しない、背景View＋固定寸法SVGの尻尾へ変更。背景と尻尾を実表示確認。iOSのマスク/blur輪郭は保持 |
 | Homeメニューが左にはみ出す | Home（dark=false）はトリガー左端に合わせて開き、画面端へclamp。地図は右端合わせを維持。Home実表示で確認 |
 | プルダウンの色 | トリガー面を黒5%・blurなしの単色へ。展開メニュー本文の可読性は既存暗色面を維持 |
-| 全Android sheetの背景・余白・取っ手 | 固定灰青/白いroute下地を除去。MapLibre SurfaceViewをPixelCopyで取得しworkerでblur、白/黒の透過レイヤーで合成。地図読込後に最大2回だけ更新、detach時破棄。移動/展開時は背景座標を追従。PinSheetとDetailUIのmapSheetへ適用。DetailUIは明色レイヤー。取っ手56×4dp/白45%、上端領域16dp。PIN半画面→全画面→半画面とフッターの連続性を確認 |
-| NFC待機リングの切れ | Androidのみ初期detentを65%へ、100%まで展開可。リングをnative sheet footerへ置き、スクロール領域下端の重なりを回避。下端まで背景とリングが表示されることを確認 |
+| 全Android sheetの背景・余白・取っ手 | 固定灰青/白いroute下地を除去。MapLibre SurfaceViewをPixelCopyで取得しworkerでblur、白/黒の透過レイヤーで合成。地図読込後に最大2回だけ更新、detach時破棄。移動/展開時は背景座標を追従。PinSheetとDetailUIのmapSheetへ適用。DetailUIは明色レイヤー。取っ手56×4dp/白45%、上端領域16dp。PIN半画面→全画面→半画面を確認。追加指摘でfooter背景自体を撤去し、名簿が背景帯で切れず、ボタンだけが浮く構成へ変更 |
+| NFC待機リングの切れ | Androidのみ初期detentを50%へ（追加指摘で65%から圧縮）、100%まで展開可。リングをnative sheet footerへ置き、スクロール領域下端の重なりを回避。下端まで背景とリングが表示されることを確認 |
 | ×/戻るボタンの色 | 固定色をやめ、暗面は白14%、明面は白55%。背景のぼかしを透過させる。PIN/入街/Accountの戻るで確認 |
 | 人数分母の太さ | HomeとPIN詳細の小さい分母をAndroidのみ800へ。地図の既存900は新フォントで実際のweightを反映 |
 
@@ -36,3 +36,9 @@ Android 24〜28は互換フォント生成と分岐のコード確認のみ、�
 フォント出典・ライセンス・ファイルhash・互換版生成手順は`apps/mobile/assets/licenses/ANDROID_FONTS.md`。icon.svg原本は`apps/mobile/assets/android-icon-source.svg`。変換scriptは`scripts/build-android-app-icon.cjs`。既存.env.local/クラウド/iOSビルドは変更しない。
 
 最終arm64 Release成功（/tmp/android-ui25-release.log、2分31秒）。最新Debugは第7版（/tmp/android-ui25-debug7.log）をエミュレーターへ上書き済み。通常Releaseの本番配布は行っていない。
+
+## 3:51〜3:53の追加画像への修正
+
+Android限定（R12/R19）。footerの背景SheetSurfaceが下の名簿を覆うことをユーザー画像で確認。背景を除き透明な固定操作領域に変更。参加する（neutral/onDark）の面は白18%へ。既存の参加済み緑色と操作は維持。入街は初期50%/展開100%、上余白12dp/図の上14dp/間隔10dpへ詰め、固定リングを維持。
+
+API35の実表示で、半画面の主催者アイコン全体と白透過の浮いた参加ボタン、入街本文とリングの収まりを確認。証拠 `/tmp/android-floating-pin-small.png`、`/tmp/android-floating-entry-small.png`。型/対象Lint成功。JSのみの変更で既存Metroへ反映し、native再ビルド・物理Android転送は実施していない。iOS分岐/表示は不変。

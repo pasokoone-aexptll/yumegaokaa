@@ -16,7 +16,7 @@ Android移植は共通操作部品・Map/PIN・keyboard・QR権限・運営画�
 
 ### 2026-11-25 Android限定の外観修正
 
-ユーザーが添付画像で指摘したアイコン比率/Intern+Noto Sans JP/吹き出し欠落/Homeメニュー位置/シート全体/ボタン透過色/人数分母を修正。最新の正本は[ANDROID_UI_REFINEMENT_20261125](frontend-redesign/ANDROID_UI_REFINEMENT_20261125.md)。前回の移植確認を外観のユーザー合格と混同しない。iOS専用素材/ファイルは未変更。Android API35の実表示確認、型/対象Lint/8試験/Debug/Release成功。エミュレーターへ新Debug反映済み、実機は未確認。
+ユーザーが添付画像で指摘したアイコン比率/Intern+Noto Sans JP/吹き出し欠落/Homeメニュー位置/シート全体/ボタン透過色/人数分母を修正。最新の正本は[ANDROID_UI_REFINEMENT_20261125](frontend-redesign/ANDROID_UI_REFINEMENT_20261125.md)。前回の移植確認を外観のユーザー合格と混同しない。iOS専用素材/ファイルは未変更。Android API35の実表示確認、型/対象Lint/8試験/Debug/Release成功。エミュレーターへ新Debug反映済み、実機は未確認。3:51の追加指摘でfooter背景帯を撤去し参加ボタンを白18%、入街を50%高へ圧縮。JS変更をMetro反映・実表示確認済み（詳細は同再調整台帳）。
 
 ### 以前のiOSキュー記録
 

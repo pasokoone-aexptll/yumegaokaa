@@ -1,4 +1,3 @@
-import { SheetSurface } from "./SheetSurface";
 import { Stack } from "expo-router";
 import { View, useWindowDimensions } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -24,7 +23,6 @@ export function PinSheetFooter({ active, children }: PinSheetFooterProps) {
               }}
               pointerEvents="box-none"
             >
-              <SheetSurface />
               <View style={{ height: 100 }} pointerEvents="box-none">
                 {children}
               </View>

@@ -118,12 +118,12 @@ export default function StreetEntry() {
         overScrollMode="never"
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{
-          paddingTop: 16,
+          paddingTop: Platform.OS === "android" ? 12 : 16,
           flexGrow: 1,
           paddingHorizontal: 20,
           paddingBottom: Platform.OS === "android" ? 110 : 12,
           alignItems: "center",
-          gap: 12,
+          gap: Platform.OS === "android" ? 10 : 12,
         }}
       >
         <View
@@ -154,7 +154,7 @@ export default function StreetEntry() {
             onPress={() => entrySheetState.close()}
           />
         </View>
-        <View style={{ marginTop: 22 }}>
+        <View style={{ marginTop: Platform.OS === "android" ? 14 : 22 }}>
           <EntryAnimation phase={phase} size={diameter} />
           {count !== undefined && count > 0 && (
             <View

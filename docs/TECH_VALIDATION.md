@@ -1814,3 +1814,5 @@ SheetSurfaceはMapLibre SurfaceViewのPixelCopy→worker blur→白/黒透過合
 11/25最終Release：arm64 assembleRelease成功（/tmp/android-ui25-release.log、2分31秒）。Android API35では最新Debug第7版の背景連続性と半画面への復帰を確認。
 
 同日iPhone 17反映：ユーザー依頼により9c5752dの認証コード/入力余白修正を含む作業ツリーをReleaseビルド。ビルド・署名検証成功。初回転送はremote接続エラー、同一成果物の再試行で上書きインストール成功。起動は端末Lockedで拒否、実画面の確認は未実施。ログ/tmp/yumegaoka-iphone17-input-build.log。
+
+11/25追加（R12/R19）：ユーザー画像でfooter背景が主催者画像を途中で覆うと確認。Android PinSheetFooterのSheetSurfaceを除去し、透明な領域に操作だけを配置。参加ボタンのneutral/onDarkを白18%へ。入街の初期detentを65→50%、上/要素間余白もAndroidだけ圧縮。API35実画面で主催者画像と浮遊ボタン、コンパクトな入街本文/リングを確認（/tmp/android-floating-pin-small.png、android-floating-entry-small.png）。型/対象Lint成功。JS変更のみでMetro反映、native再ビルド/物理端末転送なし。

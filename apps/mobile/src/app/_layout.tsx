@@ -103,7 +103,8 @@ export default function Layout() {
                 options={{
                   presentation: "formSheet",
                   animation: "slide_from_bottom",
-                  sheetAllowedDetents: Platform.OS === "android" ? [0.65, 1] : [0.5],
+                  sheetAllowedDetents:
+                    Platform.OS === "android" ? [0.5, 1] : [0.5],
                   sheetInitialDetentIndex: 0,
                   sheetGrabberVisible: true,
                   contentStyle: {

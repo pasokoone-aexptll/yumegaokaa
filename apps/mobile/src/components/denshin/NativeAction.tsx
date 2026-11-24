@@ -58,7 +58,7 @@ export function NativeAction({
               ? "#008CFF"
               : tone === "neutral"
                 ? onDark
-                  ? "#45474a"
+                  ? "rgba(255,255,255,0.18)"
                   : "#f2f2f7"
                 : "#34C759",
         opacity: disabled ? 0.4 : 1,
