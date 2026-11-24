@@ -412,4 +412,4 @@ MR02〜04も進める依頼の直後、ユーザーが待機を指示しログ�
 
 2026-11-25追補：057を単独でクラウド配備済み。配備済み関数の合成退会ROLLBACK試験成功。R2 daily/の7日削除EnabledをCloudflare UIで確認。058未配備。Auth soft deleteは識別情報が残り、members/複数表/field_trial_grant外部キーが最終削除を阻むため修正設計が必要。通報証拠の退会時原則削除、問い合わせ90日・無料の2判断とRenderログインを質問中。PRODUCTION_RETENTION_REVIEW参照。
 
-2026-11-25：通報退会時原則削除・問い合わせ完了後90日削除・無料をユーザー確定。059をクラウド配備、修正workerを配備専用branch9fa778cへpush。ローカルからクラウドに修正workerを実行して合成Auth/Storage/member/job各0件を確認。058未適用。Renderはログイン待ち、実稼働版未確認。正文はまだ公開していない。
+2026-11-25：通報退会時原則削除・問い合わせ完了後90日削除・無料をユーザー確定。059をクラウド配備、修正workerを配備専用branch9fa778cへpush。ローカルからクラウドに修正workerを実行して合成Auth/Storage/member/job各0件を確認。058未適用。Renderは11/25 06:04 JSTに9fa778cを手動配備しLive。常時workerによる別の合成アカウント消去と再試行回復を確認済み。Supabase Free・東京、Render Hobby・Oregonも確認。正文は候補2026-11-25-v1へ更新したが未公開。一般公開版向け先行公開と既存試験利用者への同意取得方針を質問中。

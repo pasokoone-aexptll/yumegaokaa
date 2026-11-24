@@ -33,7 +33,7 @@
 
 ## 退会の残検証
 
-057はchat本文・PIN本文の消去を追加。maintenance.mjsはavatarsの本人パスを削除してからAuthのsoft delete、成功時だけjob完了、失敗時retry。街pool画像は独立したicon_cleanupで回収する。soft deleteを物理完全消去と同一視しない。
+057はchat本文・PIN本文の消去を追加。059とmaintenance.mjsは所有画像をStorage APIで削除し、業務表の参照を整理してAuth hard deleteを実行する。Auth／memberが残る間はjob完了を拒否し再試行する。059クラウド配備済み、Render 9fa778cで合成Auth／member／画像／job各0件とAuth GET404を確認。プロバイダーログ・バックアップの即時消滅や実機退会一巡の証拠とはしない。詳細PRODUCTION_RETENTION_REVIEW。
 
 提出前に、クラウド057適用状況、本人以外から画像・本文が見えなくなること、Auth/Storage job完了、失敗再送、残る通報証拠・監査・バックアップの期限と説明を照合する。所有者不明の過去匿名投稿をこの作業で削除しない。
 

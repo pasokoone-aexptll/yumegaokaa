@@ -16,7 +16,7 @@
 
 ## 次の作業
 
-1. 057は配備済み。配備専用ブランチのworkerを9fa778cへ更新。Renderの実稼働版・ログは再ログイン待ち。059のhard deleteへ移行済み。検証範囲は後段参照。
+1. 057は配備済み。配備専用ブランチのworkerを9fa778cへ更新。Renderの実稼働版9fa778cと定期清掃を確認済み。059のhard deleteへ移行済み。検証範囲は後段参照。
 2. 058は規約正文・版・URL・アプリ有効化を揃えてから配備する。公開中の準備中ページをregistration_policyへ設定しない。
 3. バックアップのイメージ取得失敗対策（再試行／事前取得）を別途整備する。今回の再実行成功だけで再発防止済みとしない。
 4. R2 lifecycleの7日設定は管理画面で確認済み。復元後の再削除手順を確定する。
@@ -44,7 +44,7 @@ Supabaseプロジェクトはap-northeast-1（東京）、ACTIVE_HEALTHY。R2は
 
 058に依存しない設計で、057→059の順でクラウド適用済み。後で058を適用する際は順序差を確認し、dry-runで058のみを対象としてinclude-all等を判断する。未公開の規約URLを設定しない。
 
-配備専用ブランチcodex/field-runtimeにワーカー修正9fa778cをpush。Renderの実稼働版の確認はログイン待ちで、push成功だけを配備完了とは扱わない。
+配備専用ブランチcodex/field-runtimeの9fa778cをRenderへ手動配備。2026-11-25 06:04:11 JST、deploy dep-dc2vndd9el5s73d0h9ugがLive。自動配備は無効で、確認時の旧版36261daから更新した。
 
 ### 検証
 
@@ -54,9 +54,15 @@ Supabaseプロジェクトはap-northeast-1（東京）、ACTIVE_HEALTHY。R2は
 
 ## 正式公開までの残件
 
-- Renderで9fa778cの稼働と定期清掃ログを確認する。現時点では再ログイン待ち。
+- Renderの修正版稼働・合成アカウントの削除を確認済み。実機からの退会操作は未確認。
 - 058は未配備。年齢区分を現在収集中と説明せず、一般公開時の方針と現地試験を区別する。
 - 問い合わせの90日削除は運用方針でありメール自動清掃機能ではない。SUPPORT_OPERATIONSを担当者が実施する。送受信設定の確認は11/26以降。
 - 外部サービスの実プラン／追加ログ転送／国外取扱いを確認し、公開文面に反映する。子どもの同意方式に関する法務確認はAGE01に継続。
 
-[Supabase Auth削除仕様](https://supabase.com/docs/reference/javascript/auth-admin-deleteuser)／[Renderログ期間](https://render.com/docs/logging)／[Resendメール保持](https://resend.com/security/gdpr/)。Render Hobbyログ7日、Resend標準メール・ログ30日／バックアップ7日は公式仕様として確認。ただし実アカウントのプラン・個別契約・追加転送先と照合してから最終正文に採用する。
+[Supabase Auth削除仕様](https://supabase.com/docs/reference/javascript/auth-admin-deleteuser)／[Renderログ期間](https://render.com/docs/logging)／[Resendメール保持](https://resend.com/security/gdpr/)。Render Hobbyログ7日、Resend標準メール・ログ30日／バックアップ7日は公式仕様として確認。実画面でRender HobbyとSupabase Freeを確認。SupabaseのLog Drainsはアップグレードが必要で未設定。Render追加ログ転送とResendの現在の個別契約は未確認。
+
+## Render実稼働での追加確認（11/25 06:04〜06:12 JST）
+
+2つ目のメールを送信しない合成Auth・私有画像・退会済みmember・清掃jobを作成し、ローカルworkerを実行せず待機した。切替中の旧instance bmpbsがsoft deleteを試みたが059のfinishガードが完了を拒否し再試行へ。新instance mwrqbが06:10:17にcleanup=1、以後2周期cleanup=0。Auth GET404、auth.users／members／storage.objects／cleanup jobの対象各0件を読み取り確認し、fixtureは消去済み。実利用者は試験対象外。プロバイダーの監査ログやバックアップまで即時消滅したという証拠ではない。
+
+Supabase管理画面でFree・東京、RenderでHobby・Oregonを確認。Supabaseの通常API／DBログは[Free仕様](https://supabase.com/pricing)で1日、Render Hobbyは7日。国外処理はリージョンと別に事業者の運用・委託先も存在するためPRIVACY_POLICY_DRAFTへ区別して反映。058は未配備、公開文書の一般公開版への適用と既存試験利用者への同意取得方針はユーザー確認中。

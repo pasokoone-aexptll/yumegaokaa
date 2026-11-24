@@ -1862,3 +1862,7 @@ R03/R04/R10〜R14/R19。IMG_1714/1715を受け5点を修正。型/対象6試験/
 R10〜R14/R19。Android作成/編集ヘッダーの負marginとpaddingの差で2dpはみ出していた点を修正。円形ボタンの上端をエミュレーター拡大画像とPixelで確認。対象Lint/ローカルRelease成功、Pixelへ上書き済み。詳細・証拠はANDROID_UI_REFINEMENT_20261125末尾。
 
 2026-11-25 R17/R18：059 account_erasureと通報消去triggerを追加。Storage API→DB参照整理→Auth hard delete→finishの順に変更。権限／lease／不完全finish／再登録競合をガード。ローカルROLLBACKとHTTP4試験成功。クラウド059適用、合成アカウントの実Auth/Storage削除成功。配備ブランチ9fa778c、Render実稼働版は未確認。詳細PRODUCTION_RETENTION_REVIEW。
+
+## 2026-11-25 Render退会消去の実稼働確認（R03/R17/R18/R19）
+
+Renderは旧36261daから9fa778cへ手動配備、06:04:11 JST Live。別の合成Auth／私有画像／退会済みmember／清掃jobを用い、ローカルworkerを動かさず新instance mwrqbのcleanup=1と後続0を確認。旧instanceのsoft deleteによるfinish拒否後も再試行で回復し、Auth GET404と対象Auth／member／Storage／job各0件を確認。実利用者への試験なし。059の完了ガードとRender版の実消去を確認し、配備確認待ちを解消。実機退会・058配備・既存利用者同意・正式公開・メール返信・バックアップ復元時の再削除は未確認。旧33件の分母・達成率は変更なし。文書だけの変更につきビルド再実行なし。
