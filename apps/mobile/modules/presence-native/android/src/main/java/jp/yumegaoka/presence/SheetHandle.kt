@@ -27,7 +27,10 @@ class SheetHandle(context: Context, appContext: AppContext) : ExpoView(context, 
       val params = ancestor.layoutParams as? androidx.coordinatorlayout.widget.CoordinatorLayout.LayoutParams
       val behavior = params?.behavior as? com.google.android.material.bottomsheet.BottomSheetBehavior<*>
       if (behavior != null) {
-        behavior.state = if (target) com.google.android.material.bottomsheet.BottomSheetBehavior.STATE_EXPANDED
+        behavior.state = if (target) {
+          if (behavior.isFitToContents) com.google.android.material.bottomsheet.BottomSheetBehavior.STATE_EXPANDED
+          else com.google.android.material.bottomsheet.BottomSheetBehavior.STATE_HALF_EXPANDED
+        }
           else com.google.android.material.bottomsheet.BottomSheetBehavior.STATE_COLLAPSED
         return
       }

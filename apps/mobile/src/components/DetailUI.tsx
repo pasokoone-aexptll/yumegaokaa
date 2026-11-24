@@ -20,6 +20,8 @@ import {
   StyleSheet,
   Text,
   type TextStyle,
+  type StyleProp,
+  type ViewStyle,
   type ViewProps,
   View,
 } from "react-native";
@@ -137,27 +139,29 @@ export function DetailPage({
             height: insets.top + headerHeight + 36,
           }}
         >
-          <MaskedView
-            style={StyleSheet.absoluteFill}
-            maskElement={
-              <Svg width="100%" height="100%">
-                <Defs>
-                  <LinearGradient id="detailEdge" x1="0" y1="0" x2="0" y2="1">
-                    <Stop offset="0" stopColor="white" />
-                    <Stop offset="0.65" stopColor="white" />
-                    <Stop offset="1" stopColor="white" stopOpacity={0} />
-                  </LinearGradient>
-                </Defs>
-                <Rect width="100%" height="100%" fill="url(#detailEdge)" />
-              </Svg>
-            }
-          >
-            <BlurView
-              tint="light"
-              intensity={65}
+          {!(Platform.OS === "android" && background) && (
+            <MaskedView
               style={StyleSheet.absoluteFill}
-            />
-          </MaskedView>
+              maskElement={
+                <Svg width="100%" height="100%">
+                  <Defs>
+                    <LinearGradient id="detailEdge" x1="0" y1="0" x2="0" y2="1">
+                      <Stop offset="0" stopColor="white" />
+                      <Stop offset="0.65" stopColor="white" />
+                      <Stop offset="1" stopColor="white" stopOpacity={0} />
+                    </LinearGradient>
+                  </Defs>
+                  <Rect width="100%" height="100%" fill="url(#detailEdge)" />
+                </Svg>
+              }
+            >
+              <BlurView
+                tint="light"
+                intensity={65}
+                style={StyleSheet.absoluteFill}
+              />
+            </MaskedView>
+          )}
         </View>
         <View
           onLayout={(event) => setHeaderHeight(event.nativeEvent.layout.height)}
@@ -227,6 +231,7 @@ export function DetailRow({
   subtitle,
   titleStyle,
   icon,
+  rowStyle,
   onPress,
   danger = false,
   disabled = false,
@@ -235,6 +240,7 @@ export function DetailRow({
   title: string;
   subtitle?: string;
   titleStyle?: TextStyle;
+  rowStyle?: StyleProp<ViewStyle>;
   leading?: React.ReactNode;
   icon?: React.ComponentProps<typeof DetailIcon>["name"];
   onPress?: () => void;
@@ -281,13 +287,14 @@ export function DetailRow({
       onPress={onPress}
       style={({ pressed }) => [
         detail.row,
+        rowStyle,
         { opacity: disabled ? 0.4 : pressed ? 0.6 : 1 },
       ]}
     >
       {content}
     </Pressable>
   ) : (
-    <View style={detail.row}>{content}</View>
+    <View style={[detail.row, rowStyle]}>{content}</View>
   );
 }
 export function PrimaryAction({

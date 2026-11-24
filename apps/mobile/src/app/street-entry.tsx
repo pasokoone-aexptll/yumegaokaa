@@ -72,9 +72,6 @@ export default function StreetEntry() {
     useNavigation<
       NativeStackNavigationProp<Record<string, object | undefined>>
     >();
-  const { width } = useWindowDimensions();
-  // Space for the centered 90pt sign and its visit-count bubble.
-  const diameter = width * (0.82 / 0.975);
   useEffect(() => {
     if (
       (fieldTrial || !trialRing) &&
@@ -112,6 +109,32 @@ export default function StreetEntry() {
   }, [phase]);
   if (!value || !phase) return null;
   return (
+    <StreetEntryView
+      phase={phase}
+      count={count}
+      trialRing={trialRing}
+      onClose={() => entrySheetState.close()}
+      onScan={() => void value.scan("default")}
+    />
+  );
+}
+
+export function StreetEntryView({
+  phase,
+  count,
+  trialRing = false,
+  onClose,
+  onScan,
+}: {
+  phase: "explain" | "scanning" | "checking" | "success";
+  count?: number;
+  trialRing?: boolean;
+  onClose: () => void;
+  onScan: () => void;
+}) {
+  const { width } = useWindowDimensions();
+  const diameter = width * (0.82 / 0.975);
+  return (
     <PinSheet>
       <ScrollView
         bounces={false}
@@ -148,11 +171,7 @@ export default function StreetEntry() {
               Login city
             </Text>
           </View>
-          <RoundAction
-            label="閉じる"
-            glyph="×"
-            onPress={() => entrySheetState.close()}
-          />
+          <RoundAction label="閉じる" glyph="×" onPress={onClose} />
         </View>
         <View style={{ marginTop: Platform.OS === "android" ? 14 : 22 }}>
           <EntryAnimation phase={phase} size={diameter} />
@@ -213,7 +232,7 @@ export default function StreetEntry() {
                   : "NFCを待機中"
             }
             disabled={!trialRing || phase !== "explain"}
-            onPress={() => void value.scan("default")}
+            onPress={onScan}
             hitSlop={12}
             style={
               Platform.OS === "android"

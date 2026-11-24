@@ -4,6 +4,7 @@ import { NativeToggle as Switch } from "../components/denshin/NativeToggle";
 import { useEffect, useMemo, useState } from "react";
 import {
   ActivityIndicator,
+  Platform,
   Image,
   StyleSheet,
   Text,
@@ -226,6 +227,11 @@ export default function Invitations() {
                       : "未使用の招待を削除する"
                   }
                   value={!i.revoked && (i.used || !i.expired)}
+                  trackColor={
+                    Platform.OS === "android"
+                      ? { false: "rgba(0,0,0,0.22)" }
+                      : undefined
+                  }
                   disabled={d.busy || i.revoked || (!i.used && i.expired)}
                   onValueChange={() =>
                     router.push({

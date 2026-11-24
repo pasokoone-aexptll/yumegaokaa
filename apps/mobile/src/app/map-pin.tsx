@@ -364,7 +364,11 @@ const s = StyleSheet.create({
     alignItems: "center",
     marginRight: -8,
   },
-  content: { padding: 24, paddingTop: 16, gap: 14 },
+  content: {
+    padding: 24,
+    paddingTop: Platform.OS === "android" ? 10 : 16,
+    gap: 14,
+  },
   identity: {
     flexDirection: "row",
     gap: 18,

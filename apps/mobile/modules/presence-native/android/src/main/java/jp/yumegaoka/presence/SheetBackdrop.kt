@@ -21,24 +21,61 @@ class SheetBackdrop(context: Context, private val expoContext: AppContext) : Exp
   private var snapshot: Bitmap? = null
   private var surface: SurfaceView? = null
   private var generation = 0
+  private var sheetHost: View? = null
+  private var originalBackground: android.graphics.drawable.Drawable? = null
+  private val materialBackground = object : android.graphics.drawable.Drawable() {
+    override fun draw(canvas: Canvas) {
+      val target = sheetHost ?: return
+      val radius = 28 * resources.displayMetrics.density
+      val clip = Path().apply {
+        addRoundRect(RectF(0f, 0f, target.width.toFloat(), target.height.toFloat()),
+          floatArrayOf(radius, radius, radius, radius, 0f, 0f, 0f, 0f), Path.Direction.CW)
+      }
+      canvas.save()
+      canvas.clipPath(clip)
+      drawMaterial(canvas, target)
+      canvas.restore()
+    }
+    override fun setAlpha(alpha: Int) {}
+    override fun setColorFilter(filter: ColorFilter?) {}
+    @Deprecated("Deprecated in Java")
+    override fun getOpacity(): Int = PixelFormat.TRANSLUCENT
+  }
+  private fun attachMaterialToSheet() {
+    var ancestor = parent
+    while (ancestor is View) {
+      val params = ancestor.layoutParams as? androidx.coordinatorlayout.widget.CoordinatorLayout.LayoutParams
+      if (params?.behavior is com.google.android.material.bottomsheet.BottomSheetBehavior<*>) {
+        sheetHost = ancestor
+        originalBackground = ancestor.background
+        ancestor.background = materialBackground
+        return
+      }
+      ancestor = ancestor.parent
+    }
+  }
+  private fun invalidateMaterial() {
+    invalidate()
+    materialBackground.invalidateSelf()
+  }
   private val lastPosition = intArrayOf(Int.MIN_VALUE, Int.MIN_VALUE)
   private val position = IntArray(2)
   private val followSheet = android.view.ViewTreeObserver.OnPreDrawListener {
     getLocationOnScreen(position)
     if (!position.contentEquals(lastPosition)) {
       position.copyInto(lastPosition)
-      invalidate()
+      invalidateMaterial()
     }
     true
   }
   var light = false
-    set(value) { field = value; invalidate() }
+    set(value) { field = value; invalidateMaterial() }
   init { setWillNotDraw(false) }
   override fun onAttachedToWindow() {
     super.onAttachedToWindow()
     viewTreeObserver.addOnPreDrawListener(followSheet)
     val ticket = ++generation
-    post { capture(ticket, 0) }
+    post { attachMaterialToSheet(); capture(ticket, 0) }
     // MapLibre can finish its camera transition/tiles after sheet presentation.
     // Refresh twice while settling; never run a continuous screenshot loop.
     postDelayed({ capture(ticket, 0) }, 500)
@@ -46,6 +83,9 @@ class SheetBackdrop(context: Context, private val expoContext: AppContext) : Exp
   }
   override fun onDetachedFromWindow() {
     viewTreeObserver.removeOnPreDrawListener(followSheet)
+    sheetHost?.let { if (it.background === materialBackground) it.background = originalBackground }
+    sheetHost = null
+    originalBackground = null
     generation++
     snapshot = null
     surface = null
@@ -69,17 +109,20 @@ class SheetBackdrop(context: Context, private val expoContext: AppContext) : Exp
         if (result != PixelCopy.SUCCESS) { retry(); return@request }
         worker.execute {
           val blurred = blurMap(bitmap, max(1, (28 * resources.displayMetrics.density / 6).toInt()))
-          main.post { if (ticket == generation) { snapshot = blurred; surface = source; invalidate() } }
+          main.post { if (ticket == generation) { snapshot = blurred; surface = source; invalidateMaterial() } }
         }
       }, main)
     } catch (_: IllegalArgumentException) { retry() }
   }
   override fun onDraw(canvas: Canvas) {
     super.onDraw(canvas)
+    if (sheetHost == null) drawMaterial(canvas, this)
+  }
+  private fun drawMaterial(canvas: Canvas, target: View) {
     snapshot?.let { bitmap ->
       surface?.let { source ->
         val origin = IntArray(2); val position = IntArray(2)
-        source.getLocationOnScreen(origin); getLocationOnScreen(position)
+        source.getLocationOnScreen(origin); target.getLocationOnScreen(position)
         val x = (origin[0] - position[0]).toFloat(); val y = (origin[1] - position[1]).toFloat()
         val shader = BitmapShader(bitmap, Shader.TileMode.CLAMP, Shader.TileMode.CLAMP)
         shader.setLocalMatrix(Matrix().apply {
@@ -87,7 +130,7 @@ class SheetBackdrop(context: Context, private val expoContext: AppContext) : Exp
           postTranslate(x, y)
         })
         paint.shader = shader
-        canvas.drawRect(0f, 0f, width.toFloat(), height.toFloat(), paint)
+        canvas.drawRect(0f, 0f, target.width.toFloat(), target.height.toFloat(), paint)
         paint.shader = null
       }
     }

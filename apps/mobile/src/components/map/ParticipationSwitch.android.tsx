@@ -45,7 +45,7 @@ export function ParticipationSwitch({
             height: 28,
             padding: 2,
             borderRadius: 16,
-            backgroundColor: value ? "#34C759" : "#56606e",
+            backgroundColor: value ? "#34C759" : "rgba(255,255,255,0.22)",
           }}
         >
           <Animated.View

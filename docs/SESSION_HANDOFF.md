@@ -14,6 +14,10 @@ Codex用app-store-complianceを導入・自己検証・手動実行済み。自�
 
 Android移植は共通操作部品・Map/PIN・keyboard・QR権限・運営画面・アイコンまで実装。API35 emulatorの対象UI検証とRelease成功。PIN半画面の固定操作はAndroid native footerへ接続し、展開/折りたたみ後の表示を第16版で確認。ローカル実接続でOTP/プロフィール写真保存/PIN作成・編集を確認。Expo stopObserving予約名衝突を修正しDebug成功。Home/設定/本人チャット送信・再訪/通知詳細も実データ確認、修正後Releaseビルド成功。最終Release再起動、相手チャット受信/PIN参加・名簿も確認済み。運営MFA/自分の検証招待取消も実API確認済み。UI移植と利用可能なエミュレーター確認を完了。実カメラ受付/物理Androidの製品受入は未確認。最終照合はANDROID_UI_PORT末尾。旧33件は不変。詳細と未確認はANDROID_UI_PORT/TECH_VALIDATION末尾。
 
+### 2026-11-25 原本33枚との反復照合・Pixel開発版更新
+
+Downloads/figmaaaaaaaaの全33枚とAndroidを撮影比較し、シート背景切れ、作成画面の欠け/高さ、スイッチ、Pool、運営レイアウトを修正。追加指定のedge-to-edgeを実装しPixel 6aへDebug上書き・welcome起動確認済み。USB＋Metro8083が必要。型/対象Lint/11試験/Debug成功。完全な画素一致・全実機フロー合格とは扱わない。長時間deeplink/Hot Reload後のOOM原因、3ボタンの白アイコン化は未確認。[比較台帳](frontend-redesign/ANDROID_FIGMA_COMPARISON_20261125.md)に撮影根拠と残りを記録。iOSの表示仕様は維持。
+
 ### 2026-11-25 Android限定の外観修正
 
 ユーザーが添付画像で指摘したアイコン比率/Intern+Noto Sans JP/吹き出し欠落/Homeメニュー位置/シート全体/ボタン透過色/人数分母を修正。最新の正本は[ANDROID_UI_REFINEMENT_20261125](frontend-redesign/ANDROID_UI_REFINEMENT_20261125.md)。前回の移植確認を外観のユーザー合格と混同しない。iOS専用素材/ファイルは未変更。Android API35の実表示確認、型/対象Lint/8試験/Debug/Release成功。エミュレーターへ新Debug反映済み、実機は未確認。3:51の追加指摘でfooter背景帯を撤去し参加ボタンを白18%、入街を50%高へ圧縮。JS変更をMetro反映・実表示確認済み（詳細は同再調整台帳）。

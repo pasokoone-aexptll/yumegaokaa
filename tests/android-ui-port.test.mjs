@@ -18,6 +18,7 @@ function nodes(node) {
 test('Android operator list exposes pagination and identifies empty/used invitations', () => {
   const { OperatorForm } = load('apps/mobile/src/components/settings/OperatorForm.tsx', {
     'react-native': { Text: 'Text', View: 'View', Switch: 'Switch', Alert: {} },
+    '../denshin/NativeToggle': { NativeToggle: 'Switch' },
     '../DetailUI': { DetailRow: 'DetailRow', Section: 'Section' },
     '../icons/SuperAsset': { SuperAsset: 'SuperAsset' },
   });

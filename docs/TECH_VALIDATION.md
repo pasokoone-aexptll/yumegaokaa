@@ -1832,3 +1832,7 @@ compliance再実行はexit 2、critical=8/high=12/medium=4で前回と同じ。�
 APP_STORE_BUILD、APP_REVIEW_ACCESS、APP_STORE_PRIVACY_EVIDENCEを作成。審査デモは設計のみ承認、Apple了承／実装なし。13〜17歳を含めたい意向を記録、TEEN_SAFETY_DISCUSSIONへ未承認の安全対策を分離。年齢制限・UI・保存期限の変更なし。旧33件の実装29/33、統合27/33、iPhone11/33、DONE27/33、BLOCKED3/33を維持。C04設計草案、C05実装根拠、C06設定検査を追加したが、全体工数の減少は未計測。
 
 2026-11-25 R03/R19：資料用語をプロフィール画像へ統一し、街poolとの差を明記。顔写真必須という解釈を撤回。13歳以上・画像と現地合流は現仕様維持を記録。文書変更のみでアプリの画像・合流・年齢判定・同意機能は未変更。文言残存と差分を確認し、ビルド／実機試験は再実行しない。
+
+## 2026-11-25 Android原本比較とedge-to-edge / Pixel開発版
+
+R03/R04/R10〜R14/R19。原本33枚の比較と修正根拠は[比較台帳](frontend-redesign/ANDROID_FIGMA_COMPARISON_20261125.md)。Android全高シート背景、PIN detents/行高、専用スイッチ、Pool/運営配置を修正。全画面のedge-to-edge設定を追加し、API35のMap/シートで白いOS帯除去を撮影確認。Pixel 6a(API37)へDebugをデータ保持で上書き、welcome起動とジェスチャー領域を確認。USB＋Metro8083を使用。型/対象Lint/対象11試験/assembleDebug成功。Releaseは審査フックが拒否したため使用していない。Pixelログイン後/NFC、長時間利用時OOMの原因、3ボタン白アイコン化は未確認。既存33タスクの達成率は変更しない。

@@ -41,6 +41,38 @@ function Scenes() {
   const [code, setCode] = useState("");
   const [complete, setComplete] = useState(false);
   const [busy, setBusy] = useState(false);
+  if (scene === "notices-empty")
+    return (
+      <NotificationsView
+        data={noticeData([])}
+        push={{ status: "unavailable", enable: done }}
+        onOpen={() => {}}
+      />
+    );
+  if (scene === "block-empty")
+    return (
+      <BlocksView
+        data={{
+          items: [],
+          loading: false,
+          error: "",
+          busy: false,
+          refresh: done,
+          update: async () => false,
+        }}
+      />
+    );
+  if (scene === "account" || scene === "email" || scene === "otp-complete")
+    return (
+      <AccountView
+        editing={scene === "account" ? undefined : "1"}
+        data={
+          scene === "otp-complete"
+            ? emailData("114514", true)
+            : { ...emailData(), pending: "" }
+        }
+      />
+    );
   if (scene === "notices")
     return (
       <NotificationsView

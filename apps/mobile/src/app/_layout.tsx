@@ -1,5 +1,6 @@
 import { reviewEnabled } from "../components/debug/reviewEnabled";
 import { StatusBar } from "expo-status-bar";
+import { requireNativeModule } from "expo-modules-core";
 import { useFonts } from "expo-font";
 import { LaunchSplash, SplashPlayingContext } from "../components/LaunchSplash";
 import { sheetBackground } from "../components/map/mapBlur";
@@ -35,6 +36,24 @@ export default function Layout() {
   const access = useAccountAccess(session.signed_in, session.revision);
   usePushLifecycle(access.status === "active", session.revision);
   const previousAccess = useRef(access.status);
+  const darkNavigation =
+    (path === "/" && session.signed_in) ||
+    [
+      "/review-map",
+      "/review-chat",
+      "/review-pin",
+      "/map-pin",
+      "/pin-confirmed",
+      "/pins/create",
+      "/pins/location",
+      "/street-entry",
+    ].includes(path);
+  useEffect(() => {
+    if (Platform.OS !== "android") return;
+    requireNativeModule<{ setNavigationAppearance?: (dark: boolean) => void }>(
+      "PresenceNative",
+    ).setNavigationAppearance?.(darkNavigation);
+  }, [darkNavigation, path]);
   useEffect(() => {
     if (__DEV__ && path === "/ui-preview") return;
     // Explicit simulator review builds can show isolated fixtures without an

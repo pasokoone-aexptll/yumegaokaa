@@ -8,6 +8,7 @@ import { RollingNumber } from "../../components/denshin/RollingNumber";
 import { SuperAsset } from "../../components/icons/SuperAsset";
 import {
   Alert,
+  Platform,
   LayoutAnimation,
   Keyboard,
   Pressable,
@@ -59,10 +60,21 @@ export default function CreatePin() {
     else void save();
   }
   return (
-    <PinSheet expanded={draft.limited && expanded}>
+    <PinSheet
+      expanded={
+        Platform.OS === "android"
+          ? !!draft.id || (draft.limited && expanded)
+          : draft.limited && expanded
+      }
+    >
       <Stack.Screen
         options={{
-          sheetAllowedDetents: [draft.limited && expanded ? 0.77 : 0.47, 0.95],
+          sheetAllowedDetents:
+            Platform.OS === "android"
+              ? // Material normalizes the middle stop by the highest stop.
+                // 0.665 / 0.95 places the visible sheet at 70% of its container.
+                [0.455, 0.665, 0.95]
+              : [draft.limited && expanded ? 0.77 : 0.47, 0.95],
         }}
       />
       <ScrollView
@@ -260,6 +272,7 @@ export default function CreatePin() {
 }
 const s = StyleSheet.create({
   header: {
+    marginTop: Platform.OS === "android" ? -12 : 0,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
@@ -270,7 +283,11 @@ const s = StyleSheet.create({
     marginRight: -4,
   },
   actions: { flexDirection: "row", gap: 10 },
-  content: { padding: 20, paddingTop: 16, gap: 24 },
+  content: {
+    padding: 20,
+    paddingTop: Platform.OS === "android" ? 10 : 16,
+    gap: 24,
+  },
   group: {
     borderRadius: 26,
     borderCurve: "continuous",
@@ -282,7 +299,7 @@ const s = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-between",
     paddingHorizontal: 16,
-    paddingVertical: 16,
+    paddingVertical: Platform.OS === "android" ? 8 : 16,
     minHeight: 52,
     gap: 12,
   },
@@ -331,7 +348,7 @@ const s = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     gap: 24,
-    paddingVertical: 12,
+    paddingVertical: Platform.OS === "android" ? 16 : 12,
   },
   number: {
     color: "white",

@@ -9,8 +9,16 @@ import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 
 class PresenceNativeModule : Module() {
+  private var darkNavigation = false
   override fun definition() = ModuleDefinition {
     Name("PresenceNative")
+    Function("setNavigationAppearance") { dark: Boolean ->
+      darkNavigation = dark
+      appContext.currentActivity?.let { applyAndroidSystemBars(it, dark) }
+    }
+    OnActivityEntersForeground {
+      appContext.currentActivity?.let { applyAndroidSystemBars(it, darkNavigation) }
+    }
     // Match the iOS simulator-only fixture gate; never enable review by env alone.
     Function("isSimulator") {
       android.os.Build.FINGERPRINT.startsWith("generic") ||
