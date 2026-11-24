@@ -29,7 +29,7 @@ export function fieldFcmTick(apiURL, serviceKey, credentials) {
       method: "POST", signal: AbortSignal.timeout(12000),
       headers: { Authorization: "Bearer " + await authorize(), "Content-Type": "application/json" },
       body: JSON.stringify({ message: { token: item.token,
-        notification: { title: "夢ヶ丘", body: item.kind === "mention" ? "街のチャットにメンションがあります。" : item.kind?.startsWith("pin_") ? "電信PINのお知らせがあります。" : "オフ会のお知らせがあります。" },
+        notification: { title: "電信出口", body: item.kind === "mention" ? "街のチャットにメンションがあります。" : item.kind?.startsWith("pin_") ? "電信PINのお知らせがあります。" : "オフ会のお知らせがあります。" },
         android: { notification: { tag: item.id } }, data: { yumegaoka_open: "notifications" },
       } }),
     });
