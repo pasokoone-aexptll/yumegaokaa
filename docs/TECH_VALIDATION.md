@@ -127,7 +127,7 @@ Simulatorで現在地取得失敗時に表示された「接続アプリの版�
 - Home/Map：ロゴ/モード/見出し/本文/画像/チケット/雲の位置と寸法、チャットgradient/画像/入力高/送信矢印/最新chevronを修正。HomeとMapで公開モード切替待ちの表示が不一致だったため、両方ともpending_modeを優先して整合。toastは単一の予約領域へ集約し、native glassの親opacityを動かさず中身だけfadeして「文字だけ」の描画を防ぐ。NFC地点はpassive marker・onPress無操作へ。地図の地点や境界は変更しない。マーカーの直接タップ前後のカメラ比較は未取得（AXクリック先が上部overlayに隠れたため合格証拠にしない）。
 - PIN：編集をrouter.replaceして詳細と重ねない。実PINでHome→Map詳細→編集→×→Mapを確認。赤いnative glass削除を編集内に表示、削除実行なし。上/右16ptの閉じる余白と右/下28ptの固定編集、編集52pt（実円は約49pt）へ。募集行52pt/16pt文字/21pt素材を維持。募集バッジ本文17pt・PeopleStack33pt/重なり20pt・+人数のnative blurで画像の透け過ぎを修正。Map背景のfixture半高→全高→半高を実操作し、背景色が灰色に固定されないことを確認。
 - 画面照合：通知一覧/実ドラッグの日付固定/詳細、Block候補/一覧、Account6桁入力→自動成功、運営Formをfixtureで確認。運営Toggle内RNHostViewの提供SVGが消える問題を、外側HStackへの配置で修正し実描画を確認。Profile編集の戻る位置、Pool見出し、薄色説明、QR/History間隔を修正。QR中央人物を拡大し、H訂正/白い保護領域/quiet zoneを維持。サンプルUUIDのQRはApple Visionで一致したpayloadへ復号できた。実カメラ読取の代用にはしない。
-- 登録：Swift/AndroidのOTP送信へcreateAccountを渡し、既存ログインではfalse。6桁の実認証後だけ成功演出を表示し、1100ms後にセッション変化を通知。本人写真必須・Pool必須を保持し、定期account_access取得で写真未選択を飛ばさない。新規/既存の文言と操作を分ける。実メール/実アカウント作成は今回未実行。
+- 登録：Swift/AndroidのOTP送信へcreateAccountを渡し、既存ログインではfalse。6桁の実認証後だけ成功演出を表示し、1100ms後にセッション変化を通知。プロフィール画像必須・Pool必須を保持し、定期account_access取得で写真未選択を飛ばさない。新規/既存の文言と操作を分ける。実メール/実アカウント作成は今回未実行。
 - 元動画：原本56.627秒/60fps。ドット書体は端末原本KH-Dot-Kodenmachou-16-Kiと動画の字形を比較して採用。配布元の付属README/SIL OFL1.1を同梱しexpo-fontへ登録。開始の人物/開口/影は提供SVGを変形・透過、メールのGIFと招待こたつは提供素材の拡大/切取りを修正。名前/写真登録の@/雲/ドット見出しを再配置。完了の録画116〜128秒を元動画48〜54秒等と並べ、扉→中央→画像拡大→名前の6.5秒とホームゲージを照合。当時保留した登録コード下のゲージは、その後Q-UI01の回答で再送待ち時間と確定（本書冒頭）。
 - 検証：TypeScript成功（最後のHomeMode/こたつ位置変更後も再確認）、Lint0 errors/既存2 warnings（PlacementHandle import/first、usePushNotifications router依存）。login-auth/profile-setup-access/account-onboarding/account-access-offline/invite-qr/presence-headerの14試験成功。055/056のDB試験各1件成功。既存6桁自動認証/メール状態試験結果も再利用。Swiftを含むSimulator Releaseビルド成功。diff --check成功。
 - 通常版：確認フラグを外してSimulatorへ上書き・起動（PID65624）。Homeチケット→招待QR→戻る→Home→Settings、確認メニュー非表示、Home/Mapでpending_mode優先の表示整合、Home PIN→Map詳細→閉じるを確認。地図ドラッグも動作。現在地取得はSimulatorで失敗し標準Alertを表示。NFC地点の直接タップによるカメラ不動はDevice HubのnoWindowsAvailable/cgWindowNotFoundで未確認のまま。`normal-map-final.png`を保存し、端末の既存セッション/データは保持。
@@ -1683,7 +1683,7 @@ U45実機反映追記：ユーザーの「反映して」によりfa0859dのiPho
 
 検証：型検査、diff check、Simulator Release成功。Simulatorでメール入力のsoftware keyboard表示時に扉/見出しの位置が保持され、入力欄とCTAの重なりがないことを確認（`/tmp/onboarding-keyboard-final.png`）。コード入力時の再送リンク重なりも修正後に再確認。通信なしfixtureで6桁→認証待機→招待画面へ進むことを確認。プロフィール写真設定の配置確認（`/tmp/onboarding-photo-adjusted.png`）。実メール/QR/写真の保存や実機転送は行っていない。スキャンの新戻るボタンは型/ビルド確認のみ。全遷移のフレーム単位一致、実機表示、プロフィール名入力中のkeyboard照合は未完。旧33タスクのDONE率は変更しない。
 
-意味論：ユーザー回答により招待はQRスキャンのみを維持。動画にあるコード手入力を追加しない。再送ゲージの意味、本人写真必須、新規/既存認証の分離は維持。
+意味論：ユーザー回答により招待はQRスキャンのみを維持。動画にあるコード手入力を追加しない。再送ゲージの意味、プロフィール画像必須、新規/既存認証の分離は維持。
 
 
 ## U47 — オンボーディング登場演出（2026-11-22、R03/R19）
@@ -1759,7 +1759,7 @@ omyの初回入街はghost=true/last_seq=0で観測なし。端末journalもsequ
 
 検証：第1〜4版のarm64 Release成功（/tmp/yumegaoka-android-port-build*.log）。第3版は29秒、第4版は14秒の差分ビルド。第3版の型/変更対象Lint成功。招待QR/自動認証/プロフィール資格/位置下書き/通知遷移12試験成功、Android専用2試験成功。profile-setup-accessの既存mockがsessionState/ownProfileの追加に追従せず3試験失敗したためmockだけを補い再成功（認可コード変更なし）。全体Lintには既存React Hooksエラーが残る。iOS/実機全機能合格やクラウド接続合格には加算しない。
 
-表示証拠：/tmp/android-port-onboarding-contact.png（招待/名前/本人写真/Pool）、android-port-settings-contact.png（通知/詳細/Block/OTP/運営）。シート確認初回はハンドル欠落を検出して追加修正したため、初回画像を最終合格根拠としない。ADB操作はユーザーが2026-11-24に明示許可。
+表示証拠：/tmp/android-port-onboarding-contact.png（招待/名前/プロフィール画像/Pool）、android-port-settings-contact.png（通知/詳細/Block/OTP/運営）。シート確認初回はハンドル欠落を検出して追加修正したため、初回画像を最終合格根拠としない。ADB操作はユーザーが2026-11-24に明示許可。
 
 ### Androidシート最終修正と確認（A02/A05）
 
@@ -1779,7 +1779,7 @@ MapHeader人数/参加切替/公開メニュー/通知切替/最新へを第6版
 
 合成アカウントでOTP自動認証成功。直後のlistener.removeでExpo予約名stopObservingとアプリの引数なしAsyncFunctionの衝突を実際に検出。Kotlin/TSをstopVisitObservationへ改名、予約名再導入検出試験を追加。native-configuration/observation-timeの4試験、型検査、対象Lint成功。Debug再ビルド成功（/tmp/android-port-local-debug2.log）。再インストール後のセッション復元・画面遷移では再発なし。古いMetroログに修正前のエラーが残るが最終Bundled以降は同エラーなし。
 
-本人写真にはリポジトリの検証画像を使用。名前・Android写真Picker・切り抜き・avatar/PoolのStorage保存・Welcome表示・Homeを実操作確認し、当該アカウントのDBでdisplay_name/avatar_saved/pool_savedを確認。招待はlocal:inviteで合成アカウントだけに付与したため実QR受付合格にはしない。PIN作成→地図位置確定→保存→詳細→編集→保存を実操作し、Android_port_test_editedの詳細と地図表示を確認。証拠/tmp/android-local-welcome-small.png、android-local-home-small.png、android-local-saved-small.png、android-local-edited-small.png。
+プロフィール画像にはリポジトリの検証画像を使用。名前・Android写真Picker・切り抜き・avatar/PoolのStorage保存・Welcome表示・Homeを実操作確認し、当該アカウントのDBでdisplay_name/avatar_saved/pool_savedを確認。招待はlocal:inviteで合成アカウントだけに付与したため実QR受付合格にはしない。PIN作成→地図位置確定→保存→詳細→編集→保存を実操作し、Android_port_test_editedの詳細と地図表示を確認。証拠/tmp/android-local-welcome-small.png、android-local-home-small.png、android-local-saved-small.png、android-local-edited-small.png。
 
 残件：Home/設定の全画面一巡、実チャット、実カメラQR、物理AndroidのNFC/測位/背景/Push、修正後Release。旧33タスクの分母・DONE・iPhone実機率は不変。
 
@@ -1830,3 +1830,5 @@ app.config.tsに明示的なYUMEGAOKA_STORE_BUILDモードを追加。試験フ�
 compliance再実行はexit 2、critical=8/high=12/medium=4で前回と同じ。内訳はAPP_STORE_COMPLIANCEの誤検出2件と未確認6ゲートを維持。Rule pack v2.5.1、113 sources verified 2026-07-13〜2026-11-23。原出力/tmp/yumegaoka-store-preparation-scan.txt。override未使用。
 
 APP_STORE_BUILD、APP_REVIEW_ACCESS、APP_STORE_PRIVACY_EVIDENCEを作成。審査デモは設計のみ承認、Apple了承／実装なし。13〜17歳を含めたい意向を記録、TEEN_SAFETY_DISCUSSIONへ未承認の安全対策を分離。年齢制限・UI・保存期限の変更なし。旧33件の実装29/33、統合27/33、iPhone11/33、DONE27/33、BLOCKED3/33を維持。C04設計草案、C05実装根拠、C06設定検査を追加したが、全体工数の減少は未計測。
+
+2026-11-25 R03/R19：資料用語をプロフィール画像へ統一し、街poolとの差を明記。顔写真必須という解釈を撤回。13歳以上・画像と現地合流は現仕様維持を記録。文書変更のみでアプリの画像・合流・年齢判定・同意機能は未変更。文言残存と差分を確認し、ビルド／実機試験は再実行しない。

@@ -8,7 +8,7 @@
 | --- | --- | --- | --- |
 | A01 | 共通操作部品・Glass代替・通知遷移 | R10/R19 | 実装済み・型/対象Lint/通知切替2試験成功。Androidで消えるGlass背景、旧ボタン寸法、参加Toggle外周、メニュー素材、通知切替時の旧action保持を修正。API35でMap上のヘッダー/人数/通知/最新へ、参加切替/公開設定メニューを実部品fixture操作確認 |
 | A02 | 地図・PIN・配置・sheet・チャット | R10/R12〜R15/R19 | 仮置き/確定のズーム倍率漏れを修正し同位置・同寸法を確認。足元リングドラッグ確認。現在地表示・カメラ余白解除を接続。シートハンドル/角丸/人数展開を接続。Android native footerで半画面→全画面→半画面の固定ボタン表示を確認。チャット新着と送信確定時の重複なしをfixture確認。ローカルAPIで自身のPIN作成→位置確定→保存→編集→再保存・詳細への反映を確認 |
-| A03 | 登録・QR・Home・通知・設定の全画面 | R03/R18/R19 | 共通画面を再利用。登録メール欄のkeyboard隠れを再現・修正・確認。招待/名前/本人写真/Pool、通知/通知詳細/Block/メールOTP/運営をfixture表示確認。ローカルOTP実認証、名前・写真選択/切り抜き・Storage保存、Welcome/Homeを確認。Home/プロフィール/Pool/アカウント/招待QR/Block/運営資格なしも実API表示確認。実カメラQRは未確認 |
+| A03 | 登録・QR・Home・通知・設定の全画面 | R03/R18/R19 | 共通画面を再利用。登録メール欄のkeyboard隠れを再現・修正・確認。招待/名前/プロフィール画像/Pool、通知/通知詳細/Block/メールOTP/運営をfixture表示確認。ローカルOTP実認証、名前・写真選択/切り抜き・Storage保存、Welcome/Homeを確認。Home/プロフィール/Pool/アカウント/招待QR/Block/運営資格なしも実API表示確認。実カメラQRは未確認 |
 | A04 | 表示名・アイコン・native設定・Release | R02/R19 | 提供Icon ComposerのExclude.png/背景グラデーションからadaptive/legacy/monochromeを生成。表示名/QRカメラ権限同期、arm64 Releaseビルド成功。レビュー無効の通常APKもビルド/起動・レビューURL閉鎖を確認。iOSの光学glassはAndroid固有表現として別扱い |
 | A05 | 統合確認・残件記録 | R19 | 監査・型・対象Lint・対象テスト・API35のUI確認を記録済み。接続実機0台。主要4タブと設定の実データ一巡を追加確認。複数人操作・運営MFA/招待取消も実API確認。利用可能端末での移植確認を完了。物理AndroidのNFC/カメラ/背景/Pushは未確認で、Android製品全体DONEにはしない |
 
@@ -16,7 +16,7 @@
 
 ## 既存差分の再利用
 
-Home/設定のnested routes、電信PIN/hooks/API、登録6桁自動認証、QR中央マーク、本人写真必須、Welcome/Splash、提供SVG、気配人物列・吹き出しは共通コードに存在。SwiftUI部品は.ios分岐に隔離済み。AndroidはMapLibre、既存の背景観測/認証実装を維持。
+Home/設定のnested routes、電信PIN/hooks/API、登録6桁自動認証、QR中央マーク、プロフィール画像必須、Welcome/Splash、提供SVG、気配人物列・吹き出しは共通コードに存在。SwiftUI部品は.ios分岐に隔離済み。AndroidはMapLibre、既存の背景観測/認証実装を維持。
 
 ## 表現上の制約
 

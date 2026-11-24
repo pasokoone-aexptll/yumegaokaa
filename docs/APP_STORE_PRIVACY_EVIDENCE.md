@@ -7,7 +7,7 @@
 | 経路 | 確認した実装 | 申告時の扱い・残確認 |
 | --- | --- | --- |
 | 認証 | APIClient.swiftはSupabase Authへメール・OTPを送信、資格はKeychainに保存 | Email Address／User ID、App Functionality、本人との関連あり。OTP配信先と基盤ログを照合 |
-| プロフィール | avatar.ts→profile_avatar_set、表示名と本人写真必須 | Name／Photos or Videos。本人写真と街pool画像は用途を分ける |
+| プロフィール | avatar.ts→profile_avatar_set、表示名とプロフィール画像必須 | Name／Photos or Videos。プロフィール画像と街pool画像は用途を分ける |
 | 画像変換 | avatar.tsでpickerのexif:false、512以内の再レンダリングとJPEG出力、2MB以下を判定 | exif:falseは選択結果にEXIFを返さない設定だけではメタデータ除去の証明にならない。保存された実JPEGのGPS/EXIFを検査して確定 |
 | 気配観測 | PresenceEngine.swiftは端末で生GPSをGrid.project。observe要求はvisit_id・seq・area_version・observed_at・horizontal_accuracy_m・verdict、通常公開時はcell_id／grid_versionを追加 | Location、本人との内部関連あり。100m区画だけでCoarseと即断しない。Appleの精度定義・区画復元可能性と照合 |
 | ゴースト | 非公開状態ではcell_idを送らない分岐があるが、滞在の状態・精度・時刻等は送信 | 「一切収集しない」と説明しない。状態切替中の要求も実通信で確認 |
