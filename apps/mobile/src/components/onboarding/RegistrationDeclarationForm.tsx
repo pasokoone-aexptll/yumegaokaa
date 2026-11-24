@@ -21,8 +21,10 @@ import {
 export function RegistrationDeclarationForm({
   onContinue,
   onWithdraw,
+  onClosePreview,
 }: {
   onWithdraw?: () => void;
+  onClosePreview?: () => void;
   onContinue: (value: RegistrationDeclaration) => void | Promise<void>;
 }) {
   const [termsAccepted, setTermsAccepted] = useState(false);
@@ -75,12 +77,23 @@ export function RegistrationDeclarationForm({
       .finally(() => setBusy(false));
   }
   function logout() {
+    if (onClosePreview) {
+      onClosePreview();
+      return;
+    }
     void native.logout().catch(() => setError("ログアウトできませんでした。"));
   }
   return (
     <SafeAreaView style={styles.page}>
       <ScrollView contentContainerStyle={styles.content}>
         <View style={styles.heading}>
+          {onClosePreview && (
+            <Pressable accessibilityRole="button" onPress={onClosePreview}>
+              <Text style={styles.caption}>
+                プレビューを閉じる（保存しません）
+              </Text>
+            </Pressable>
+          )}
           <Text accessibilityRole="header" style={styles.title}>
             年齢の確認
           </Text>
@@ -213,7 +226,7 @@ export function RegistrationDeclarationForm({
               onPress={logout}
               style={styles.logout}
             >
-              <Text style={styles.caption}>ログアウト</Text>
+              <Text style={styles.caption}>{onClosePreview ? "プレビューを閉じる" : "ログアウト"}</Text>
             </Pressable>
           )}
         </View>

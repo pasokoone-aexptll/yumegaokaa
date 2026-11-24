@@ -24,3 +24,7 @@ Cloudflareのhello CNAMEは82672453f5fbb748.vercel-dns-017.com、DNS only。MX�
 ## 2026-11-25 添付デザインへの差替え
 
 トップは添付PC／iPhoneデザインを参照。public/assets/exit.svgとwordmark.svgはユーザー提供の出口.svg／電信出口icon.svg原本をそのままコピー。KHドットフォントのOFLを同梱。ストアURL未発行のためボタンは無効で公開準備中と表示。実URL取得後にリンクへ変更する。法務ページのURL・本文は維持。最終Vercel配備 dpl_3u1w8LEmPMCwN5TCFnYVep1Pt45m。
+
+本文フォントはInternとNoto Sans JPの可変TTFをassetsへ同梱し、fonts.cssを全ページで読込。OFL著作権表示も同梱。トップの指定見出しのみKHドットを保持。support/operator/privacy/termsのヘッダーとフッターも電信出口ロゴ。
+
+見出しはGoogle Fonts公式のNoto Serif JP（wght 900、横幅72%）をOFLと同梱。https://github.com/google/fonts/tree/main/ofl/notoserifjp 。Appleマークは2026-11-25取得のhttps://www.apple.com/公式ナビゲーション内SVGを無改変で保存しCSS maskで白く表示。Apple専用文字U+F8FFは使用しない。

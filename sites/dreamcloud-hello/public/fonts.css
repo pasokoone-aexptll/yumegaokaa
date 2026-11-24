@@ -1,0 +1,5 @@
+@font-face{font-family:Intern;src:url('/assets/Intern.ttf') format('truetype');font-weight:100 900;font-style:normal;font-display:swap}
+@font-face{font-family:'Noto Sans JP';src:url('/assets/NotoSansJP.ttf') format('truetype');font-weight:100 900;font-style:normal;font-display:swap}
+button,input,textarea,select{font-family:inherit}
+
+@font-face{font-family:'Noto Serif JP';src:url('/assets/NotoSerifJP.ttf') format('truetype');font-weight:200 900;font-style:normal;font-display:swap}

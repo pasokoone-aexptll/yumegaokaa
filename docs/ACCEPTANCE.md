@@ -157,3 +157,11 @@ iPhone17 Releaseビルド成功。上書きは自動審査に拒否されたた�
 ユーザー画像に合わせ、年齢確認を灰色背景・白い角丸の3択・右チェック・規約リンク行・ネイティブ同意スイッチ・横並び青ボタンへ変更。13〜17歳の保護者同意項目、未選択／未同意の進行拒否、保存中無効化、ログアウト・退会導線を保持。小画面はスクロールとボタン折返しに対応。既存の同意記録や版は変更せず再同意を強制しない。型チェック・iPhone Releaseビルド・署名検証・iPhone17上書き成功。新UIの実機外観確認は未完。同意済み本人の記録を消して再表示させる操作はしていない。
 
 サイトのSVG透明領域がフッター操作を遮る不具合に対し、exit画像pointer-events:none/z-index:0、footerをposition:relative/z-index:2へ変更。Vercel dpl_ghorn1YjE9ydPzDANwPdh8CU2MDP公開済み。ブラウザでcomputed styleと運営者情報・プライバシー・問い合わせ3リンクのクリック遷移を確認。SVG原本と配置は維持。旧33件達成率は不変。
+
+## 2026-11-25 同意UIの非保存プレビュー（R03/R19）
+
+ユーザー依頼により、現地確認ビルドの設定→データと謝辞・利用規約とプライバシー→年齢確認画面をプレビューを追加。consent-previewはEXPO_PUBLIC_FIELD_TRIAL=1のときだけ開け、通常提出版ではホームへ戻す。同じRegistrationDeclarationFormを使い、年齢／スイッチは画面内stateのみ。保存と退会のcallbackは説明Alertのみ、ログアウトは閉じるへ置換。registration_policyの読取のみで、consent_accept／退会APIや同意記録の変更なし。通常の同意強制・サーバー認可は不変。型チェック・iPhone Releaseビルド・署名検証・iPhone17上書き成功。端末でのプレビュー表示確認は未完。
+
+サイトのsupport/operator/privacy/termsのヘッダー・フッターをユーザー提供の電信出口ロゴに統一。運営者DreamCloudの本文表記は保持。Vercel dpl_3SSJtwzjCKMM3s5CL9bHumo56psJ公開、問い合わせページのロゴをブラウザ確認。
+
+11/25追加指示：サイト全ページにIntern/Noto Sans JPの可変TTFとOFLライセンスを同梱。欧文→Intern、日本語→Noto Sans JPのfallback。指定のトップ見出しはKHドットを保持。運営者本文のDreamCloudは変更なし。
