@@ -1912,3 +1912,9 @@ iPhone17 Releaseビルド成功。上書きは自動審査に拒否されたた�
 2026-11-25 C04続行：本人が無料枠での別Supabase/Render作成を承認。審査用Supabase denshin-app-review（eyrdviyebyozsaellopr、ap-northeast-1）作成、独立した/private/tmp/denshin-review-deployで061までschema配備。本番のリンクは変更なし。Renderは公開repo・codex/mvp-integration・Node・npm ci --omit=dev・node scripts/field-gateway.mjs・Free $0で作成フォーム準備。審査用だけの資格登録はブラウザの実行直前確認待ち。秘密はGit/本文に記録しない。
 
 2026-11-25 全体監査・R03/R15/R17/R18/R19：Supabase公式/Postgres、Trail of Bits audit-context-building、OpenAI security-best-practicesを導入して適用。docs/audit-20261125/AUDIT_REPORT.mdを参照。本番read-onlyでschema再現差、データ参照/権限を確認。主要ローカル試験で古い環境・mock・cleanupの失敗と退会試験の一時unauthorizedを記録。Android session=null logout未完をmockで再現。ユーザーは本番のアカウント/利用者データ全消去、街/NFC設定/schema/契約保持、運営再作成を承認。実行前の対象最終確認を約束、まだ本番削除なし。通常退会はsticker_draftsも消すためRESET_PLANで保持手順を分離。新規デモ配備・Render資格登録は監査優先で保留。旧33件の達成率は変更なし。
+
+## 2026-11-25 本番リセット実行（R03/R15/R17/R18/R19）
+
+本人が最終実行を承認。RESET_PLANに結果を記録。本番36利用者表・Auth8件/関連session/identity/MFA/refresh/OTP・Storage11件を消去し0件確認。街/NFC/規約設定7表・migration65件を保持。一時書込制御は解除、残存trigger/function0。Auth削除の500は一時statement triggerが空のCASCADEも止めるためで、row triggerへ直し完了。初回hash証跡の保持制限もRESET_PLANへ明記。運営アカウント0、設置draft4は未割当owner。本人の新規OTP→restore-production-operator.mjs→本人同意/画像/MFA→実機一巡が次。バックアップ/サービスログの即時消去は未実施。
+
+Android session=null logoutを修正し実adapterのmock回帰2件と型検査成功。端末配備は未実施。既存33件の実装29/33・統合27/33・実機11/33・DONE27/33・BLOCKED3/33は維持。大規模監査/Leanは後回し、審査デモ・ADP/APNs/提出ビルドは未完。

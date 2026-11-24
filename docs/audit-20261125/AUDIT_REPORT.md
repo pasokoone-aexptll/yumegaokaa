@@ -1,6 +1,6 @@
 # 提出前コード・DB監査（2026-11-25）
 
-判定：DB全体の破損は確認できない。ただし再現性・テスト基盤・リセット後の認証復帰に不足があり、整理とリセットを一度に実行しない。今回は本番read-onlyの構造/件数検査、重要経路の静的分析、ローカル回帰試験。全画面・全競合・実機の網羅監査完了ではない。アプリ/DBの修正、データ削除は未実施。
+判定：DB全体の破損は確認できない。ただし再現性・テスト基盤・リセット後の認証復帰に不足があり、整理とリセットを一度に実行しない。今回は本番read-onlyの構造/件数検査、重要経路の静的分析、ローカル回帰試験。全画面・全競合・実機の網羅監査完了ではない。監査時点では修正・削除未実施。後続の本人最終承認による初期化結果はRESET_PLANを参照。
 
 ## 使用したスキル
 
@@ -12,7 +12,7 @@
 
 | ID/優先度 | 確認事実・影響 | 根拠・次の処置 |
 | --- | --- | --- |
-| A01 高（リセット前） | AndroidはAuth session=nullでlogoutがlogin_requiredを投げ、signOutに到達しない。古い/失効セッションからの復帰の障害になり得る | platformAuth.android.ts:19–22,35–36,362–375。tests/audit-android-logout.test.mjsで実exportのmock再現と正常対照2件成功。実機リセット後は未確認。後片付けをセッション取得成功に依存させない修正を検討 |
+| A01 高（リセット前） | AndroidはAuth session=nullでlogoutがlogin_requiredを投げ、signOutに到達しない。古い/失効セッションからの復帰の障害になり得る | platformAuth.android.ts:19–22,35–36,362–375。tests/audit-android-logout.test.mjsで実exportのmock再現と正常対照2件成功。実機リセット後は未確認。後続でsessionなしでもlocal signOutする修正を実施、回帰2件と型検査成功。Android配備/実機は未確認 |
 | A02 中 | migration記録65件は同一だが、本番と新規構築DBの招待関数3本の定義が異なる。058/059の適用順が逆。本番はage→erasure→従来、freshはerasure→age→従来 | schema-inventory.sqlのハッシュ比較。現在両方の検査が連鎖することはコード確認。検査欠落の証拠ではない。順番と定義を正規化する追加migrationと再現試験を準備 |
 | A03 中 | 本番だけfield_trial_grant/guard_field_trialが存在し、migrationから再現できない | 本番43 tables/90 functions、新規42/89（対象schema）。以前の現地試験の記録と一致。初期化時にgrantデータは消すが、試験用schemaを残すかは提出構成と分離して整理 |
 | A04 中 | ローカルDBにhas_current_consentがなく、現在のgateway-auth試験が失敗 | tests/gateway-auth.test.mjs:28、scripts/lib/gateway-authorize.mjs。058/060をtransaction内適用する同意試験は成功。本番の同関数は存在。ローカル環境整備と試験fixture更新が必要 |

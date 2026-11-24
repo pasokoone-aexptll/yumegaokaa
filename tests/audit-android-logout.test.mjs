@@ -3,8 +3,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import ts from '../apps/mobile/node_modules/typescript/lib/typescript.js';
 
-// Audit reproduction of the existing adapter, not a desired-behavior acceptance
-// test. No native device, SecureStore instance, Supabase account or network is used.
+// Exercise the real adapter with mocked native services and no network.
 const source = ts.transpileModule(
   readFileSync('apps/mobile/src/lib/platformAuth.android.ts', 'utf8'),
   { compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022 } },
@@ -49,17 +48,12 @@ function harness(initialSession) {
   return { auth: exports.platformAuth, calls };
 }
 
-test('audit reproduction: logout with no Supabase session rejects before signOut', async () => {
+test('logout without a session still clears local authentication', async () => {
   const { auth, calls } = harness(null);
   await auth.configure('https://review.example.test', 'fake-publishable-key');
-  await assert.rejects(auth.logout(), { message: 'login_required' });
-  assert.deepEqual(calls, [
-    ['createClient', 'https://review.example.test', 'fake-publishable-key'],
-    'stopObservation',
-    'auth.getSession',
-  ]);
-  // In particular, neither remote cleanup nor the eventual signOut is reached.
-  assert.equal(calls.some((entry) => Array.isArray(entry) && entry[0] === 'auth.signOut'), false);
+  await auth.logout();
+  assert.ok(calls.some(entry => Array.isArray(entry) && entry[0] === 'auth.signOut'));
+  assert.equal(calls.some(entry => Array.isArray(entry) && entry[0] === 'SecureStore.delete'), false);
 });
 
 test('audit control: logout with a present session reaches local signOut', async () => {

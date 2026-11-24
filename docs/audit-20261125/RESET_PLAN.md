@@ -1,6 +1,6 @@
 # 本番データ初期化の実行前計画
 
-2026-11-25。本人承認範囲：yumegaoka-fieldの利用者アカウント・投稿・画像・招待・入街履歴等を全消去。運営アカウントも作り直す。DB構造・街/NFC設置設定・クラウド契約を残す。まだ削除していない。不可逆な実行の前に最終対象一覧を確認する約束。
+2026-11-25。本人承認範囲：yumegaoka-fieldの利用者アカウント・投稿・画像・招待・入街履歴等を全消去。運営アカウントも作り直す。DB構造・街/NFC設置設定・クラウド契約を残す。本人が「本番を全リセットしていいよ」と最終承認。11/25 08:46 JSTに利用者データとAuth/Storageの消去・一時停止解除を完了。運営再作成と実機一巡は本人のOTP操作待ち。
 
 ## 消去対象
 
@@ -24,4 +24,12 @@ street1、area2、tag6、placement4、sticker_drafts4の設置情報、registrat
 8. Auth/Storage/対象tableのゼロ件（新運営者分は別計上）と、保持設定のhash一致を確認。端末の古いsession・画像cacheを失効させ、新規登録/同意/入街/投稿/通報/退会を一巡する。
 9. 停止したサービスを再開し、資格と通知先が新しい環境に一致するか確認。最終報告で失敗/再試行中/バックアップ期限を明示。
 
-本書は実行スクリプトではない。現時点では監査と再現試験を優先し、本番削除の準備完了とは扱わない。
+## 実行結果（2026-11-25）
+
+scripts/admin/reset-production-users.mjsを実行。36利用者テーブル、Auth users/sessions/identities/MFA、Storageがすべて0。refresh tokens/one time tokensも0。migration65件、街1・区域2・タグ6・設置4・設置draft4・規約設定1を保持。一時制御のtrigger/function残存0。サイト・審査DB・メール設定は操作していない。
+
+本番ROLLBACKリハーサルで外部キーと保持hash一致を確認後、書込/新規Auth/画像uploadを一時遮断して実行。画像はStorage APIで削除。利用者表は明示36表TRUNCATE（CASCADEなし）。旧設置creatorを未割当UUIDへ変更。Auth管理API削除は一時停止のstatement triggerが空の同意表へのCASCADEまで拒否して500になった。利用者表の一時制御をrow triggerへ変更し再開、全8アカウントをhard deleteした。個人データや資格はGitへ記録しない。
+
+初回保持hashはプロセス内のみで保存されず、再開後のhash照合は利用者表の原子的消去後を基準に実施。初回ROLLBACK一致・保持表を含まない明示TRUNCATE・書込遮断・最終件数を合わせて保持の根拠とする。独立した消去前後hash証跡が残ったとは主張しない。証拠は/private/tmp/denshin-reset-result.json。
+
+旧運営IDは残していない。設置draft4のcreatorは未割当（00000000-0000-0000-0000-000000000000）、運営OTP認証後scripts/admin/restore-production-operator.mjsで引継ぐ。年齢・保護者同意・規約同意・MFAは代行しない。端末状態、運営再作成、実機一巡は未確認。既存暗号化バックアップは7日期限、サービスログは既存保持で、瞬時消去したとは扱わない。

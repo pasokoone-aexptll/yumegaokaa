@@ -361,7 +361,12 @@ export const platformAuth = {
   },
   async logout() {
     await stopObservation();
-    await visitOperation(async () => SecureStore.deleteItemAsync(await modeKey()));
+    await visitOperation(async () => {
+      const { session } = unwrap(await client.auth.getSession());
+      if (session) await SecureStore.deleteItemAsync(
+        "yumegaoka.attempt." + new URL(origin).hostname + "." + session.user.id + ".mode",
+      );
+    });
     const current = await platformAuth.rpc<NativeState>("get_my_visit").catch(() => null);
     const visit = current?.visit;
     if (visit?.state === "active" && visit.can_update) {
@@ -371,7 +376,7 @@ export const platformAuth = {
       }).catch(() => {});
     }
     registration = "";
-    await client.rpc("fcm_registration", { operation: "remove" });
+    await Promise.resolve(client.rpc("fcm_registration", { operation: "remove" })).catch(() => {});
     const { error } = await client.auth.signOut({ scope: "local" });
     if (error && (await platformAuth.session()).signed_in) throw new Error(error.message);
   },
