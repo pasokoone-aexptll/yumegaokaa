@@ -46,3 +46,18 @@ test('Android glass fallback keeps a visible surface and does not leak unsupport
   assert.equal('glassEffectStyle' in element.props, false);
   assert.ok(GlassView({ colorScheme: 'dark' }).props.style[0].backgroundColor);
 });
+test('normal mode remains green while logged out; ghost mode remains distinct', () => {
+  const value = { interpolate: () => '90deg' };
+  const { ModeDropdown } = load('apps/mobile/src/components/map/ModeDropdown.tsx', {
+    react: { useRef: () => ({ current: null }), useState: init => [typeof init === 'function' ? init() : init, () => {}] },
+    'react-native': { View: 'View', Pressable: 'Pressable', Text: 'Text', Modal: 'Modal', Animated: { Value: function () { return value; }, View: 'AnimatedView' }, Easing: {}, StyleSheet: { create: x => x }, useWindowDimensions: () => ({ width: 400 }) },
+    '../icons/SuperAsset': { SuperAsset: 'Icon' },
+  });
+  const colors = props => nodes(ModeDropdown({ disabled: false, onChange() {}, ...props }))
+    .flatMap(n => Array.isArray(n.props?.style) ? n.props.style : [n.props?.style])
+    .filter(Boolean).map(s => s.backgroundColor).filter(Boolean);
+  for (const active of [false, true]) {
+    assert.ok(colors({ ghost: false, active }).includes('#00bc83'));
+    assert.ok(!colors({ ghost: true, active }).includes('#00bc83'));
+  }
+});

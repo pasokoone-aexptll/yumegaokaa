@@ -15,7 +15,7 @@ import { SmoothSurface } from "./SmoothSurface";
 export function ModeDropdown({
   dark = true,
   ghost,
-  active,
+  active: _active,
   disabled,
   onChange,
   placesVisible,
@@ -86,9 +86,7 @@ export function ModeDropdown({
                   ? dark
                     ? "#9a9a9e"
                     : "rgba(0,0,0,0.55)"
-                  : active
-                    ? "#00bc83"
-                    : "#ffffff66",
+                  : "#00bc83",
               },
             ]}
           />
@@ -218,7 +216,7 @@ export function ModeDropdown({
 }
 const styles = StyleSheet.create({
   trigger: {
-    width: 52,
+    width: 60,
     height: 34,
     flexDirection: "row",
     alignItems: "center",

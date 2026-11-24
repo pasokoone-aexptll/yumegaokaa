@@ -280,6 +280,7 @@ export default function Street() {
       <Map
         onMapReady={() => setAndroidMapReady(true)}
         historyBlur={historyExpanded}
+        chatBackdrop={Platform.OS === "android"}
         showUserLocation={mapFocused || placement.active}
         bottomInset={detailInset}
         onMovingChange={setMapMoving}

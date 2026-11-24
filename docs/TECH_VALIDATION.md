@@ -1850,3 +1850,7 @@ R03/R04/R10〜R14/R19。原本33枚の比較と修正根拠は[比較台帳](fro
 R03/R04/R10〜R14/R19。Mapカプセルを通常Viewへ、NFC地点を実View Marker＋地図領域のPixelCopy/blurMapへ変更。HomeのDreamCloud背景.pngとDreamCloud.pngのAndroid資源名衝突を固有ASCII名で解消。型/対象Lint/Debug/最終ローカルRelease成功。エミュレーターのNFC背景ぼかしとパン後更新、原本133とのHome比較、生成資源と原本PNGのバイト一致を確認。Pixel上書き成功、HomeとMap確認。ストア提出なし、USB不要を維持。API24/25実機とNFCスキャンは未確認。詳細・画像はANDROID_UI_REFINEMENT_20261125末尾。
 
 2026-11-25（R17/R18/R19）：hello.dreamcloud.shをVercelに公開、Cloudflareにhello CNAMEのみ追加（DNS only）。匿名HTTPSのトップ・support・operator・privacy・termsで200、account-deletionからsupportへ遷移確認。ローカル／公開トップをブラウザ表示確認。モバイル実機のサイト操作は未確認。DBのread-only点検とバックアップ再実行successはPRODUCTION_RETENTION_REVIEW参照。規約正文・057/058配備・本番削除保証は未完。
+
+## 2026-11-25 Androidシート/吹き出し/チャット再調整
+
+R03/R04/R10〜R14/R19。IMG_1714/1715を受け5点を修正。型/対象6試験/Debug/ローカルRelease成功。変更対象Lint成功、StreetChatのみHEADにも同じreact-hooks/refs 4エラーがあると照合済み。Pixel上書き・Map/モード表示、エミュレーターの未保存シート・PIN詳細遷移・一体吹き出し・広範囲gradientを撮影確認。USB不要を維持、ストア提出なし。証拠と差分はANDROID_UI_REFINEMENT_20261125末尾。

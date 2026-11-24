@@ -282,7 +282,7 @@ const s = StyleSheet.create({
     paddingLeft: 8,
     marginRight: -4,
   },
-  actions: { flexDirection: "row", gap: 10 },
+  actions: { flexDirection: "row", gap: 10, flexShrink: Platform.OS === "android" ? 0 : undefined },
   content: {
     padding: 20,
     paddingTop: Platform.OS === "android" ? 10 : 16,

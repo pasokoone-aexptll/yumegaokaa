@@ -149,6 +149,7 @@ export function StreetMapMarkers({
         .map((pin) => (
           <Marker
             key={pin.id}
+            live={Platform.OS === "android"}
             snapshotKey={JSON.stringify(pin)}
             lngLat={[pin.longitude, pin.latitude]}
             onPress={
@@ -223,6 +224,7 @@ export function StreetMapMarkers({
         .map((pin) => (
           <Marker
             key={pin.id}
+            live={Platform.OS === "android"}
             snapshotKey={pin.display_name + pin.icon_path}
             lngLat={[pin.longitude, pin.latitude]}
             onPress={

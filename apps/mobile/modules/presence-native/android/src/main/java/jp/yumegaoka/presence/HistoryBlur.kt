@@ -14,8 +14,7 @@ import java.util.concurrent.Executors
 import kotlin.math.max
 import kotlin.math.roundToInt
 
-// This overlay exists only during expanded chat. Sample the map once, never
-// the chat or keyboard. Ignore a late copy if the overlay has already closed.
+// Blur the map only, excluding chat/keyboard. Refresh at camera rest, not every frame.
 class HistoryBlur(context: Context, appContext: AppContext) : ExpoView(context, appContext) {
   companion object { private val worker = Executors.newSingleThreadExecutor() }
   private val main = Handler(Looper.getMainLooper())
@@ -23,6 +22,11 @@ class HistoryBlur(context: Context, appContext: AppContext) : ExpoView(context, 
   private val bounds = Rect()
   private var snapshot: Bitmap? = null
   private var generation = 0
+  var fadeBottom = false
+    set(value) { field = value; invalidate() }
+  var revision = 0
+    set(value) { field = value; val ticket = ++generation; post { capture(ticket, 0) } }
+  private val maskPaint = Paint().apply { xfermode = PorterDuffXfermode(PorterDuff.Mode.DST_IN) }
   init { setWillNotDraw(false) }
 
   override fun onAttachedToWindow() {
@@ -71,7 +75,18 @@ class HistoryBlur(context: Context, appContext: AppContext) : ExpoView(context, 
   override fun onDraw(canvas: Canvas) {
     super.onDraw(canvas)
     bounds.set(0, 0, width, height)
-    snapshot?.let { canvas.drawBitmap(it, null, bounds, paint) }
+    snapshot?.let {
+      if (!fadeBottom) canvas.drawBitmap(it, null, bounds, paint)
+      else {
+        val layer = canvas.saveLayer(0f, 0f, width.toFloat(), height.toFloat(), null)
+        canvas.drawBitmap(it, null, bounds, paint)
+        maskPaint.shader = LinearGradient(0f, 0f, 0f, height.toFloat(),
+          intArrayOf(Color.TRANSPARENT, Color.TRANSPARENT, Color.argb(64,255,255,255), Color.WHITE),
+          floatArrayOf(0f, 0.4f, 0.7f, 1f), Shader.TileMode.CLAMP)
+        canvas.drawRect(0f, 0f, width.toFloat(), height.toFloat(), maskPaint)
+        canvas.restoreToCount(layer)
+      }
+    }
   }
 }
 

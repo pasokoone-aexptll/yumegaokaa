@@ -64,3 +64,17 @@ R03/R04/R10〜R14/R19。ユーザーの写真と原本133を比較し、前回�
 型検査・対象Lint成功。Debug成功後に実表示修正を反復し、最終ローカルテストassembleRelease成功（/tmp/android-photo-fixes-release.log、1分20秒）。JS同梱5,219,652 bytes。生成Android背景資源が原本PNGとバイト一致することを確認。Pixelへデータ保持で上書き成功、HomeとMapを実表示確認。ストア提出なし、USB/Metro不要を維持。NFC実スキャンは今回検証していない。
 
 比較証拠： [Homeと原本133](evidence/android-20261125/home-cloud-final-pair.png)、[Mapカプセル](evidence/android-20261125/map-capsule-final-crop.png)、[NFC地点の背景ぼかし](evidence/android-20261125/nfc-live-marker-crop.png)、[パン後](evidence/android-20261125/nfc-after-pan-small.png)。
+
+## IMG_1714/1715：シート・吹き出し・モード・チャット（2026-11-25 05:47）
+
+R03/R04/R10〜R14/R19。Androidの×/チェックを28dp領域の独立した線画へ変更し、3dpの丸い線端/接合で小さな元SVGの密集を避けた。ボタンと作成ヘッダー操作列の縮小を抑止。未保存の作成画面で表示を確認し閉じた。
+
+PinBubbleは半透明カプセル＋別三角（marginTop=-1）を廃止し、iOSと同じ一続きの輪郭を一度だけ白90%で塗る。AndroidのPIN/旧募集マーカーは更新可能な実Viewに切替え、SVGのlayout確定前の画像化による背景欠落を防ぐ。PINタップ→詳細シートを確認。
+
+通常モードの丸はactiveに依存せず緑、ghostだけ灰色に変更。トリガー幅52→60dp（左右各4dp増）・高さ34dp維持。回帰テストで参加/未参加の両方を確認。Pixelの灰色表示はメニューでもゴーストにチェックがあることを読み取り確認し、ユーザー設定は変更していない。
+
+チャットはAndroidの暗色gradientを下45%→60%へ拡張。HistoryBlurで地図Surfaceだけを取得してぼかし、画面40%で透明、70%で25%、下端100%の連続マスクを掛ける。カメラ停止で更新し、拡大チャットは従来の全画面ぼかし。iOS固有実装/gradientは変更なし。初期試験でbottomという標準Viewプロパティ名と衝突したためfadeBottomへ修正し、上側の地図を保持することを再撮影確認。
+
+型検査成功、変更対象Lint成功（StreetChat.tsxのみ既存react-hooks/refsの4エラー。HEADの同ファイルを別名で検査し同じ4件であることを確認、新規増加なし）。Android UI/字体の6試験成功。Debug成功、最終JS同梱ローカルRelease成功（1分28秒、/tmp/android-sheet-chat-release.log、JS 5,220,456 bytes）。Pixelへデータ保持で上書き成功、通常Map/チャット/モードメニューの表示を確認。USB不要、ストア提出なし。
+
+証拠：[シートアイコン](evidence/android-20261125/sheet-icons-final-small.png)、[一体吹き出し・通常モード緑・広いchat背景](evidence/android-20261125/bubble-single-final-small.png)。

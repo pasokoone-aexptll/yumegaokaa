@@ -67,7 +67,11 @@ class PresenceNativeModule : Module() {
       Name("MarkerBackdrop")
       Prop("point") { view: MarkerBackdrop, point: List<Double> -> view.point = point }
     }
-    View(HistoryBlur::class) { Name("HistoryBlur") }
+    View(HistoryBlur::class) {
+      Name("HistoryBlur")
+      Prop("fadeBottom") { view: HistoryBlur, value: Boolean -> view.fadeBottom = value }
+      Prop("revision") { view: HistoryBlur, revision: Int -> view.revision = revision }
+    }
     View(SheetHandle::class) {
       Name("SheetHandle")
       Prop("expanded") { view: SheetHandle, expanded: Boolean? -> view.setExpanded(expanded) }

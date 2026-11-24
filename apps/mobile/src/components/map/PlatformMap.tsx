@@ -49,12 +49,12 @@ import type {
   ViewState,
 } from "./PlatformMap.types";
 export type { CameraRef } from "./PlatformMap.types";
-const HistoryBlur = requireNativeViewManager<ViewProps>(
-  "PresenceNative",
-  "HistoryBlur",
-);
+const HistoryBlur = requireNativeViewManager<
+  ViewProps & { fadeBottom: boolean; revision: number }
+>("PresenceNative", "HistoryBlur");
 export function Map({
   historyBlur = false,
+  chatBackdrop = false,
   children,
   showUserLocation = false,
   mapStyle = defaultStyle,
@@ -185,8 +185,10 @@ export function Map({
             style={{ position: "absolute", top: 0, left: 0, right: 0, height }}
           >
             {map}
-            {historyBlur && (
+            {(historyBlur || chatBackdrop) && (
               <HistoryBlur
+                fadeBottom={!historyBlur}
+                revision={materialRevision}
                 pointerEvents="none"
                 style={StyleSheet.absoluteFill}
               />
@@ -250,6 +252,7 @@ export function Marker({
   onPress,
   snapshotKey,
   passive,
+  live,
 }: MarkerProps) {
   const ref = useRef<ViewAnnotationRef>(null);
   const frame = useRef<number | null>(null);
@@ -268,9 +271,9 @@ export function Marker({
       frame.current = null;
     };
   }, [scale, snapshotKey, refresh]);
-  if (passive)
+  if (passive || live)
     return (
-      <LibreMarker lngLat={lngLat}>
+      <LibreMarker lngLat={lngLat} onPress={passive ? undefined : onPress}>
         <View
           collapsable={false}
           pointerEvents="none"

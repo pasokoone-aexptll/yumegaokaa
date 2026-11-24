@@ -288,7 +288,10 @@ export function StreetChat({
               left: 0,
               right: 0,
               bottom: 0,
-              height: Math.min(height * 0.45, availableHeight - overlap),
+              height: Math.min(
+                height * (Platform.OS === "android" ? 0.6 : 0.45),
+                availableHeight - overlap,
+              ),
             }}
           >
             {Platform.OS !== "android" && (

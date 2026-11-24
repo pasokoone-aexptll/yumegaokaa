@@ -142,31 +142,31 @@ export function PinBubble({
   const center = w / 2;
   const tailScale =
     0.9 * (0.65 + (Math.min(7, Math.max(3, textLength)) - 3) * (0.35 / 4));
+  // One silhouette: the tail shares its contour and shadow with the capsule.
+  const outline = `M${r} 0H${w - r}A${r} ${r} 0 0 1 ${w} ${r}A${r} ${r} 0 0 1 ${w - r} ${h}H${center + 18 * tailScale}Q${center + 14 * tailScale} ${h} ${center + 10 * tailScale} ${h + 3 * tailScale}L${center - 7 * tailScale} ${h + 17 * tailScale}Q${center - 12 * tailScale} ${h + 21 * tailScale} ${center - 12 * tailScale} ${h + 15 * tailScale}V${h + 5 * tailScale}Q${center - 12 * tailScale} ${h} ${center - 17 * tailScale} ${h}H${r}A${r} ${r} 0 0 1 0 ${r}A${r} ${r} 0 0 1 ${r} 0Z`;
   if (Platform.OS === "android") {
     return (
       <LabelShadow bubble>
         <View style={s.bubbleWrapper}>
+          {w > 0 && h > 0 && (
+            <Svg
+              pointerEvents="none"
+              width={w}
+              height={h + 23}
+              style={StyleSheet.absoluteFill}
+            >
+              <Path d={outline} fill="rgba(255,255,255,0.9)" />
+            </Svg>
+          )}
           <View
-            style={[
-              s.bubble,
-              { backgroundColor: "rgba(255,255,255,0.9)" },
-              minWidth !== undefined && { minWidth },
-            ]}
+            onLayout={({ nativeEvent: { layout } }) =>
+              setSize({ width: layout.width, height: layout.height })
+            }
+            style={[s.bubble, minWidth !== undefined && { minWidth }]}
           >
             {children}
           </View>
-          <Svg
-            pointerEvents="none"
-            width={54 * tailScale}
-            height={19 * tailScale}
-            viewBox="0 0 54 19"
-            style={{ marginTop: -1 }}
-          >
-            <Path
-              d="M0 0H54Q45 0 38 3L21 17Q16 21 16 15V5Q16 0 11 0Z"
-              fill="rgba(255,255,255,0.9)"
-            />
-          </Svg>
+          <View style={{ height: 19 * tailScale }} />
           {accessory && (
             <View
               style={{ position: "absolute", right: -10, top: 24, zIndex: 4 }}
@@ -178,8 +178,6 @@ export function PinBubble({
       </LabelShadow>
     );
   }
-  // One silhouette: the tail shares its contour and shadow with the capsule.
-  const outline = `M${r} 0H${w - r}A${r} ${r} 0 0 1 ${w} ${r}A${r} ${r} 0 0 1 ${w - r} ${h}H${center + 18 * tailScale}Q${center + 14 * tailScale} ${h} ${center + 10 * tailScale} ${h + 3 * tailScale}L${center - 7 * tailScale} ${h + 17 * tailScale}Q${center - 12 * tailScale} ${h + 21 * tailScale} ${center - 12 * tailScale} ${h + 15 * tailScale}V${h + 5 * tailScale}Q${center - 12 * tailScale} ${h} ${center - 17 * tailScale} ${h}H${r}A${r} ${r} 0 0 1 0 ${r}A${r} ${r} 0 0 1 ${r} 0Z`;
   return (
     <View collapsable={false} style={s.shadowFrame}>
       <View style={s.bubbleWrapper}>
