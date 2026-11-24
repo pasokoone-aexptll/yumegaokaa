@@ -16,7 +16,7 @@ Android移植は共通操作部品・Map/PIN・keyboard・QR権限・運営画�
 
 ### 2026-11-25 原本33枚との反復照合・Pixel開発版更新
 
-Downloads/figmaaaaaaaaの全33枚とAndroidを撮影比較し、シート背景切れ、作成画面の欠け/高さ、スイッチ、Pool、運営レイアウトを修正。追加指定のedge-to-edgeを実装しPixel 6aへDebug上書き・welcome起動確認済み。USB＋Metro8083が必要。型/対象Lint/11試験/Debug成功。完全な画素一致・全実機フロー合格とは扱わない。長時間deeplink/Hot Reload後のOOM原因、3ボタンの白アイコン化は未確認。[比較台帳](frontend-redesign/ANDROID_FIGMA_COMPARISON_20261125.md)に撮影根拠と残りを記録。iOSの表示仕様は維持。
+Downloads/figmaaaaaaaaの全33枚とAndroidを撮影比較し、シート背景切れ、作成画面の欠け/高さ、スイッチ、Pool、運営レイアウトを修正。追加指定のedge-to-edgeを実装しPixel 6aへDebug上書き・welcome起動確認済み。USB＋Metro8083が必要。型/対象Lint/11試験/Debug成功。完全な画素一致・全実機フロー合格とは扱わない。長時間deeplink/Hot Reload後のOOM原因は未確認。3ボタンの明暗指定はSystemUIで反映確認済み。33状態の比較と修正対象の再撮影を完了。[比較台帳](frontend-redesign/ANDROID_FIGMA_COMPARISON_20261125.md)に撮影根拠と残りを記録。iOSの表示仕様は維持。
 
 ### 2026-11-25 Android限定の外観修正
 

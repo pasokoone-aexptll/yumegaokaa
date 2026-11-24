@@ -53,7 +53,7 @@
 全33原本について撮影・目視比較済み。142/147/169も修正後に再撮影した。写真/名前/文言の状態差、地図提供元、指定フォント、OS領域の差は上表を参照。完全な画素一致やユーザー受入済みとは扱わない。原本の丸い端末外枠自体はアプリUIとして追加しない。
 
 - シート背景：背景をネイティブBottomSheetBehaviorのホスト背景へ置き、全高の透明footer領域まで連続させる。前面に背景帯を戻して名簿を隠さない。143のv3→v4で修正確認。最新の `/tmp/android-edge-sheet.png` でも名簿・浮いた参加ボタン・連続背景を確認。
-- edge-to-edge：ユーザーの追加指定を反映。AndroidSystemBarsで全画面のdecor fitsを無効化し、API29以上のシステムバーのコントラスト面を除去。操作部のSafeAreaは維持。画面に合わせたナビゲーションアイコン設定を追加。ただしAPI35エミュレーターの3ボタンは灰色のままで、白アイコンへの切替は表示確認できていない。Mapとシートの白い帯除去は実表示確認（`/tmp/android-edge-map.png`、`/tmp/android-edge-sheet.png`）。API24/25のみ白アイコンのため暗い透過下地を残す（未実機確認）。
+- edge-to-edge：ユーザーの追加指定を反映。AndroidSystemBarsで全画面のdecor fitsを無効化し、API29以上のシステムバーのコントラスト面を除去。操作部のSafeAreaは維持。画面に合わせたナビゲーションアイコン設定を追加。API35エミュレーターの3ボタンは灰色に見えるが、SystemUI dumpで暗いシートはmNavigationLight=false/mDarkIntensity=0、明るいHomeはLIGHT_NAVIGATION_BARS/mNavigationLight=true/mDarkIntensity=1へ切替を確認。アプリからOSへの明暗指定は反映されている。Mapとシートの白い帯除去は実表示確認（`/tmp/android-edge-map.png`、`/tmp/android-edge-sheet.png`）。API24/25のみ白アイコンのため暗い透過下地を残す（未実機確認）。
 - PIN：半高の上余白を6dp削減。作成の行高を52dpへ調整。人数展開と編集はAndroidの3段階detents [0.455, 0.665, 0.95]（中央はMaterial正規化後約70%）へ修正。iOSの既存2段階設定は維持。
 - スイッチ：Android専用64×36dp、白いノブと透過OFF面、値変更アニメーション、switchアクセシビリティ。運営/招待の明るい面は黒22%のOFF下地（disabled時は全体opacity .65）。操作コールバックは既存のまま。
 - Pool：Androidの代替BlurViewが重ねる白い帯を、明示的なページ背景がある場合は重ねず、青の連続gradientを維持。158/159で再撮影。
@@ -85,3 +85,9 @@
 - [Pixel起動](evidence/android-20261125/pixel-edge-final-small.png)
 
 実機ログイン後/NFC・長時間利用・API24/25は今回の画面照合の検証外で、製品受入済みとはしない。3ボタンの灰色アイコンは残存差として記録。
+
+## 完了監査（04:52）
+
+原本33状態の比較、検出したシート/作成画面/運営/Pool/スイッチ差分の修正、修正対象の再撮影、Android限定の実装、既指定フォント/アイコン/透過色/浮いた操作の維持、検証記録、ローカルcommit保存を確認。追加のPixelインストールとedge-to-edgeは実機起動/エミュレーターのMap・シート表示で確認した。全件の実API・物理端末受入を意味しない。
+
+ナビゲーション色はSystemUIの読み取りで明暗の切替が確認できたため、アプリ設定の未反映とは判定しない。灰色に見えるOS描画の差と、上記の実データ/地図/既決定仕様差を残した状態が今回の比較結果。検出済みUI差分の修正・対象再撮影は完了。原本との完全なRGB同一性は保証しない。

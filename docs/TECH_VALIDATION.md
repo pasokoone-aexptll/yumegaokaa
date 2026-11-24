@@ -1835,4 +1835,4 @@ APP_STORE_BUILD、APP_REVIEW_ACCESS、APP_STORE_PRIVACY_EVIDENCEを作成。審�
 
 ## 2026-11-25 Android原本比較とedge-to-edge / Pixel開発版
 
-R03/R04/R10〜R14/R19。原本33枚の比較と修正根拠は[比較台帳](frontend-redesign/ANDROID_FIGMA_COMPARISON_20261125.md)。Android全高シート背景、PIN detents/行高、専用スイッチ、Pool/運営配置を修正。全画面のedge-to-edge設定を追加し、API35のMap/シートで白いOS帯除去を撮影確認。Pixel 6a(API37)へDebugをデータ保持で上書き、welcome起動とジェスチャー領域を確認。USB＋Metro8083を使用。型/対象Lint/対象11試験/assembleDebug成功。Releaseは審査フックが拒否したため使用していない。Pixelログイン後/NFC、長時間利用時OOMの原因、3ボタン白アイコン化は未確認。既存33タスクの達成率は変更しない。
+R03/R04/R10〜R14/R19。原本33枚の比較と修正根拠は[比較台帳](frontend-redesign/ANDROID_FIGMA_COMPARISON_20261125.md)。Android全高シート背景、PIN detents/行高、専用スイッチ、Pool/運営配置を修正。全画面のedge-to-edge設定を追加し、API35のMap/シートで白いOS帯除去を撮影確認。Pixel 6a(API37)へDebugをデータ保持で上書き、welcome起動とジェスチャー領域を確認。USB＋Metro8083を使用。型/対象Lint/対象11試験/assembleDebug成功。Releaseは審査フックが拒否したため使用していない。SystemUI dumpで暗いシートのmNavigationLight=false/mDarkIntensity=0、HomeのmNavigationLight=true/mDarkIntensity=1を確認。Pixelログイン後/NFC、長時間利用時OOMの原因は未確認。既存33タスクの達成率は変更しない。
