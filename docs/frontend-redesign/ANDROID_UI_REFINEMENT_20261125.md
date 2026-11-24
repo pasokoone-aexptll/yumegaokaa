@@ -78,3 +78,9 @@ PinBubbleは半透明カプセル＋別三角（marginTop=-1）を廃止し、iO
 型検査成功、変更対象Lint成功（StreetChat.tsxのみ既存react-hooks/refsの4エラー。HEADの同ファイルを別名で検査し同じ4件であることを確認、新規増加なし）。Android UI/字体の6試験成功。Debug成功、最終JS同梱ローカルRelease成功（1分28秒、/tmp/android-sheet-chat-release.log、JS 5,220,456 bytes）。Pixelへデータ保持で上書き成功、通常Map/チャット/モードメニューの表示を確認。USB不要、ストア提出なし。
 
 証拠：[シートアイコン](evidence/android-20261125/sheet-icons-final-small.png)、[一体吹き出し・通常モード緑・広いchat背景](evidence/android-20261125/bubble-single-final-small.png)。
+
+## 05:53指摘：ボタン上端のクリップを修正
+
+前回の線画調整ではチェックの円上端が平らに切れる問題を解消できていなかった。AndroidのPIN作成/編集はcontent.paddingTop=10、header.marginTop=-12でヘッダーがScrollView上端から2dpはみ出していた。無効ボタンのopacity合成で上端が切れるため、負のmarginを除去しpaddingTop=0へ変更。実際の配置は2dp下がるだけで円全体が描画範囲へ収まる。iOSの余白16dpは維持。
+
+エミュレーターの拡大撮影とPixel作成シートで、無効チェック/×の円上端が丸く表示されることを確認。対象Lint成功、JS同梱ローカルRelease成功18秒（/tmp/android-sheet-unclipped-release.log）、Pixel上書き成功。保存/投稿は実行していない。証拠：[円の拡大](evidence/android-20261125/sheet-unclipped-detail.png)、[Pixel](evidence/android-20261125/pixel-sheet-unclipped-small.png)。

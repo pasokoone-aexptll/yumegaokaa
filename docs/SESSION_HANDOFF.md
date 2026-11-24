@@ -14,7 +14,11 @@ Codex用app-store-complianceを導入・自己検証・手動実行済み。自�
 
 Android移植は共通操作部品・Map/PIN・keyboard・QR権限・運営画面・アイコンまで実装。API35 emulatorの対象UI検証とRelease成功。PIN半画面の固定操作はAndroid native footerへ接続し、展開/折りたたみ後の表示を第16版で確認。ローカル実接続でOTP/プロフィール写真保存/PIN作成・編集を確認。Expo stopObserving予約名衝突を修正しDebug成功。Home/設定/本人チャット送信・再訪/通知詳細も実データ確認、修正後Releaseビルド成功。最終Release再起動、相手チャット受信/PIN参加・名簿も確認済み。運営MFA/自分の検証招待取消も実API確認済み。UI移植と利用可能なエミュレーター確認を完了。実カメラ受付/物理Androidの製品受入は未確認。最終照合はANDROID_UI_PORT末尾。旧33件は不変。詳細と未確認はANDROID_UI_PORT/TECH_VALIDATION末尾。
 
-### 2026-11-25 シート等5点の再調整（最新）
+### 2026-11-25 シートボタン上端の切れ（最新）
+
+05:53の再指摘で、線画ではなくheader.marginTop=-12/content.paddingTop=10による2dpのはみ出しが原因と確認。Androidの負marginを除去しpaddingTop=0へ変更、Pixelの無効チェックと×が円形に描画されることを確認。対象Lint/ローカルRelease成功、Pixel単体動作版を再更新済み。詳細はANDROID_UI_REFINEMENT_20261125末尾。
+
+### 2026-11-25 シート等5点の再調整（前回）
 
 IMG_1714/1715を受け、Androidの×/チェック線画、吹き出し一体描画、通常モードの緑（active依存除去）、カプセル左右各4dp増、チャット下60%の連続ぼかしを実装。型/対象6試験/Debug/JS同梱ローカルRelease成功、Pixel上書き済み。StreetChat Lintは変更前から4件のrefsエラーがあり今回増加なし。実画面でPINタップ、作成シート、Map/モードを確認。詳細と証拠はANDROID_UI_REFINEMENT_20261125末尾。
 

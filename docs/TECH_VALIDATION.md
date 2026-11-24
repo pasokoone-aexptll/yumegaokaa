@@ -1856,3 +1856,7 @@ R03/R04/R10〜R14/R19。Mapカプセルを通常Viewへ、NFC地点を実View Ma
 R03/R04/R10〜R14/R19。IMG_1714/1715を受け5点を修正。型/対象6試験/Debug/ローカルRelease成功。変更対象Lint成功、StreetChatのみHEADにも同じreact-hooks/refs 4エラーがあると照合済み。Pixel上書き・Map/モード表示、エミュレーターの未保存シート・PIN詳細遷移・一体吹き出し・広範囲gradientを撮影確認。USB不要を維持、ストア提出なし。証拠と差分はANDROID_UI_REFINEMENT_20261125末尾。
 
 2026-11-25 R17/R18：隔離migration一覧で057のみdry-run後、クラウド適用成功。配備済みpublic.street_api経由の合成退会試験で再認証拒否・本人本文消去・他者維持・PIN閉鎖・清掃job・再送を確認、全変更ROLLBACK。R2のdaily/7日削除Enabled・非公開・APACを管理画面確認。クラウド清掃関数の保存期限を読み取り照合。Auth soft deleteと外部キーによる最終消去未完を発見。Render再ログインと保持方針の回答待ち。
+
+## 2026-11-25 05:53 シート上端クリップ再修正
+
+R10〜R14/R19。Android作成/編集ヘッダーの負marginとpaddingの差で2dpはみ出していた点を修正。円形ボタンの上端をエミュレーター拡大画像とPixelで確認。対象Lint/ローカルRelease成功、Pixelへ上書き済み。詳細・証拠はANDROID_UI_REFINEMENT_20261125末尾。
