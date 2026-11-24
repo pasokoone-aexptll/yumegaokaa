@@ -8,9 +8,9 @@
 | --- | --- | --- | --- |
 | A01 | 共通操作部品・Glass代替・通知遷移 | R10/R19 | 実装済み・型/対象Lint/通知切替2試験成功。Androidで消えるGlass背景、旧ボタン寸法、参加Toggle外周、メニュー素材、通知切替時の旧action保持を修正。API35でMap上のヘッダー/人数/通知/最新へ、参加切替/公開設定メニューを実部品fixture操作確認 |
 | A02 | 地図・PIN・配置・sheet・チャット | R10/R12〜R15/R19 | 仮置き/確定のズーム倍率漏れを修正し同位置・同寸法を確認。足元リングドラッグ確認。現在地表示・カメラ余白解除を接続。シートハンドル/角丸/人数展開を接続。Android native footerで半画面→全画面→半画面の固定ボタン表示を確認。チャット新着と送信確定時の重複なしをfixture確認。ローカルAPIで自身のPIN作成→位置確定→保存→編集→再保存・詳細への反映を確認 |
-| A03 | 登録・QR・Home・通知・設定の全画面 | R03/R18/R19 | 共通画面を再利用。登録メール欄のkeyboard隠れを再現・修正・確認。招待/名前/本人写真/Pool、通知/通知詳細/Block/メールOTP/運営をfixture表示確認。ローカルOTP実認証、名前・写真選択/切り抜き・Storage保存、Welcome/Homeを確認。実カメラQR・全画面一巡は未確認 |
+| A03 | 登録・QR・Home・通知・設定の全画面 | R03/R18/R19 | 共通画面を再利用。登録メール欄のkeyboard隠れを再現・修正・確認。招待/名前/本人写真/Pool、通知/通知詳細/Block/メールOTP/運営をfixture表示確認。ローカルOTP実認証、名前・写真選択/切り抜き・Storage保存、Welcome/Homeを確認。Home/プロフィール/Pool/アカウント/招待QR/Block/運営資格なしも実API表示確認。実カメラQRは未確認 |
 | A04 | 表示名・アイコン・native設定・Release | R02/R19 | 提供Icon ComposerのExclude.png/背景グラデーションからadaptive/legacy/monochromeを生成。表示名/QRカメラ権限同期、arm64 Releaseビルド成功。レビュー無効の通常APKもビルド/起動・レビューURL閉鎖を確認。iOSの光学glassはAndroid固有表現として別扱い |
-| A05 | 統合確認・残件記録 | R19 | 監査・型・対象Lint・対象テスト・API35のUI確認を記録済み。接続実機0台。実データの全画面一巡と実機特有NFC/カメラ/背景/Pushが残り、Android全体DONEにはしない |
+| A05 | 統合確認・残件記録 | R19 | 監査・型・対象Lint・対象テスト・API35のUI確認を記録済み。接続実機0台。主要4タブと設定の実データ一巡を追加確認。複数人操作・運営権限内操作・実機特有NFC/カメラ/背景/Pushが残り、Android全体DONEにはしない |
 
 初回残量5区分、工数未計測。区分は進捗管理用でありMVP33タスクへ加算しない。共通コードに既に反映済みであることとAndroid実表示合格を区別する。
 
@@ -34,7 +34,7 @@ Swift APIClientのcreateAccount指定は既存platformAuth.androidのshouldCreat
 
 前回：5区分とも移植着手前。今回：A01〜A04の必要実装とOS専用差分監査を実施し、利用可能なエミュレーターで対象UIを確認。A05の実データ/実機統合確認は未完。工数は未計測のままで、件数を工数削減率へ換算しない。シートの下端ボタン欠落はA02の既存操作条件に直接関わるため必要修正であり、分母追加はなし。
 
-- テスト不足：ログイン後のHome/実プロフィール/アカウント設定、実チャット送受信、実カメラQR復号を同じAndroid版で一巡。ローカルOTP/プロフィール保存/PIN作成・編集は確認済み。共通コードがあることを実データ合格に置き換えない。
+- テスト不足：複数人のチャット受信・PIN参加/名簿、運営権限内操作、実カメラQR受付。ローカルOTP/プロフィール保存/PIN作成・編集、Home/設定、本人チャット送信とタブ再訪表示、通知詳細・既読操作は確認済み。共通コードがあることを実データ合格に置き換えない。
 - 実機待ち：物理Androidで画面密度/keyboard/戻る操作、カメラ/NFC、位置・背景、Pushの確認。現在接続はemulator-5554のみ。
 - 配布条件：通常APKも既存ローカル開発用設定と署名。クラウド本番版、Play公開版、iOS再ビルドは含まない。
 
@@ -50,4 +50,6 @@ Colima停止とDB以外のコンテナ停止を切り分けて復旧。CLI migra
 
 ### 実接続で検出したnative競合（R04〜R09/R19）
 
-認証後のlistener.removeで「Received 1 arguments, but 0 was expected」を再現。アプリのstopObservingがExpo EventEmitterの同名ライフサイクルを上書きしていたためstopVisitObservationへ変更。対象4試験/型検査/対象Lint/Debug再ビルド成功。再インストール後にセッション復元、プロフィール・PINの複数遷移を行い、新しい同エラーなし。Releaseへの最終反映は次の検証サイクル。
+認証後のlistener.removeで「Received 1 arguments, but 0 was expected」を再現。アプリのstopObservingがExpo EventEmitterの同名ライフサイクルを上書きしていたためstopVisitObservationへ変更。対象4試験/型検査/対象Lint/Debug再ビルド成功。再インストール後にセッション復元、プロフィール・PINの複数遷移を行い、新しい同エラーなし。修正後の通常Releaseも成功（/tmp/android-port-native-final-release.log、1分8秒）。最終Releaseの再インストール・起動は次サイクル。
+
+追加実データ証拠：/tmp/android-local-account-small.png、android-local-profile-settings-small.png、android-local-account-settings2-small.png、android-local-pool-small.png、android-local-invite-small.png、android-local-blocks-small.png、android-local-admin-small.png。Android表示の実招待QRをApple Visionで1件復号（非空payload確認、実カメラ受付とは別）。本人チャット入力・送信・確定・タブ再訪はandroid-local-chat-input-small.png、android-local-chat-sent-small.png、android-local-chat-return-small.png。通知生成・詳細・了解操作はandroid-local-notifications-small.png、android-local-notification-detail-small.png。

@@ -1777,3 +1777,7 @@ MapHeader人数/参加切替/公開メニュー/通知切替/最新へを第6版
 本人写真にはリポジトリの検証画像を使用。名前・Android写真Picker・切り抜き・avatar/PoolのStorage保存・Welcome表示・Homeを実操作確認し、当該アカウントのDBでdisplay_name/avatar_saved/pool_savedを確認。招待はlocal:inviteで合成アカウントだけに付与したため実QR受付合格にはしない。PIN作成→地図位置確定→保存→詳細→編集→保存を実操作し、Android_port_test_editedの詳細と地図表示を確認。証拠/tmp/android-local-welcome-small.png、android-local-home-small.png、android-local-saved-small.png、android-local-edited-small.png。
 
 残件：Home/設定の全画面一巡、実チャット、実カメラQR、物理AndroidのNFC/測位/背景/Push、修正後Release。旧33タスクの分母・DONE・iPhone実機率は不変。
+
+追加確認：API35 DebugでHomeの編集済みPIN、プロフィール、Pool保存画像、アカウントの実メール、招待QR/履歴、Block空状態、運営資格なし表示を確認。本人チャットの入力→送信→単一確定行→タブ再訪表示、PIN作成通知→詳細→了解操作を確認。未入街でもチャット送信可能な既存仕様を維持。Androidの招待QR画像はApple Visionで1件復号し非空payloadを確認（カメラ受付とは別）。詳細画像一覧はANDROID_UI_PORT。
+
+修正後の通常arm64 Release成功（/tmp/android-port-native-final-release.log、1分8秒）。UI_REVIEW=0、既存.env.localを維持。最終Releaseの再インストール起動、複数人の受信・参加/名簿、運営資格内操作、物理端末機能は未確認。エミュレーターにはローカルAPI接続用Debugを維持。
