@@ -14,6 +14,10 @@ Codex用app-store-complianceを導入・自己検証・手動実行済み。自�
 
 Android移植は共通操作部品・Map/PIN・keyboard・QR権限・運営画面・アイコンまで実装。API35 emulatorの対象UI検証とRelease成功。PIN半画面の固定操作はAndroid native footerへ接続し、展開/折りたたみ後の表示を第16版で確認。ローカル実接続でOTP/プロフィール写真保存/PIN作成・編集を確認。Expo stopObserving予約名衝突を修正しDebug成功。Home/設定/本人チャット送信・再訪/通知詳細も実データ確認、修正後Releaseビルド成功。最終Release再起動、相手チャット受信/PIN参加・名簿も確認済み。運営MFA/自分の検証招待取消も実API確認済み。UI移植と利用可能なエミュレーター確認を完了。実カメラ受付/物理Androidの製品受入は未確認。最終照合はANDROID_UI_PORT末尾。旧33件は不変。詳細と未確認はANDROID_UI_PORT/TECH_VALIDATION末尾。
 
+### 2026-11-25 Pixel単体動作版（最新）
+
+ユーザー指定により、ストア提出なしのローカルテストAPKをJS同梱でビルドしPixelへ上書き済み。ADB reverseを全て外してコールド起動し、保持されたアカウントのプロフィール写真設定画面を確認。USB/Metro不要（オンライン機能はネット接続が必要）。Mapのボタンをカプセル半径17dp、Homeのゴースト丸を黒55%へ変更。場所表示はエミュレーターDBのplacements=0を確認し、fixtureではON/OFF描画正常。本番バグ解消とはせず、発生端末の回答待ち。詳しくはANDROID_UI_REFINEMENT_20261125末尾。ビルドスクリプトはscripts/build-android-local-test.sh。ユーザーが一時停止した審査フックは再有効化可能。
+
 ### 2026-11-25 原本33枚との反復照合・Pixel開発版更新
 
 Downloads/figmaaaaaaaaの全33枚とAndroidを撮影比較し、シート背景切れ、作成画面の欠け/高さ、スイッチ、Pool、運営レイアウトを修正。追加指定のedge-to-edgeを実装しPixel 6aへDebug上書き・welcome起動確認済み。USB＋Metro8083が必要。型/対象Lint/11試験/Debug成功。完全な画素一致・全実機フロー合格とは扱わない。長時間deeplink/Hot Reload後のOOM原因は未確認。3ボタンの明暗指定はSystemUIで反映確認済み。33状態の比較と修正対象の再撮影を完了。[比較台帳](frontend-redesign/ANDROID_FIGMA_COMPARISON_20261125.md)に撮影根拠と残りを記録。iOSの表示仕様は維持。

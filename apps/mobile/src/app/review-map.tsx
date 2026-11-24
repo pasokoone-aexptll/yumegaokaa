@@ -130,15 +130,28 @@ function Scene() {
             onSelect={() => {}}
           />
         ) : (
-          <EntryPlaces
-            map={{
-              name: "表示確認",
-              boundary: null,
-              places: [
-                { title: "表示確認", longitude: 139.7109, latitude: 35.7295 },
-              ],
-            }}
-          />
+          (scene !== "controls" || placesVisible) && (
+            <EntryPlaces
+              map={{
+                name: "表示確認",
+                boundary: {
+                  type: "Polygon",
+                  coordinates: [
+                    [
+                      [139.7102, 35.7291],
+                      [139.7116, 35.7291],
+                      [139.7116, 35.73],
+                      [139.7102, 35.73],
+                      [139.7102, 35.7291],
+                    ],
+                  ],
+                },
+                places: [
+                  { title: "表示確認", longitude: 139.7109, latitude: 35.7295 },
+                ],
+              }}
+            />
+          )
         )}
       </Map>
       {scene === "controls" && (

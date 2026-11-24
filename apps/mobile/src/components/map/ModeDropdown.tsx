@@ -70,7 +70,7 @@ export function ModeDropdown({
         <SmoothSurface
           color="rgba(0,0,0,0.05)"
           blurIntensity={0}
-          radius={12}
+          radius={17}
           style={styles.trigger}
         >
           <View
@@ -78,7 +78,9 @@ export function ModeDropdown({
               styles.dot,
               {
                 backgroundColor: ghost
-                  ? "#9a9a9e"
+                  ? dark
+                    ? "#9a9a9e"
+                    : "rgba(0,0,0,0.55)"
                   : active
                     ? "#00bc83"
                     : "#ffffff66",

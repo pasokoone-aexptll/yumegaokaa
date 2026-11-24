@@ -42,3 +42,13 @@ Android 24〜28は互換フォント生成と分岐のコード確認のみ、�
 Android限定（R12/R19）。footerの背景SheetSurfaceが下の名簿を覆うことをユーザー画像で確認。背景を除き透明な固定操作領域に変更。参加する（neutral/onDark）の面は白18%へ。既存の参加済み緑色と操作は維持。入街は初期50%/展開100%、上余白12dp/図の上14dp/間隔10dpへ詰め、固定リングを維持。
 
 API35の実表示で、半画面の主催者アイコン全体と白透過の浮いた参加ボタン、入街本文とリングの収まりを確認。証拠 `/tmp/android-floating-pin-small.png`、`/tmp/android-floating-entry-small.png`。型/対象Lint成功。JSのみの変更で既存Metroへ反映し、native再ビルド・物理Android転送は実施していない。iOS分岐/表示は不変。
+
+## 追加指定：単体動作とMapカプセル（2026-11-25）
+
+ユーザーがUSB/Metro不要のPixelローカル開発者テスト版を指定。ストア提出ではない。Mapの指摘は「カプセル型のボタンになっていない」と確定。Android ModeDropdownの高さ34dpに対する半径を12→17dpへ変更し、黒5%/52×34dp/丸と矢印/開いたメニューの動作を保持。iOS専用実装は変更なし。エミュレーターのMap実表示を撮影（/tmp/android-capsule.png）、対象Lint成功。
+
+JS同梱・既存debug署名のassembleReleaseを試みたが、PreToolUseのApp Store Compliance Guardが審査項目未確認を理由に拒否。通常クラウド/レビュー無効のローカル端末用APKを予定。フックはプロセス環境のみからAPP_STORE_GUARD_OKを読むため、コマンド内の指定は届かない。ユーザーがSettings→Hooksで一時停止したと回答後、正式なassembleReleaseを実行。JS同梱のローカルテストAPKをビルド成功し、Pixelへデータ保持で上書き成功。ストアへのアップロードはしていない。
+
+Homeのゴースト丸はAndroid/lightだけ黒55%へ変更（以前は#9a9a9e）。Map/darkは維持。`scripts/build-android-local-test.sh` を追加し、通常クラウド/レビュー・FIELD_TRIAL・ローカル入街代替を無効にしたJS同梱APKを再現可能にした。最終ビルド16秒で成功。APKのassets/index.android.bundleは5,217,108 bytes、クラウドAPI/Gatewayを内包。PixelのADB reverse一覧を空にしてforce-stop→MainActivity起動し、保持されたアカウントのプロフィール写真設定画面まで表示を確認（05:03）。USB/Metroは不要、通信機能にはネット接続が必要。型/対象Lint成功。
+
+「ログイン場所・街の範囲」について：エミュレーターの実DBではplacements=0、境界は経度139.70〜139.72・緯度35.725〜35.738で、拡大時の画面外。review-map controlsに本番のEntryPlacesを使った小さな境界を追加し、メニューONで範囲・NFCマーカーが表示され、OFFでは出ないことを撮影確認。以前のreview controlsはplacesVisibleを描画条件に使っていなかったため修正した。本番の表示不具合を修正済みとは扱わず、発生端末のユーザー回答待ち。クラウドに架空の場所は追加していない。
