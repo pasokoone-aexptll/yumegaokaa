@@ -3,8 +3,8 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import ts from '../apps/mobile/node_modules/typescript/lib/typescript.js';
 
-test('outgoing notice retains its own action until the next message enters', () => {
-  const source = ts.transpileModule(readFileSync('apps/mobile/src/components/map/MapStatusBanner.ios.tsx', 'utf8'), {
+for (const platform of ['ios', 'android']) test(`${platform}: outgoing notice retains its own action until the next message enters`, () => {
+  const source = ts.transpileModule(readFileSync(`apps/mobile/src/components/map/MapStatusBanner.${platform}.tsx`, 'utf8'), {
     compilerOptions: { module: ts.ModuleKind.CommonJS, jsx: ts.JsxEmit.ReactJSX },
   }).outputText;
   const slots = []; let cursor = 0, finish;

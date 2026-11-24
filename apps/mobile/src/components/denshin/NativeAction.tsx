@@ -6,7 +6,7 @@ export function NativeAction({
   disabled = false,
   destructive = false,
   tone = "green",
-  contentWidth = 168,
+  contentWidth = 156,
   compact = false,
   onDark = false,
   leadingIcon,
@@ -36,11 +36,15 @@ export function NativeAction({
   return (
     <Pressable
       accessibilityRole="button"
+      accessibilityState={{ disabled }}
       disabled={disabled}
       onPress={onPress}
       style={{
-        padding: compact ? 10 : 16,
-        minWidth: contentWidth,
+        paddingHorizontal: 16,
+        minHeight: compact ? 40 : 54,
+        minWidth: contentWidth + 32,
+        maxWidth: "100%",
+        alignSelf: "center",
         borderRadius: 40,
         alignItems: "center",
         flexDirection: "row",
@@ -53,7 +57,9 @@ export function NativeAction({
             : tone === "blue"
               ? "#008CFF"
               : tone === "neutral"
-                ? "rgba(255,255,255,0.75)"
+                ? onDark
+                  ? "#45474a"
+                  : "#f2f2f7"
                 : "#34C759",
         opacity: disabled ? 0.4 : 1,
       }}
@@ -69,7 +75,10 @@ export function NativeAction({
         style={[
           {
             color: tone === "neutral" && !onDark ? "black" : "white",
-            fontFamily: "ui-rounded",
+            flexShrink: 1,
+            textAlign: "center",
+            includeFontPadding: false,
+            fontWeight: "600",
             fontSize: compact ? 16 : 18,
           },
           labelStyle,

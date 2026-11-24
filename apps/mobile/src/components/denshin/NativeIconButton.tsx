@@ -9,7 +9,7 @@ export function NativeIconButton({
   dark = true,
   rotation = 0,
   accent = "#34C759",
-  size = 44,
+  size = 49,
 }: {
   icon: SuperAssetName;
   label: string;
@@ -25,13 +25,14 @@ export function NativeIconButton({
     <Pressable
       accessibilityRole="button"
       accessibilityLabel={label}
+      accessibilityState={{ disabled }}
       disabled={disabled}
       onPress={onPress}
       style={{
         width: size,
         height: size,
         borderRadius: size / 2,
-        backgroundColor: active ? accent : "rgba(255,255,255,0.15)",
+        backgroundColor: active ? accent : dark ? "#45474a" : "#f2f2f7",
         opacity: disabled ? 0.35 : 1,
         alignItems: "center",
         justifyContent: "center",
@@ -41,7 +42,19 @@ export function NativeIconButton({
         pointerEvents="none"
         style={{ transform: [{ rotate: `${rotation}deg` }] }}
       >
-        <SuperAsset name={icon} size={22} tint={dark ? "white" : "black"} />
+        <SuperAsset
+          name={icon}
+          size={
+            icon === "chevron-base"
+              ? 32
+              : icon === "x"
+                ? 16
+                : size > 49
+                  ? 26
+                  : 22
+          }
+          tint={dark ? "white" : "black"}
+        />
       </View>
     </Pressable>
   );

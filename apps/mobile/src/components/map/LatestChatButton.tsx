@@ -1,4 +1,4 @@
-import { GlassView } from "expo-glass-effect";
+import { GlassView } from "./PlatformGlass";
 import { IconPressable } from "../icons/IconMotion";
 import { SuperAsset } from "../icons/SuperAsset";
 

@@ -8,7 +8,7 @@ import {
   Text,
   View,
 } from "react-native";
-import { GlassView } from "expo-glass-effect";
+import { GlassView } from "./PlatformGlass";
 import { SuperAsset } from "../icons/SuperAsset";
 
 /** Dismissing this notice never changes the underlying visit or observation state. */

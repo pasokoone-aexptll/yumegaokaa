@@ -9,10 +9,11 @@ import {
   useWindowDimensions,
   View,
 } from "react-native";
-import { MapAsset } from "./MapAsset";
+import { SuperAsset } from "../icons/SuperAsset";
 import { SmoothSurface } from "./SmoothSurface";
 
 export function ModeDropdown({
+  dark = true,
   ghost,
   active,
   disabled,
@@ -64,7 +65,7 @@ export function ModeDropdown({
         }
       >
         <SmoothSurface
-          color="#ffffff26"
+          color={dark ? "#ffffff26" : "#0000000d"}
           blurIntensity={25}
           radius={12}
           style={styles.trigger}
@@ -93,7 +94,12 @@ export function ModeDropdown({
               ],
             }}
           >
-            <MapAsset name="chevron.right" size={16} />
+            <SuperAsset
+              name="chevron-base"
+              size={24}
+              tint={dark ? "white" : "black"}
+              opacity={0.7}
+            />
           </Animated.View>
         </SmoothSurface>
       </Pressable>
@@ -177,7 +183,7 @@ export function ModeDropdown({
                 </Pressable>
               ))}
               <Text style={styles.note}>
-                ゴースト中は人数に含まれ、気配を隠して募集を終了します。投稿やイベントには名前が表示されます。設定は次の入街にも引き継ぎます。
+                ゴースト中も人数に含まれます。気配を隠し、募集を終了します。投稿には名前が表示されます。
               </Text>
               {onTogglePlaces && (
                 <Pressable
@@ -202,14 +208,14 @@ export function ModeDropdown({
 }
 const styles = StyleSheet.create({
   trigger: {
-    width: 64,
-    height: 38,
+    width: 52,
+    height: 34,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
     gap: 4,
   },
-  dot: { width: 14, height: 14, borderRadius: 7 },
+  dot: { width: 12, height: 12, borderRadius: 6 },
   menu: { position: "absolute", width: 228, maxWidth: "94%" },
   option: {
     minHeight: 46,

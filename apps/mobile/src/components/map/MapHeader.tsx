@@ -1,4 +1,4 @@
-import { GlassView } from "expo-glass-effect";
+import { GlassView } from "./PlatformGlass";
 import { ModeDropdown } from "./ModeDropdown";
 import { ParticipationSwitch } from "./ParticipationSwitch";
 import { StyleSheet, View, Text } from "react-native";

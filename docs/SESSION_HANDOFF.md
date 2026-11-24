@@ -3,7 +3,11 @@
 
 2026-11-19追記：電信PINのQ-DP01〜06はユーザーが推奨案をすべて承認。DENSHIN_PIN_SPECに本文反映しDP01実装を開始。旧有効データがある場合の移行判断は配備前に確認。
 
-## 現在の再開点（2026-11-22・ユーザー指定キュー）
+## 現在の再開点（2026-11-24・Android移植）
+
+ユーザーがiOS UI完成を明示。`5f9e895..1709cce`のAndroid移植を自律サイクルで開始。現在の作業と残件は[ANDROID_UI_PORT](frontend-redesign/ANDROID_UI_PORT.md)。旧iOSキューの記録は以下に保持し、Androidの確認済み根拠へ流用しない。
+
+### 以前のiOSキュー記録
 
 U46：オンボーディングの元動画再照合を進行。keyboard時の上側構図保持/CTAと補助リンクの重なり解消、認証3+3間隔、メール文字/青吹き出し、プロフィール背景等を修正。型/ReleaseとSimulator入力/認証fixture/写真設定確認済み。現在review-onboarding招待画面。全フレーム一致と実機は未完。招待はQRのみ維持とユーザー確定。TECH_VALIDATION末尾に詳細。
 

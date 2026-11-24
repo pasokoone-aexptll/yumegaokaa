@@ -1732,3 +1732,10 @@ omyの初回入街はghost=true/last_seq=0で観測なし。端末journalもsequ
 2026-11-24 U52実機反映：8f6bc2eをiPhone17へReleaseビルド・署名検証・インストール成功。ビルド済みCFBundleDisplayName=電信出口を確認。新Icon Composer素材/招待中央SVGを含む。起動確認は端末Lockedで未完。
 
 2026-11-24 U52アイコン再差替え（R19）：ユーザーが更新したicons/yumegaoka.icon（Exclude.png、背景グラデーション）をassets/iosと生成iOSへ同期。iPhone17 Releaseビルド・署名検証・上書きインストール・起動成功。ホーム画面上の外観は未確認。
+
+
+## 2026-11-24 Android UI移植 A01（R10/R19）
+
+5f9e895..1709cceを対象に開始。人数バッジ/通知/最新へボタンのGlassViewはAndroidで背景なしViewになることをSDK58ソースと公式資料で確認し、Android専用PlatformGlassで色/形/コントラストを保持。iOSは元のGlassViewを再export。Android操作部品の寸法/文字重み/明暗、参加トグルの外周、メニュー素材/説明を最新iOSへ追従。通知の退出アニメーションと切替中の旧action保持を移植。
+
+型検査成功、変更10ファイルの対象Lint成功、map-notice-transitionを両OSへ拡張し2試験成功、delayed-refresh試験成功。全体Lintは13 errors/4 warnings（うち今回コピーしたAndroid ref代入1件は修正して対象Lint成功、残りは既存）。全体Lint成功ではない。Android実表示・ビルドは次サイクル。実機0台、既存API35 emulator-5554起動。iOS実機再ビルドなし。

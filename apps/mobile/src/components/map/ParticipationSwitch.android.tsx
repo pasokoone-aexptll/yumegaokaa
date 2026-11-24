@@ -30,11 +30,11 @@ export function ParticipationSwitch({
     >
       <SmoothSurface
         radius={26}
-        color="#ffffff26"
+        color={value ? "#74e494" : "#ffffff26"}
         blurIntensity={25}
         style={{
-          width: 82,
-          height: 46,
+          width: 74,
+          height: 40,
           alignItems: "center",
           justifyContent: "center",
         }}
