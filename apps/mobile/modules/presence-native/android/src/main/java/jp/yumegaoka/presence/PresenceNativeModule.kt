@@ -43,7 +43,8 @@ class PresenceNativeModule : Module() {
         .putExtra("visit", visit).putExtra("deadline", SystemClock.elapsedRealtime() + remainingMs.toLong().coerceAtMost(10800000L)))
       true
     }
-    AsyncFunction("stopObserving") {
+    // stopObserving(eventName) belongs to Expo's event-emitter lifecycle.
+    AsyncFunction("stopVisitObservation") {
       appContext.reactContext?.let { it.stopService(android.content.Intent(it, VisitLocationService::class.java)) }
       Unit
     }

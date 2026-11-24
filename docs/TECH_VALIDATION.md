@@ -1767,3 +1767,13 @@ MapHeader人数/参加切替/公開メニュー/通知切替/最新へを第6版
 最終変更の型検査と対象Lint成功。先行の関連12試験＋Android専用2試験＋delayed-refresh成功を再利用し、無関係な全件試験は繰り返していない。全体Lintには既存React Hooksエラーが残る。実データHome/アカウント/実チャット/保存、物理Androidのカメラ/NFC/背景/Pushは未確認で、Android全体DONEにはしない。
 
 通常版：EXPO_PUBLIC_UI_REVIEW=0のarm64 Release成功（/tmp/yumegaoka-android-port-normal-final.log、13秒）。emulator-5554へ上書きしWelcome起動、初回dot font、dark status barを確認。レビューURLを開いてもWelcomeへ戻り、fixtureが開かないことを確認（/tmp/android-port-normal-launch.png、android-port-normal-review-closed.png）。エラーログなし。生成APKはapps/mobile/android/app/build/outputs/apk/release/app-release.apk。別途/tmp/yumegaoka-android-ui-review.apkは検証用として保持。通常版も既存ローカル開発接続先であり、クラウド実データ接続を保証しない。
+
+### Androidローカル実接続とイベント購読競合修正（2026-11-24、R03〜R09/R12/R19）
+
+既存Colima/夢ヶ丘コンテナをデータ保持で復旧。認証health200、MailpitローカルSMTP、gateway54325を確認。migration履歴欠番でCLI適用は停止したが、051/055/056の対象関数本文は実DBと一致し再適用していない。通常ReleaseのHTTP保護を維持し、既存Debug manifestとプロセス限定10.0.2.2設定で接続。既存.env.local/クラウド/他人のデータは変更なし。
+
+合成アカウントでOTP自動認証成功。直後のlistener.removeでExpo予約名stopObservingとアプリの引数なしAsyncFunctionの衝突を実際に検出。Kotlin/TSをstopVisitObservationへ改名、予約名再導入検出試験を追加。native-configuration/observation-timeの4試験、型検査、対象Lint成功。Debug再ビルド成功（/tmp/android-port-local-debug2.log）。再インストール後のセッション復元・画面遷移では再発なし。古いMetroログに修正前のエラーが残るが最終Bundled以降は同エラーなし。
+
+本人写真にはリポジトリの検証画像を使用。名前・Android写真Picker・切り抜き・avatar/PoolのStorage保存・Welcome表示・Homeを実操作確認し、当該アカウントのDBでdisplay_name/avatar_saved/pool_savedを確認。招待はlocal:inviteで合成アカウントだけに付与したため実QR受付合格にはしない。PIN作成→地図位置確定→保存→詳細→編集→保存を実操作し、Android_port_test_editedの詳細と地図表示を確認。証拠/tmp/android-local-welcome-small.png、android-local-home-small.png、android-local-saved-small.png、android-local-edited-small.png。
+
+残件：Home/設定の全画面一巡、実チャット、実カメラQR、物理AndroidのNFC/測位/背景/Push、修正後Release。旧33タスクの分母・DONE・iPhone実機率は不変。

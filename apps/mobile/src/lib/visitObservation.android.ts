@@ -7,7 +7,7 @@ type Fix = { visit: string; latitude: number; longitude: number; accuracy: numbe
 type RPC = <T>(operation: string, payload?: Record<string, unknown>) => Promise<T>;
 const service = requireNativeModule<{
   observeVisit(id: string, remainingMs: number): Promise<boolean>;
-  stopObserving(): Promise<void>;
+  stopVisitObservation(): Promise<void>;
   monotonicTime(): number;
   addListener(name: "onVisitFix", listener: (fix: Fix) => void): { remove(): void };
 }>("PresenceNative");
@@ -31,7 +31,7 @@ export async function stopObservation() {
   reset();
   subscription?.remove();
   subscription = undefined;
-  await service.stopObserving();
+  await service.stopVisitObservation();
 }
 
 export async function watchVisit(visit: Partial<Visit>, serverTime: string, receive: (fix: Fix) => void) {
