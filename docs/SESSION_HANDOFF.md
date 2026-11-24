@@ -432,4 +432,6 @@ MR02〜04も進める依頼の直後、ユーザーが待機を指示しログ�
 
 11/25追加指示：サイト全ページにIntern/Noto Sans JPの可変TTFとOFLライセンスを同梱。欧文→Intern、日本語→Noto Sans JPのfallback。指定のトップ見出しはKHドットを保持。運営者本文のDreamCloudは変更なし。
 
-11/25追加（R19）：本文用Intern/Noto Sans JPに加え、文書見出しにNoto Serif JP 900・横幅72%を適用（参考画像のフォントそのものと断定しない）。Google Fonts公式TTF/OFLを同梱。Apple公式ホームのSVGをassets/apple.svgへ保存し、U+F8FF特殊文字をCSS maskへ置換。本番hello.dreamcloud.shでSVG配信・りんご表示・問い合わせの太い明朝見出しをブラウザ確認。Windows/Android実機での表示は未確認。確認画像は/private/tmp/denshin-apple-svg.jpg、/private/tmp/denshin-support-mincho.jpg。
+11/25追加（R19）：本文用Intern/Noto Sans JPに加え、文書見出しは最新の訂正依頼によりKHドット・通常横幅へ変更（当初のNoto Serif JP 900・横幅72%を置換）。Apple公式ホームのSVGをassets/apple.svgへ保存し、U+F8FF特殊文字をCSS maskへ置換。本番hello.dreamcloud.shでSVG配信・りんご表示・問い合わせの太い明朝見出しをブラウザ確認。Windows/Android実機での表示は未確認。確認画像は/private/tmp/denshin-apple-svg.jpg、/private/tmp/denshin-support-mincho.jpg。
+
+11/25 R19：訂正後のドット見出しをVercel dpl_Ama3NXM9eFseBLi6a26LMTH3W3Ldで公開。問い合わせページの実表示とcomputed style（Kodenmachou、weight400、transform:none）を確認。本文のIntern/Noto Sans JPは維持。

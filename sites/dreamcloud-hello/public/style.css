@@ -3,4 +3,4 @@
 
 .brand img,footer img{display:block;max-width:100%;height:auto}
 
-.text h1,.text h2{font-family:'Noto Serif JP',serif;font-weight:900;letter-spacing:-.045em;transform:scaleX(.72);transform-origin:left center}.text h1{font-size:clamp(2.8rem,7vw,5.6rem);line-height:1.35}.text h2{font-size:1.8rem;line-height:1.5}
+.text h1,.text h2{font-family:Kodenmachou,monospace;font-weight:400;letter-spacing:normal}.text h1{font-size:clamp(2.8rem,7vw,5.6rem);line-height:1.35}.text h2{font-size:1.8rem;line-height:1.5}
