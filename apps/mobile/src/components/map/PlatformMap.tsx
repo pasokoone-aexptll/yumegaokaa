@@ -1,3 +1,4 @@
+import { MapProjection } from "./MapProjection";
 import { requireNativeViewManager } from "expo-modules-core";
 import type { ViewProps } from "react-native";
 import {
@@ -34,6 +35,7 @@ import {
   Map as LibreMap,
   Camera as LibreCamera,
   ViewAnnotation,
+  Marker as LibreMarker,
   GeoJSONSource,
   Layer,
   UserLocation,
@@ -87,6 +89,17 @@ export function Map({
   }, [showUserLocation]);
   const [scale, updateZoom] = useMarkerScale();
   const lastProjectionAt = useRef(0);
+  const [materialRevision, setMaterialRevision] = useState(0);
+  const [projectionReady, setProjectionReady] = useState(false);
+  const materialProjection = useMemo(
+    () => ({
+      project: async (
+        coordinate: [number, number],
+      ): Promise<[number, number]> => mapRef.current!.project(coordinate),
+      revision: materialRevision,
+    }),
+    [materialRevision],
+  );
   const [mapReady, setMapReady] = useState(false);
   const [cameraRevision, setCameraRevision] = useState(0);
   const projection = useMemo(
@@ -135,7 +148,11 @@ export function Map({
           setCameraRevision((r) => r + 1);
         }
       }}
-      onDidFinishLoadingMap={onMapReady}
+      onDidFinishLoadingMap={() => {
+        setProjectionReady(true);
+        setMaterialRevision((r) => r + 1);
+        onMapReady?.();
+      }}
       onDidFinishRenderingFrameFully={mapReady ? undefined : reveal}
       onDidFailLoadingMap={reveal}
       contentInset={{ top: 0, left: 0, right: 0, bottom: bottomInset }}
@@ -146,12 +163,17 @@ export function Map({
       {...props}
       onRegionWillChange={() => onMovingChange?.(true)}
       onRegionDidChange={(event) => {
+        setMaterialRevision((r) => r + 1);
         updateZoom(event.nativeEvent.zoom);
         onMovingChange?.(false);
         if (placement) setCameraRevision((r) => r + 1);
       }}
     >
-      {children}
+      <MapProjection.Provider
+        value={projectionReady ? materialProjection : null}
+      >
+        {children}
+      </MapProjection.Provider>
       {locationVisible && <UserLocation />}
     </LibreMap>
   );
@@ -227,6 +249,7 @@ export function Marker({
   onDragEnd,
   onPress,
   snapshotKey,
+  passive,
 }: MarkerProps) {
   const ref = useRef<ViewAnnotationRef>(null);
   const frame = useRef<number | null>(null);
@@ -245,6 +268,18 @@ export function Marker({
       frame.current = null;
     };
   }, [scale, snapshotKey, refresh]);
+  if (passive)
+    return (
+      <LibreMarker lngLat={lngLat}>
+        <View
+          collapsable={false}
+          pointerEvents="none"
+          style={{ transform: [{ scale }] }}
+        >
+          {children}
+        </View>
+      </LibreMarker>
+    );
   return (
     <ViewAnnotation
       ref={ref}

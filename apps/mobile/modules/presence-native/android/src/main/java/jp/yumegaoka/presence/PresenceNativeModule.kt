@@ -63,6 +63,10 @@ class PresenceNativeModule : Module() {
       Name("SheetBackdrop")
       Prop("light") { view: SheetBackdrop, light: Boolean -> view.light = light }
     }
+    View(MarkerBackdrop::class) {
+      Name("MarkerBackdrop")
+      Prop("point") { view: MarkerBackdrop, point: List<Double> -> view.point = point }
+    }
     View(HistoryBlur::class) { Name("HistoryBlur") }
     View(SheetHandle::class) {
       Name("SheetHandle")

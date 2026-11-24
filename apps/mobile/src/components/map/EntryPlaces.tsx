@@ -1,4 +1,4 @@
-import { BlurView } from "expo-blur";
+import { EntryPlaceMaterial } from "./EntryPlaceMaterial";
 import { StyleSheet, View } from "react-native";
 import { Boundary, Marker } from "./PlatformMap";
 import { SuperAsset } from "../icons/SuperAsset";
@@ -25,11 +25,8 @@ export function EntryPlaces({ map }: { map: EntryMap }) {
             accessibilityLabel={place.title + "・NFCログイン場所"}
             style={styles.pin}
           >
-            <BlurView
-              pointerEvents="none"
-              intensity={65}
-              tint="systemUltraThinMaterialDark"
-              style={StyleSheet.absoluteFill}
+            <EntryPlaceMaterial
+              coordinate={[place.longitude, place.latitude]}
             />
             <View style={styles.pinBorder}>
               <SuperAsset

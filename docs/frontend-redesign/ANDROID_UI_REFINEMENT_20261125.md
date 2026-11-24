@@ -52,3 +52,15 @@ JS同梱・既存debug署名のassembleReleaseを試みたが、PreToolUseのApp
 Homeのゴースト丸はAndroid/lightだけ黒55%へ変更（以前は#9a9a9e）。Map/darkは維持。`scripts/build-android-local-test.sh` を追加し、通常クラウド/レビュー・FIELD_TRIAL・ローカル入街代替を無効にしたJS同梱APKを再現可能にした。最終ビルド16秒で成功。APKのassets/index.android.bundleは5,217,108 bytes、クラウドAPI/Gatewayを内包。PixelのADB reverse一覧を空にしてforce-stop→MainActivity起動し、保持されたアカウントのプロフィール写真設定画面まで表示を確認（05:03）。USB/Metroは不要、通信機能にはネット接続が必要。型/対象Lint成功。
 
 「ログイン場所・街の範囲」について：エミュレーターの実DBではplacements=0、境界は経度139.70〜139.72・緯度35.725〜35.738で、拡大時の画面外。review-map controlsに本番のEntryPlacesを使った小さな境界を追加し、メニューONで範囲・NFCマーカーが表示され、OFFでは出ないことを撮影確認。以前のreview controlsはplacesVisibleを描画条件に使っていなかったため修正した。本番の表示不具合を修正済みとは扱わず、発生端末のユーザー回答待ち。クラウドに架空の場所は追加していない。
+
+## 実機写真 IMG_1711 / IMG_1712 に基づく再修正（2026-11-25 05:35）
+
+R03/R04/R10〜R14/R19。ユーザーの写真と原本133を比較し、前回の半径変更だけではMapの輪郭が見えないこと、NFC地点のexpo-blurがAndroidのbitmap annotation内で背景をぼかしていないこと、Homeに別の雲画像が表示されていることを確認。
+
+- カプセル：Androidのトリガーを52×34dp・borderRadius17のViewへ変更。指定の黒5%を維持し、暗いMapだけ白20%の細い輪郭を付けた。Homeは輪郭なし。PixelのMapで表示確認。
+- NFC地点：Androidのpassive markerだけMapLibreの実View Markerへ移行。Map読み込み完了後とカメラ停止後に座標を投影し、その地点のSurfaceView領域をPixelCopy→既存blurMapでぼかすMarkerBackdropを追加。背景は実地図＋黒/白opacity。bitmap annotationのrefreshではviewToBitmap nullが起きるため実Viewへ切り替えた。最終版でNFC内部の線路がぼけ、パン後にも背景更新することをエミュレーターで撮影確認。API24/25は全Surface取得後に対象範囲を切り出す互換処理（物理旧OS未確認）。iOSは従来BlurViewのまま。
+- Home雲：DreamCloud.pngとDreamCloud背景.pngがAndroidの資源名assets_superassets_dreamcloudに衝突し、濃い通常ロゴが選ばれていた。Android専用のASCII名home-cloud-background.pngを追加（背景原本とバイト一致）、HomeのAndroid参照だけ差替え。背景原本はalpha最大43/255で薄さが既に入っているためopacity1を維持。位置top=width×1.07/right=-4/size=width×.62は正しい画像で原本133と照合して維持。Pixelでも雲の薄さ・位置・右側の切れ方を確認。
+
+型検査・対象Lint成功。Debug成功後に実表示修正を反復し、最終ローカルテストassembleRelease成功（/tmp/android-photo-fixes-release.log、1分20秒）。JS同梱5,219,652 bytes。生成Android背景資源が原本PNGとバイト一致することを確認。Pixelへデータ保持で上書き成功、HomeとMapを実表示確認。ストア提出なし、USB/Metro不要を維持。NFC実スキャンは今回検証していない。
+
+比較証拠： [Homeと原本133](evidence/android-20261125/home-cloud-final-pair.png)、[Mapカプセル](evidence/android-20261125/map-capsule-final-crop.png)、[NFC地点の背景ぼかし](evidence/android-20261125/nfc-live-marker-crop.png)、[パン後](evidence/android-20261125/nfc-after-pan-small.png)。

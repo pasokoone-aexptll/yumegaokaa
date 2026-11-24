@@ -67,11 +67,16 @@ export function ModeDropdown({
           })
         }
       >
-        <SmoothSurface
-          color="rgba(0,0,0,0.05)"
-          blurIntensity={0}
-          radius={17}
-          style={styles.trigger}
+        <View
+          style={[
+            styles.trigger,
+            {
+              borderRadius: 17,
+              backgroundColor: "rgba(0,0,0,0.05)",
+              borderWidth: dark ? 1 : 0,
+              borderColor: "rgba(255,255,255,0.2)",
+            },
+          ]}
         >
           <View
             style={[
@@ -106,7 +111,7 @@ export function ModeDropdown({
               opacity={0.7}
             />
           </Animated.View>
-        </SmoothSurface>
+        </View>
       </Pressable>
       {anchor && (
         <Modal

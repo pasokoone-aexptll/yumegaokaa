@@ -118,7 +118,11 @@ export default function Home() {
     <View style={s.page}>
       <Image
         pointerEvents="none"
-        source={require("../../../../assets/superassets/DreamCloud背景.png")}
+        source={
+          Platform.OS === "android"
+            ? require("../../../../assets/superassets/home-cloud-background.png")
+            : require("../../../../assets/superassets/DreamCloud背景.png")
+        }
         style={{
           position: "absolute",
           top: width * 1.07,
