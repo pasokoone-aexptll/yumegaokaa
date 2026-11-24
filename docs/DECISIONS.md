@@ -332,3 +332,7 @@ R12〜R14/R16〜R19。最新ユーザー指示により、詳細のステータ�
 ## 2026-11-25 審査対策と退会時の本文削除
 
 ユーザーがCodexへのapp-store-compliance導入・即時実行を依頼し、退会時は「投稿本文も削除する（推奨）」を承認。運営者名・公開メール・ポリシーURLは「未定」。057は今後の退会でchat本文消去・PIN本文置換を実装し、ローカルのみ反映。匿名化済み過去データ・通報証拠の保持根拠・クラウド／実機は未完。詳細は[APP_STORE_COMPLIANCE](APP_STORE_COMPLIANCE.md)。
+
+## 2026-11-25 App Store優先・公式サイトの分担
+
+App Store提出を優先しGoogle Playも並行。初回日本のみ・ADP個人登録をユーザー確認済み。18歳になる11月26日にADP加入予定。dreamcloud.shを所有しサイトは本人が制作。初めはユーザー向け制作を禁止、その後「こちらの下書きを本人が仕上げる方向もよい」と追加回答。今回の制作範囲は内部資料。support@dreamcloud.shの作成依頼を受けCloudflareへ進み、転送先を受領したがログイン／設定は未完。個人転送先はGitへ保存しない。詳細：[APP_STORE_SUBMISSION_PLAN](APP_STORE_SUBMISSION_PLAN.md)。
