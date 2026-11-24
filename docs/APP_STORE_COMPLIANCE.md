@@ -26,7 +26,7 @@
 
 | 重要度・ID | 根拠・現状 | 対応／状態 |
 | --- | --- | --- |
-| 提出阻止 C01 Privacy policy（Apple 5.1.1(i)、Play User Data） | account.tsxの「利用規約とプライバシー」はlicenses.tsxのライセンス一覧へ遷移。公開ポリシーと連絡先なし | 運営者名・メール・URLはユーザー回答「未定」。PRIVACY_POLICY_DRAFT.mdを準備。公開・アプリへのリンク・ストア設定は外部待ち |
+| 提出阻止 C01 Privacy policy（Apple 5.1.1(i)、Play User Data） | account.tsxの「利用規約とプライバシー」はlicenses.tsxのライセンス一覧へ遷移。公開ポリシーと連絡先なし | 運営者名は未定。dreamcloud.shを使用、support@dreamcloud.shの受信転送は設定済み（受信テスト待ち）。PRIVACY_POLICY_DRAFT.mdを準備。ポリシー公開・アプリへのリンク・ストア設定は外部待ち |
 | 提出阻止 C02 Deletion（Apple 5.1.1(v)） | 旧037はmessages.author_idだけをnull化し本文を保持。Appleは共有されたUGCも削除対象と説明 | ユーザーが本文削除へ変更を承認。057で今後の退会時にchat本文をnull化＋削除時刻、PIN本文を「削除済み」に置換＋閉鎖。ローカル反映・DB試験済み。クラウド配備／実機は未完 |
 | 提出阻止 C02残余 | 過去に匿名化済みのchatは元作者を追えない。通報証拠、旧募集・イベント等には別の保存内容がある | 一括削除は未実行。過去データ棚卸し、通報保持の必要性／根拠、削除完了時刻の案内を決める。今回の修正だけで全アカウント削除適合とはしない |
 | 高 C03 UGC（Apple 1.2） | 通報・ブロック・運営削除は実装済み。投稿前の不適切コンテンツfilterと公開連絡先の根拠を確認できない | chat/PIN/本人写真/pool画像の対象と、拒否・保留・運営確認の方式を選定。外部判定サービスへの画像送信は未承認。運営対応体制も準備する |
@@ -73,4 +73,8 @@
 
 ## 2026-11-25 提出優先順の確定
 
-[APP_STORE_SUBMISSION_PLAN](APP_STORE_SUBMISSION_PLAN.md)を追加。ADPは11月26日申込予定、dreamcloud.shを公式サイトに使用。supportアドレス作成を依頼されたが設定完了前。ローカルの退会データ読取専用集計は7分類0件、クラウド／バックアップは未確認。UI・サイト公開・法的契約を変更せず、データ申告と審査アクセスの準備を進める。
+[APP_STORE_SUBMISSION_PLAN](APP_STORE_SUBMISSION_PLAN.md)を追加。ADPは11月26日申込予定、dreamcloud.shを公式サイトに使用。supportアドレスの受信転送は設定済み、実受信とsupport名義の送信は未確認。ローカルの退会データ読取専用集計は7分類0件、クラウド／バックアップは未確認。UI・サイト公開・法的契約を変更せず、データ申告と審査アクセスの準備を進める。
+
+## 11月25日 提出設定と資料の追加
+
+C04/C05/C06・R03/R07/R15/R17/R18・T033：[APP_STORE_BUILD](APP_STORE_BUILD.md)、[APP_REVIEW_ACCESS](APP_REVIEW_ACCESS.md)、[APP_STORE_PRIVACY_EVIDENCE](APP_STORE_PRIVACY_EVIDENCE.md)を追加。試験用設定がstoreモードに混入した場合と未設定を停止。通常開発モードは維持。提出可能判定は変わらず、公開・配備・実機・Apple了承は未実施。年齢は13〜17歳も含めたい意向、具体条件は相談中。

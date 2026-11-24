@@ -14,7 +14,7 @@
   "notes": {
     "demo_account": "OTP, invitation QR, location and NFC need a reviewer-accessible path tested on the submitted build.",
     "live_backend": "Cloud development evidence does not attest to availability throughout App Review.",
-    "review_notes": "Public operator name, contact email and policy URL are undecided. See docs/APP_STORE_COMPLIANCE.md at the repository root.",
+    "review_notes": "Internal review notes and isolated demo design drafted in docs/APP_REVIEW_ACCESS.md. Public operator/policy, OTP access, Apple review consultation and submitted-build validation remain open. support forwarding configured; delivery test pending.",
     "screenshots_match_build": "No App Store Connect listing or submitted binary was inspected.",
     "account_deletion_device_test": "Migration 057 erases future withdrawing members' chat and PIN text. Only rollback DB verification is complete; deployment, historic anonymous content and retained report evidence remain open.",
     "privacy_labels_match_runtime": "No console declaration or release traffic audit yet. A privacy manifest alone does not attest to these declarations.",

@@ -18,7 +18,8 @@
     "db:maintenance": "node scripts/maintenance-worker.mjs",
     "db:maintenance:once": "node scripts/maintenance-worker.mjs --once",
     "realtime:local": "node scripts/realtime-gateway.mjs",
-    "compliance:check": "bash \"${HOME}/.codex/hooks/app-store-compliance-guard.sh\" apps/mobile"
+    "compliance:check": "bash \"${HOME}/.codex/hooks/app-store-compliance-guard.sh\" apps/mobile",
+    "store:config": "node scripts/app-store-config.mjs"
   },
   "devDependencies": {
     "proj4": "2.20.2",

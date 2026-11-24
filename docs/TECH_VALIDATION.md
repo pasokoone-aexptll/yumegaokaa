@@ -1820,3 +1820,13 @@ SheetSurfaceはMapLibre SurfaceViewのPixelCopy→worker blur→白/黒透過合
 ## 2026-11-25 R03/R17/T033 提出準備のデータ棚卸し
 
 scripts/audit-withdrawal-retention.mjsをローカルDBで実行。repeatable read/read only transactionで本文・個人IDを出さず7分類集計、全件0、057適用済み。変更・削除なし。クラウド／画像／Auth／バックアップ／端末は対象外。App Store優先、日本・個人、11月26日ADP予定を記録。APP_STORE_SUBMISSION_PLANにサイト必要事項・App Privacy候補・審査アクセスを整理。UI/ネイティブ変更なし、ビルド再実行なし。
+
+## 2026-11-25 R03/R07/R15/R17/R18・T033 提出設定と審査資料
+
+app.config.tsに明示的なYUMEGAOKA_STORE_BUILDモードを追加。試験フラグ、API origin不一致、非公開キー、APNs／Team／街未設定を拒否し、提出設定だけローカルATS例外を除去。npm run store:configはExpo設定の読取のみで生成・配備・送信なし。通常開発の挙動を維持。
+
+検証：store-config.test.mjsとvalidation-release.test.mjsの4テスト成功。後者の既存mock欠落（Platform）と旧表示名を現行へ追従。typecheck成功。app.config.tsの対象ESLint成功（初回root cwdでは設定を見つけられず、mobile cwdで再実行）。実環境store:configは未準備としてexit 2、架空公開値によるExpo設定評価はexit 0。署名・接続・実配信の証拠ではない。ネイティブビルド／端末更新は未実施。
+
+compliance再実行はexit 2、critical=8/high=12/medium=4で前回と同じ。内訳はAPP_STORE_COMPLIANCEの誤検出2件と未確認6ゲートを維持。Rule pack v2.5.1、113 sources verified 2026-07-13〜2026-11-23。原出力/tmp/yumegaoka-store-preparation-scan.txt。override未使用。
+
+APP_STORE_BUILD、APP_REVIEW_ACCESS、APP_STORE_PRIVACY_EVIDENCEを作成。審査デモは設計のみ承認、Apple了承／実装なし。13〜17歳を含めたい意向を記録、TEEN_SAFETY_DISCUSSIONへ未承認の安全対策を分離。年齢制限・UI・保存期限の変更なし。旧33件の実装29/33、統合27/33、iPhone11/33、DONE27/33、BLOCKED3/33を維持。C04設計草案、C05実装根拠、C06設定検査を追加したが、全体工数の減少は未計測。

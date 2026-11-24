@@ -2,6 +2,75 @@ import type { ExpoConfig, ConfigContext } from "expo/config";
 export default ({ config }: ConfigContext): ExpoConfig => {
   const localEntry = process.env.YUMEGAOKA_LOCAL_ENTRY === "1";
   const validationRelease = process.env.YUMEGAOKA_VALIDATION_RELEASE === "1";
+  const storeBuild = process.env.YUMEGAOKA_STORE_BUILD === "1";
+  if (storeBuild) {
+    for (const flag of [
+      "YUMEGAOKA_LOCAL_ENTRY",
+      "YUMEGAOKA_VALIDATION_RELEASE",
+      "EXPO_PUBLIC_FIELD_TRIAL",
+      "EXPO_PUBLIC_UI_REVIEW",
+      "YUMEGAOKA_SIMULATE_READ_OUTAGE",
+    ]) {
+      if (process.env[flag] === "1")
+        throw new Error(`Store build forbids ${flag}`);
+    }
+    // Require an explicitly selected deployment, rather than accepting whatever
+    // development endpoint happens to be in .env.local. Never print credentials.
+    const approvedOrigin = process.env.YUMEGAOKA_STORE_API_ORIGIN;
+    const apiURL = process.env.EXPO_PUBLIC_SUPABASE_URL;
+    if (!approvedOrigin || !apiURL || apiURL !== approvedOrigin)
+      throw new Error("Store build requires an explicit matching API origin");
+    const address = new URL(apiURL);
+    if (
+      address.protocol !== "https:" ||
+      address.origin !== apiURL ||
+      !/^[a-z0-9-]+\.supabase\.co$/.test(address.hostname)
+    )
+      throw new Error("Store build requires a hosted Supabase HTTPS origin");
+    const publicKey = process.env.EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY ?? "";
+    let publicRole = false;
+    if (publicKey.startsWith("sb_publishable_")) {
+      publicRole = publicKey.length > "sb_publishable_".length;
+    } else {
+      try {
+        const parts = publicKey.split(".");
+        publicRole =
+          parts.length === 3 &&
+          JSON.parse(Buffer.from(parts[1], "base64url").toString()).role ===
+            "anon";
+      } catch {
+        /* Fail closed without logging the key. */
+      }
+    }
+    if (!publicRole)
+      throw new Error(
+        "Store build requires a publishable or legacy anon key, never a secret key",
+      );
+    if (
+      !process.env.EXPO_PUBLIC_STREET_ID?.match(
+        /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i,
+      )
+    )
+      throw new Error("Store build requires an explicit street ID");
+    if (process.env.YUMEGAOKA_APNS_ENVIRONMENT !== "production")
+      throw new Error("Store build requires production APNs");
+    if (!process.env.APPLE_TEAM_ID?.match(/^[A-Z0-9]{10}$/))
+      throw new Error("Store build requires an Apple Team ID");
+    const gateway = process.env.EXPO_PUBLIC_GATEWAY_URL;
+    if (gateway) {
+      const endpoint = new URL(gateway);
+      if (
+        endpoint.protocol !== "wss:" ||
+        endpoint.username ||
+        endpoint.password ||
+        endpoint.search ||
+        endpoint.hash
+      )
+        throw new Error(
+          "Store build requires a WSS gateway without embedded credentials",
+        );
+    }
+  }
   if (validationRelease) {
     const address = new URL(process.env.EXPO_PUBLIC_SUPABASE_URL ?? "");
     const octets = address.hostname.split(".").map(Number);
@@ -32,6 +101,12 @@ export default ({ config }: ConfigContext): ExpoConfig => {
   if (pushEnvironment)
     entitlements["aps-environment"] =
       pushEnvironment === "sandbox" ? "development" : "production";
+  const infoPlist = { ...config.ios?.infoPlist };
+  if (storeBuild) {
+    delete infoPlist.NSLocalNetworkUsageDescription;
+    // No development ATS exceptions in the store configuration.
+    delete infoPlist.NSAppTransportSecurity;
+  }
   return {
     ...config,
     name: validationRelease
@@ -40,7 +115,7 @@ export default ({ config }: ConfigContext): ExpoConfig => {
         ? "電信出口 開発用"
         : (config.name ?? "電信出口"),
     slug: "yumegaoka",
-    extra: { ...config.extra, localEntry, validationRelease },
+    extra: { ...config.extra, localEntry, validationRelease, storeBuild },
     plugins: [
       ...(config.plugins ?? []).filter(
         (plugin) =>
@@ -63,7 +138,7 @@ export default ({ config }: ConfigContext): ExpoConfig => {
       ...config.ios,
       entitlements,
       infoPlist: {
-        ...config.ios?.infoPlist,
+        ...infoPlist,
         CFBundleDisplayName: "電信出口",
         YumegaokaPushEnvironment: pushEnvironment ?? "",
       },
