@@ -38,4 +38,6 @@ Swift APIClientのcreateAccount指定は既存platformAuth.androidのshouldCreat
 - 実機待ち：物理Androidで画面密度/keyboard/戻る操作、カメラ/NFC、位置・背景、Pushの確認。現在接続はemulator-5554のみ。
 - 配布条件：通常APKも既存ローカル開発用設定と署名。クラウド本番版、Play公開版、iOS再ビルドは含まない。
 
+保存済み：`78c6250`（共通操作部品）、`4673e73`（Map/PIN/登録/native設定と検証記録）。作業ツリーのコード変更は保存済み。最終環境点検ではadb接続はemulator-5554のみ、localhost:54321/auth/v1/healthは接続不可。実データ一巡に使う接続先と検証アカウントのメールアドレスをユーザーへ照会中。API停止をアプリ側のUI不具合として扱わず、既存データ初期化やクラウド設定変更は行っていない。
+
 旧MVP33件は変更なし：実装29/33（87.9%）、統合27/33（81.8%）、iPhone実機11/33（33.3%）、DONE27/33（81.8%）、BLOCKED3/33。今回のAndroid fixture成功を旧実機率やDONEへ加算しない。
