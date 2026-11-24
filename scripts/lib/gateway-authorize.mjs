@@ -30,6 +30,7 @@ export function gatewayAuthorizer({ apiURL, publishableKey, db, streetId }) {
       from app_private.members m join auth.sessions s on s.user_id=m.account_id
       where m.account_id=$1 and s.id=$2 and m.active and m.withdrawn_at is null
       and (s.not_after is null or s.not_after>clock_timestamp())
+      and app_private.has_current_consent(m.account_id)
       and exists(select 1 from app_private.streets where id=$3)`,
       [user.id, claims.session_id, streetId],
     );
