@@ -4,20 +4,20 @@
 
 ## サイトへ渡す原稿
 
-| 候補URL（未公開） | 原稿・内容 |
+| 公開先URL | 原稿・状態 |
 | --- | --- |
-| https://dreamcloud.sh/terms | [利用規約](TERMS_OF_SERVICE_DRAFT.md) |
-| https://dreamcloud.sh/privacy | [プライバシーポリシー](PRIVACY_POLICY_DRAFT.md) |
-| https://dreamcloud.sh/support | [問い合わせ・削除案内](SUPPORT_PAGE_DRAFT.md) |
-| https://dreamcloud.sh/account-deletion | 同上の削除案内を独立ページとして掲載。Google PlayのWeb削除導線候補 |
+| https://hello.dreamcloud.sh/terms | [利用規約草案](TERMS_OF_SERVICE_DRAFT.md)。公開先は準備中案内のみ |
+| https://hello.dreamcloud.sh/privacy | [ポリシー草案](PRIVACY_POLICY_DRAFT.md)。公開先は準備中案内のみ |
+| https://hello.dreamcloud.sh/support | 問い合わせ・削除依頼・保護者相談を公開。詳細草案は[こちら](SUPPORT_PAGE_DRAFT.md) |
+| https://hello.dreamcloud.sh/account-deletion | support内の削除案内へリダイレクト。正式な削除期間の説明は未完、Google Play適合完了とはしない |
 
-原稿の冒頭の内部注記は公開版では外す。ただし未確定欄を隠して公開しない。URLは候補であり疎通確認済みではない。サイトの制作・公開はユーザー担当。
+原稿の冒頭の内部注記は公開版では外す。ただし未確定欄を隠して公開しない。2026-11-25の追加依頼でVercelへサイトの土台を作成・公開。全掲載URLの匿名HTTPS 200と削除案内への遷移を確認。正式な規約本文は未公開。サイトはユーザーが後で編集できる静的HTML/CSS。
 
 ## ユーザー判断と技術確認の分担
 
 | 項目 | 現状／次の作業 |
 | --- | --- |
-| ブランドと個人事業者の氏名・住所の案内方法 | ブランドDreamCloud。正式な運営者の表示は未決定。Web常時掲載か、請求に遅滞なく回答する方法かを決定。私的住所・氏名をGitへ保存しない |
+| ブランドと個人事業者の氏名・住所の案内方法 | ユーザー確定：サイト表記DreamCloud、氏名・住所は請求に遅滞なく回答する。operatorページに案内を掲載。回答用の正式情報は運営者が非公開で管理し、Gitへ保存しない。個人ADP販売者表示は別要件 |
 | 年齢・同意記録の保持 | 利用中保存・退会時削除をユーザー承認。058実装済み、配備前 |
 | 保護者の否認・撤回 | 関係と対象を確認後に停止・削除案内をユーザー承認。窓口の本人／代理関係確認手順、停止操作と対応記録の実運用は未検証 |
 | 通報証拠の退会後保持 | 必要性・対象・法的根拠を整理して判断。一般的な安全目的だけでAppleの法令上の保持例外とみなさない |
