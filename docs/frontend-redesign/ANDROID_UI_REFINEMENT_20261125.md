@@ -84,3 +84,9 @@ PinBubbleは半透明カプセル＋別三角（marginTop=-1）を廃止し、iO
 前回の線画調整ではチェックの円上端が平らに切れる問題を解消できていなかった。AndroidのPIN作成/編集はcontent.paddingTop=10、header.marginTop=-12でヘッダーがScrollView上端から2dpはみ出していた。無効ボタンのopacity合成で上端が切れるため、負のmarginを除去しpaddingTop=0へ変更。実際の配置は2dp下がるだけで円全体が描画範囲へ収まる。iOSの余白16dpは維持。
 
 エミュレーターの拡大撮影とPixel作成シートで、無効チェック/×の円上端が丸く表示されることを確認。対象Lint成功、JS同梱ローカルRelease成功18秒（/tmp/android-sheet-unclipped-release.log）、Pixel上書き成功。保存/投稿は実行していない。証拠：[円の拡大](evidence/android-20261125/sheet-unclipped-detail.png)、[Pixel](evidence/android-20261125/pixel-sheet-unclipped-small.png)。
+
+## 06:47指定：Androidアプリアイコン173/174へ更新
+
+ユーザー提供の173/174と各「作成よう角なし」SVGをAndroid原本として保存。通常は173、Adaptiveは角なし173へ220→330 viewBoxの余白を追加し、中央72/108の円形マスクで原本比率を維持。174は逆形状pathから図柄のalphaマスクを抽出してmonochromeへ設定（配色はOSのテーマに従う）。iOSアイコンは未変更。生成スクリプトを新原本へ更新し、ExpoのsetIconAsyncでAndroidのmipmapだけ更新。
+
+4生成PNGの1024×1024とmonochromeの透過/不透明画素を検証。ローカルRelease成功48秒（/tmp/android-new-icon-release.log）。Pixelへデータ保持で上書き成功、アプリ情報の円形アイコンで原本の図柄/余白を実表示確認。USB不要を維持、ストア提出なし。テーマ色の実機切替は未実施。証拠：[Pixel新アイコン](evidence/android-20261125/pixel-new-icon-small.png)。
