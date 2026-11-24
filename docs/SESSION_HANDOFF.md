@@ -405,3 +405,5 @@ MR02〜04も進める依頼の直後、ユーザーが待機を指示しログ�
 2026-11-25：公開規約・ポリシー・サポート／削除案内草案を整備。LEGAL_PUBLICATION_CHECKLISTが公開前残件の入口。年齢申告記録は退会時削除、保護者否認／撤回は関係確認後に停止・削除案内でユーザー確定。氏名・住所は請求時回答で確定。コードや058配備は変更なし。公開サイトは後続の11/25記録を参照。旧33タスクの達成率は据え置き。
 
 2026-11-25：hello.dreamcloud.shをVercelへ公開（sites/dreamcloud-hello）。サイト表記DreamCloud、氏名・住所は請求時回答でユーザー確定。Git自動配備は承認後解除、手動配備。privacy/termsは準備中案内のみ、058へ登録不可。クラウド056まで・清掃5周期成功、バックアップrun45323128200を承認後再実行しsuccess。R2 lifecycle現況は読取資格不足で未確認。詳細PRODUCTION_RETENTION_REVIEW。旧33タスク達成率は据置き。
+
+2026-11-25追補：057を単独でクラウド配備済み。配備済み関数の合成退会ROLLBACK試験成功。R2 daily/の7日削除EnabledをCloudflare UIで確認。058未配備。Auth soft deleteは識別情報が残り、members/複数表/field_trial_grant外部キーが最終削除を阻むため修正設計が必要。通報証拠の退会時原則削除、問い合わせ90日・無料の2判断とRenderログインを質問中。PRODUCTION_RETENTION_REVIEW参照。

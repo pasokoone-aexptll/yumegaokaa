@@ -6,22 +6,41 @@
 
 | 対象 | 今回の証拠 | 判定と残件 |
 | --- | --- | --- |
-| DB migration | linked projectを確認し、read-only transactionで履歴を照会。最新056 | 057退会本文削除、058年齢申告は未配備。新規登録を止める058は正式ポリシーとアプリの準備前に適用しない |
+| DB migration | linked projectを確認し、read-only transactionで履歴を照会。最新057。057単独のdry-run後に配備成功 | 退会本文削除は配備済み、058年齢申告は未配備。新規登録を止める058は正式ポリシーとアプリの準備前に適用しない |
 | DB清掃 | yumegaoka-cleanupがactive、毎分。11/25 05:31〜05:35 JSTの直近5件succeeded | 定期実行を確認。全テーブルの物理削除や将来の稼働保証ではない |
 | 退会後のDB残存 | 所有者なし本文、退会者の本文付きchat／PIN、退会者を対象としたreport、account cleanup待機が各0件 | 現時点の対象件数のみ。旧イベント／募集、Auth、Storage、端末キャッシュは別途確認。0件で退会実操作の成功とはしない |
 | Storage | オブジェクト総数11 | 内訳・所有関係・削除完了は未検証。画像本体の取得なし |
 | 日次バックアップ | run45323128200初回失敗。Dockerイメージ取得時のtoomanyrequests/Data limit exceeded | ユーザー承認後、同runの失敗ジョブを再実行しsuccess。2026-11-25 05:39 JST、暗号化・非公開R2アップロード・暗号文読み戻し比較が成功。復号／復元試験は今回未実施 |
-| R2保存期限 | 既存運用はdaily/の7日保管（FIELD_BACKUP） | 今回のS3 lifecycle読取はAccessDenied。保存専用資格の権限を広げず、現在値の再確認を未完と記録 |
+| R2保存期限 | 既存運用はdaily/の7日保管（FIELD_BACKUP） | S3資格での読取はAccessDenied。その後、Cloudflare管理画面でexpire-daily-backups／daily/／Delete objects after 7 day(s)／Enabledを確認。APAC、公開URL無効、独自ドメインなし、バケットロックなしも確認 |
 | 復元時の再削除 | 初回の隔離復元成功は既存証拠 | 退会後に古い世代へ戻した際の削除再適用、認証・画像の照合手順が未完。バックアップ7日だけで削除完了期限を決めない |
 
 ## 次の作業
 
-1. 057と最新清掃workerのクラウド配備をひとまとまりで準備し、Auth soft delete残存とStorage削除を含む退会の対象確認を行う。
+1. 057は配備済み。配備専用ブランチ36261daのmaintenance.mjsは現行と一致する。Renderの実稼働版・ログは再ログイン待ち。Auth soft delete残存とStorage削除を含む退会全体の確認は継続。
 2. 058は規約正文・版・URL・アプリ有効化を揃えてから配備する。公開中の準備中ページをregistration_policyへ設定しない。
 3. バックアップのイメージ取得失敗対策（再試行／事前取得）を別途整備する。今回の再実行成功だけで再発防止済みとしない。
-4. R2 lifecycleを管理画面等の適切な読取権限で再確認し、復元後の再削除手順を確定する。
+4. R2 lifecycleの7日設定は管理画面で確認済み。復元後の再削除手順を確定する。
 5. 委託先ログ、問い合わせ保持、国外取扱い、通報証拠の保持根拠を詰めて公開ポリシーへ反映する。
 
 ## 公開サイトとの関係
 
 https://hello.dreamcloud.sh にトップ、問い合わせ・削除依頼、運営者情報を公開。privacy/termsは準備中の案内のみ。匿名HTTPSで各ページ200を確認したがC01全体は未完。私的氏名・住所、DB接続資格、バックアップ内容をサイトへ含めていない。
+
+## 057配備後の対象確認
+
+クラウド上の配備済み関数に対し、合成アカウント・街・本文・PINをtransaction内だけ作成。再認証なし拒否、OTP再認証付き退会成功、本人本文消去、他者本文維持、PIN本文消去・閉鎖、清掃job追加、同一要求再送をassertして全変更ROLLBACKした。実利用者の退会・Storage削除・Auth管理APIをこの試験で実行していない。
+
+## 配備された保存期限
+
+クラウドのpg_get_functiondefで確認。chat作成30日、command期限後24時間、rate記録7日、旧event終了等から24時間、operator audit90日、report未対応180日／解決30日、終了visit24時間、arrival log30日、PIN失効／削除24時間、通知24時間、未公開NFC draft7日／公開draft90日。いずれも清掃対象になる条件であり、障害時を含む完了保証ではない。
+
+Supabaseプロジェクトはap-northeast-1（東京）、ACTIVE_HEALTHY。R2はAPACであり、全情報が日本だけに保存されると表現しない。
+
+## 正式ポリシー公開を阻む具体的な差分
+
+- Auth清掃はshould_soft_delete=true。Supabaseの仕様上、識別用情報が残る。members→auth.users、複数の業務表→members、現地試験grant→auth.usersの外部キーも存在するため、falseへ変更するだけでは完全削除できない。関連データの削除順・期限・再送とAuthの最終削除を揃える必要がある。
+- 退会者に関する通報の証拠・記述・投稿者／通報者参照の消去方針はユーザー回答待ち。申告だけで法令上の保存義務ありとは扱わない。
+- 問い合わせ対応完了後90日削除・請求手数料無料の運用案はユーザー回答待ち。メール運用未検証を自動削除済みとしない。
+- 058は未配備。年齢区分を現在収集中と説明せず、一般公開時の方針と現地試験を区別する。
+
+[Supabase Auth削除仕様](https://supabase.com/docs/reference/javascript/auth-admin-deleteuser)／[Renderログ期間](https://render.com/docs/logging)／[Resendメール保持](https://resend.com/security/gdpr/)。Render Hobbyログ7日、Resend標準メール・ログ30日／バックアップ7日は公式仕様として確認。ただし実アカウントのプラン・個別契約・追加転送先と照合してから最終正文に採用する。

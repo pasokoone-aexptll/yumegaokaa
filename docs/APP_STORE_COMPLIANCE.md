@@ -27,7 +27,7 @@
 | 重要度・ID | 根拠・現状 | 対応／状態 |
 | --- | --- | --- |
 | 提出阻止 C01 Privacy policy（Apple 5.1.1(i)、Play User Data） | account.tsxの「利用規約とプライバシー」はlicenses.tsxのライセンス一覧へ遷移。公開ポリシーと連絡先なし | 運営者名は未定。dreamcloud.shを使用、support@dreamcloud.shの受信転送は設定済み（受信テスト待ち）。PRIVACY_POLICY_DRAFT.mdを準備。ポリシー公開・アプリへのリンク・ストア設定は外部待ち |
-| 提出阻止 C02 Deletion（Apple 5.1.1(v)） | 旧037はmessages.author_idだけをnull化し本文を保持。Appleは共有されたUGCも削除対象と説明 | ユーザーが本文削除へ変更を承認。057で今後の退会時にchat本文をnull化＋削除時刻、PIN本文を「削除済み」に置換＋閉鎖。ローカル反映・DB試験済み。クラウド配備／実機は未完 |
+| 提出阻止 C02 Deletion（Apple 5.1.1(v)） | 旧037はmessages.author_idだけをnull化し本文を保持。Appleは共有されたUGCも削除対象と説明 | ユーザーが本文削除へ変更を承認。057で今後の退会時にchat本文をnull化＋削除時刻、PIN本文を「削除済み」に置換＋閉鎖。ローカル反映・DB試験済み。057クラウド配備と合成退会ROLLBACK確認済み。実Auth／Storage最終削除・実機は未完 |
 | 提出阻止 C02残余 | 過去に匿名化済みのchatは元作者を追えない。通報証拠、旧募集・イベント等には別の保存内容がある | 一括削除は未実行。過去データ棚卸し、通報保持の必要性／根拠、削除完了時刻の案内を決める。今回の修正だけで全アカウント削除適合とはしない |
 | 高 C03 UGC（Apple 1.2） | 通報・ブロック・運営削除は実装済み。投稿前の不適切コンテンツfilterと公開連絡先の根拠を確認できない | chat/PIN/プロフィール画像/pool画像の対象と、拒否・保留・運営確認の方式を選定。外部判定サービスへの画像送信は未承認。運営対応体制も準備する |
 | 高 C04 Reviewer access（Apple 2.1） | OTP→招待QR、街・NFCで機能が制限される。開発fixtureは審査用アクセスの証拠にならない | デモアカウント／QR、地域制限機能へのレビュー手順と必要機材、稼働バックエンドを審査メモへ。実際の提出版で検証待ち |
@@ -63,7 +63,7 @@
 ## 検証と限界
 
 - `node --test tests/withdrawal-content.test.mjs`：成功。ローカルDBでmigrationをtransaction内に読み込み、再認証なし拒否、本人本文消去、他人本文維持、PIN閉鎖、再送を検証して全変更ROLLBACK。実Authメール送信や実機操作の証拠ではない。
-- `node scripts/apply-local-migration.mjs 202611250057_withdrawal_content_deletion.sql`：ローカル反映成功。クラウドは未配備。
+- `node scripts/apply-local-migration.mjs 202611250057_withdrawal_content_deletion.sql`：ローカル反映成功。11/25に057のみクラウド配備、配備済み関数の合成退会ROLLBACK試験も成功。
 - mobile typecheck：成功。変更したwithdraw.tsxのeslint：成功。
 - mobile全体lint：10 errors / 1 warning。未変更のreview-onboarding、StreetChat、ReceiveInvitation、useDelayedRefreshStatus等のReact hooks指摘。今回の変更で解消したと扱わない。
 - PrivacyInfo.xcprivacyの配布元validator：構文検証成功。SDK／実データとの整合・アーカイブ内容は未確認。
@@ -73,7 +73,7 @@
 
 ## 2026-11-25 提出優先順の確定
 
-[APP_STORE_SUBMISSION_PLAN](APP_STORE_SUBMISSION_PLAN.md)を追加。ADPは11月26日申込予定、dreamcloud.shを公式サイトに使用。supportアドレスの受信転送は設定済み、実受信とsupport名義の送信は未確認。ローカルの退会データ読取専用集計は7分類0件、クラウド／バックアップは未確認。UI・サイト公開・法的契約を変更せず、データ申告と審査アクセスの準備を進める。
+[APP_STORE_SUBMISSION_PLAN](APP_STORE_SUBMISSION_PLAN.md)を追加。ADPは11月26日申込予定、dreamcloud.shを公式サイトに使用。supportアドレスの受信転送は設定済み、実受信とsupport名義の送信は未確認。ローカルの退会データ読取専用集計は7分類0件、後続のクラウド点検・バックアップ再実行成功・R2の7日期限確認はPRODUCTION_RETENTION_REVIEW参照。サイトの土台はhello.dreamcloud.shに公開済み、規約正文は未公開。
 
 ## 11月25日 提出設定と資料の追加
 
@@ -81,4 +81,4 @@ C04/C05/C06・R03/R07/R15/R17/R18・T033：[APP_STORE_BUILD](APP_STORE_BUILD.md)
 
 ## 13〜17歳の保護者同意に関する提出前条件
 
-本人申告チェック方式を採用。保護者の返信待ちなし、画像・現地合流は維持。採用は法的充足や審査了承を意味しない。TEEN_SAFETY_DISCUSSIONのAGE01〜09（法務、公開文面、年齢判定、記録／撤回、既存利用者、サーバー検査、実機、年齢質問票、UGC）を未完として管理する。年齢3択と申告のアプリ／DB接続を実装し、ローカルROLLBACK試験済み。公開文面・記録保持案・法務・配備・実機は未完。既定OFF、storeモードでは有効化が必須。
+本人申告チェック方式を採用。保護者の返信待ちなし、画像・現地合流は維持。採用は法的充足や審査了承を意味しない。TEEN_SAFETY_DISCUSSIONのAGE01〜09（法務、公開文面、年齢判定、記録／撤回、既存利用者、サーバー検査、実機、年齢質問票、UGC）を未完として管理する。年齢3択と申告のアプリ／DB接続を実装し、ローカルROLLBACK試験済み。記録は退会時削除で承認済み。公開文面・法務・配備・実機は未完。既定OFF、storeモードでは有効化が必須。
