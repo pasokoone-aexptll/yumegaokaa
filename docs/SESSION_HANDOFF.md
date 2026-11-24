@@ -443,3 +443,5 @@ MR02〜04も進める依頼の直後、ユーザーが待機を指示しログ�
 同日：通報対応版をiPhone17の既存アプリへ上書き成功（devicectl databaseSequenceNumber 3944）。端末での運営MFAログインと削除UI実操作は未確認。
 
 2026-11-25 C04続行：本人が無料枠での別Supabase/Render作成を承認。審査用Supabase denshin-app-review（eyrdviyebyozsaellopr、ap-northeast-1）作成、独立した/private/tmp/denshin-review-deployで061までschema配備。本番のリンクは変更なし。Renderは公開repo・codex/mvp-integration・Node・npm ci --omit=dev・node scripts/field-gateway.mjs・Free $0で作成フォーム準備。審査用だけの資格登録はブラウザの実行直前確認待ち。秘密はGit/本文に記録しない。
+
+2026-11-25 全体監査・R03/R15/R17/R18/R19：Supabase公式/Postgres、Trail of Bits audit-context-building、OpenAI security-best-practicesを導入して適用。docs/audit-20261125/AUDIT_REPORT.mdを参照。本番read-onlyでschema再現差、データ参照/権限を確認。主要ローカル試験で古い環境・mock・cleanupの失敗と退会試験の一時unauthorizedを記録。Android session=null logout未完をmockで再現。ユーザーは本番のアカウント/利用者データ全消去、街/NFC設定/schema/契約保持、運営再作成を承認。実行前の対象最終確認を約束、まだ本番削除なし。通常退会はsticker_draftsも消すためRESET_PLANで保持手順を分離。新規デモ配備・Render資格登録は監査優先で保留。旧33件の達成率は変更なし。
