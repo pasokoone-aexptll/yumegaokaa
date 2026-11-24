@@ -9,13 +9,16 @@ export type RegistrationDeclaration = {
   age_band: "13_17" | "18_plus";
   guardian_declared: boolean;
   policy_version: string;
+  terms_accepted: true;
 };
 export function registrationDeclaration(
   band: AgeBand | undefined,
   checked: boolean,
   policy: RegistrationPolicy | undefined,
+  termsAccepted = false,
 ): RegistrationDeclaration | null {
   if (
+    !termsAccepted ||
     !policy?.available ||
     !policy.version ||
     !policy.terms_url?.startsWith("https://") ||
@@ -28,5 +31,6 @@ export function registrationDeclaration(
     age_band: band,
     guardian_declared: band === "13_17",
     policy_version: policy.version,
+    terms_accepted: true,
   };
 }

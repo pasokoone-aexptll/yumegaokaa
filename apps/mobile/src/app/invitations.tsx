@@ -67,7 +67,6 @@ export default function Invitations() {
   const target = d.items.find((i) => i.id === revoke);
   if (
     d.receiving &&
-    process.env.EXPO_PUBLIC_REGISTRATION_DECLARATION === "1" &&
     !declaration
   )
     return <RegistrationDeclarationForm onContinue={setDeclaration} />;

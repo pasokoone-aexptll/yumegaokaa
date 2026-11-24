@@ -12,9 +12,13 @@ import {
 
 export function RegistrationDeclarationForm({
   onContinue,
+  onWithdraw,
 }: {
-  onContinue: (value: RegistrationDeclaration) => void;
+  onWithdraw?: () => void;
+  onContinue: (value: RegistrationDeclaration) => void | Promise<void>;
 }) {
+  const [termsAccepted, setTermsAccepted] = useState(false);
+  const [busy, setBusy] = useState(false);
   const [band, setBand] = useState<AgeBand>();
   const [checked, setChecked] = useState(false);
   const [policy, setPolicy] = useState<RegistrationPolicy>();
@@ -37,7 +41,7 @@ export function RegistrationDeclarationForm({
       active = false;
     };
   }, [attempt]);
-  const declaration = registrationDeclaration(band, checked, policy);
+  const declaration = registrationDeclaration(band, checked, policy, termsAccepted);
   function open(url?: string) {
     if (url?.startsWith("https://"))
       void Linking.openURL(url).catch(() =>
@@ -105,24 +109,32 @@ export function RegistrationDeclarationForm({
             </Text>
           </Pressable>
         )}
+        <Pressable accessibilityRole="checkbox" accessibilityState={{ checked: termsAccepted }} onPress={() => setTermsAccepted(!termsAccepted)} style={{ paddingVertical: 14 }}>
+          <Text>{termsAccepted ? "☑" : "☐"} 利用規約に同意し、プライバシーポリシーを確認しました。</Text>
+        </Pressable>
         {!!error && <Text accessibilityRole="alert">{error}</Text>}
-        {!policy?.available && (
+        {(!policy?.available || !!error) && (
           <NativeAction
             title="再読み込み"
             onPress={() => {
               setError("");
+              setTermsAccepted(false);
               setPolicy(undefined);
               setAttempt(attempt + 1);
             }}
           />
         )}
         <NativeAction
-          title="次へ"
-          disabled={!declaration}
+          title={busy ? "保存中…" : "同意して次へ"}
+          disabled={!declaration || busy}
           onPress={() => {
-            if (declaration) onContinue(declaration);
+            if (!declaration || busy) return;
+            setBusy(true);
+            setError("");
+            void Promise.resolve().then(() => onContinue(declaration)).catch(() => setError("保存できませんでした。通信状態を確認し、再度お試しください。")).finally(() => setBusy(false));
           }}
         />
+        {onWithdraw && <NativeAction title="同意せず退会する" onPress={onWithdraw} />}
         <NativeAction
           title="ログアウト"
           onPress={() => {

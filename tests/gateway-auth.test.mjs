@@ -79,6 +79,8 @@ test("gateway uses real Auth signature and active DB membership/session", async 
     await db.query("insert into app_private.members(account_id) values($1)", [
       uid,
     ]);
+    assert.equal(await authorize(token), null);
+    await db.query("insert into app_private.registration_declarations(account_id,age_band,guardian_declared,policy_version,terms_accepted) select $1,'18_plus',false,version,true from app_private.registration_policy where singleton", [uid]);
     const identity = await authorize(token);
     assert.equal(identity.accountId, uid);
     const config = {

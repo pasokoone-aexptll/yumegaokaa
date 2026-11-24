@@ -20,6 +20,7 @@ test("age bands and guardian declaration fail closed", () => {
     privacy_url: "https://example.com/privacy",
   };
   const fn = exports.registrationDeclaration;
+  assert.equal(fn("18_plus", false, p, false), null);
   for (const age of [undefined, "under_13", "invalid"])
     assert.equal(fn(age, true, p), null);
   assert.equal(fn("13_17", false, p), null);
@@ -28,8 +29,8 @@ test("age bands and guardian declaration fail closed", () => {
     fn("18_plus", false, { ...p, terms_url: "http://example.com" }),
     null,
   );
-  assert.equal(fn("13_17", true, p).guardian_declared, true);
-  assert.equal(fn("18_plus", true, p).guardian_declared, false);
+  assert.equal(fn("13_17", true, p, true).guardian_declared, true);
+  assert.equal(fn("18_plus", true, p, true).guardian_declared, false);
 });
 test("registration declaration: public API validation, atomicity, retry, withdrawal, privacy (ROLLBACK)", async () => {
   const db = new pg.Client({

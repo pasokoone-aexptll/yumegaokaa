@@ -1872,3 +1872,15 @@ Renderは旧36261daから9fa778cへ手動配備、06:04:11 JST Live。別の合�
 ユーザーが既存試験利用者にも一般公開前の年齢申告・必要な保護者同意・規約同意を求める方針と正文公開を承認。規約／ポリシー2026-11-25-v1をhello.dreamcloud.sh/terms/と/privacy/へ正式先行公開。Vercel deployment dpl_54r7tzBPF1m9BW6yLKQEhbuspJB3 READY。supportの削除範囲・バックアップ7日・問い合わせ90日・無料を追記。
 
 認証なしHTTPでterms/privacy/support各200、account-deletionはsupport/#account-deletionへ到達を確認。ブラウザで正文・版・適用範囲を確認。アプリの既存settings/licenses導線に規約・プライバシー・サポートURLと開けない場合の案内を追加。npm run typecheck成功、git diff --check成功。ネイティブ変更なしにつき再ビルドなし。実機でのリンク操作、058クラウド配備、既存会員向け同意取得導線とサーバー検査、App Store Connect設定は未完。サイト公開を申告・同意取得や審査可能判定と扱わない。旧33件の達成率・分母は不変。
+
+## 2026-11-25 既存会員の同意強制とサイト差替え（R03/R17/R18/R19）
+
+060で現行版への明示的規約同意を追加し、未申告の既存会員はaccount_access=consent_required。通常API・Storage・gatewayを制限し、年齢／保護者同意／規約チェックを共通画面で取得。ログアウト・退会・観測終了を維持。保存成功後のみ通常画面へ戻し、再送は元の同意記録を維持する。過去年齢や同意の捏造／一括バックフィルなし。退会文言も通報原則削除へ修正。
+
+local: registration-declaration／existing-consent計3試験成功。新規招待、既存会員、偽boolean、13歳未満、保護者申告なし、規約未同意、旧版、再送、gateway／Storage拒否と同意後許可、退会時消去を全変更ROLLBACKで確認。型チェック成功。058/060のみdry-run後にクラウド配備。配備済み関数の合成会員ROLLBACK試験で未同意拒否→保存→active→退会時記録0を確認。Render gateway f77707b、dep-dc30e1rm8hqs73aif2m0 Live。
+
+iPhone17 Releaseビルド成功。上書きは自動審査に拒否されたためユーザーが明示承認、codesign確認・インストール成功。本人の同意は代行しない。初回起動は端末Lockedで拒否。その後ユーザーが「リンク・同意保存・通常画面への復帰まで確認できた」と回答。同意導線の実機確認根拠はこの本人報告。VoiceOver・小画面・オフライン再送・退会の実機確認までは含めない。旧33件分母・達成率は維持。
+
+サイトはユーザー添付デザインの短い文と余白、PC横配置／スマホ縦配置を実装。後から提供された出口.svgと電信出口icon.svgを無改変で採用。KHドットフォントとライセンスを同梱。App Store URL未発行につきダウンロードボタンは無効・公開準備中を明示、Google Playへの架空リンクなし。規約等既存URLを保持。
+
+本人の実機確認後、クラウドをread-onlyで集計し、現行2026-11-25-v1の明示同意記録2件・年齢／保護者申告の不整合0件を確認。個人ID・具体的年齢区分は出力せず、件数を全利用者の完了とは扱わない。サイト最終配備dpl_3u1w8LEmPMCwN5TCFnYVep1Pt45m。指定SVGと配備ソースのcmp一致、公開ページの横はみ出しなし（観測幅913px）。402pxローカル縦配置も確認。1512pxへのviewport指定はブラウザに反映されず、その寸法の実測合格とはしない。

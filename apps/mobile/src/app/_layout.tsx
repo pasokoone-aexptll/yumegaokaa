@@ -81,6 +81,8 @@ export default function Layout() {
         path !== "/access"
       )
         router.replace("/access");
+      else if (access.status === "consent_required" && !["/consent", "/withdraw"].includes(path))
+        router.replace("/consent");
       else if (access.status === "unregistered" && path !== "/invitations")
         router.replace("/invitations");
       else if (access.status === "pool_required" && path !== "/street-icons")
@@ -89,7 +91,7 @@ export default function Layout() {
         router.replace("/profile");
       else if (
         access.status === "active" &&
-        (path === "/access" ||
+        (path === "/access" || path === "/consent" ||
           (wasSetup && ["/profile", "/street-icons"].includes(path)))
       )
         router.replace(wasSetup ? "/welcome" : "/");

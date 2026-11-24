@@ -20,3 +20,7 @@ npx vercel@66.6.0 deploy --prod --scope gochisoukengai-3762s-projects
 トップ、問い合わせ・削除依頼、運営者情報を掲載。privacy/termsは2026-11-25-v1を正式に先行公開済み。docs/TERMS_OF_SERVICE_DRAFT.mdとPRIVACY_POLICY_DRAFT.mdはファイル名を維持した正文の控え。既存試験利用者を含む同意取得は別工程で、掲載を同意取得と扱わない。
 
 Cloudflareのhello CNAMEは82672453f5fbb748.vercel-dns-017.com、DNS only。MX等メール関連は変更しない。
+
+## 2026-11-25 添付デザインへの差替え
+
+トップは添付PC／iPhoneデザインを参照。public/assets/exit.svgとwordmark.svgはユーザー提供の出口.svg／電信出口icon.svg原本をそのままコピー。KHドットフォントのOFLを同梱。ストアURL未発行のためボタンは無効で公開準備中と表示。実URL取得後にリンクへ変更する。法務ページのURL・本文は維持。最終Vercel配備 dpl_3u1w8LEmPMCwN5TCFnYVep1Pt45m。

@@ -4,6 +4,7 @@ import { createContext, useCallback, useEffect, useRef, useState } from "react";
 import { AppState } from "react-native";
 import { native, streetID } from "../lib/native";
 export type AccessStatus =
+  | "consent_required"
   | "pool_required"
   | "profile_required"
   | "unknown"
@@ -62,7 +63,7 @@ export function useAccountAccess(signed: boolean, revision: number) {
           status,
           chatRestrictedUntil: result.chat_restricted_until ?? null,
         });
-        if (result.status === "suspended" || result.status === "withdrawn")
+        if (result.status === "suspended" || result.status === "withdrawn" || result.status === "consent_required")
           void native.stop().catch(() => {});
       }
     } catch (e) {
