@@ -437,3 +437,7 @@ MR02〜04も進める依頼の直後、ユーザーが待機を指示しログ�
 11/25 R19：訂正後のドット見出しをVercel dpl_Ama3NXM9eFseBLi6a26LMTH3W3Ldで公開。問い合わせページの実表示とcomputed style（Kodenmachou、weight400、transform:none）を確認。本文のIntern/Noto Sans JPは維持。
 
 2026-11-25 C03/C04・R03/R15/R17/R18/R19：061と運営画面へ電信PIN削除を追加。ローカルROLLBACK試験で一般会員/MFAなし拒否、本文消去・参加終了・再送・監査1件を確認。moderation-state 3件と型検査成功。本番配備・実機は未実施。UGC_SUBMISSION_PREPARATIONに画像公開経路の不足と方式比較、APP_REVIEW_ACCESSに本人承認の分離デモ実装案を記録。外部AI/公開保留は未承認、デモ環境・認証方式・費用は未確定。スキャンcritical8/high12/medium4、Rule pack v2.5.1（最新出典2026-11-23）。未確認ゲートを維持し提出不可。旧33件の分母・達成率は不変。
+
+2026-11-25 C03/C04 R03/R15/R17/R18/R19：ユーザーが画像判定導入を撤回し、通報対応と審査デモ準備のみ継続。061を本番へ単独配備し、適用記録・handler・MFA呼出し・private関数のauthenticated実行不可・同意ゲート保持をread-onlyで確認。既存投稿の削除は実行せず。審査専用メール＋パスワードは本人承認、別環境作成は判断待ち。review-demo/README.mdにデータ/操作順/料金と未完を整理。設定validatorは本番・未承認project・非TLS・資格埋込・push有効を拒否する2試験成功。アプリへの環境切替接続と実デモは未実装。iPhone Releaseビルド成功。旧33件達成率は不変、画像フィルタ不足は提出前未解決事項。
+
+同日：通報対応版をiPhone17の既存アプリへ上書き成功（devicectl databaseSequenceNumber 3944）。端末での運営MFAログインと削除UI実操作は未確認。
