@@ -48,7 +48,11 @@ function harness() {
           }
         : id === "react-native"
           ? { AppState: {} }
-          : { native, streetID: "test" },
+          : id.endsWith("/sessionState")
+            ? { sessionState: { get: () => ({ revision: 1 }) } }
+            : id.endsWith("/ownProfile")
+              ? { ownProfile: { publish: () => {} } }
+              : { native, streetID: "test" },
     exports,
   );
   const render = () => {

@@ -11,6 +11,14 @@ import expo.modules.kotlin.modules.ModuleDefinition
 class PresenceNativeModule : Module() {
   override fun definition() = ModuleDefinition {
     Name("PresenceNative")
+    // Match the iOS simulator-only fixture gate; never enable review by env alone.
+    Function("isSimulator") {
+      android.os.Build.FINGERPRINT.startsWith("generic") ||
+        android.os.Build.FINGERPRINT.startsWith("google/sdk_gphone") ||
+        android.os.Build.MODEL.contains("sdk_gphone") ||
+        android.os.Build.MODEL.contains("Android SDK built for") ||
+        android.os.Build.PRODUCT.startsWith("sdk_")
+    }
     Events("onChange", "onVisitFix")
     OnCreate {
       appContext.reactContext?.let(::ensureStreetNotificationChannel)

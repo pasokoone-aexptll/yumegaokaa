@@ -226,7 +226,7 @@ export function StreetLogin({
   return (
     <KeyboardAvoidingView
       style={s.root}
-      behavior={Platform.OS === "ios" ? "padding" : undefined}
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
     >
       <Animated.View
         style={[s.root, { opacity: authExit }]}

@@ -1739,3 +1739,31 @@ omyの初回入街はghost=true/last_seq=0で観測なし。端末journalもsequ
 5f9e895..1709cceを対象に開始。人数バッジ/通知/最新へボタンのGlassViewはAndroidで背景なしViewになることをSDK58ソースと公式資料で確認し、Android専用PlatformGlassで色/形/コントラストを保持。iOSは元のGlassViewを再export。Android操作部品の寸法/文字重み/明暗、参加トグルの外周、メニュー素材/説明を最新iOSへ追従。通知の退出アニメーションと切替中の旧action保持を移植。
 
 型検査成功、変更10ファイルの対象Lint成功、map-notice-transitionを両OSへ拡張し2試験成功、delayed-refresh試験成功。全体Lintは13 errors/4 warnings（うち今回コピーしたAndroid ref代入1件は修正して対象Lint成功、残りは既存）。全体Lint成功ではない。Android実表示・ビルドは次サイクル。実機0台、既存API35 emulator-5554起動。iOS実機再ビルドなし。
+
+
+## 2026-11-24 Android UI移植 A02〜04（R02/R03/R10/R12〜R15/R18/R19）
+
+- PlatformMapのMarkerScaleが仮置きoverlayを囲まず倍率1になる移植漏れを修正。仮置き/確定表示の同位置・同寸法と足元リングからのドラッグをAPI35 emulator-5554で確認（/tmp/android-port-map.png、android-port-pin-settled.png、android-port-pin-drag2.png）。最初のtoggle直後のswipeは地図panとなったため、表示安定後にリングから再確認しカメラ停止counterが増えずPIN移動。保存/RPCなし。
+- iOSのshowUserLocation指定をAndroidで消費していなかったためMapLibre UserLocationを接続。既存の前景かつ位置権限付与済みのみ表示し、ここで権限要求/気配送信しない。実GPSは未確認。bottomInset反映と詳細カメラ余白の解除を修正。
+- Androidの登録メール入力がkeyboard下へ隠れることを画像で再現。KeyboardAvoidingViewのheightをAndroidに適用し入力欄可視を確認（/tmp/android-port-keyboard.png→android-port-keyboard3.png）。ProfileSetupも同じOS分岐へ。iOS paddingは維持。
+- expo-image-pickerのcameraPermission:falseがAndroidManifestのCAMERAをtools:node=removeにしていた。招待QR用途の説明へ変更し、prebuild後のCAMERA宣言を確認。音声録音は引き続き除外。実カメラ復号は未確認。
+- Android運営Formへ空状態/使用済み表示/標準toggle/取消確認/続きを表示を移植。fixture表示とpaginationのcallback/disabledテスト成功。
+- icons/yumegaoka.iconの提供Exclude.pngと背景色からAndroid adaptive/legacy/monochromeを再生成するscriptを追加。iOS原本は不変。native表示名は電信出口（このローカル設定は開発用接尾辞あり）。
+- AndroidのisSimulatorを実装し、EXPO_PUBLIC_UI_REVIEW=1かつemulatorのみ、自己完結fixtureの5ルートを未ログインでも表示。実ルート/認可/RPCは変更せず、レビュー旗だけで実機開放しない。
+- Androidシートに既存SheetHandleを接続し、角丸と人数編集時の拡大を追加。ステータスバーの明暗と起動時fontロード待ちもAndroidに限定して修正。通知画面のstatus barを第4版、シートを最終第16版で確認。
+
+検証：第1〜4版のarm64 Release成功（/tmp/yumegaoka-android-port-build*.log）。第3版は29秒、第4版は14秒の差分ビルド。第3版の型/変更対象Lint成功。招待QR/自動認証/プロフィール資格/位置下書き/通知遷移12試験成功、Android専用2試験成功。profile-setup-accessの既存mockがsessionState/ownProfileの追加に追従せず3試験失敗したためmockだけを補い再成功（認可コード変更なし）。全体Lintには既存React Hooksエラーが残る。iOS/実機全機能合格やクラウド接続合格には加算しない。
+
+表示証拠：/tmp/android-port-onboarding-contact.png（招待/名前/本人写真/Pool）、android-port-settings-contact.png（通知/詳細/Block/OTP/運営）。シート確認初回はハンドル欠落を検出して追加修正したため、初回画像を最終合格根拠としない。ADB操作はユーザーが2026-11-24に明示許可。
+
+### Androidシート最終修正と確認（A02/A05）
+
+地図から半画面を開くと、既存のabsolute CTAが画面外へ出る問題を実際に再現。独自のnative高さ通知方式は往復時の描画が安定しなかったため撤去し、固定済みExpo Router/RN ScreensのAndroid専用unstable_sheetFooterをPinSheetFooter.androidに隔離した。明示幅/下端inset/背景とhardware textureでネイティブ移動時の描画を保持。iOS adapterは既存childrenをそのまま返す。依存更新時にはこのunstable APIの確認が必要。
+
+第16版で半画面→全画面→半画面の参加ボタン表示を確認。証拠：/tmp/android-port-half16.png、android-port-full16.png、android-port-footer16.png、android-port-collapsed16-small.png。参加状態のサーバー変更は行っていない。試行途中の第5〜12版を合格根拠にせず、診断ログ/独自高さ通知は最終コードに残していない。Runtime/ReactNativeJSのerrorログなし。
+
+MapHeader人数/参加切替/公開メニュー/通知切替/最新へを第6版の実部品fixtureで操作。/tmp/android-port-controls6.png、android-port-menu6.png。チャット新着6件目と送信phase3の単一行を確認（android-port-chat-confirmed5.png）。Androidの通常Toggle/PinAuthorMenuは既存標準部品とcallbackを再利用し、Swiftの診断専用追加はUI移植対象から区別。
+
+最終変更の型検査と対象Lint成功。先行の関連12試験＋Android専用2試験＋delayed-refresh成功を再利用し、無関係な全件試験は繰り返していない。全体Lintには既存React Hooksエラーが残る。実データHome/アカウント/実チャット/保存、物理Androidのカメラ/NFC/背景/Pushは未確認で、Android全体DONEにはしない。
+
+通常版：EXPO_PUBLIC_UI_REVIEW=0のarm64 Release成功（/tmp/yumegaoka-android-port-normal-final.log、13秒）。emulator-5554へ上書きしWelcome起動、初回dot font、dark status barを確認。レビューURLを開いてもWelcomeへ戻り、fixtureが開かないことを確認（/tmp/android-port-normal-launch.png、android-port-normal-review-closed.png）。エラーログなし。生成APKはapps/mobile/android/app/build/outputs/apk/release/app-release.apk。別途/tmp/yumegaoka-android-ui-review.apkは検証用として保持。通常版も既存ローカル開発接続先であり、クラウド実データ接続を保証しない。

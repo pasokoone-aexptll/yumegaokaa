@@ -6,7 +6,7 @@ iOSネイティブUIの初回監査・画面別移行案は[IOS_NATIVE_UI_PLAN](
 
 更新：2026-11-05。実装・レビューはここから開始する。現行文書は現在の合意を示し、履歴は採用根拠を残す。記載がない詳細を承認済みと解釈しない。
 
-新セッションは [SESSION_HANDOFF](SESSION_HANDOFF.md) を読む。現在は主要ロジック・ローカル統合済み、UI改修・実機確認・外部接続を残す段階。iOSはApple Maps、AndroidはMapLibre。APNs直接送信はローカル実装済みで本番接続待ち。
+新セッションは [SESSION_HANDOFF](SESSION_HANDOFF.md) を読む。2026-11-24、ユーザーがiOS UI完成を明示し、`5f9e895..1709cce`のAndroid移植を依頼。現在の追加作業は[Android UI移植台帳](frontend-redesign/ANDROID_UI_PORT.md)。現在は主要ロジック・ローカル統合済み、UI改修・実機確認・外部接続を残す段階。iOSはApple Maps、AndroidはMapLibre。APNs直接送信はローカル実装済みで本番接続待ち。
 
 11月6日の残件一覧は[作業台帳「残件の照合」](DELIVERY_PLAN.md#11月6日-残件の照合)を参照。
 
@@ -56,7 +56,7 @@ iOSネイティブUIの初回監査・画面別移行案は[IOS_NATIVE_UI_PLAN](
 
 最新のユーザーの明示的な訂正・承認 → 現行の要件と決定 → 承認された詳細設計部分（滞在L01〜L04。文書全体への包括承認ではない）。構成提案、試作コード、旧資料から要件を上書きしない。現行文書同士の矛盾を見つけたら、都合のよい方を選ばず根拠を確認する。根拠がない製品判断は未決定として提示する。
 
-現在は33タスク中27タスクがDONE。主要ロジックとローカル統合の証拠があり、最新UIの実機確認・背景観測の実DB確認・外部接続を残している。React Native/ExpoとSwift背景観測、Supabase/PostgreSQLを使用。iOSはApple Maps、将来Android用MapLibreのコードを保持する。Androidは現在の完了条件に含めない。具体バージョンはlockfileを参照。既存Swift試作は保持している。
+現在は33タスク中27タスクがDONE。主要ロジックとローカル統合の証拠があり、最新UIの実機確認・背景観測の実DB確認・外部接続を残している。React Native/ExpoとSwift背景観測、Supabase/PostgreSQLを使用。iOSはApple Maps、将来Android用MapLibreのコードを保持する。旧33タスクの条件・履歴は保持し、Android移植の達成は追加台帳で判定する。具体バージョンはlockfileを参照。既存Swift試作は保持している。
 
 ## 実装時に読む範囲と次の成果物
 

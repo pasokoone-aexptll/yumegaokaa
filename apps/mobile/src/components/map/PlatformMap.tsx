@@ -6,7 +6,14 @@ import {
 } from "../pins/PlacementHandle";
 import { MarkerScale, RefreshMarker, useMarkerScale } from "./markerScale";
 
-import { StyleSheet, View, Animated, useWindowDimensions } from "react-native";
+import {
+  StyleSheet,
+  View,
+  Animated,
+  useWindowDimensions,
+  AppState,
+  PermissionsAndroid,
+} from "react-native";
 
 import {
   useRef,
@@ -22,13 +29,14 @@ import type {
   ViewAnnotationRef,
   MapRef,
 } from "@maplibre/maplibre-react-native";
-// Android/default implementation. Preserve MapLibre for the future Android build.
+// Android implementation; map coordinates and markers share the overlay scale.
 import {
   Map as LibreMap,
   Camera as LibreCamera,
   ViewAnnotation,
   GeoJSONSource,
   Layer,
+  UserLocation,
 } from "@maplibre/maplibre-react-native";
 import { mapStyle as defaultStyle } from "../../lib/mapStyle";
 import type {
@@ -45,6 +53,8 @@ const HistoryBlur = requireNativeViewManager<ViewProps>(
 );
 export function Map({
   historyBlur = false,
+  children,
+  showUserLocation = false,
   mapStyle = defaultStyle,
   placement,
   bottomInset = 0,
@@ -53,6 +63,28 @@ export function Map({
   ...props
 }: MapProps) {
   const mapRef = useRef<MapRef>(null);
+  const [locationVisible, setLocationVisible] = useState(false);
+  useEffect(() => {
+    let current = true;
+    const update = async () => {
+      const allowed =
+        showUserLocation &&
+        AppState.currentState === "active" &&
+        (await PermissionsAndroid.check(
+          PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+        ));
+      if (current) setLocationVisible(allowed);
+    };
+    void update();
+    const subscription = AppState.addEventListener(
+      "change",
+      () => void update(),
+    );
+    return () => {
+      current = false;
+      subscription.remove();
+    };
+  }, [showUserLocation]);
   const [scale, updateZoom] = useMarkerScale();
   const lastProjectionAt = useRef(0);
   const [mapReady, setMapReady] = useState(false);
@@ -106,9 +138,7 @@ export function Map({
       onDidFinishLoadingMap={onMapReady}
       onDidFinishRenderingFrameFully={mapReady ? undefined : reveal}
       onDidFailLoadingMap={reveal}
-      contentInset={
-        bottomInset ? undefined : { top: 0, left: 0, right: 0, bottom: 0 }
-      }
+      contentInset={{ top: 0, left: 0, right: 0, bottom: bottomInset }}
       preferredFramesPerSecond={30}
       compass={false}
       androidView="surface"
@@ -120,37 +150,49 @@ export function Map({
         onMovingChange?.(false);
         if (placement) setCameraRevision((r) => r + 1);
       }}
-    />
+    >
+      {children}
+      {locationVisible && <UserLocation />}
+    </LibreMap>
   );
-  return onMovingChange ? (
-    <>
-      <View style={{ position: "absolute", top: 0, left: 0, right: 0, height }}>
-        <MarkerScale.Provider value={scale}>{map}</MarkerScale.Provider>
-        {historyBlur && (
-          <HistoryBlur pointerEvents="none" style={StyleSheet.absoluteFill} />
-        )}
-        <Animated.View
-          pointerEvents="none"
-          style={[
-            StyleSheet.absoluteFill,
-            { backgroundColor: "#303947", opacity: cover },
-          ]}
-        />
-      </View>
-      {placement && (
-        <PlacementHandle
-          map={projection}
-          point={placement.point}
-          revision={placement.revision}
-          preview={placement.preview}
-          active={placement.active}
-          onDrop={placement.onDrop}
-          cameraRevision={cameraRevision}
-        />
+  return (
+    <MarkerScale.Provider value={scale}>
+      {onMovingChange ? (
+        <>
+          <View
+            style={{ position: "absolute", top: 0, left: 0, right: 0, height }}
+          >
+            {map}
+            {historyBlur && (
+              <HistoryBlur
+                pointerEvents="none"
+                style={StyleSheet.absoluteFill}
+              />
+            )}
+            <Animated.View
+              pointerEvents="none"
+              style={[
+                StyleSheet.absoluteFill,
+                { backgroundColor: "#303947", opacity: cover },
+              ]}
+            />
+          </View>
+          {placement && (
+            <PlacementHandle
+              map={projection}
+              point={placement.point}
+              revision={placement.revision}
+              preview={placement.preview}
+              active={placement.active}
+              onDrop={placement.onDrop}
+              cameraRevision={cameraRevision}
+            />
+          )}
+        </>
+      ) : (
+        map
       )}
-    </>
-  ) : (
-    map
+    </MarkerScale.Provider>
   );
 }
 export function Camera({ ref, ...props }: CameraProps) {
@@ -167,7 +209,10 @@ export function Camera({ ref, ...props }: CameraProps) {
             padding: { top: 0, left: 0, right: 0, bottom: detailPadding },
           });
         } else {
-          camera.current?.flyTo(view);
+          camera.current?.flyTo({
+            ...view,
+            padding: { top: 0, left: 0, right: 0, bottom: 0 },
+          });
         }
       },
     }),

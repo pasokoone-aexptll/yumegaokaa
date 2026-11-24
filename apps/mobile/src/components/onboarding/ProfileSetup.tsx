@@ -142,7 +142,7 @@ export function ProfileSetup({
   return (
     <KeyboardAvoidingView
       style={s.root}
-      behavior={Platform.OS === "ios" ? "padding" : undefined}
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
     >
       <View style={s.root}>
         {onExit && (

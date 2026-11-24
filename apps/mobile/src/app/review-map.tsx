@@ -1,6 +1,8 @@
 import { DenshinPlacementPreview } from "../components/pins/DenshinPlacementPreview";
 import { StatusMessageInput } from "../components/denshin/StatusMessageInput";
 import { LatestChatButton } from "../components/map/LatestChatButton";
+import { MapHeader } from "../components/map/MapHeader";
+import { MapStatusBanner } from "../components/map/MapStatusBanner";
 import { pin as reviewPin } from "../components/debug/figmaFixtures";
 import { useState } from "react";
 import { useLocalSearchParams, useRouter } from "expo-router";
@@ -24,6 +26,9 @@ function Scene() {
     normal?: string;
   }>();
   const [previewOnly, setPreviewOnly] = useState(true);
+  const [participating, setParticipating] = useState(true);
+  const [ghost, setGhost] = useState(false);
+  const [placesVisible, setPlacesVisible] = useState(false);
   const [dropRevision, setDropRevision] = useState(0);
   const [placementPoint, setPlacementPoint] = useState<[number, number]>([
     139.7109, 35.7295,
@@ -136,6 +141,29 @@ function Scene() {
           />
         )}
       </Map>
+      {scene === "controls" && (
+        <View
+          style={{ position: "absolute", top: insets.top, left: 20, right: 20 }}
+        >
+          <MapHeader
+            active={participating}
+            count={12}
+            onToggle={setParticipating}
+            ghost={ghost}
+            onModeChange={setGhost}
+            placesVisible={placesVisible}
+            onTogglePlaces={() => setPlacesVisible((value) => !value)}
+          />
+          <MapStatusBanner
+            message={
+              participating
+                ? "街にログインしました"
+                : "街からログアウトしました"
+            }
+            autoDismiss={false}
+          />
+        </View>
+      )}
       {scene === "input" && (
         <View
           style={{
@@ -159,7 +187,7 @@ function Scene() {
           ))}
         </View>
       )}
-      {scene === "latest" && (
+      {(scene === "latest" || scene === "controls") && (
         <View
           style={{ position: "absolute", bottom: 160, alignSelf: "center" }}
         >
@@ -169,7 +197,7 @@ function Scene() {
       <View
         style={{
           position: "absolute",
-          top: insets.top + 12,
+          top: insets.top + (scene === "controls" ? 160 : 12),
           left: 20,
           right: 20,
           padding: 12,
@@ -201,6 +229,11 @@ function Scene() {
         <Text>
           カメラ停止 {settled} / 地図タップ {presses}
         </Text>
+        {scene === "controls" && (
+          <Pressable onPress={() => router.push("/review-pin?scene=half")}>
+            <Text>PINシートを開く（通信なし）</Text>
+          </Pressable>
+        )}
         <Pressable
           accessibilityRole="button"
           onPress={() => {

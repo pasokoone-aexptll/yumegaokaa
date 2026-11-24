@@ -1,3 +1,4 @@
+import { PinSheetFooter } from "../components/denshin/PinSheetFooter";
 import { useEffect } from "react";
 import { NativeToggle as Switch } from "../components/denshin/NativeToggle";
 import { NativeAction } from "../components/denshin/NativeAction";
@@ -280,69 +281,73 @@ export function PinDetailView({
               </>
             )}
           </ScrollView>
-          {p?.mine && !d.ended && (
-            <View
-              style={{
-                position: "absolute",
-                right: 28,
-                bottom: 28,
-              }}
-            >
-              <RoundAction
-                label="編集する"
-                size={52}
-                glyph="✎"
-                disabled={disabled || readOnly}
-                onPress={() => {
-                  editDenshin(p);
-                  router.replace("/pins/create");
+          <PinSheetFooter active={!!p && !d.ended && (p.mine || p.recruiting)}>
+            {p?.mine && !d.ended && (
+              <View
+                style={{
+                  position: "absolute",
+                  right: 28,
+                  bottom: 28,
                 }}
-              />
-            </View>
-          )}
-          {p?.recruiting && !p.mine && !d.ended && (
-            <View
-              style={{
-                position: "absolute",
-                bottom: 28,
-                width: p.attendance === "left" ? 140 : 220,
-                right: 28,
-                zIndex: 10,
-              }}
-            >
-              <NativeAction
-                onDark
-                leadingIcon={p.attendance === "planned" ? "check" : undefined}
-                contentWidth={p.attendance === "left" ? 96 : 170}
-                tone={!p.mine && p.attendance === "left" ? "neutral" : "green"}
-                title={
-                  p.attendance === "planned"
-                    ? "現地につきました"
-                    : p.attendance === "arrived"
-                      ? "現地を離れる"
-                      : p.capacity !== null && p.count >= p.capacity
-                        ? "満員です"
-                        : "参加する！"
-                }
-                disabled={
-                  disabled ||
-                  (!p.mine &&
-                    p.attendance === "left" &&
-                    p.capacity !== null &&
-                    p.count >= p.capacity)
-                }
-                onPress={() => {
-                  void d.attend(
-                    p.attendance === "left"
-                      ? "planned"
-                      : p.attendance === "planned"
-                        ? "arrived"
-                        : "left",
-                  );
+              >
+                <RoundAction
+                  label="編集する"
+                  size={52}
+                  glyph="✎"
+                  disabled={disabled || readOnly}
+                  onPress={() => {
+                    editDenshin(p);
+                    router.replace("/pins/create");
+                  }}
+                />
+              </View>
+            )}
+            {p?.recruiting && !p.mine && !d.ended && (
+              <View
+                style={{
+                  position: "absolute",
+                  bottom: 28,
+                  width: p.attendance === "left" ? 140 : 220,
+                  right: 28,
+                  zIndex: 10,
                 }}
-              />
-            </View>
-          )}
+              >
+                <NativeAction
+                  onDark
+                  leadingIcon={p.attendance === "planned" ? "check" : undefined}
+                  contentWidth={p.attendance === "left" ? 96 : 170}
+                  tone={
+                    !p.mine && p.attendance === "left" ? "neutral" : "green"
+                  }
+                  title={
+                    p.attendance === "planned"
+                      ? "現地につきました"
+                      : p.attendance === "arrived"
+                        ? "現地を離れる"
+                        : p.capacity !== null && p.count >= p.capacity
+                          ? "満員です"
+                          : "参加する！"
+                  }
+                  disabled={
+                    disabled ||
+                    (!p.mine &&
+                      p.attendance === "left" &&
+                      p.capacity !== null &&
+                      p.count >= p.capacity)
+                  }
+                  onPress={() => {
+                    void d.attend(
+                      p.attendance === "left"
+                        ? "planned"
+                        : p.attendance === "planned"
+                          ? "arrived"
+                          : "left",
+                    );
+                  }}
+                />
+              </View>
+            )}
+          </PinSheetFooter>
         </>
       )}
     </PinSheet>

@@ -33,7 +33,7 @@
 - Q04：更新元Authセッション、入街受付期限、再起動順序、退出優先は[VISIT_LIFECYCLE](VISIT_LIFECYCLE.md)と[FIRST_SLICE_CONTRACT](FIRST_SLICE_CONTRACT.md)へ統合済み。本体とDBの実装・試験範囲は監査E05/E06。新しい製品判断待ちに戻さない。
 - K01：RN＋Expo開発ビルド、MapLibre、react-native-nfc-manager、Swiftモジュールは導入済み。バージョンはlockfile固定。静止時の新測位による更新も本体実装済みだが、本体ロック中の歩行/静止通信は未確認。
 - V01〜V03、N01〜N03、E01〜E03、C01〜C03、L01〜L04は承認済み。未実装という理由で再承認を求めない。
-- QR引継ぎは廃案。メールログインで引継ぐ。Androidは将来移植であり、現在の実装・検証の条件にしない。
+- QR引継ぎは廃案。メールログインで引継ぐ。Android UI移植は2026-11-24に依頼済み。旧MVPの達成条件とは別にANDROID_UI_PORTで管理する。
 
 ## 外部依存と次の判断
 

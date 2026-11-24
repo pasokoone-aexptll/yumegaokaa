@@ -59,7 +59,7 @@ export default function CreatePin() {
     else void save();
   }
   return (
-    <PinSheet>
+    <PinSheet expanded={draft.limited && expanded}>
       <Stack.Screen
         options={{
           sheetAllowedDetents: [draft.limited && expanded ? 0.77 : 0.47, 0.95],

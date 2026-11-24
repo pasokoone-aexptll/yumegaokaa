@@ -276,7 +276,7 @@ export default function Street() {
   const cells = snapshot ? liveCells(snapshot, now) : [];
   return (
     <View style={styles.root}>
-      <StatusBar style="light" />
+      {Platform.OS === "ios" && <StatusBar style="light" />}
       <Map
         onMapReady={() => setAndroidMapReady(true)}
         historyBlur={historyExpanded}

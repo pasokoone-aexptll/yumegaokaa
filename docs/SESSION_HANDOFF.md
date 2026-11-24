@@ -7,6 +7,8 @@
 
 ユーザーがiOS UI完成を明示。`5f9e895..1709cce`のAndroid移植を自律サイクルで開始。現在の作業と残件は[ANDROID_UI_PORT](frontend-redesign/ANDROID_UI_PORT.md)。旧iOSキューの記録は以下に保持し、Androidの確認済み根拠へ流用しない。
 
+Android移植は共通操作部品・Map/PIN・keyboard・QR権限・運営画面・アイコンまで実装。API35 emulatorの対象UI検証とRelease成功。PIN半画面の固定操作はAndroid native footerへ接続し、展開/折りたたみ後の表示を第16版で確認。残件は実データ全画面一巡と物理Android確認。旧33件は不変。詳細と未確認はANDROID_UI_PORT/TECH_VALIDATION末尾。
+
 ### 以前のiOSキュー記録
 
 U46：オンボーディングの元動画再照合を進行。keyboard時の上側構図保持/CTAと補助リンクの重なり解消、認証3+3間隔、メール文字/青吹き出し、プロフィール背景等を修正。型/ReleaseとSimulator入力/認証fixture/写真設定確認済み。現在review-onboarding招待画面。全フレーム一致と実機は未完。招待はQRのみ維持とユーザー確定。TECH_VALIDATION末尾に詳細。

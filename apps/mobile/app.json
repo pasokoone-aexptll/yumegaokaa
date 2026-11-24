@@ -23,10 +23,10 @@
       }
     },
     "android": {
-      "icon": "./assets/ios/yumegaoka-iOS-Default-1024@1x.png",
+      "icon": "./assets/android-icon.png",
       "package": "jp.yumegaoka.development",
       "adaptiveIcon": {
-        "backgroundColor": "#BBDCF6",
+        "backgroundColor": "#FEDAB0",
         "foregroundImage": "./assets/android-icon-foreground.png",
         "backgroundImage": "./assets/android-icon-background.png",
         "monochromeImage": "./assets/android-icon-monochrome.png"
@@ -49,7 +49,7 @@
         "expo-image-picker",
         {
           "photosPermission": "プロフィールの写真を選択します。",
-          "cameraPermission": false,
+          "cameraPermission": "招待QRコードを読み取るためにカメラを使用します。",
           "microphonePermission": false
         }
       ],

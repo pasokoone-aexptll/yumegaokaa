@@ -1,3 +1,5 @@
+import { reviewEnabled } from "../components/debug/reviewEnabled";
+import { StatusBar } from "expo-status-bar";
 import { useFonts } from "expo-font";
 import { LaunchSplash, SplashPlayingContext } from "../components/LaunchSplash";
 import { sheetBackground } from "../components/map/mapBlur";
@@ -19,7 +21,7 @@ import { Stack, useRouter, usePathname } from "expo-router";
 import { Platform } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 export default function Layout() {
-  useFonts({
+  const [fontsLoaded, fontError] = useFonts({
     OnboardingDot: require("../../assets/fonts/KH-Dot-Kodenmachou-16-Ki.ttf"),
   });
   const [splashPlaying, setSplashPlaying] = useState(true);
@@ -35,6 +37,19 @@ export default function Layout() {
   const previousAccess = useRef(access.status);
   useEffect(() => {
     if (__DEV__ && path === "/ui-preview") return;
+    // Explicit simulator review builds can show isolated fixtures without an
+    // account. Real routes, auth, RPC authorization and device builds are unchanged.
+    if (
+      reviewEnabled &&
+      [
+        "/review-map",
+        "/review-pin",
+        "/review-chat",
+        "/review-onboarding",
+        "/settings/review",
+      ].includes(path)
+    )
+      return;
     const wasSetup = ["profile_required", "pool_required"].includes(
       previousAccess.current,
     );
@@ -61,6 +76,7 @@ export default function Layout() {
         router.replace(wasSetup ? "/welcome" : "/");
     }
   }, [session.ready, session.signed_in, path, access.status, router]);
+  if (Platform.OS === "android" && !fontsLoaded && !fontError) return null;
   return (
     <IconMotionProvider>
       <AccountAccessContext.Provider value={access}>
@@ -90,7 +106,6 @@ export default function Layout() {
                   sheetAllowedDetents: [0.5],
                   sheetInitialDetentIndex: 0,
                   sheetGrabberVisible: true,
-                  sheetCornerRadius: Platform.OS === "android" ? 28 : undefined,
                   contentStyle: {
                     backgroundColor:
                       Platform.OS === "android"
@@ -106,7 +121,6 @@ export default function Layout() {
                   sheetAllowedDetents: [0.5, 1],
                   sheetInitialDetentIndex: 0,
                   sheetGrabberVisible: true,
-                  sheetCornerRadius: Platform.OS === "android" ? 28 : undefined,
                   sheetExpandsWhenScrolledToEdge: true,
                   sheetLargestUndimmedDetentIndex: 1,
                   contentStyle: { backgroundColor: sheetBackground },
@@ -119,7 +133,6 @@ export default function Layout() {
                   sheetAllowedDetents: [0.5, 1],
                   sheetInitialDetentIndex: 0,
                   sheetGrabberVisible: true,
-                  sheetCornerRadius: Platform.OS === "android" ? 28 : undefined,
                   sheetExpandsWhenScrolledToEdge: true,
                   sheetLargestUndimmedDetentIndex: 1,
                   contentStyle: { backgroundColor: sheetBackground },
@@ -156,7 +169,6 @@ export default function Layout() {
                   sheetAllowedDetents: [0.47, 0.95],
                   sheetInitialDetentIndex: 0,
                   sheetGrabberVisible: true,
-                  sheetCornerRadius: Platform.OS === "android" ? 28 : undefined,
                   contentStyle: { backgroundColor: "transparent" },
                 }}
               />
@@ -174,6 +186,26 @@ export default function Layout() {
                 options={{ presentation: "fullScreenModal" }}
               />
             </Stack>
+            {Platform.OS === "android" && (
+              <StatusBar
+                style={
+                  (path === "/" && session.signed_in) ||
+                  [
+                    "/review-map",
+                    "/review-chat",
+                    "/review-pin",
+                    "/map-pin",
+                    "/map-event",
+                    "/map-recruitment",
+                    "/pin-confirmed",
+                    "/pins/create",
+                    "/street-entry",
+                  ].includes(path)
+                    ? "light"
+                    : "dark"
+                }
+              />
+            )}
             <LaunchSplash onComplete={finishSplash} />
           </SplashPlayingContext.Provider>
         </SafeAreaProvider>
