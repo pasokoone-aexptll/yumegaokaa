@@ -1866,3 +1866,9 @@ R10〜R14/R19。Android作成/編集ヘッダーの負marginとpaddingの差で2
 ## 2026-11-25 Render退会消去の実稼働確認（R03/R17/R18/R19）
 
 Renderは旧36261daから9fa778cへ手動配備、06:04:11 JST Live。別の合成Auth／私有画像／退会済みmember／清掃jobを用い、ローカルworkerを動かさず新instance mwrqbのcleanup=1と後続0を確認。旧instanceのsoft deleteによるfinish拒否後も再試行で回復し、Auth GET404と対象Auth／member／Storage／job各0件を確認。実利用者への試験なし。059の完了ガードとRender版の実消去を確認し、配備確認待ちを解消。実機退会・058配備・既存利用者同意・正式公開・メール返信・バックアップ復元時の再削除は未確認。旧33件の分母・達成率は変更なし。文書だけの変更につきビルド再実行なし。
+
+## 2026-11-25 正文公開とアプリ導線（R03/R17/R19）
+
+ユーザーが既存試験利用者にも一般公開前の年齢申告・必要な保護者同意・規約同意を求める方針と正文公開を承認。規約／ポリシー2026-11-25-v1をhello.dreamcloud.sh/terms/と/privacy/へ正式先行公開。Vercel deployment dpl_54r7tzBPF1m9BW6yLKQEhbuspJB3 READY。supportの削除範囲・バックアップ7日・問い合わせ90日・無料を追記。
+
+認証なしHTTPでterms/privacy/support各200、account-deletionはsupport/#account-deletionへ到達を確認。ブラウザで正文・版・適用範囲を確認。アプリの既存settings/licenses導線に規約・プライバシー・サポートURLと開けない場合の案内を追加。npm run typecheck成功、git diff --check成功。ネイティブ変更なしにつき再ビルドなし。実機でのリンク操作、058クラウド配備、既存会員向け同意取得導線とサーバー検査、App Store Connect設定は未完。サイト公開を申告・同意取得や審査可能判定と扱わない。旧33件の達成率・分母は不変。

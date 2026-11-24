@@ -135,3 +135,9 @@ cp133 R13：APNs直接送信/端末登録/再送・取消時再確認を実装�
 2026-11-25 R17/R18：057クラウド配備と合成データの全変更ROLLBACK確認に合格。退会の実Auth／Storage最終削除、Render稼働版、復元後の再削除は未完。R2の7日削除設定は確認済み。正文を公開可にする判断とは区別する。
 
 2026-11-25 R17/R18：059クラウド適用、worker9fa778cを配備ブランチへpush。認可／lease／画像未清掃拒否／他者維持／再送のDB試験とworker4試験成功。クラウド合成アカウントを修正workerで処理しAuth GET404、Auth/member/画像/job各0件確認。Renderの実稼働版はログイン待ち。
+
+## 2026-11-25 正文公開とアプリ導線（R03/R17/R19）
+
+ユーザーが既存試験利用者にも一般公開前の年齢申告・必要な保護者同意・規約同意を求める方針と正文公開を承認。規約／ポリシー2026-11-25-v1をhello.dreamcloud.sh/terms/と/privacy/へ正式先行公開。Vercel deployment dpl_54r7tzBPF1m9BW6yLKQEhbuspJB3 READY。supportの削除範囲・バックアップ7日・問い合わせ90日・無料を追記。
+
+認証なしHTTPでterms/privacy/support各200、account-deletionはsupport/#account-deletionへ到達を確認。ブラウザで正文・版・適用範囲を確認。アプリの既存settings/licenses導線に規約・プライバシー・サポートURLと開けない場合の案内を追加。npm run typecheck成功、git diff --check成功。ネイティブ変更なしにつき再ビルドなし。実機でのリンク操作、058クラウド配備、既存会員向け同意取得導線とサーバー検査、App Store Connect設定は未完。サイト公開を申告・同意取得や審査可能判定と扱わない。旧33件の達成率・分母は不変。

@@ -26,7 +26,7 @@
 
 | 重要度・ID | 根拠・現状 | 対応／状態 |
 | --- | --- | --- |
-| 提出阻止 C01 Privacy policy（Apple 5.1.1(i)、Play User Data） | account.tsxの「利用規約とプライバシー」はlicenses.tsxのライセンス一覧へ遷移。公開ポリシーと連絡先なし | 運営者表記DreamCloud、氏名・住所は請求時回答で確定。dreamcloud.shを使用、support@dreamcloud.shの受信転送は設定済み（受信テスト待ち）。PRIVACY_POLICY_DRAFT.mdを準備。ポリシー公開・アプリへのリンク・ストア設定は外部待ち |
+| 提出阻止 C01 Privacy policy（Apple 5.1.1(i)、Play User Data） | account.tsxの既存導線先licenses.tsxに規約・ポリシー・サポートの実URLを追加。正文2026-11-25-v1を公開 | 運営者表記DreamCloud、氏名・住所は請求時回答で確定。dreamcloud.shを使用、support@dreamcloud.shの受信転送は設定済み（受信テスト待ち）。PRIVACY_POLICY_DRAFT.mdを準備。ポリシー公開・アプリのリンク実装済み。提出バイナリでの実操作とストア設定は未完 |
 | 提出阻止 C02 Deletion（Apple 5.1.1(v)） | 旧037はmessages.author_idだけをnull化し本文を保持。Appleは共有されたUGCも削除対象と説明 | ユーザーが本文削除へ変更を承認。057で今後の退会時にchat本文をnull化＋削除時刻、PIN本文を「削除済み」に置換＋閉鎖。ローカル反映・DB試験済み。057クラウド配備と合成退会ROLLBACK確認済み。059で実Auth／Storage最終削除の合成アカウント確認済み。Render 9fa778cの常時workerで合成Auth／画像／member／job消去確認済み。実機退会は未完 |
 | 提出阻止 C02残余 | 過去に匿名化済みのchatは元作者を追えない。通報証拠、旧募集・イベント等には別の保存内容がある | 一括削除は未実行。過去データ棚卸しと削除完了時刻の案内を整理。通報証拠の退会時原則削除をユーザー承認し059へ反映。今回の修正だけで全アカウント削除適合とはしない |
 | 高 C03 UGC（Apple 1.2） | 通報・ブロック・運営削除は実装済み。投稿前の不適切コンテンツfilterと公開連絡先の根拠を確認できない | chat/PIN/プロフィール画像/pool画像の対象と、拒否・保留・運営確認の方式を選定。外部判定サービスへの画像送信は未承認。運営対応体制も準備する |
@@ -73,7 +73,7 @@
 
 ## 2026-11-25 提出優先順の確定
 
-[APP_STORE_SUBMISSION_PLAN](APP_STORE_SUBMISSION_PLAN.md)を追加。ADPは11月26日申込予定、dreamcloud.shを公式サイトに使用。supportアドレスの受信転送は設定済み、実受信とsupport名義の送信は未確認。ローカルの退会データ読取専用集計は7分類0件、後続のクラウド点検・バックアップ再実行成功・R2の7日期限確認はPRODUCTION_RETENTION_REVIEW参照。サイトの土台はhello.dreamcloud.shに公開済み、規約正文は未公開。
+[APP_STORE_SUBMISSION_PLAN](APP_STORE_SUBMISSION_PLAN.md)を追加。ADPは11月26日申込予定、dreamcloud.shを公式サイトに使用。supportアドレスの受信転送は設定済み、実受信とsupport名義の送信は未確認。ローカルの退会データ読取専用集計は7分類0件、後続のクラウド点検・バックアップ再実行成功・R2の7日期限確認はPRODUCTION_RETENTION_REVIEW参照。サイトの土台はhello.dreamcloud.shに公開済み、規約正文は2026-11-25-v1を公開済み。
 
 ## 11月25日 提出設定と資料の追加
 

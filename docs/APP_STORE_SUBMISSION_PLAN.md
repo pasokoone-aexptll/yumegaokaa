@@ -93,4 +93,4 @@
 
 C01〜C06は引き続き未完。C04は設計未着手→設計草案、C05は概略棚卸し→実装根拠照合、C06は設定検査なし→検査実装／試験済み。旧33件の達成率・分母は不変。残工数の減少は未計測。
 
-2026-11-25：公開本文として[利用規約](TERMS_OF_SERVICE_DRAFT.md)、[プライバシーポリシー](PRIVACY_POLICY_DRAFT.md)、[サポート／削除案内](SUPPORT_PAGE_DRAFT.md)を準備。[公開チェックリスト](LEGAL_PUBLICATION_CHECKLIST.md)に本人判断と技術確認を分離。サイトの土台は公開済みだが規約正文は未公開のため、C01全体および提出判定は未達のまま。
+2026-11-25：公開本文として[利用規約](TERMS_OF_SERVICE_DRAFT.md)、[プライバシーポリシー](PRIVACY_POLICY_DRAFT.md)、[サポート／削除案内](SUPPORT_PAGE_DRAFT.md)を準備。[公開チェックリスト](LEGAL_PUBLICATION_CHECKLIST.md)に本人判断と技術確認を分離。正文2026-11-25-v1は公開済み。アプリ実操作・ストア設定等が未完のため、C01全体および提出判定は未達のまま。

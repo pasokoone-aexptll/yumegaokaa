@@ -24,7 +24,7 @@
 
 ## 公開サイトとの関係
 
-https://hello.dreamcloud.sh にトップ、問い合わせ・削除依頼、運営者情報を公開。privacy/termsは準備中の案内のみ。匿名HTTPSで各ページ200を確認したがC01全体は未完。私的氏名・住所、DB接続資格、バックアップ内容をサイトへ含めていない。
+https://hello.dreamcloud.sh にトップ、問い合わせ・削除依頼、運営者情報を公開。privacy/termsは2026-11-25-v1の正文を公開済み。匿名HTTPSで各ページ200を確認したがC01全体は未完。私的氏名・住所、DB接続資格、バックアップ内容をサイトへ含めていない。
 
 ## 057配備後の対象確認
 
@@ -65,4 +65,4 @@ Supabaseプロジェクトはap-northeast-1（東京）、ACTIVE_HEALTHY。R2は
 
 2つ目のメールを送信しない合成Auth・私有画像・退会済みmember・清掃jobを作成し、ローカルworkerを実行せず待機した。切替中の旧instance bmpbsがsoft deleteを試みたが059のfinishガードが完了を拒否し再試行へ。新instance mwrqbが06:10:17にcleanup=1、以後2周期cleanup=0。Auth GET404、auth.users／members／storage.objects／cleanup jobの対象各0件を読み取り確認し、fixtureは消去済み。実利用者は試験対象外。プロバイダーの監査ログやバックアップまで即時消滅したという証拠ではない。
 
-Supabase管理画面でFree・東京、RenderでHobby・Oregonを確認。Supabaseの通常API／DBログは[Free仕様](https://supabase.com/pricing)で1日、Render Hobbyは7日。国外処理はリージョンと別に事業者の運用・委託先も存在するためPRIVACY_POLICY_DRAFTへ区別して反映。058は未配備、公開文書の一般公開版への適用と既存試験利用者への同意取得方針はユーザー確認中。
+Supabase管理画面でFree・東京、RenderでHobby・Oregonを確認。Supabaseの通常API／DBログは[Free仕様](https://supabase.com/pricing)で1日、Render Hobbyは7日。国外処理はリージョンと別に事業者の運用・委託先も存在するためPRIVACY_POLICY_DRAFTへ区別して反映。058は未配備、公開文書の一般公開版への適用と既存試験利用者への公開前同意取得方針はユーザー承認済み。既存会員の同意取得導線は未実装。
