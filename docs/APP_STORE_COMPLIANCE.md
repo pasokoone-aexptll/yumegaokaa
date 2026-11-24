@@ -29,7 +29,7 @@
 | 提出阻止 C01 Privacy policy（Apple 5.1.1(i)、Play User Data） | account.tsxの既存導線先licenses.tsxに規約・ポリシー・サポートの実URLを追加。正文2026-11-25-v1を公開 | 運営者表記DreamCloud、氏名・住所は請求時回答で確定。dreamcloud.shを使用、support@dreamcloud.shの受信転送は設定済み（受信テスト待ち）。PRIVACY_POLICY_DRAFT.mdを準備。ポリシー公開・アプリのリンク実装済み。提出バイナリでの実操作とストア設定は未完 |
 | 提出阻止 C02 Deletion（Apple 5.1.1(v)） | 旧037はmessages.author_idだけをnull化し本文を保持。Appleは共有されたUGCも削除対象と説明 | ユーザーが本文削除へ変更を承認。057で今後の退会時にchat本文をnull化＋削除時刻、PIN本文を「削除済み」に置換＋閉鎖。ローカル反映・DB試験済み。057クラウド配備と合成退会ROLLBACK確認済み。059で実Auth／Storage最終削除の合成アカウント確認済み。Render 9fa778cの常時workerで合成Auth／画像／member／job消去確認済み。実機退会は未完 |
 | 提出阻止 C02残余 | 過去に匿名化済みのchatは元作者を追えない。通報証拠、旧募集・イベント等には別の保存内容がある | 一括削除は未実行。過去データ棚卸しと削除完了時刻の案内を整理。通報証拠の退会時原則削除をユーザー承認し059へ反映。今回の修正だけで全アカウント削除適合とはしない |
-| 高 C03 UGC（Apple 1.2） | 通報・ブロック・運営削除は実装済み。投稿前の不適切コンテンツfilterと公開連絡先の根拠を確認できない | chat/PIN/プロフィール画像/pool画像の対象と、拒否・保留・運営確認の方式を選定。外部判定サービスへの画像送信は未承認。運営対応体制も準備する |
+| 高 C03 UGC（Apple 1.2） | 通報・ブロック・運営削除は実装済み。投稿前の不適切コンテンツfilterと公開連絡先の根拠を確認できない | [投稿対策の準備](UGC_SUBMISSION_PREPARATION.md)に対象・方式比較を整理。061でPIN運営削除をローカル実装・検証（本番未配備）。chat/PIN/プロフィール画像/pool画像の拒否・保留・運営確認の方式は未決定。外部判定サービスへの画像送信は未承認。運営対応体制も準備する |
 | 高 C04 Reviewer access（Apple 2.1） | OTP→招待QR、街・NFCで機能が制限される。開発fixtureは審査用アクセスの証拠にならない | デモアカウント／QR、地域制限機能へのレビュー手順と必要機材、稼働バックエンドを審査メモへ。実際の提出版で検証待ち |
 | 高 C05 Privacy declarations（Apple 5.1.2／App Privacy） | メール、ID、画像、投稿、参加、区画等を扱う。生GPSを送らないことは位置データ非収集と同義でない | SDKとRelease通信を含むデータ一覧→App Privacy／Data Safetyを照合。PrivacyInfo.xcprivacyの存在・構文合格のみでは完了にならない |
 | 中 C06 Submission metadata（Apple 2.3） | App Store Connect／Play Consoleは未閲覧 | ADP有効性・契約・年齢区分・配信地域・スクリーンショット・輸出申告を確認。掲載情報未取得のためmetadata-audit未実施 |

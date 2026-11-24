@@ -24,6 +24,7 @@ export default function Moderation() {
             {(
               {
                 message: "投稿",
+                denshin: "電信PIN",
                 recruitment: "募集",
                 event: "オフ会",
               } as Record<string, string>
@@ -59,20 +60,22 @@ export default function Moderation() {
               }
             />
           )}
-          {r.target_kind === "message" && (
+          {(r.target_kind === "message" || r.target_kind === "denshin") && (
             <Action
-              title="元の投稿を削除"
+              title={r.target_kind === "denshin" ? "電信PINを削除" : "元の投稿を削除"}
               disabled={busy || loading}
               onPress={() =>
                 Alert.alert(
                   "投稿を削除しますか？",
-                  "通常の本文は削除されます。通報証拠は保持期限まで残ります。",
+                  r.target_kind === "denshin"
+                    ? "PIN本文を削除し、募集と参加を終了します。通報証拠は保持方針に従って処理します。"
+                    : "通常の本文は削除されます。通報証拠は保持方針に従って処理します。",
                   [
                     { text: "戻る", style: "cancel" },
                     {
                       text: "削除",
                       style: "destructive",
-                      onPress: () => void act("operator_message_delete", r.id),
+                      onPress: () => void act(r.target_kind === "denshin" ? "operator_denshin_delete" : "operator_message_delete", r.id),
                     },
                   ],
                 )

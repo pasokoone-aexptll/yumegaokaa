@@ -1902,3 +1902,5 @@ iPhone17 Releaseビルド成功。上書きは自動審査に拒否されたた�
 11/25追加（R19）：本文用Intern/Noto Sans JPに加え、文書見出しは最新の訂正依頼によりKHドット・通常横幅へ変更（当初のNoto Serif JP 900・横幅72%を置換）。Apple公式ホームのSVGをassets/apple.svgへ保存し、U+F8FF特殊文字をCSS maskへ置換。本番hello.dreamcloud.shでSVG配信・りんご表示・問い合わせの太い明朝見出しをブラウザ確認。Windows/Android実機での表示は未確認。確認画像は/private/tmp/denshin-apple-svg.jpg、/private/tmp/denshin-support-mincho.jpg。
 
 11/25 R19：訂正後のドット見出しをVercel dpl_Ama3NXM9eFseBLi6a26LMTH3W3Ldで公開。問い合わせページの実表示とcomputed style（Kodenmachou、weight400、transform:none）を確認。本文のIntern/Noto Sans JPは維持。
+
+2026-11-25 C03/C04・R03/R15/R17/R18/R19：061と運営画面へ電信PIN削除を追加。ローカルROLLBACK試験で一般会員/MFAなし拒否、本文消去・参加終了・再送・監査1件を確認。moderation-state 3件と型検査成功。本番配備・実機は未実施。UGC_SUBMISSION_PREPARATIONに画像公開経路の不足と方式比較、APP_REVIEW_ACCESSに本人承認の分離デモ実装案を記録。外部AI/公開保留は未承認、デモ環境・認証方式・費用は未確定。スキャンcritical8/high12/medium4、Rule pack v2.5.1（最新出典2026-11-23）。未確認ゲートを維持し提出不可。旧33件の分母・達成率は不変。

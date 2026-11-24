@@ -60,7 +60,7 @@ export function useModeration() {
   );
 
   async function act(
-    operation: "operator_message_delete" | "operator_report_resolve",
+    operation: "operator_message_delete" | "operator_denshin_delete" | "operator_report_resolve",
     id: string,
     resolution?: "handled" | "no_action",
   ) {

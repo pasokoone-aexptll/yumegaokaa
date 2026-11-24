@@ -165,3 +165,5 @@ iPhone17 Releaseビルド成功。上書きは自動審査に拒否されたた�
 サイトのsupport/operator/privacy/termsのヘッダー・フッターをユーザー提供の電信出口ロゴに統一。運営者DreamCloudの本文表記は保持。Vercel dpl_3SSJtwzjCKMM3s5CL9bHumo56psJ公開、問い合わせページのロゴをブラウザ確認。
 
 11/25追加指示：サイト全ページにIntern/Noto Sans JPの可変TTFとOFLライセンスを同梱。欧文→Intern、日本語→Noto Sans JPのfallback。指定のトップ見出しはKHドットを保持。運営者本文のDreamCloudは変更なし。
+
+2026-11-25 C03/C04・R03/R15/R17/R18/R19：061と運営画面へ電信PIN削除を追加。ローカルROLLBACK試験で一般会員/MFAなし拒否、本文消去・参加終了・再送・監査1件を確認。moderation-state 3件と型検査成功。本番配備・実機は未実施。UGC_SUBMISSION_PREPARATIONに画像公開経路の不足と方式比較、APP_REVIEW_ACCESSに本人承認の分離デモ実装案を記録。外部AI/公開保留は未承認、デモ環境・認証方式・費用は未確定。スキャンcritical8/high12/medium4、Rule pack v2.5.1（最新出典2026-11-23）。未確認ゲートを維持し提出不可。旧33件の分母・達成率は不変。
