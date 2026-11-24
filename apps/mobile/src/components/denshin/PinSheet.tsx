@@ -1,3 +1,4 @@
+import { SheetSurface } from "./SheetSurface";
 import { SheetChrome } from "../SheetChrome";
 import { requireNativeViewManager } from "expo-modules-core";
 import type { ViewProps } from "react-native";
@@ -28,6 +29,7 @@ export function PinSheet({
     >
       {Platform.OS === "android" ? (
         <SafeAreaView edges={["bottom"]} style={{ flex: 1 }}>
+          <SheetSurface />
           <SheetChrome expanded={expanded} />
           <View style={{ flex: 1 }}>{children}</View>
         </SafeAreaView>
@@ -53,6 +55,6 @@ const s = StyleSheet.create({
           overflow: "hidden" as const,
         }
       : {}),
-    backgroundColor: Platform.OS === "ios" ? "transparent" : "#424b5a",
+    backgroundColor: "transparent",
   },
 });

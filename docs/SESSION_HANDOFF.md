@@ -9,6 +9,10 @@
 
 Android移植は共通操作部品・Map/PIN・keyboard・QR権限・運営画面・アイコンまで実装。API35 emulatorの対象UI検証とRelease成功。PIN半画面の固定操作はAndroid native footerへ接続し、展開/折りたたみ後の表示を第16版で確認。ローカル実接続でOTP/プロフィール写真保存/PIN作成・編集を確認。Expo stopObserving予約名衝突を修正しDebug成功。Home/設定/本人チャット送信・再訪/通知詳細も実データ確認、修正後Releaseビルド成功。最終Release再起動、相手チャット受信/PIN参加・名簿も確認済み。運営MFA/自分の検証招待取消も実API確認済み。UI移植と利用可能なエミュレーター確認を完了。実カメラ受付/物理Androidの製品受入は未確認。最終照合はANDROID_UI_PORT末尾。旧33件は不変。詳細と未確認はANDROID_UI_PORT/TECH_VALIDATION末尾。
 
+### 2026-11-25 Android限定の外観修正
+
+ユーザーが添付画像で指摘したアイコン比率/Intern+Noto Sans JP/吹き出し欠落/Homeメニュー位置/シート全体/ボタン透過色/人数分母を修正。最新の正本は[ANDROID_UI_REFINEMENT_20261125](frontend-redesign/ANDROID_UI_REFINEMENT_20261125.md)。前回の移植確認を外観のユーザー合格と混同しない。iOS専用素材/ファイルは未変更。Android API35の実表示確認、型/対象Lint/8試験/Debug/Release成功。エミュレーターへ新Debug反映済み、実機は未確認。
+
 ### 以前のiOSキュー記録
 
 U46：オンボーディングの元動画再照合を進行。keyboard時の上側構図保持/CTAと補助リンクの重なり解消、認証3+3間隔、メール文字/青吹き出し、プロフィール背景等を修正。型/ReleaseとSimulator入力/認証fixture/写真設定確認済み。現在review-onboarding招待画面。全フレーム一致と実機は未完。招待はQRのみ維持とユーザー確定。TECH_VALIDATION末尾に詳細。

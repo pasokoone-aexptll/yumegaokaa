@@ -32,7 +32,7 @@ export function NativeIconButton({
         width: size,
         height: size,
         borderRadius: size / 2,
-        backgroundColor: active ? accent : dark ? "#45474a" : "#f2f2f7",
+        backgroundColor: active ? accent : dark ? "rgba(255,255,255,0.14)" : "rgba(255,255,255,0.55)",
         opacity: disabled ? 0.35 : 1,
         alignItems: "center",
         justifyContent: "center",

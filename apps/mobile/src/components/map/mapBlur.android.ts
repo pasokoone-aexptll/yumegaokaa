@@ -1,1 +1,1 @@
-export const sheetBackground = "#ffffff";
+export const sheetBackground = "transparent";

@@ -6,7 +6,7 @@ iOSネイティブUIの初回監査・画面別移行案は[IOS_NATIVE_UI_PLAN](
 
 更新：2026-11-05。実装・レビューはここから開始する。現行文書は現在の合意を示し、履歴は採用根拠を残す。記載がない詳細を承認済みと解釈しない。
 
-新セッションは [SESSION_HANDOFF](SESSION_HANDOFF.md) を読む。2026-11-24、ユーザーがiOS UI完成を明示し、`5f9e895..1709cce`のAndroid移植を依頼。現在の追加作業は[Android UI移植台帳](frontend-redesign/ANDROID_UI_PORT.md)。現在は主要ロジック・ローカル統合済み、UI改修・実機確認・外部接続を残す段階。iOSはApple Maps、AndroidはMapLibre。APNs直接送信はローカル実装済みで本番接続待ち。
+新セッションは [SESSION_HANDOFF](SESSION_HANDOFF.md) を読む。2026-11-24、ユーザーがiOS UI完成を明示し、`5f9e895..1709cce`のAndroid移植を依頼。現在の追加作業は[Android UI移植台帳](frontend-redesign/ANDROID_UI_PORT.md)。11/25の画像指摘へのAndroid限定修正は[Android UI再調整](frontend-redesign/ANDROID_UI_REFINEMENT_20261125.md)。現在は主要ロジック・ローカル統合済み、UI改修・実機確認・外部接続を残す段階。iOSはApple Maps、AndroidはMapLibre。APNs直接送信はローカル実装済みで本番接続待ち。
 
 11月6日の残件一覧は[作業台帳「残件の照合」](DELIVERY_PLAN.md#11月6日-残件の照合)を参照。
 

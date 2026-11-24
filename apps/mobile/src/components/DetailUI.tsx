@@ -1,11 +1,16 @@
-import type { ComponentRef } from "react";
+import { SheetSurface } from "./denshin/SheetSurface";
 import { BlurView } from "expo-blur";
 import NativeMaskedView from "@react-native-masked-view/masked-view";
 import Svg, { Defs, LinearGradient, Stop, Rect } from "react-native-svg";
 import { SheetChrome } from "./SheetChrome";
 
 import { IconPressable as Pressable } from "./icons/IconMotion";
-import type { ReactNode, ComponentType, ReactElement } from "react";
+import type {
+  ReactNode,
+  ComponentType,
+  ReactElement,
+  ComponentRef,
+} from "react";
 import { Children, Fragment, useState, useRef } from "react";
 import {
   ActivityIndicator,
@@ -71,10 +76,15 @@ export function DetailPage({
             ? ["top", "left", "right"]
             : ["top", "bottom", "left", "right"]
       }
-      style={[detail.page, materialSheet && { backgroundColor: "white" }]}
+      style={[detail.page, materialSheet && { backgroundColor: "transparent" }]}
     >
       {background}
-      {materialSheet && <SheetChrome />}
+      {materialSheet && (
+        <>
+          <SheetSurface light />
+          <SheetChrome />
+        </>
+      )}
       <ScrollView
         ref={scrollRef}
         onContentSizeChange={() => {

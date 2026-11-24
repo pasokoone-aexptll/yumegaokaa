@@ -6,6 +6,7 @@ import { HomeModeDropdown } from "../../../components/HomeModeDropdown";
 import { useInviteQuota } from "../../../hooks/useInviteQuota";
 import { useState, useRef } from "react";
 import {
+  Platform,
   ActivityIndicator,
   Alert,
   Pressable,
@@ -218,7 +219,14 @@ export default function Home() {
                           <Text>
                             {" "}
                             ・ {p.count}
-                            <Text style={{ fontSize: 9 }}>
+                            <Text
+                              style={{
+                                fontSize: 9,
+                                ...(Platform.OS === "android"
+                                  ? { fontWeight: "800" as const }
+                                  : {}),
+                              }}
+                            >
                               {p.capacity === null ? "人" : `/${p.capacity}人`}
                             </Text>
                           </Text>

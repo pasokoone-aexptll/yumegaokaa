@@ -21,7 +21,10 @@ class PresenceNativeModule : Module() {
     }
     Events("onChange", "onVisitFix")
     OnCreate {
-      appContext.reactContext?.let(::ensureStreetNotificationChannel)
+      appContext.reactContext?.let {
+        ensureStreetNotificationChannel(it)
+        installAndroidTypography(it)
+      }
       VisitLocationService.onFix = { visit, location ->
         sendEvent("onVisitFix", mapOf("visit" to visit, "longitude" to location.longitude,
           "latitude" to location.latitude, "accuracy" to location.accuracy.toDouble(),
@@ -47,6 +50,10 @@ class PresenceNativeModule : Module() {
     AsyncFunction("stopVisitObservation") {
       appContext.reactContext?.let { it.stopService(android.content.Intent(it, VisitLocationService::class.java)) }
       Unit
+    }
+    View(SheetBackdrop::class) {
+      Name("SheetBackdrop")
+      Prop("light") { view: SheetBackdrop, light: Boolean -> view.light = light }
     }
     View(HistoryBlur::class) { Name("HistoryBlur") }
     View(SheetHandle::class) {

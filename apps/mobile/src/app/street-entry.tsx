@@ -1,3 +1,4 @@
+import { PinSheetFooter } from "../components/denshin/PinSheetFooter";
 import { native, streetID } from "../lib/native";
 import { SpeechBubble } from "../components/denshin/SpeechBubble";
 import { PinSheet } from "../components/denshin/PinSheet";
@@ -120,7 +121,7 @@ export default function StreetEntry() {
           paddingTop: 16,
           flexGrow: 1,
           paddingHorizontal: 20,
-          paddingBottom: 12,
+          paddingBottom: Platform.OS === "android" ? 110 : 12,
           alignItems: "center",
           gap: 12,
         }}
@@ -200,23 +201,29 @@ export default function StreetEntry() {
                 : "NFCを探しています…"}
           </Text>
         </View>
-        <View style={{ flex: 1, minHeight: 26 }} />
-        <Pressable
-          accessibilityRole={trialRing ? "button" : "progressbar"}
-          accessibilityLabel={
-            trialRing && phase === "explain"
-              ? "NFCログインを試す"
-              : phase === "success"
-                ? "ログイン成功"
-                : "NFCを待機中"
-          }
-          disabled={!trialRing || phase !== "explain"}
-          onPress={() => void value.scan("default")}
-          hitSlop={12}
-          style={{ marginBottom: 12 }}
-        >
-          <EntryProgress success={phase === "success"} />
-        </Pressable>
+        {Platform.OS === "ios" && <View style={{ flex: 1, minHeight: 26 }} />}
+        <PinSheetFooter active>
+          <Pressable
+            accessibilityRole={trialRing ? "button" : "progressbar"}
+            accessibilityLabel={
+              trialRing && phase === "explain"
+                ? "NFCログインを試す"
+                : phase === "success"
+                  ? "ログイン成功"
+                  : "NFCを待機中"
+            }
+            disabled={!trialRing || phase !== "explain"}
+            onPress={() => void value.scan("default")}
+            hitSlop={12}
+            style={
+              Platform.OS === "android"
+                ? { position: "absolute", bottom: 28, alignSelf: "center" }
+                : { marginBottom: 12 }
+            }
+          >
+            <EntryProgress success={phase === "success"} />
+          </Pressable>
+        </PinSheetFooter>
       </ScrollView>
     </PinSheet>
   );

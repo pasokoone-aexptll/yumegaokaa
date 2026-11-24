@@ -4,6 +4,7 @@ import { NativeToggle as Switch } from "../components/denshin/NativeToggle";
 import { NativeAction } from "../components/denshin/NativeAction";
 import { SuperAsset } from "../components/icons/SuperAsset";
 import {
+  Platform,
   ActivityIndicator,
   Alert,
   Pressable,
@@ -393,7 +394,10 @@ const s = StyleSheet.create({
     fontWeight: "600",
     lineHeight: 21,
   },
-  capacity: { fontSize: 11 },
+  capacity: {
+    fontSize: 11,
+    ...(Platform.OS === "android" ? { fontWeight: "800" as const } : {}),
+  },
   toggle: {
     flexDirection: "row",
     justifyContent: "space-between",

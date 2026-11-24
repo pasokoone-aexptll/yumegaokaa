@@ -30,7 +30,7 @@ export function ModeDropdown({
   onChange?: (ghost: boolean) => void;
 }) {
   const button = useRef<ComponentRef<typeof View>>(null);
-  const [anchor, setAnchor] = useState<{ right: number; top: number } | null>(
+  const [anchor, setAnchor] = useState<{ left: number; top: number } | null>(
     null,
   );
   const [progress] = useState(() => new Animated.Value(0));
@@ -60,13 +60,16 @@ export function ModeDropdown({
         onPress={() =>
           button.current?.measureInWindow((x, y, w, h) => {
             progress.setValue(0);
-            setAnchor({ right: Math.max(8, width - x - w), top: y + h + 6 });
+            setAnchor({
+              left: Math.max(8, Math.min(width - 236, dark ? x + w - 228 : x)),
+              top: y + h + 6,
+            });
           })
         }
       >
         <SmoothSurface
-          color={dark ? "#ffffff26" : "#0000000d"}
-          blurIntensity={25}
+          color="rgba(0,0,0,0.05)"
+          blurIntensity={0}
           radius={12}
           style={styles.trigger}
         >

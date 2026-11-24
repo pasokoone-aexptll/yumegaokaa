@@ -1797,3 +1797,13 @@ Android運営実接続（R03/R18/R19）：ローカル合成本人に一時運�
 ユーザー添付画像に基づき、CodeInputの未入力0を黒30%の灰色へ変更。RollingNumberは値とplaceholder状態を保持し、未入力0→入力済み0も既存280msの移動/拡大縮小で遷移する。compactの新数字は下から上へ拡大、旧数字は縮小。削除時は灰色へ戻し、Reduce Motionと成功時の緑表示を保持。StreetLoginのメール入力背景を外側Viewへ分離し、標準clearボタンに外側14ptの右余白を確保。認証/API変更なし。
 
 型チェック成功。placeholder→入力0→削除/Reduce Motionと既存自動認証の対象5試験成功。対象LintはRollingNumber/CodeInputで指摘なし、StreetLoginの変更外119行の既存set-state-in-effectで失敗（今回変更せず）。実画面の余白・動きの視覚照合と実機反映は未実施。旧33タスクの達成数は不変。
+
+## 2026-11-25 Android限定の外観修正（R10/R12/R19）
+
+提供icon.svgをAndroid原本へ採用（ユーザー確認済み）。Intern/Noto Sans JPの公式OFLを確認・原本/ライセンスと互換派生フォントを保存。AndroidだけのText/TextInput変換、ネイティブfallback/weight登録。iOS/dependenciesへ変換しないことを3試験で確認。MapBubbleはAndroidのmarker画像化でMaskedView/動的寸法描画が欠ける不具合を検出し、固定輪郭のnative背景/SVG tailへ修正。Homeメニュー左合わせ、トリガー黒5%、人数分母太字、ボタン白opacityを反映。
+
+SheetSurfaceはMapLibre SurfaceViewのPixelCopy→worker blur→白/黒透過合成。地図camera/tilesの遅延を考慮して提示後2回だけ再取得。シート移動を検知して描画座標を更新し、footerとの背景段差を再現・解消。native handleを明るくし上部余白を縮めた。NFCシートはAndroidのみ65%→全高、リングはnative footerへ固定し下端切れを解消。DetailUI mapSheetは同じ仕組みの明色合成。iOSの表示分岐は保持。
+
+型/変更対象Lint成功、Babel分離3試験と既存Android UI/entry-dismissal5試験成功。Debugビルド/上書き成功。API35でランチャー、Home menu、Map bubble、NFC進行リング、PIN半高/全高往復、Account戻るを実表示確認。各画像と途中失敗の扱いはANDROID_UI_REFINEMENT_20261125。物理Android/API24〜28実表示、iOS再ビルドは未実施。旧33タスクの分母/達成率は変更なし。
+
+11/25最終Release：arm64 assembleRelease成功（/tmp/android-ui25-release.log、2分31秒）。Android API35では最新Debug第7版の背景連続性と半画面への復帰を確認。

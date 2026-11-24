@@ -77,7 +77,7 @@ class HistoryBlur(context: Context, appContext: AppContext) : ExpoView(context, 
 
 // Three box passes approximate a Gaussian. Filter before scaling up, and
 // extend the edge pixels so the blur covers the entire viewport.
-private fun blurMap(image: Bitmap, radius: Int): Bitmap {
+internal fun blurMap(image: Bitmap, radius: Int): Bitmap {
   val w = image.width
   val h = image.height
   val pixels = IntArray(w * h)
