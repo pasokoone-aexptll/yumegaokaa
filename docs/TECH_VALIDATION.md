@@ -1807,3 +1807,5 @@ SheetSurfaceはMapLibre SurfaceViewのPixelCopy→worker blur→白/黒透過合
 型/変更対象Lint成功、Babel分離3試験と既存Android UI/entry-dismissal5試験成功。Debugビルド/上書き成功。API35でランチャー、Home menu、Map bubble、NFC進行リング、PIN半高/全高往復、Account戻るを実表示確認。各画像と途中失敗の扱いはANDROID_UI_REFINEMENT_20261125。物理Android/API24〜28実表示、iOS再ビルドは未実施。旧33タスクの分母/達成率は変更なし。
 
 11/25最終Release：arm64 assembleRelease成功（/tmp/android-ui25-release.log、2分31秒）。Android API35では最新Debug第7版の背景連続性と半画面への復帰を確認。
+
+同日iPhone 17反映：ユーザー依頼により9c5752dの認証コード/入力余白修正を含む作業ツリーをReleaseビルド。ビルド・署名検証成功。初回転送はremote接続エラー、同一成果物の再試行で上書きインストール成功。起動は端末Lockedで拒否、実画面の確認は未実施。ログ/tmp/yumegaoka-iphone17-input-build.log。
