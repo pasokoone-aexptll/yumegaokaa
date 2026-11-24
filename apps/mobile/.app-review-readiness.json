@@ -1,0 +1,23 @@
+{
+  "build": "1.0.0 (1) — compliance work in progress; not a submission attestation",
+  "checked_on": "2026-11-25",
+  "enforce": true,
+  "checks": {
+    "demo_account": "todo",
+    "live_backend": "todo",
+    "review_notes": "todo",
+    "screenshots_match_build": "todo",
+    "account_deletion_device_test": "todo",
+    "privacy_labels_match_runtime": "todo",
+    "iap_reachable_by_reviewer": "n/a"
+  },
+  "notes": {
+    "demo_account": "OTP, invitation QR, location and NFC need a reviewer-accessible path tested on the submitted build.",
+    "live_backend": "Cloud development evidence does not attest to availability throughout App Review.",
+    "review_notes": "Public operator name, contact email and policy URL are undecided. See docs/APP_STORE_COMPLIANCE.md at the repository root.",
+    "screenshots_match_build": "No App Store Connect listing or submitted binary was inspected.",
+    "account_deletion_device_test": "Migration 057 erases future withdrawing members' chat and PIN text. Only rollback DB verification is complete; deployment, historic anonymous content and retained report evidence remain open.",
+    "privacy_labels_match_runtime": "No console declaration or release traffic audit yet. A privacy manifest alone does not attest to these declarations.",
+    "iap_reachable_by_reviewer": "Current app has no in-app purchases or paid digital goods. Recheck if monetization is added."
+  }
+}

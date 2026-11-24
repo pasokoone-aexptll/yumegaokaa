@@ -1,3 +1,8 @@
+
+## 2026-11-25 審査チェック導入・退会本文削除（R03/R15/R17/R19）
+
+Codex用v2.5.1を導入しInstall verified、提出停止／通常コマンド許可の自己検証成功。明示スキャンと未確認6項目を止めるreadiness設定を追加。057のローカルDB rollback試験成功（再認証拒否・本人限定消去・PIN閉鎖・再送）、ローカル適用済み。typecheck／変更画面eslint成功。全体lintは既存10 errors/1 warning。クラウド配備・実機・公開ポリシー・App Store Connectは未完。自動フックのユーザー信頼承認は未確認。詳細：[APP_STORE_COMPLIANCE](APP_STORE_COMPLIANCE.md)。
+
 ## 2026-11-21 U38/U39（R12/R19）
 
 新規PINのアプリ入力条件をtrim後3 Unicodeコードポイント以上へ。保存ボタン/保存hookを同じ判定にし、既存短文の編集・未確定commandの照合は維持。DB制約は従来の1〜500で変更なし。空/空白/1/2/3文字/絵文字/既存編集の境界試験・型検査・Simulator Release成功。通常画面で場所選択済み2文字の保存disabled、3文字でenabledを確認し、投稿せず下書きを閉鎖。

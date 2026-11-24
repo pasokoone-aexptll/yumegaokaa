@@ -7,7 +7,7 @@ export default function Withdraw() {
   return (
     <Page title="退会">
       <Text>
-        滞在と募集を終了し、主催イベントを中止します。プロフィールを削除し、投稿は匿名化します。元には戻せません。
+        滞在とPINを終了し、プロフィールと投稿本文を削除します。通報の証拠は所定の期限まで運営専用に保管します。元には戻せません。
       </Text>
       {!request ? (
         <Action

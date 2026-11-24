@@ -107,7 +107,7 @@ try {
     [street],
   );
   await db.query(
-    "insert into app_private.messages(street_id,author_id,body) values($1,$2,'匿名化対象')",
+    "insert into app_private.messages(street_id,author_id,body) values($1,$2,'削除対象')",
     [street, uid],
   );
   const unusedInvite = randomUUID(),
@@ -217,7 +217,7 @@ try {
   assert.equal(
     (
       await db.query(
-        "select author_id from app_private.messages where street_id=$1",
+        "select author_id,body,deleted_at from app_private.messages where street_id=$1",
         [street],
       )
     ).rows[0].author_id,
@@ -232,6 +232,11 @@ try {
     ).rowCount,
     0,
   );
+  const erased = (await db.query(
+    "select body,deleted_at from app_private.messages where street_id=$1", [street],
+  )).rows[0];
+  assert.equal(erased.body, null, "Withdrawal erases message content");
+  assert.ok(erased.deleted_at, "Withdrawal keeps a deletion marker");
   execFileSync(process.execPath, ["scripts/maintenance-worker.mjs", "--once"], {
     stdio: ["ignore", "pipe", "pipe"],
   });
@@ -250,7 +255,7 @@ try {
     0,
   );
   console.log(
-    "アカウント統合成功: 新旧メール確認→変更→再認証前の退会拒否→OTP再認証→資格停止/匿名化→Auth清掃。",
+    "アカウント統合成功: 新旧メール確認→変更→再認証前の退会拒否→OTP再認証→資格停止/本文削除→Auth清掃。",
   );
 } finally {
   if (uid) {

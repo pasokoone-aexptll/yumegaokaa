@@ -17,7 +17,8 @@
     "test:lifecycle-http": "node scripts/lifecycle-http.mjs",
     "db:maintenance": "node scripts/maintenance-worker.mjs",
     "db:maintenance:once": "node scripts/maintenance-worker.mjs --once",
-    "realtime:local": "node scripts/realtime-gateway.mjs"
+    "realtime:local": "node scripts/realtime-gateway.mjs",
+    "compliance:check": "bash \"${HOME}/.codex/hooks/app-store-compliance-guard.sh\" apps/mobile"
   },
   "devDependencies": {
     "proj4": "2.20.2",
