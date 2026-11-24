@@ -1,0 +1,53 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import pg from 'pg';
+import {readFile} from 'node:fs/promises';
+import {randomUUID} from 'node:crypto';
+test('account erasure: authorization, assets, dependent references, retry and hard-delete completion',async()=>{
+ const db=new pg.Client({connectionString:'postgresql://postgres:postgres@127.0.0.1:54322/postgres'});
+ await db.connect();
+ try{
+  await db.query('begin');
+  const migration=await readFile(new URL('../supabase/migrations/202611250059_account_erasure.sql',import.meta.url),'utf8');
+  await db.query(migration.replace(/^begin;/,'').replace(/commit;\s*$/,''));
+  const u=randomUUID(),other=randomUUID(),street=randomUUID(),session=randomUUID();
+  await db.query('insert into auth.users(id) values($1),($2)',[u,other]);
+  await db.query('insert into auth.sessions(id,user_id) values($1,$2)',[session,u]);
+  await db.query('insert into app_private.members(account_id) values($1),($2)',[u,other]);
+  await db.query("insert into app_private.streets(id,name) values($1,'erasure test')",[street]);
+  await db.query("insert into app_private.reports(reporter,subject_id,target_kind,target_id,reason,description,evidence) values($1,$2,'message',$3,'other','synthetic','{}'),($2,$1,'message',$4,'other','synthetic','{}')",[u,other,randomUUID(),randomUUID()]);
+  await db.query("insert into app_private.messages(street_id,author_id,body) values($1,$2,'own'),($1,$3,'other')",[street,u,other]);
+  await db.query("insert into app_private.invitations(issuer,code_hash,used_by,used_at) values($1,decode('01','hex'),$2,now()),($2,decode('02','hex'),$1,now())",[u,other]);
+  const pin=randomUUID();
+  await db.query("insert into app_private.denshin_pins(id,owner_id,street_id,body,longitude,latitude,created_at,expires_at) values($1,$2,$3,'own pin',139,35,now(),now()+interval '24 hours')",[pin,u,street]);
+  await db.query("insert into app_private.denshin_attendance(pin_id,account_id,state,revision,updated_at) values($1,$2,'planned',1,now())",[pin,other]);
+  await db.query('update app_private.members set active=false,withdrawn_at=now() where account_id=$1',[u]);
+  assert.equal((await db.query('select count(*)::int n from app_private.reports where reporter=$1 or subject_id=$1',[u])).rows[0].n,0);
+  await db.query('insert into app_private.account_cleanup_jobs(account_id) values($1)',[u]);
+  const claims=async role=>db.query("select set_config('request.jwt.claims',$1,true)",[JSON.stringify({role,sub:u,session_id:session})]);
+  const call=async(fn,op,payload={})=>(await db.query(`select public.${fn}($1,$2) r`,[op,payload])).rows[0].r;
+  const rejects=async(fn,pattern)=>{await db.query('savepoint reject');await assert.rejects(fn,pattern);await db.query('rollback to savepoint reject');};
+  await claims('service_role');
+  const j=await call('maintenance_jobs','claim');assert.equal(j.account_id,u);
+  const lease={id:j.id,lease:j.lease};
+  await claims('authenticated');await rejects(()=>call('account_erasure','assets',lease),/unauthorized/);
+  await claims('service_role');await rejects(()=>call('account_erasure','assets',{...lease,lease:randomUUID()}),/conflict/);
+  await db.query('savepoint storage_fixture');
+  await db.query("insert into storage.objects(bucket_id,name,owner_id) values('avatars',$1,$2)",[u+'/avatar.jpg',u]);
+  assert.equal((await call('account_erasure','assets',lease)).assets.length,1);
+  await rejects(()=>call('account_erasure','prepare_auth_delete',lease),/storage_cleanup_pending/);
+  await db.query('rollback to savepoint storage_fixture');
+  assert.deepEqual(await call('account_erasure','prepare_auth_delete',lease),{prepared:true});
+  assert.equal((await db.query('select count(*)::int n from app_private.members where account_id=$1',[u])).rows[0].n,0);
+  assert.equal((await db.query('select count(*)::int n from auth.sessions where user_id=$1',[u])).rows[0].n,0);
+  assert.equal((await db.query('select body from app_private.messages where author_id=$1',[other])).rows[0].body,'other');
+  assert.equal((await db.query('select used_by from app_private.invitations where issuer=$1',[other])).rows[0].used_by,null);
+  await rejects(()=>call('maintenance_jobs','finish',lease),/erasure_incomplete/);
+  await claims('authenticated');await rejects(()=>call('street_api','invite_accept',{code:'anything'}),/unauthorized/);
+  await claims('service_role');assert.deepEqual(await call('account_erasure','prepare_auth_delete',lease),{prepared:true});
+  // SQL stand-in verifies referential feasibility only; worker HTTP tests cover Auth API request.
+  await db.query('delete from auth.users where id=$1',[u]);
+  assert.equal((await call('maintenance_jobs','finish',lease)).finished,true);
+  assert.equal((await db.query('select count(*)::int n from auth.users where id=$1',[other])).rows[0].n,1);
+ }finally{await db.query('rollback');await db.end();}
+});

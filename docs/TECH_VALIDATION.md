@@ -1860,3 +1860,5 @@ R03/R04/R10〜R14/R19。IMG_1714/1715を受け5点を修正。型/対象6試験/
 ## 2026-11-25 05:53 シート上端クリップ再修正
 
 R10〜R14/R19。Android作成/編集ヘッダーの負marginとpaddingの差で2dpはみ出していた点を修正。円形ボタンの上端をエミュレーター拡大画像とPixelで確認。対象Lint/ローカルRelease成功、Pixelへ上書き済み。詳細・証拠はANDROID_UI_REFINEMENT_20261125末尾。
+
+2026-11-25 R17/R18：059 account_erasureと通報消去triggerを追加。Storage API→DB参照整理→Auth hard delete→finishの順に変更。権限／lease／不完全finish／再登録競合をガード。ローカルROLLBACKとHTTP4試験成功。クラウド059適用、合成アカウントの実Auth/Storage削除成功。配備ブランチ9fa778c、Render実稼働版は未確認。詳細PRODUCTION_RETENTION_REVIEW。

@@ -52,14 +52,21 @@ export function maintenanceTick({ apiURL, serviceKey, simulate = false }) {
       const item = await job("claim");
       if (!item.id) break;
       try {
-        const storage = await request("/storage/v1/object/avatars", "DELETE", {
-          prefixes: [item.account_id + "/avatar.jpg"],
-        });
-        if (!storage.ok) throw Error("storage_cleanup_failed");
+        const lease = { id: item.id, lease: item.lease };
+        const { assets } = await job("assets", lease, "account_erasure");
+        if (!Array.isArray(assets)) throw Error("invalid_asset_inventory");
+        for (const asset of assets) {
+          const storage = await request(
+            "/storage/v1/object/" + encodeURIComponent(asset.bucket),
+            "DELETE", { prefixes: [asset.path] },
+          );
+          if (!storage.ok) throw Error("storage_cleanup_failed");
+        }
+        await job("prepare_auth_delete", lease, "account_erasure");
         const auth = await request(
           "/auth/v1/admin/users/" + item.account_id,
           "DELETE",
-          { should_soft_delete: true },
+          { should_soft_delete: false },
         );
         if (!auth.ok && auth.status !== 404) throw Error("auth_cleanup_failed");
         await job("finish", { id: item.id, lease: item.lease });

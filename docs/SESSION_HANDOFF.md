@@ -411,3 +411,5 @@ MR02〜04も進める依頼の直後、ユーザーが待機を指示しログ�
 2026-11-25：hello.dreamcloud.shをVercelへ公開（sites/dreamcloud-hello）。サイト表記DreamCloud、氏名・住所は請求時回答でユーザー確定。Git自動配備は承認後解除、手動配備。privacy/termsは準備中案内のみ、058へ登録不可。クラウド056まで・清掃5周期成功、バックアップrun45323128200を承認後再実行しsuccess。R2 lifecycle現況は読取資格不足で未確認。詳細PRODUCTION_RETENTION_REVIEW。旧33タスク達成率は据置き。
 
 2026-11-25追補：057を単独でクラウド配備済み。配備済み関数の合成退会ROLLBACK試験成功。R2 daily/の7日削除EnabledをCloudflare UIで確認。058未配備。Auth soft deleteは識別情報が残り、members/複数表/field_trial_grant外部キーが最終削除を阻むため修正設計が必要。通報証拠の退会時原則削除、問い合わせ90日・無料の2判断とRenderログインを質問中。PRODUCTION_RETENTION_REVIEW参照。
+
+2026-11-25：通報退会時原則削除・問い合わせ完了後90日削除・無料をユーザー確定。059をクラウド配備、修正workerを配備専用branch9fa778cへpush。ローカルからクラウドに修正workerを実行して合成Auth/Storage/member/job各0件を確認。058未適用。Renderはログイン待ち、実稼働版未確認。正文はまだ公開していない。
