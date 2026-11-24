@@ -1789,3 +1789,5 @@ Android運営実接続（R03/R18/R19）：ローカル合成本人に一時運�
 ## 2026-11-25 iOS Homeのghost表示色（R19）
 
 ユーザー指定により、Homeプルダウンのghost状態ドットを#77777Cから黒#000・不透明度12%（rgba(0,0,0,0.12)）へ変更。ModeDropdown.ios.tsxのlight側だけが対象で、Map/Android・モード切替処理は維持。型チェックと対象ESLint成功。実機反映・外観確認は未実施。旧33タスクの達成数は不変。
+
+同日実機反映：ユーザー依頼によりghost色変更を含む現在の作業ツリーをiPhone 17向けReleaseビルド。ビルド・codesign検証・上書きインストール成功。起動は端末Lockedで拒否され、外観確認は未実施。ログ/tmp/yumegaoka-iphone17-ghost-build.log。色のみの変更ではLint不要とのユーザー指示を受け、追加Lintは実施していない。
