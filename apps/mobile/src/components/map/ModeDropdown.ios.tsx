@@ -55,7 +55,7 @@ export function ModeDropdown({
                   backgroundColor: ghost
                     ? dark
                       ? "rgba(255,255,255,0.45)"
-                      : "#77777C"
+                      : "rgba(0,0,0,0.12)"
                     : "#01AE6B",
                 }}
               />
