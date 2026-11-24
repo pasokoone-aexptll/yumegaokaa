@@ -40,7 +40,7 @@ test('Offline header removes the count badge and gives the logo more space',()=>
   './MapAsset':{MapAsset:'Logo'},'./SmoothSurface':{SmoothSurface:'Surface'},
  });
  const visit=(node)=>Array.isArray(node)?node.flatMap(visit):node&&typeof node==='object'?[node,...visit(node.props?.children)]:[];
- const props={name:'夢ヶ丘',count:99,stale:false,active:false,onToggle:()=>{}};
+ const props={name:'電信出口',count:99,stale:false,active:false,onToggle:()=>{}};
  const online=visit(MapHeader(props)),offline=visit(MapHeader({...props,offline:true}));
  assert.ok(online.some(x=>x.props?.gradient?.[0]==='#FF9E9E'));
  assert.ok(!offline.some(x=>x.props?.gradient?.[0]==='#FF9E9E'));

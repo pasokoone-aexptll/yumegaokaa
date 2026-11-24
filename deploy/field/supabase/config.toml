@@ -4,15 +4,15 @@ project_id = "yumegaoka-field"
 otp_length = 6
 
 [auth.email.template.confirmation]
-subject = "夢ヶ丘の確認コード"
+subject = "電信出口の確認コード"
 content_path = "./supabase/templates/otp.html"
 
 [auth.email.template.magic_link]
-subject = "夢ヶ丘の確認コード"
+subject = "電信出口の確認コード"
 content_path = "./supabase/templates/otp.html"
 
 [auth.email.template.email_change]
-subject = "夢ヶ丘 メール変更の確認コード"
+subject = "電信出口 メール変更の確認コード"
 content_path = "./supabase/templates/email_change.html"
 
 [auth.email.smtp]
@@ -22,4 +22,4 @@ port = 465
 user = "resend"
 pass = "env(YUMEGAOKA_RESEND_SMTP_KEY)"
 admin_email = "noreply@auth.dreamcloud.sh"
-sender_name = "夢ヶ丘"
+sender_name = "電信出口"

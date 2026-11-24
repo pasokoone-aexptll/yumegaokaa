@@ -29,7 +29,7 @@ class VisitLocationService : Service(), LocationListener {
     }
     startForeground(2711, androidx.core.app.NotificationCompat.Builder(this, channel)
       .setSmallIcon(android.R.drawable.ic_menu_mylocation)
-      .setContentTitle("夢ヶ丘で入街中").setContentText("街の範囲と気配を更新しています")
+      .setContentTitle("電信出口で入街中").setContentText("街の範囲と気配を更新しています")
       .setOngoing(true).build())
     val nextDeadline = intent.getLongExtra("deadline", 0L)
     handler.removeCallbacks(expire)

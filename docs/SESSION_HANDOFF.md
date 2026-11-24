@@ -451,3 +451,5 @@ MR02〜04も進める依頼の直後、ユーザーが待機を指示しログ�
 本人が最終実行を承認。RESET_PLANに結果を記録。本番36利用者表・Auth8件/関連session/identity/MFA/refresh/OTP・Storage11件を消去し0件確認。街/NFC/規約設定7表・migration65件を保持。一時書込制御は解除、残存trigger/function0。Auth削除の500は一時statement triggerが空のCASCADEも止めるためで、row triggerへ直し完了。初回hash証跡の保持制限もRESET_PLANへ明記。運営アカウント0、設置draft4は未割当owner。本人の新規OTP→restore-production-operator.mjs→本人同意/画像/MFA→実機一巡が次。バックアップ/サービスログの即時消去は未実施。
 
 Android session=null logoutを修正し実adapterのmock回帰2件と型検査成功。端末配備は未実施。既存33件の実装29/33・統合27/33・実機11/33・DONE27/33・BLOCKED3/33は維持。大規模監査/Leanは後回し、審査デモ・ADP/APNs/提出ビルドは未完。
+
+11/25 R03/R15/R19：本人の招待入力到達と指定メールの確認済みAuth・sessionを照合し運営を復元。本番でactive運営1・同運営に属する設置draft4を確認。本人同意/プロフィール/MFAは別。メールの差出人・登録/ログイン/メール変更件名・登録/ログイン本文の本番6設定を「電信出口」へ更新し再取得で一致。実受信は未確認。NFC案内・通知・ライセンス表記などのソースも更新。本番の街名に旧名0。UI検証5件中2件成功、3件は既存mock不足/旧ファイル参照で実行不能。旧33件の達成段階は据置き。

@@ -3,7 +3,7 @@ import { readFileSync, writeFileSync } from "node:fs";
 
 const root = new URL("../", import.meta.url);
 const sources = [
-  ["夢ヶ丘（DreamCloud）", "LICENSE"],
+  ["電信出口（DreamCloud）", "LICENSE"],
   ["Expo", "apps/mobile/LICENSE"],
   ["Kubai Icons", "apps/mobile/src/components/icons/LICENSE"],
   ["OpenFreeMap styles", "apps/mobile/assets/maps/LICENSE.openfreemap-styles"],

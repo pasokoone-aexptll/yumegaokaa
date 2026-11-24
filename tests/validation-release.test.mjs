@@ -17,7 +17,7 @@ function config(env) {
   new Function("exports", "process", configSource)(exports, { env });
   return exports.default({
     config: {
-      name: "夢ヶ丘",
+      name: "電信出口",
       plugins: ["react-native-nfc-manager"],
       ios: {
         entitlements: {

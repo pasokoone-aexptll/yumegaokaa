@@ -52,7 +52,7 @@ const friendly = (error: unknown) => {
   if (s.includes("nfc_off"))
     return "端末のNFCをオンにしてから、もう一度読み取ってください。";
   if (/invalid_tag|SyntaxError/.test(s))
-    return "夢ヶ丘のNFCステッカーを読み取ってください。";
+    return "電信出口のNFCステッカーを読み取ってください。";
   if (s.includes("inactive_tag")) return "このステッカーは現在使えません。";
   if (s.includes("wrong_writer"))
     return "別の端末で参加しています。この端末で参加するにはNFCにタッチしてください。";
@@ -72,7 +72,7 @@ export function useStreetMap() {
   const [state, setState] = useState(initial),
     [snapshot, setSnapshot] = useState<Snapshot>(),
     [now, setNow] = useState(0),
-    [name, setName] = useState("夢ヶ丘");
+    [name, setName] = useState("電信出口");
   const [refreshError, setRefreshError] = useState("");
   const [error, setError] = useState(
       !url || !key

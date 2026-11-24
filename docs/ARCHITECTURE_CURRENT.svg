@@ -1,5 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1680" height="1040" viewBox="0 0 1680 1040" role="img" aria-labelledby="title description">
-  <title id="title">夢ヶ丘 現在のシステム構成</title>
+  <title id="title">電信出口 現在のシステム構成</title>
   <desc id="description">iPhoneアプリ、Supabase、ローカルNode.jsゲートウェイとワーカー、外部サービスの接続。クラウドには未デプロイ。</desc>
   <defs>
     <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
@@ -28,7 +28,7 @@
   </defs>
 
   <rect width="1680" height="1040" fill="#F1F5F2" />
-  <text x="52" y="62" class="title">夢ヶ丘｜現在のシステム構成</text>
+  <text x="52" y="62" class="title">電信出口｜現在のシステム構成</text>
   <text x="54" y="96" class="subtitle">実装・ローカル接続の構成。責務を一つのバックエンドにまとめ、必要な常駐処理だけをNode.jsワーカーに分離。</text>
 
   <rect x="1190" y="35" width="438" height="72" rx="8" fill="#183238" />
