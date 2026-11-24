@@ -7,7 +7,7 @@
 
 ユーザーがiOS UI完成を明示。`5f9e895..1709cce`のAndroid移植を自律サイクルで開始。現在の作業と残件は[ANDROID_UI_PORT](frontend-redesign/ANDROID_UI_PORT.md)。旧iOSキューの記録は以下に保持し、Androidの確認済み根拠へ流用しない。
 
-Android移植は共通操作部品・Map/PIN・keyboard・QR権限・運営画面・アイコンまで実装。API35 emulatorの対象UI検証とRelease成功。PIN半画面の固定操作はAndroid native footerへ接続し、展開/折りたたみ後の表示を第16版で確認。ローカル実接続でOTP/プロフィール写真保存/PIN作成・編集を確認。Expo stopObserving予約名衝突を修正しDebug成功。Home/設定/本人チャット送信・再訪/通知詳細も実データ確認、修正後Releaseビルド成功。最終Release再起動、相手チャット受信/PIN参加・名簿も確認済み。残件は運営資格内操作、実カメラ受付、物理Android確認。旧33件は不変。詳細と未確認はANDROID_UI_PORT/TECH_VALIDATION末尾。
+Android移植は共通操作部品・Map/PIN・keyboard・QR権限・運営画面・アイコンまで実装。API35 emulatorの対象UI検証とRelease成功。PIN半画面の固定操作はAndroid native footerへ接続し、展開/折りたたみ後の表示を第16版で確認。ローカル実接続でOTP/プロフィール写真保存/PIN作成・編集を確認。Expo stopObserving予約名衝突を修正しDebug成功。Home/設定/本人チャット送信・再訪/通知詳細も実データ確認、修正後Releaseビルド成功。最終Release再起動、相手チャット受信/PIN参加・名簿も確認済み。運営MFA/自分の検証招待取消も実API確認済み。UI移植と利用可能なエミュレーター確認を完了。実カメラ受付/物理Androidの製品受入は未確認。最終照合はANDROID_UI_PORT末尾。旧33件は不変。詳細と未確認はANDROID_UI_PORT/TECH_VALIDATION末尾。
 
 ### 以前のiOSキュー記録
 

@@ -1783,3 +1783,5 @@ MapHeader人数/参加切替/公開メニュー/通知切替/最新へを第6版
 修正後の通常arm64 Release成功（/tmp/android-port-native-final-release.log、1分8秒）。UI_REVIEW=0、既存.env.localを維持。最終Releaseの再インストール起動、複数人の受信・参加/名簿、運営資格内操作、物理端末機能は未確認。エミュレーターにはローカルAPI接続用Debugを維持。
 
 Android継続確認（R12〜R15/R19）：最終Releaseの上書き・通常起動成功、確認範囲にAndroidRuntime/ReactNativeJSエラーなし。ローカルHTTP接続制約は維持しDebugへ戻した。ローカル合成相手のプロフィールfixtureを準備し、別セッションの実command APIからチャット/PINを作成。Androidで相手新着、Home募集一覧、PIN半画面から参加→確定→人数1/3→全画面の参加予定名簿を確認。固定footerは展開後も表示。画像はANDROID_UI_PORT末尾。物理端末・運営権限内操作・実カメラ受付は未確認。
+
+Android運営実接続（R03/R18/R19）：ローカル合成本人に一時運営資格を付け、Androidの認証アプリ登録→TOTP→実運営Form→自分の未使用招待取消の確認ダイアログ→API成功/スイッチOFFを確認。資格は検証後に解除、設定キーの一時XMLは削除。他人の会員/招待を操作せず、クラウド変更なし。画像と最終目的照合はANDROID_UI_PORT。UI移植・ビルド・利用可能なエミュレーター確認は完了。物理Androidのカメラ/NFC/背景/Pushと製品全体受入は未確認のまま。
