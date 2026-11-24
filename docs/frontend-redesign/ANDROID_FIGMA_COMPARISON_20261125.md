@@ -20,9 +20,9 @@
 | 136 | 入街成功 | `/tmp/compare-136-v1.png` | 成功の緑図とチェックを比較。実NFC成功ではなく表示fixture |
 | 137 | 募集PIN・半画面 | `/tmp/compare-137-v4.png` | 白い下端/透明footer領域の背景切れを修正。主催者別枠は現行仕様 |
 | 138 | 参加予定PIN | `/tmp/compare-138-v4.png` | 緑の現地到着ボタン、主催者別枠、透明footerを比較 |
-| 139 | 本人募集PIN | `/tmp/compare-139-v4.png` | 本人募集スイッチと編集ボタンを比較。スイッチ寸法修正後の再撮影対象 |
+| 139 | 本人募集PIN | `/tmp/compare-139-verified.png` | 本人募集スイッチと編集ボタンを比較。スイッチ寸法修正後も再撮影確認 |
 | 141 | PIN作成・定員あり | `/tmp/compare-141-final.png` | 設定行を68→52dp、上余白16→10dp。マップ行の欠けを修正 |
-| 142 | PIN作成・人数展開 | `/tmp/compare-142-final.png` | 95%まで開く差を検出。3 detentsの中央70%へ修正、再撮影済み（最終カウンター上下+4dpは個別再撮影未実施） |
+| 142 | PIN作成・人数展開 | `/tmp/compare-142-verified.png` | 95%まで開く差を検出。3 detentsの中央70%へ修正、最終カウンター上下+4dpを含め原本と横並びで再撮影確認 |
 | 143 | 募集PIN・全画面 | `/tmp/compare-143-v4.png` | 全画面のfooter背後に地図が露出する差を修正。本文24dpと主催者分離は既決定 |
 | 144 | 通常PIN | `/tmp/compare-144-v4.png` | 通常本文/作者を比較。…は旧長押しを置換した既決定仕様 |
 | 145 | 参加確定 | `/tmp/compare-145-v4.png` | 写真、募集吹き出し、本文、チェック、確定文を原本と横並び比較 |
@@ -46,7 +46,7 @@
 | 166 | アカウント | `/tmp/compare-166-v1.png` | 現在メール表示・変更行・赤ボタン・footerを比較。メールの×撤去は既決定 |
 | 167 | メール変更 | `/tmp/compare-167-v1.png` | 入力・見出し・次へを比較。空なのでボタンは無効、送信しない |
 | 168 | メール認証成功 | `/tmp/compare-168-v1.png` | 固定コードと成功チェックを比較。実認証ではない |
-| 169 | 運営 | `/tmp/compare-169-final.png` | 上余白/グループ間隔/行高/折返し/スイッチ差を修正、再撮影確認 |
+| 169 | 運営 | `/tmp/compare-169-verified.png` | 上余白/グループ間隔/行高/折返し/スイッチ差を修正、再撮影確認 |
 
 ## 反復の結果と残り
 
@@ -62,7 +62,7 @@
 
 ## 検証・環境の記録
 
-最新の型検査・対象Lint成功。Android UI/typography/entryの対象11試験成功。最新edge-to-edge版のassembleDebug成功（`/tmp/android-edge-debug.log`）。エミュレーターとPixelへインストール成功。`git diff --check`成功。通常MapとレビューPINの遷移・表示を確認。最終カウンターpaddingの微調整と運営OFF色だけは個別再撮影未実施。
+最新の型検査・対象Lint成功。Android UI/typography/entryの対象11試験成功。最新edge-to-edge版のassembleDebug成功（`/tmp/android-edge-debug.log`）。エミュレーターとPixelへインストール成功。`git diff --check`成功。通常MapとレビューPINの遷移・表示を確認。最終カウンターpadding・運営OFF色・本人PINスイッチを追加再撮影し、表示を確認。
 
 開発サーバー切替時にExpo DevLauncherのReact context二重作成で一度落ち、再起動で復帰。連続した多数のdeeplink/Hot Reload後に192MB Java heapのOutOfMemoryError（OkHttp TaskRunner）を確認。原因は未確定。通常版での再現確認前であり、解消済みとしない。
 
@@ -71,3 +71,17 @@
 ユーザーが接続Pixelへのインストールを追加依頼。Pixel 6a / API37 / 24071JEGR10449 の jp.yumegaoka.development をデータ保持でDebug上書き済み。他パッケージは変更していない。ユーザーの画面ロック解除後、通常クラウド接続・UI_REVIEW無効のwelcome画面起動を確認。edge-to-edge更新後も再インストール・起動・撮影確認（`/tmp/pixel-edge-final.png`）。ログイン後のMap/NFC等の実機フローは未確認。
 
 今回は開発者テスト用Debug版。USBのADB reverse tcp:8083とMetro8083が必要。ストア提出はしない。ReleaseビルドはApp Store Compliance Guardにより提出項目未確認を理由に拒否され、一時環境指定もフックに認識されず再拒否された。フックを変更・迂回せず、ユーザー指定の開発者テストに合う通常Debugへ切り替えた。今回のRelease成功や審査合格とは扱わない。
+
+## 最終再撮影の保存（04:50）
+
+変更後に未確認だった139/142/169を再撮影。142は原本と幅360pxで並べ、シート上端・入力・人数グループ・マップ行の配置を確認した。169のOFFは明るい面でも識別可能。139では本人スイッチと浮いた編集ボタンを確認。データを書き込む操作はしていない。今回追加したのは検証記録のみのため、成功済みビルド/試験は再実行していない。
+
+一時ファイル消去後も追跡できる代表証拠：
+
+- [142 原本と最終画面](evidence/android-20261125/pair-142-verified.png)
+- [139 本人PIN](evidence/android-20261125/compare-139-verified-small.png)
+- [169 運営](evidence/android-20261125/compare-169-verified-small.png)
+- [全高シートとedge-to-edge](evidence/android-20261125/android-edge-sheet-small.png)
+- [Pixel起動](evidence/android-20261125/pixel-edge-final-small.png)
+
+実機ログイン後/NFC・長時間利用・API24/25は今回の画面照合の検証外で、製品受入済みとはしない。3ボタンの灰色アイコンは残存差として記録。
