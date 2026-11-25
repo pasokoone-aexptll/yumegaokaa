@@ -21,9 +21,13 @@
 4. Inside the street you can open a sample 電信PIN, join it, use street chat, report content, and block its author. All people and content in this environment are fictitious.
 5. You can leave the street from the entry screen. Account deletion is available in Settings and requires the review account password again. A spare account is available if the first one is deleted.
 
+画像の通報を案内する場合は、英語メモに次の手順を添える。
+
+To report an image, tap a profile picture in street chat or in a PIN detail, or open Settings → My city pool icon → この画像を通報 for the daily street image. The report form shows the selected image. Reports go to the operator.
+
 ## 提出担当者の確認
 
-App Store Connectの専用欄に資格と連絡先を入力する。実際の提出ビルドで上記の操作名・画面・退会を確認してから使用する。日本での対象場所を運営者が設定後、現地での実NFC・背景観測も別途検証する。実機動画は未準備。Appleは審査用アカウントと必要な機材・資料・アクセスの提供を案内している。地域制約の代替方法へのAppleの回答は未取得。[App Review Guidelines 2.1](https://developer.apple.com/app-store/review/guidelines/#app-completeness)
+プロジェクト直下のローカル専用ファイル `densin-review-account.json` に審査専用の2件がある。メイン資格はApp Store Connectのサインイン欄、予備資格は必要に応じて審査メモに入力する。JSONはGit管理外で所有者のみ読書き可能。公開リポジトリ・アプリ・ストア掲載文に資格を含めない。実際の提出ビルドで上記の操作名・画面・退会を確認してから使用する。日本での対象場所を運営者が設定後、現地での実NFC・背景観測も別途検証する。実機動画は未準備。Appleは審査用アカウントと必要な機材・資料・アクセスの提供を案内している。地域制約の代替方法へのAppleの回答は未取得。[App Review Guidelines 2.1](https://developer.apple.com/app-store/review/guidelines/#app-completeness)
 
 ## 受入条件
 

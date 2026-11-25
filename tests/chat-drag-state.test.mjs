@@ -38,6 +38,14 @@ test("ending a chat drag collapses presentation without clearing history or resu
           ];
         },
       };
+    if (id.endsWith("chatReadPolicy")) return { readSpacingMs: 0, showReadFailure: () => false };
+    if (id.endsWith("chatMentions")) return { chatAuthors: () => [] };
+    if (id.endsWith("readRetry")) {
+      const retry = {};
+      const src = readFileSync("apps/mobile/src/lib/readRetry.ts", "utf8");
+      new Function("exports",ts.transpileModule(src, {compilerOptions:{module:ts.ModuleKind.CommonJS}}).outputText)(retry);
+      return retry;
+    }
     if (id.endsWith("chatWindow"))
       return { readChatWindow: async (page) => page() };
     if (id.endsWith("localBlocks"))
@@ -60,10 +68,10 @@ test("ending a chat drag collapses presentation without clearing history or resu
   await new Promise((resolve) => setImmediate(resolve));
   assert.deepEqual(states[0], [message]);
   hook.beginHistory();
-  assert.equal(states[2], true);
+  assert.equal(states[3], true);
   assert.equal(hook.readingHistory.current, true);
   hook.endHistoryDrag();
-  assert.equal(states[2], false);
+  assert.equal(states[3], false);
   assert.equal(hook.readingHistory.current, true);
   assert.deepEqual(states[0], [message]);
   assert.equal(calls, 1, "collapse must not refetch/reset history");

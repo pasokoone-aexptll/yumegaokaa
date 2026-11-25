@@ -1,3 +1,4 @@
+import { imageReport } from "../lib/imageReport";
 import { PinSheetFooter } from "../components/denshin/PinSheetFooter";
 import { useEffect } from "react";
 import { NativeToggle as Switch } from "../components/denshin/NativeToggle";
@@ -117,15 +118,35 @@ export function PinDetailView({
       ],
     );
   const authorAvatar = p && (
-    <Avatar
-      path={p.avatar_path}
-      name={p.display_name}
-      size={64}
-      shape="square"
-    />
+    <Pressable
+      disabled={readOnly || p.mine || !p.avatar_path}
+      accessibilityRole="button"
+      accessibilityLabel="プロフィール画像を通報"
+      onPress={() =>
+        p.avatar_path &&
+        router.push(imageReport("profile_image", [p.avatar_path]))
+      }
+    >
+      <Avatar
+        path={p.avatar_path}
+        name={p.display_name}
+        size={64}
+        shape="square"
+      />
+    </Pressable>
   );
   const person = (x: PinPerson) => (
-    <View key={x.account_id} style={s.person}>
+    <Pressable
+      key={x.account_id}
+      style={s.person}
+      disabled={readOnly || !x.avatar_path}
+      accessibilityLabel={x.display_name + "のプロフィール画像を通報"}
+      accessibilityRole="button"
+      onPress={() =>
+        x.avatar_path &&
+        router.push(imageReport("profile_image", [x.avatar_path]))
+      }
+    >
       <Avatar
         path={x.avatar_path}
         name={x.display_name}
@@ -133,7 +154,7 @@ export function PinDetailView({
         shape="square"
       />
       <Text style={s.name}>{x.display_name}</Text>
-    </View>
+    </Pressable>
   );
   return (
     <PinSheet>

@@ -1,3 +1,5 @@
+import { Avatar } from "../components/Avatar";
+import { imagePaths } from "../lib/imageReport";
 import { useState } from "react";
 import { useRouter, useLocalSearchParams } from "expo-router";
 import { Text, TextInput } from "react-native";
@@ -11,7 +13,18 @@ import {
 import { native } from "../lib/native";
 export default function Report() {
   const router = useRouter();
-  const { kind, id } = useLocalSearchParams<{ kind: string; id: string }>();
+  const {
+    kind,
+    id,
+    images = "",
+  } = useLocalSearchParams<{ kind: string; id?: string; images?: string }>();
+  const isImage = kind === "profile_image" || kind === "street_image";
+  const paths =
+    isImage && typeof images === "string" ? imagePaths(kind, images) : [];
+  const [choice, setChoice] = useState("");
+  const path =
+    paths.length === 1 ? paths[0] : paths.find((entry) => entry === choice);
+  const bucket = kind === "profile_image" ? "avatars" : "street-icons";
   const [reason, setReason] = useState("spam"),
     [description, setDescription] = useState(""),
     [busy, setBusy] = useState(false),
@@ -23,7 +36,7 @@ export default function Report() {
     try {
       await native.rpc("report_create", {
         target_kind: kind,
-        target_id: id,
+        ...(isImage ? { path } : { target_id: id }),
         reason,
         description,
       });
@@ -45,6 +58,33 @@ export default function Report() {
         </>
       ) : (
         <>
+          {isImage && (
+            <Section
+              title={
+                kind === "street_image"
+                  ? "通報する街のアイコン"
+                  : "通報するプロフィール画像"
+              }
+            >
+              {paths.map((item, index) => (
+                <DetailRow
+                  key={item}
+                  title={
+                    paths.length === 1 ? "対象の画像" : `画像 ${index + 1}`
+                  }
+                  leading={
+                    <Avatar bucket={bucket} path={item} name="" size={60} />
+                  }
+                  selected={item === path}
+                  disabled={busy}
+                  onPress={() => setChoice(item)}
+                />
+              ))}
+              {!paths.length && (
+                <Text style={ui.error}>対象の画像を確認できません。</Text>
+              )}
+            </Section>
+          )}
           <Section title="通報する理由">
             {[
               ["spam", "スパム"],
@@ -71,7 +111,11 @@ export default function Report() {
             onChangeText={setDescription}
           />
           {!!error && <Text style={ui.error}>{error}</Text>}
-          <Action title="運営へ送信" disabled={busy} onPress={send} />
+          <Action
+            title="運営へ送信"
+            disabled={busy || (isImage && !path)}
+            onPress={send}
+          />
         </>
       )}
     </Page>

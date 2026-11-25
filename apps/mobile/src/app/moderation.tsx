@@ -1,3 +1,5 @@
+import { useState } from "react";
+import { Avatar } from "../components/Avatar";
 import { useRouter } from "expo-router";
 import { Alert, Text, View } from "react-native";
 import { Action, Empty, Page, ui } from "../components/Page";
@@ -23,6 +25,8 @@ export default function Moderation() {
           <Text>
             {(
               {
+                profile_image: "プロフィール画像",
+                street_image: "街のアイコン",
                 message: "投稿",
                 denshin: "電信PIN",
                 recruitment: "募集",
@@ -40,6 +44,21 @@ export default function Moderation() {
             {r.review_due ? " · 整理対象" : ""}
           </Text>
           <Text>{r.description}</Text>
+          {(r.target_kind === "profile_image" ||
+            r.target_kind === "street_image") &&
+            r.evidence.path &&
+            (r.evidence.removed ? (
+              <Text>画像を公開停止しました。</Text>
+            ) : (
+              <ImageRemoval
+                path={r.evidence.path}
+                bucket={
+                  r.target_kind === "profile_image" ? "avatars" : "street-icons"
+                }
+                disabled={busy || loading}
+                remove={() => void act("operator_image_delete", r.id)}
+              />
+            ))}
           <Text>{r.evidence.title}</Text>
           <Text>{r.evidence.body ?? r.evidence.description}</Text>
           {(r.target_kind === "event" || r.target_kind === "recruitment") && (
@@ -62,7 +81,9 @@ export default function Moderation() {
           )}
           {(r.target_kind === "message" || r.target_kind === "denshin") && (
             <Action
-              title={r.target_kind === "denshin" ? "電信PINを削除" : "元の投稿を削除"}
+              title={
+                r.target_kind === "denshin" ? "電信PINを削除" : "元の投稿を削除"
+              }
               disabled={busy || loading}
               onPress={() =>
                 Alert.alert(
@@ -75,7 +96,13 @@ export default function Moderation() {
                     {
                       text: "削除",
                       style: "destructive",
-                      onPress: () => void act(r.target_kind === "denshin" ? "operator_denshin_delete" : "operator_message_delete", r.id),
+                      onPress: () =>
+                        void act(
+                          r.target_kind === "denshin"
+                            ? "operator_denshin_delete"
+                            : "operator_message_delete",
+                          r.id,
+                        ),
                     },
                   ],
                 )
@@ -97,5 +124,54 @@ export default function Moderation() {
         </View>
       ))}
     </Page>
+  );
+}
+
+function ImageRemoval({
+  path,
+  bucket,
+  disabled,
+  remove,
+}: {
+  path: string;
+  bucket: "avatars" | "street-icons";
+  disabled: boolean;
+  remove: () => void;
+}) {
+  const [visible, setVisible] = useState(false);
+  const [attempt, setAttempt] = useState(0);
+  return (
+    <>
+      <Avatar
+        key={attempt}
+        path={path}
+        bucket={bucket}
+        name="通報された画像"
+        size={150}
+        onImageDisplay={() => setVisible(true)}
+      />
+      {visible ? (
+        <Action
+          title="この画像を削除"
+          disabled={disabled}
+          onPress={() =>
+            Alert.alert(
+              "通報された画像を削除しますか？",
+              "この画像の公開を停止します。",
+              [
+                { text: "戻る", style: "cancel" },
+                { text: "削除", style: "destructive", onPress: remove },
+              ],
+            )
+          }
+        />
+      ) : (
+        <Action
+          title="画像を再読み込み"
+          disabled={disabled}
+          onPress={() => setAttempt(attempt + 1)}
+        />
+      )}
+    </>
   );
 }

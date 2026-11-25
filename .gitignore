@@ -26,3 +26,7 @@ tests/ios-ui/Smoke.xcodeproj/
 # Local icon authoring tools and prompts; keep separate from the shipped icon set.
 /icons/kubai-icons/
 /docs/KUBAI_ICONS_PROMPT.md
+
+# Local App Store Connect review credentials
+/densin-review-account.json
+/denshin-review-accounts.json

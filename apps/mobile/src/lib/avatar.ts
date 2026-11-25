@@ -103,7 +103,7 @@ export async function chooseAvatar(): Promise<Profile | null> {
   return chooseImage(async (file) => {
     const profile = await native.rpc<Profile>("profile_get", {});
     await uploadImage("avatars", profile.avatar_upload_path, file);
-    return native.rpc<Profile>("profile_avatar_set", {});
+    return native.rpc<Profile>("profile_avatar_set", { path: profile.avatar_upload_path });
   });
 }
 export type StreetIconState = {

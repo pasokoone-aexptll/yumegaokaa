@@ -219,6 +219,7 @@ export function useStreetChat() {
   return {
     chatRestrictedUntil,
     hasNew,
+    historyLoaded: hasLoaded.current,
     followLatest,
     readingHistory: older,
     items,

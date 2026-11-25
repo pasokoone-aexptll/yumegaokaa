@@ -1,3 +1,4 @@
+import { imageReport } from "../lib/imageReport";
 import { useCallback, useContext, useState } from "react";
 import { useFocusEffect, useLocalSearchParams, useRouter } from "expo-router";
 import { Image, Text, View } from "react-native";
@@ -177,6 +178,16 @@ export default function StreetIcons() {
             </View>
           )}
         </View>
+        {!editing && state?.daily_path && (
+          <NativeAction
+            title="この画像を通報"
+            tone="neutral"
+            onPress={() =>
+              state.daily_path &&
+              router.push(imageReport("street_image", [state.daily_path]))
+            }
+          />
+        )}
         {editing && (
           <NativeAction
             title="画像を変更"

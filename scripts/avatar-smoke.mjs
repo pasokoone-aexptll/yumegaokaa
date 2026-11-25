@@ -23,7 +23,8 @@ try{
   const login=await request('/auth/v1/token?grant_type=password','POST',{email,password});assert.ok(login.ok,'fixture login');const session=await login.json();fixtures[i].token=session.access_token;
   await db.query('insert into app_private.members(account_id) values($1)',[user.id]);await rpc(fixtures[i],'profile_save',{display_name:'画像試験'});
  }
- const owner=fixtures[0],other=fixtures[1],path=owner.id+'/avatar.jpg';
+ const owner=fixtures[0],other=fixtures[1],path=(await rpc(owner,'profile_get')).avatar_upload_path;
+ owner.uploadPath=path;
  const upload=await request('/storage/v1/object/avatars/'+path,'POST',image,owner.token,'image/jpeg');assert.ok(upload.ok,'owner upload '+upload.status);
  const profile=await rpc(owner,'profile_avatar_set');assert.equal(profile.avatar_path,path);
  assert.equal((await request('/storage/v1/object/authenticated/avatars/'+path,'GET',undefined,other.token)).status,200,'member read');
@@ -35,7 +36,7 @@ try{
  console.log('Storage統合成功: 所有者保存→プロフィール参照→会員読取→他人上書き/公開読取/2MB超過/停止会員拒否。');
 }finally{
  for(const user of fixtures){
-  await request('/storage/v1/object/avatars','DELETE',{prefixes:[user.id+'/avatar.jpg']});
+  if(user.uploadPath) await request('/storage/v1/object/avatars','DELETE',{prefixes:[user.uploadPath]});
   await db.query('delete from app_private.profiles where account_id=$1',[user.id]);await db.query('delete from app_private.members where account_id=$1',[user.id]);
   const removed=await request('/auth/v1/admin/users/'+user.id,'DELETE');assert.ok(removed.ok,'fixture cleanup');
  }

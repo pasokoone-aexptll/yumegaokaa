@@ -29,6 +29,7 @@ export function Avatar({
   bucket = "avatars",
   shape = "circle",
   onReady,
+  onImageDisplay,
 }: {
   path?: string;
   version?: string;
@@ -37,6 +38,7 @@ export function Avatar({
   bucket?: "avatars" | "street-icons";
   shape?: "circle" | "square";
   onReady?: () => void;
+  onImageDisplay?: () => void;
 }) {
   const refreshMarker = useContext(RefreshMarker);
   const localImage = useContext(AvatarImageContext)[name];
@@ -115,6 +117,7 @@ export function Avatar({
           contentFit="cover"
           transition={0}
           onDisplay={() => {
+            onImageDisplay?.();
             refreshMarker?.();
             onReady?.();
           }}

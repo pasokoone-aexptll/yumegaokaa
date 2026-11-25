@@ -3,7 +3,7 @@ import CoreLocation
 import CryptoKit
 
 final class Smoke: XCTestCase {
- @MainActor func testHostedReviewLoginReachesConsent() throws {
+ @MainActor private func hostedReviewLogin() throws -> XCUIApplication {
   let environment = ProcessInfo.processInfo.environment
   guard let email = environment["TEST_REVIEW_EMAIL"], let password = environment["TEST_REVIEW_PASSWORD"] else {
    throw XCTSkip("Requires an isolated App Review test account")
@@ -17,13 +17,50 @@ final class Smoke: XCTestCase {
   let emailInput = app.textFields["審査用メール"]
   XCTAssertTrue(emailInput.waitForExistence(timeout:8))
   emailInput.tap()
-  emailInput.typeText(email)
+  for character in email { emailInput.typeText(String(character)) }
   XCTAssertEqual(emailInput.value as? String, email)
   let passwordInput = app.secureTextFields["審査用パスワード"]
   passwordInput.tap()
   passwordInput.typeText(password)
   app.buttons["ログイン"].tap()
+  return app
+ }
+
+ @MainActor func testHostedReviewLoginReachesConsent() throws {
+  let app = try hostedReviewLogin()
   XCTAssertTrue(app.staticTexts["年齢の確認"].waitForExistence(timeout:30))
+  app.terminate()
+ }
+
+ @MainActor func testHostedImageReportScreens() throws {
+  guard ProcessInfo.processInfo.environment["TEST_REVIEW_IMAGES"] == "1" else {
+   throw XCTSkip("Requires a consented review account and synthetic sample images")
+  }
+  let app = XCUIApplication(bundleIdentifier:"jp.yumegaoka.development")
+  if ProcessInfo.processInfo.environment["TEST_ON_REVIEW_POOL"] == "1" {
+   app.activate()
+  } else {
+   _ = try hostedReviewLogin()
+   XCTAssertTrue(app.descendants(matching:.any).matching(identifier:"Settings").firstMatch.waitForExistence(timeout:45))
+   XCUIDevice.shared.system.open(URL(string:"yumegaoka:///settings/street-icons")!)
+   let alert = XCUIApplication(bundleIdentifier:"com.apple.springboard").alerts.firstMatch
+   if alert.waitForExistence(timeout:3) {
+    let open = alert.buttons["開く"]
+    if open.exists { open.tap() } else if alert.buttons["Open"].exists { alert.buttons["Open"].tap() }
+   }
+  }
+  let system = XCUIApplication(bundleIdentifier:"com.apple.springboard")
+  let dismiss = ["今はしない", "Not Now"]
+  for container in [system, app] {
+   if let button = dismiss.map({ container.buttons[$0] }).first(where: { $0.exists }) {
+    button.tap()
+    break
+   }
+  }
+  tap(app,"この画像を通報")
+  XCTAssertTrue(app.staticTexts["通報する街のアイコン"].waitForExistence(timeout:10))
+  attach(app,"street-image-report")
+  XCTAssertTrue(app.buttons["運営へ送信"].isEnabled)
   app.terminate()
  }
 

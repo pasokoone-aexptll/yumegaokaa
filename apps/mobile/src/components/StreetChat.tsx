@@ -1,3 +1,4 @@
+import { imageReport } from "../lib/imageReport";
 import { ownProfile } from "../lib/ownProfile";
 import { chatRows } from "../lib/chatRows";
 import { ChatMessageReveal } from "./map/ChatMessageReveal";
@@ -102,6 +103,7 @@ export function StreetChat({
     restore,
     chatRestrictedUntil,
     hasNew,
+    historyLoaded,
     followLatest,
     readingHistory,
     items,
@@ -165,8 +167,9 @@ export function StreetChat({
   const jumpingToLatest = useRef(false);
   const scroll = useRef<ComponentRef<typeof ScrollView>>(null);
   const initialLatest = useRef<string | null>(null);
-  if (initialLatest.current === null && items.length)
-    initialLatest.current = items[0].created_at;
+  if (initialLatest.current === null && historyLoaded)
+    initialLatest.current = items[0]?.created_at ?? "";
+  const contentHeight = useRef(0);
   const contentLaidOut = useRef(false);
   const notice: MapNotice | null = busy
     ? null
@@ -346,8 +349,13 @@ export function StreetChat({
                       automaticallyAdjustKeyboardInsets={false}
                       automaticallyAdjustContentInsets={false}
                       contentInsetAdjustmentBehavior="never"
-                      maintainVisibleContentPosition={{ minIndexForVisible: 1 }}
-                      onContentSizeChange={() => {
+                      maintainVisibleContentPosition={
+                        readingHistory.current
+                          ? { minIndexForVisible: 1 }
+                          : undefined
+                      }
+                      onContentSizeChange={(_width, height) => {
+                        contentHeight.current = height;
                         if (!readingHistory.current) {
                           jumpingToLatest.current = true;
                           scroll.current?.scrollToEnd({
@@ -428,10 +436,16 @@ export function StreetChat({
                       ).map((m) => (
                         <ChatMessageReveal
                           key={m.rowKey}
+                          grow={
+                            contentHeight.current <=
+                              historyViewportHeight + 1 &&
+                            !readingHistory.current
+                          }
                           waitForImage={m.kind !== "arrival" && !!m.avatar_path}
                           animate={
-                            !!initialLatest.current &&
-                            m.created_at > initialLatest.current
+                            !!m.local ||
+                            (initialLatest.current !== null &&
+                              m.created_at > initialLatest.current)
                           }
                         >
                           {(imageReady) => (
@@ -442,14 +456,28 @@ export function StreetChat({
                               {m.kind === "arrival" ? (
                                 <ArrivalIcon />
                               ) : (
-                                <Avatar
-                                  onReady={imageReady}
-                                  path={m.avatar_path}
-                                  version={m.avatar_updated_at}
-                                  name={m.display_name}
-                                  size={35}
-                                  shape="square"
-                                />
+                                <Pressable
+                                  disabled={!m.avatar_path || m.mine}
+                                  accessibilityRole="button"
+                                  accessibilityLabel="プロフィール画像を通報"
+                                  onPress={() =>
+                                    m.avatar_path &&
+                                    router.push(
+                                      imageReport("profile_image", [
+                                        m.avatar_path,
+                                      ]),
+                                    )
+                                  }
+                                >
+                                  <Avatar
+                                    onReady={imageReady}
+                                    path={m.avatar_path}
+                                    version={m.avatar_updated_at}
+                                    name={m.display_name}
+                                    size={35}
+                                    shape="square"
+                                  />
+                                </Pressable>
                               )}
                               <View style={{ flex: 1, minWidth: 0 }}>
                                 <ChatTouchRegion
@@ -564,8 +592,8 @@ export function StreetChat({
                   <LatestChatButton
                     onPress={() => {
                       Keyboard.dismiss();
+                      jumpingToLatest.current = true;
                       if (Platform.OS === "android") {
-                        jumpingToLatest.current = true;
                         endHistoryDrag();
                       }
                       followLatest();

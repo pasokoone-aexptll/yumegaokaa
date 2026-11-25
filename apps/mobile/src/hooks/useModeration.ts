@@ -10,7 +10,13 @@ type Report = {
   target_id: string;
   reason: string;
   description: string;
-  evidence: { body?: string; title?: string; description?: string };
+  evidence: {
+    path?: string;
+    removed?: boolean;
+    body?: string;
+    title?: string;
+    description?: string;
+  };
   created_at: string;
   review_due: boolean;
 };
@@ -60,7 +66,11 @@ export function useModeration() {
   );
 
   async function act(
-    operation: "operator_message_delete" | "operator_denshin_delete" | "operator_report_resolve",
+    operation:
+      | "operator_image_delete"
+      | "operator_message_delete"
+      | "operator_denshin_delete"
+      | "operator_report_resolve",
     id: string,
     resolution?: "handled" | "no_action",
   ) {

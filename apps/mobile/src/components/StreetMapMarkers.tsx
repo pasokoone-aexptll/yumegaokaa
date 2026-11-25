@@ -1,3 +1,4 @@
+import { imageReport } from "../lib/imageReport";
 import { DenshinMapPin } from "./pins/DenshinMapPin";
 import { onsitePeople, DenshinPin } from "../lib/denshin";
 import { RecruitmentIcon } from "./RecruitmentIcon";
@@ -74,18 +75,33 @@ export function StreetMapMarkers({
       router.replace(destination);
     else router.push(destination);
   }
+  function reportIcons(icons: (string | null | undefined)[]) {
+    const paths = icons.filter((value): value is string => !!value);
+    if (paths.length) router.push(imageReport("street_image", paths));
+  }
   return (
     <>
       {cells.map((cell) => (
         <Marker
           key={`${cell.area_version}:${cell.cell_id}`}
           snapshotKey={JSON.stringify(cell.clusters)}
+          onPress={
+            Platform.OS === "android"
+              ? () => reportIcons(cell.clusters.flatMap((c) => c.icons))
+              : undefined
+          }
           lngLat={[cell.anchor.longitude, cell.anchor.latitude]}
         >
           <View style={styles.clusterRow}>
             {cell.clusters.map((cluster, i) => (
               <MarkerFeedback
                 key={i}
+                onPress={
+                  Platform.OS === "ios"
+                    ? () => reportIcons(cluster.icons)
+                    : undefined
+                }
+                accessibilityHint="表示中の街のアイコンを選んで通報"
                 accessibilityLabel={`ここに${cluster.count}人の気配`}
                 style={[
                   styles.presence,
