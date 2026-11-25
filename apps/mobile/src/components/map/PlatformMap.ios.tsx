@@ -1,3 +1,4 @@
+import { inReview } from "../../lib/native";
 import { PlacementPreviewMotion } from "../pins/PlacementPreviewMotion";
 import { MarkerScale, useMarkerScale } from "./markerScale";
 import { AppState, View, useWindowDimensions } from "react-native";
@@ -81,7 +82,7 @@ export function Map({
             userLocationCalloutEnabled={false}
             tintColor="#005EFF"
             initialCamera={appleCamera({
-              center: [139.7109, 35.7295],
+              center: inReview() ? [139.8333333, 36] : [139.7109, 35.7295],
               zoom: 17,
               pitch: 55,
             })}

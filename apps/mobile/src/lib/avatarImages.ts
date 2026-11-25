@@ -12,7 +12,7 @@ function identity(bucket: string, path: string, version?: string) {
     images.clear();
     pending.clear();
   }
-  return JSON.stringify([current, bucket, path, version]);
+  return JSON.stringify([url, current, bucket, path, version]);
 }
 export function cachedAvatar(bucket: string, path: string, version?: string) {
   return images.get(identity(bucket, path, version));
@@ -24,14 +24,16 @@ export function loadAvatar(bucket: string, path: string, version?: string) {
   const existing = pending.get(id);
   if (existing) return existing;
   const session = revision;
+  const origin = url, publicKey = key;
   const request = (async () => {
     // Retry once with a fresh token, but share both attempts across all rows.
     for (let attempt = 0; ; attempt++) {
       try {
         const token = await native.realtimeToken();
+        if (sessionState.get().revision !== session || url !== origin) throw Error("session_changed");
         const image = await Image.loadAsync({
-          uri: `${url}/storage/v1/object/authenticated/${bucket}/${path}?v=${encodeURIComponent(version ?? "")}`,
-          headers: { apikey: key, Authorization: `Bearer ${token}` },
+          uri: `${origin}/storage/v1/object/authenticated/${bucket}/${path}?v=${encodeURIComponent(version ?? "")}`,
+          headers: { apikey: publicKey, Authorization: `Bearer ${token}` },
           cacheKey: id,
         });
         if (sessionState.get().revision === session) {

@@ -1,3 +1,4 @@
+import { AppReviewLogin } from "./onboarding/AppReviewLogin";
 import { SplashPlayingContext } from "./LaunchSplash";
 import { NativeIconButton } from "./denshin/NativeIconButton";
 import { useContext, useEffect, useRef, useState } from "react";
@@ -55,6 +56,7 @@ export function StreetLogin({
   nextSendAt = 0,
   authSuccess = false,
 }: Props & { nextSendAt?: number; authSuccess?: boolean }) {
+  const [reviewLogin, setReviewLogin] = useState(false);
   const router = useRouter(),
     insets = useSafeAreaInsets();
   const reduced = useContext(ReducedIconMotion);
@@ -223,6 +225,7 @@ export function StreetLogin({
     height * (sent ? 0.545 : 0.66),
     availableHeight - (sent ? 180 : 118),
   );
+  if (reviewLogin) return <AppReviewLogin back={() => setReviewLogin(false)} />;
   return (
     <KeyboardAvoidingView
       style={s.root}
@@ -294,6 +297,11 @@ export function StreetLogin({
               },
             ]}
           >
+            {Platform.OS === "ios" && (
+              <Pressable accessibilityRole="button" onPress={() => setReviewLogin(true)} style={{ paddingVertical: 8 }}>
+                <Text style={s.fine}>App Review ログイン</Text>
+              </Pressable>
+            )}
             <Pressable
               accessibilityRole="button"
               onPress={() => choose(true)}

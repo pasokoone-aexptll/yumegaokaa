@@ -3,6 +3,30 @@ import CoreLocation
 import CryptoKit
 
 final class Smoke: XCTestCase {
+ @MainActor func testHostedReviewLoginReachesConsent() throws {
+  let environment = ProcessInfo.processInfo.environment
+  guard let email = environment["TEST_REVIEW_EMAIL"], let password = environment["TEST_REVIEW_PASSWORD"] else {
+   throw XCTSkip("Requires an isolated App Review test account")
+  }
+  continueAfterFailure = false
+  let app = XCUIApplication(bundleIdentifier:"jp.yumegaoka.development")
+  app.launch()
+  let entry = app.buttons["App Review ログイン"]
+  XCTAssertTrue(entry.waitForExistence(timeout:40))
+  entry.tap()
+  let emailInput = app.textFields["審査用メール"]
+  XCTAssertTrue(emailInput.waitForExistence(timeout:8))
+  emailInput.tap()
+  emailInput.typeText(email)
+  XCTAssertEqual(emailInput.value as? String, email)
+  let passwordInput = app.secureTextFields["審査用パスワード"]
+  passwordInput.tap()
+  passwordInput.typeText(password)
+  app.buttons["ログイン"].tap()
+  XCTAssertTrue(app.staticTexts["年齢の確認"].waitForExistence(timeout:30))
+  app.terminate()
+ }
+
  @MainActor func testSignOutForFixtureSwitch() throws {
   continueAfterFailure=false
   let app=XCUIApplication(bundleIdentifier:"jp.yumegaoka.development")

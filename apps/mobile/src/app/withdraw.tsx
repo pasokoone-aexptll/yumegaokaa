@@ -1,3 +1,4 @@
+import { inReview } from "../lib/native";
 import { Alert, Text, TextInput } from "react-native";
 import { Action, Page, ui } from "../components/Page";
 import { useWithdrawal } from "../hooks/useWithdrawal";
@@ -11,7 +12,7 @@ export default function Withdraw() {
       </Text>
       {!request ? (
         <Action
-          title="本人確認コードを送る"
+          title={inReview() ? "パスワードで本人確認" : "本人確認コードを送る"}
           disabled={busy}
           onPress={() => void begin()}
         />
@@ -23,9 +24,11 @@ export default function Withdraw() {
             style={ui.input}
             value={code}
             onChangeText={setCode}
-            placeholder="確認コード"
-            keyboardType="number-pad"
-            maxLength={8}
+            placeholder={inReview() ? "審査用パスワード" : "確認コード"}
+            secureTextEntry={inReview()}
+            autoCapitalize="none"
+            keyboardType={inReview() ? "default" : "number-pad"}
+            maxLength={inReview() ? undefined : 8}
           />
           <Action
             title="退会する"
@@ -41,11 +44,11 @@ export default function Withdraw() {
               ])
             }
           />
-          <Action
+          {!inReview() && <Action
             title="コードを送り直す"
             disabled={busy}
             onPress={() => void begin()}
-          />
+          />}
         </>
       )}
       {!!error && <Text style={ui.error}>{error}</Text>}

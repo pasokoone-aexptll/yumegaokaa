@@ -1,5 +1,5 @@
 import { PinSheetFooter } from "../components/denshin/PinSheetFooter";
-import { native, streetID } from "../lib/native";
+import { inReview, native, streetID } from "../lib/native";
 import { SpeechBubble } from "../components/denshin/SpeechBubble";
 import { PinSheet } from "../components/denshin/PinSheet";
 import { SuperAsset } from "../components/icons/SuperAsset";
@@ -27,7 +27,7 @@ import { fieldTrial, localEntry, nfcDisabled } from "../lib/development";
 export default function StreetEntry() {
   const trialRing =
     Platform.OS === "ios" &&
-    (fieldTrial || (localEntry && (nfcDisabled || native.isSimulator?.())));
+    (inReview() || fieldTrial || (localEntry && (nfcDisabled || native.isSimulator?.())));
   const started = useRef(false);
   const lastError = useRef("");
   const value = useSyncExternalStore(
@@ -74,7 +74,7 @@ export default function StreetEntry() {
     >();
   useEffect(() => {
     if (
-      (fieldTrial || !trialRing) &&
+      !inReview() && (fieldTrial || !trialRing) &&
       value?.sheet === "explain" &&
       !started.current
     ) {
@@ -217,7 +217,7 @@ export function StreetEntryView({
               ? "ログイン成功"
               : phase === "checking"
                 ? "ログインしています…"
-                : "NFCを探しています…"}
+                : inReview() ? "審査用入口：リングをタップして入街" : "NFCを探しています…"}
           </Text>
         </View>
         {Platform.OS === "ios" && <View style={{ flex: 1, minHeight: 26 }} />}

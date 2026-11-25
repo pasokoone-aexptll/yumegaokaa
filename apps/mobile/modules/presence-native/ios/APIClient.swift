@@ -22,6 +22,7 @@ actor APIClient {
   if SecItemCopyMatching(q as CFDictionary,&item)==errSecSuccess,let data=item as? Data,let saved=try? JSONSerialization.jsonObject(with:data) as? [String:Any] {credentials=saved}
  }
  private func save(_ value:[String:Any]) throws {
+  if base == reviewOrigin { credentials=value;return }
   let data=try JSONSerialization.data(withJSONObject:value)
   let updates:[String:Any]=[kSecValueData as String:data,kSecAttrAccessible as String:kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly]
   var status=SecItemUpdate(keychainQuery as CFDictionary,updates as CFDictionary)
@@ -60,6 +61,21 @@ actor APIClient {
    throw ServiceError(code:safe)
   }
   return json
+ }
+ private let reviewOrigin = "https://eyrdviyebyozsaellopr.supabase.co"
+ func reviewPassword(email: String, password: String) async throws {
+  guard base == reviewOrigin, ["review-main@example.test", "review-spare@example.test"].contains(email.lowercased())
+  else { throw ServiceError(code:"review_account_required") }
+  if let current = (credentials["user"] as? [String:Any])?["email"] as? String,
+     current.caseInsensitiveCompare(email) != .orderedSame { throw ServiceError(code:"unauthorized") }
+  authGeneration+=1;refreshing?.cancel();refreshing=nil
+  let generation = authGeneration
+  let result = try await request(path:"/auth/v1/token?grant_type=password",body:["email":email,"password":password])
+  guard generation == authGeneration, base == reviewOrigin,
+        let user = result["user"] as? [String:Any], let actual = user["email"] as? String,
+        actual.caseInsensitiveCompare(email) == .orderedSame, result["access_token"] is String
+  else { throw ServiceError(code:"login_required") }
+  try save(result)
  }
  func sendOTP(email:String,createAccount:Bool = true) async throws { _ = try await request(path:"/auth/v1/otp",body:["email":email,"create_user":createAccount]) }
  func verifyOTP(email:String,code:String) async throws -> [String:Any] {

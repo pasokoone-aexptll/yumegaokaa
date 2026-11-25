@@ -1,3 +1,4 @@
+import { reviewVisits } from "./reviewVisit";
 import { platformAuth } from "./platformAuth";
 import { sessionState } from "./sessionState";
 import { requireNativeModule } from "expo-modules-core";
@@ -61,6 +62,7 @@ const bridge = requireNativeModule("PresenceNative") as {
   mfaEnroll(): Promise<{ id: string; totp: { secret: string; uri: string } }>;
   mfaVerify(factor: string, code: string): Promise<void>;
   configure(url: string, key: string): Promise<void>;
+  reviewPassword(email: string, password: string): Promise<void>;
   session(): Promise<{ signed_in: boolean; email: string }>;
   sendOTP(email: string, createAccount?: boolean): Promise<void>;
   verifyOTP(email: string, code: string): Promise<unknown>;
@@ -106,7 +108,9 @@ const authMethods = {
     return result;
   },
   async logout() {
+    if (inReview()) await demoVisits.stop().catch(() => {});
     await auth.logout();
+    if (inReview()) await selectDeployment(production);
     sessionState.publish({ signed_in: false, email: "" });
   },
 };
@@ -122,13 +126,18 @@ function configure(url: string, key: string) {
   configuration = { url, key, promise };
   return promise;
 }
+const demoVisits = reviewVisits((operation, payload = {}) => {
+  if (!inReview()) throw Error("review_environment_required");
+  return auth.rpc(operation, payload);
+});
 export const native: typeof bridge = {
   isSimulator: () => bridge.isSimulator?.() ?? false,
   ...authMethods,
-  pushSync: (request) => auth.pushSync(request),
+  reviewPassword: (email, password) => bridge.reviewPassword(email, password),
+  pushSync: (request) => inReview() ? Promise.resolve("unavailable") : auth.pushSync(request),
   pushStatus: async () => auth.pushStatus(),
-  pushOpen: async () => bridge.pushOpen(),
-  currentLocation: () => auth.currentLocation(),
+  pushOpen: async () => !inReview() && bridge.pushOpen(),
+  currentLocation: () => inReview() ? Promise.resolve({ longitude: 139.8333333, latitude: 36, accuracy: 5, observed_at: Date.now() }) : auth.currentLocation(),
   monotonicTime: () => bridge.monotonicTime(),
   realtimeToken: () => auth.realtimeToken(),
   accountDetails: () => auth.accountDetails(),
@@ -140,18 +149,45 @@ export const native: typeof bridge = {
   sendOTP: (email, createAccount = true) => auth.sendOTP(email, createAccount),
   rpc: (operation, payload) => auth.rpc(operation, payload),
   checkin: (tag) =>
-    platformAuth ? platformAuth.checkin(tag) : bridge.checkin(tag),
+    inReview() ? demoVisits.enter() : platformAuth ? platformAuth.checkin(tag) : bridge.checkin(tag),
   setGhost: (ghost) =>
-    platformAuth ? platformAuth.setGhost(ghost) : bridge.setGhost(ghost),
+    inReview() ? demoVisits.ghost(ghost) : platformAuth ? platformAuth.setGhost(ghost) : bridge.setGhost(ghost),
   stop: (visitId) =>
-    platformAuth ? platformAuth.stop(visitId) : bridge.stop(),
-  resume: () => auth.resume(),
+    inReview() ? demoVisits.stop() : platformAuth ? platformAuth.stop(visitId) : bridge.stop(),
+  resume: () => inReview() ? demoVisits.state() : auth.resume(),
   addListener: (event, listener) => bridge.addListener(event, listener),
 };
-export const streetID =
-  process.env.EXPO_PUBLIC_STREET_ID ?? "11111111-1111-4111-8111-111111111111";
-export const url = process.env.EXPO_PUBLIC_SUPABASE_URL ?? "";
-export const key = process.env.EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY ?? "";
+const production = {
+  url: process.env.EXPO_PUBLIC_SUPABASE_URL ?? "",
+  key: process.env.EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY ?? "",
+  streetID: process.env.EXPO_PUBLIC_STREET_ID ?? "11111111-1111-4111-8111-111111111111",
+  gateway: process.env.EXPO_PUBLIC_GATEWAY_URL,
+};
+const review = {
+  url: "https://eyrdviyebyozsaellopr.supabase.co",
+  key: "sb_publishable_0T5I4TG5sI_9FJtvq8q7TQ_1zEIVWGO",
+  streetID: "22222222-2222-4222-8222-222222222222",
+  gateway: "wss://denshin-app-review.onrender.com/street",
+};
+export let { url, key, streetID, gateway } = production;
+export const inReview = () => url === review.url;
+
+async function selectDeployment(target: typeof production) {
+  await configure(target.url, target.key);
+  ({ url, key, streetID, gateway } = target);
+}
+
+export async function loginForReview(email: string, password: string) {
+  if (platformAuth || (await auth.session()).signed_in) throw Error("logout_required");
+  await selectDeployment(review);
+  try {
+    await bridge.reviewPassword(email, password);
+    await session();
+  } catch (error) {
+    await selectDeployment(production);
+    throw error;
+  }
+}
 
 export async function displayClock() {
   let best: { server: number; local: number; rtt: number } | undefined;

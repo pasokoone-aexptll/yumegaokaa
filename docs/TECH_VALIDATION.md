@@ -1,4 +1,10 @@
 
+## 2026-11-25 App Reviewの専用アカウントと入街（C04・R03/R15/R17/R19）
+
+iPhone 17の開発署名版で本人がログイン、年齢申告・同意、架空の入口からの入街を確認した。入力修正後のSimulator Releaseでは予備アカウントで「App Review ログイン」から実際の認証を経て「年齢の確認」までUIテストに成功。予備アカウントの同意は保存していない。
+
+別の使い捨てアカウントで審査用API・WebSocketへ接続し、架空区画の入街・観測、PIN参加、チャット送信、通報、ブロック、退出を検証した。退会は古い認証を拒否し、パスワード再認証後にAuth削除を確認した。実NFC、実位置、配布署名版、Appleによる審査は別途確認する。手順は[App Reviewアクセス](APP_REVIEW_ACCESS.md)。
+
 ## 2026-11-25 審査チェック導入・退会本文削除（R03/R15/R17/R19）
 
 Codex用v2.5.1を導入しInstall verified、提出停止／通常コマンド許可の自己検証成功。明示スキャンと未確認6項目を止めるreadiness設定を追加。057のローカルDB rollback試験成功（再認証拒否・本人限定消去・PIN閉鎖・再送）、ローカル適用済み。typecheck／変更画面eslint成功。全体lintは既存10 errors/1 warning。クラウド配備・実機・公開ポリシー・App Store Connectは未完。自動フックのユーザー信頼承認は未確認。詳細：[APP_STORE_COMPLIANCE](APP_STORE_COMPLIANCE.md)。

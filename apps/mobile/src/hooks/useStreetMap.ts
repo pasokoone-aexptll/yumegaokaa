@@ -11,7 +11,9 @@ import { closeMenu, setToolsButtonVisible } from "expo-dev-client";
 import { gatewayConnection } from "../lib/gatewayConnection";
 import NfcManager, { NfcTech, Ndef, NfcError } from "react-native-nfc-manager";
 import {
+  inReview,
   key,
+  gateway as deploymentGateway,
   displayClock,
   native,
   NativeState,
@@ -207,7 +209,7 @@ export function useStreetMap() {
     const gateway = gatewayConnection({
       token: () => native.realtimeToken(),
       connect: (token) => {
-        let endpoint = process.env.EXPO_PUBLIC_GATEWAY_URL;
+        let endpoint = deploymentGateway;
         if (!endpoint && localHost) {
           const local = new URL(url);
           local.protocol = local.protocol === "https:" ? "wss:" : "ws:";
@@ -394,6 +396,10 @@ export function useStreetMap() {
   async function performScan(source: "default" | "tag") {
     // Simulator has no NFC reader. Keep the waiting presentation without
     // attempting a session or falsely treating hardware absence as a network error.
+    if (inReview()) {
+      await enterFixture("33333333-3333-4333-8333-333333333333");
+      return;
+    }
     if (source === "tag" && native.isSimulator?.()) {
       setSheet("explain");
       return;

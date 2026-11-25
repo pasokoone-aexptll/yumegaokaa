@@ -115,14 +115,16 @@ export type StreetIconState = {
   next_shuffle_at: string;
 };
 async function uploadImage(bucket: string, path: string, file: File) {
+  const origin = url, publicKey = key;
   const body = stripJpegMetadata(await file.arrayBuffer());
   const token = await native.realtimeToken();
+  if (origin !== url) throw Error("session_changed");
   const response = await fetch(
-    url + "/storage/v1/object/" + bucket + "/" + path,
+    origin + "/storage/v1/object/" + bucket + "/" + path,
     {
       method: "POST",
       headers: {
-        apikey: key,
+        apikey: publicKey,
         Authorization: "Bearer " + token,
         "Content-Type": "image/jpeg",
         "x-upsert": "true",

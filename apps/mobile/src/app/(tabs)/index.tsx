@@ -40,7 +40,7 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Camera, CameraRef, Map } from "../../components/map/PlatformMap";
-import { native } from "../../lib/native";
+import { inReview, native } from "../../lib/native";
 import { liveCells } from "../../lib/presence";
 import { fieldTrial, localEntry } from "../../lib/development";
 import { useStreetMap } from "../../hooks/useStreetMap";
@@ -281,7 +281,7 @@ export default function Street() {
         onMapReady={() => setAndroidMapReady(true)}
         historyBlur={historyExpanded}
         chatBackdrop={Platform.OS === "android"}
-        showUserLocation={mapFocused || placement.active}
+        showUserLocation={!inReview() && (mapFocused || placement.active)}
         bottomInset={detailInset}
         onMovingChange={setMapMoving}
         style={StyleSheet.absoluteFill}
@@ -312,7 +312,7 @@ export default function Street() {
         <Camera
           ref={camera}
           initialViewState={{
-            center: [139.7109, 35.7295],
+            center: inReview() ? [139.8333333, 36] : [139.7109, 35.7295],
             zoom: 17,
             pitch: initialPitch,
           }}

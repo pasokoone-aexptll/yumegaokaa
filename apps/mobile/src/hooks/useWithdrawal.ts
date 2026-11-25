@@ -1,6 +1,6 @@
 import { useRef, useState } from "react";
 import { useRouter } from "expo-router";
-import { native } from "../lib/native";
+import { native, inReview } from "../lib/native";
 
 export function useWithdrawal() {
   const router = useRouter();
@@ -19,7 +19,7 @@ export function useWithdrawal() {
     try {
       const account = await native.accountDetails();
       const ticket = await native.rpc<{ id: string }>("withdraw_prepare", {});
-      await native.sendOTP(account.email);
+      if (!inReview()) await native.sendOTP(account.email);
       authenticated.current = false;
       confirmed.current = false;
       setCode("");
@@ -38,7 +38,8 @@ export function useWithdrawal() {
     setError("");
     try {
       if (!authenticated.current) {
-        await native.verifyOTP(request.email, code.trim());
+        if (inReview()) await native.reviewPassword(request.email, code);
+        else await native.verifyOTP(request.email, code.trim());
         authenticated.current = true;
       }
       if (!confirmed.current) {

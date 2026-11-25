@@ -1,6 +1,6 @@
 # 電信出口 App Review専用環境の準備
 
-状態：無料枠の別環境作成を本人承認。Supabase denshin-app-review（eyrdviyebyozsaellopr、東京）を作成し061まで配備。Renderは無料プランの作成フォームを準備、審査用管理資格の登録は確認待ち。アカウントは未作成。アプリの環境切替・パスワードログイン・NFC代替操作は未接続。このディレクトリを本番migrationや通常seedへ含めない。
+審査専用SupabaseとRender Freeは配備済み。事前作成した通常権限の2アカウント（審査用・予備）でパスワードログインと同意前の制限を確認した。審査DBは一般登録を無効化。RenderのDB接続はSupabase Root CAで検証し、認証付きWebSocketを確認。審査資格はMacの所有者だけが読める一時ファイルに保管し、提出時にApp Store Connectの審査情報欄へ入力する。審査用の街・区域・入口・架空の図形画像・サンプルチャット・24時間のPINを準備済み。提出直前に独立した作業ディレクトリから審査project refを明示して sample-content.sql を再実行し、期限内のPINがあるか確認する。
 
 ## 確定した仕様
 
@@ -36,9 +36,9 @@
 
 設定validatorの成功は、サーバーの認可や実データ分離の確認を意味しない。
 
-## 費用（2026-11-25公式資料確認、未契約）
+## 費用（2026-11-25、無料枠で配備）
 
-Supabase Freeは2 active projectsまで・非活動時休止あり。CLIで見える既存はyumegaoka-fieldの1件。無料枠の最終可否は作成画面で確認。Render Freeは15分非活動で休止するため試作向け。常時稼働プランは公式価格で$7/月の構成がある。Supabase Proは$25/月から、追加projectは$10/月から（組織とcompute構成による）。審査用の追加総額は本番側の契約にも影響するので別途確定する。
+Supabaseは本番と審査の2プロジェクトを使用。Renderは審査サービスにFreeを選択し、作成時の表示は月額$0。無料サービスは休止するため、提出前に休止後の初回到達性を再検証する。追加料金が必要になる場合は本人が判断する。
 
 - https://supabase.com/pricing
 - https://supabase.com/docs/guides/platform/billing-on-supabase

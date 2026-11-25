@@ -103,6 +103,7 @@ public class PresenceNativeModule: Module {
   AsyncFunction("mfaVerify") { (factor:String,code:String) in try await APIClient.shared.mfaVerify(factor:factor,code:code) }
   AsyncFunction("session") { await APIClient.shared.session() }
   AsyncFunction("sendOTP") { (email:String, createAccount:Bool?) in try await APIClient.shared.sendOTP(email:email,createAccount:createAccount ?? true) }
+  AsyncFunction("reviewPassword") { (email:String,password:String) in try await APIClient.shared.reviewPassword(email:email,password:password) }
   AsyncFunction("verifyOTP") { (email:String,code:String) in try await APIClient.shared.verifyOTP(email:email,code:code) }
   AsyncFunction("rpc") { (operation:String,payload:[String:Any]) in try await APIClient.shared.rpc(operation,payload) }
   AsyncFunction("checkin") { (tag:String) in try await PresenceEngine.shared.checkin(tagID:tag) }

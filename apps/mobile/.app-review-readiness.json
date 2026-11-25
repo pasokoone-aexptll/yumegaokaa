@@ -12,11 +12,11 @@
     "iap_reachable_by_reviewer": "n/a"
   },
   "notes": {
-    "demo_account": "OTP, invitation QR, location and NFC need a reviewer-accessible path tested on the submitted build.",
-    "live_backend": "Cloud development evidence does not attest to availability throughout App Review.",
-    "review_notes": "Internal review notes and isolated demo design drafted in docs/APP_REVIEW_ACCESS.md. Public operator/policy, OTP access, Apple review consultation and submitted-build validation remain open. support forwarding configured; delivery test pending.",
+    "demo_account": "Two real review accounts. User confirmed review login, consent and check-in on development-signed iPhone 17. Repeat on distribution build before passing.",
+    "live_backend": "Dedicated review service deployed on Render Free. Authenticated WebSocket, synthetic check-in and checkout verified. Cold-start availability at submission and production street setup pending.",
+    "review_notes": "Review login and simulated NFC instructions updated in docs/APP_REVIEW_ACCESS.md. Verify notes against the signed distribution build.",
     "screenshots_match_build": "No App Store Connect listing or submitted binary was inspected.",
-    "account_deletion_device_test": "Migration 057 erases future withdrawing members' chat and PIN text. Only rollback DB verification is complete; deployment, historic anonymous content and retained report evidence remain open.",
+    "account_deletion_device_test": "Production cleanup previously verified with synthetic accounts. Dedicated review project rejected stale password auth and accepted fresh reauthentication for a disposable account. Device deletion walkthrough pending.",
     "privacy_labels_match_runtime": "No console declaration or release traffic audit yet. A privacy manifest alone does not attest to these declarations.",
     "iap_reachable_by_reviewer": "Current app has no in-app purchases or paid digital goods. Recheck if monetization is added."
   }
