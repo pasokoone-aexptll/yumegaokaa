@@ -57,7 +57,12 @@ final class Smoke: XCTestCase {
     break
    }
   }
-  tap(app,"この画像を通報")
+  let report = app.buttons["この画像を通報"]
+  XCTAssertTrue(report.waitForExistence(timeout:15))
+  // XCTest's automatic hit point can land outside this button inside the Settings tab.
+  let center = report.frame
+  app.coordinate(withNormalizedOffset:.zero)
+   .withOffset(CGVector(dx:center.midX - app.frame.minX, dy:center.midY - app.frame.minY)).tap()
   XCTAssertTrue(app.staticTexts["通報する街のアイコン"].waitForExistence(timeout:10))
   attach(app,"street-image-report")
   XCTAssertTrue(app.buttons["運営へ送信"].isEnabled)
