@@ -12,7 +12,9 @@ const source = ts.transpileModule(
     },
   },
 ).outputText;
+const review = JSON.parse(readFileSync("apps/mobile/review-deployment.json", "utf8"));
 const valid = {
+  EXPO_PUBLIC_GATEWAY_URL: "wss://gateway.example.test/street",
   YUMEGAOKA_STORE_BUILD: "1",
   EXPO_PUBLIC_REGISTRATION_DECLARATION: "1",
   YUMEGAOKA_STORE_API_ORIGIN: "https://example.supabase.co",
@@ -24,7 +26,10 @@ const valid = {
 };
 function config(env) {
   const exports = {};
-  new Function("exports", "process", source)(exports, { env });
+  new Function("exports", "process", "require", source)(exports, { env }, (name) => {
+    assert.equal(name, "./review-deployment.json");
+    return review;
+  });
   return exports.default({
     config: {
       plugins: ["react-native-nfc-manager"],
@@ -117,4 +122,13 @@ test("store mode preserves required capabilities but removes local network excep
     development.ios.infoPlist.NSAppTransportSecurity.NSAllowsLocalNetworking,
     true,
   );
+});
+
+test("review services cannot be the default destination for regular accounts", () => {
+  assert.throws(() => config({
+    ...valid, EXPO_PUBLIC_SUPABASE_URL: review.url, YUMEGAOKA_STORE_API_ORIGIN: review.url,
+  }), /review API/);
+  const gateway = new URL(review.gateway);
+  gateway.pathname = "/other";
+  assert.throws(() => config({ ...valid, EXPO_PUBLIC_GATEWAY_URL: gateway.href }), /review gateway/);
 });

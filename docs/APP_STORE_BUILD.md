@@ -17,7 +17,9 @@
 | `EXPO_PUBLIC_REGISTRATION_DECLARATION` | `1`。058配備と公開規約設定を先に完了する |
 | `YUMEGAOKA_APNS_ENVIRONMENT` | `production` |
 | `APPLE_TEAM_ID` | ADP加入後の10文字のTeam ID |
-| `EXPO_PUBLIC_GATEWAY_URL` | 設定するならWSS。資格情報・query・fragmentを埋め込まない |
+| `EXPO_PUBLIC_GATEWAY_URL` | 通常利用者用のWSS接続先が必須。審査専用ホスト、資格情報・query・fragmentは使用不可 |
+
+審査デモ設定はアプリの審査ログインと提出前検査で共有する。通常利用者用に審査Supabaseや審査用ゲートウェイを指定すると、設定評価時点で停止する。
 
 このモードではLOCAL_ENTRY、VALIDATION_RELEASE、FIELD_TRIAL、UI_REVIEW、SIMULATE_READ_OUTAGEの有効化を拒否する。iOSの開発用ローカルネットワーク説明・ATS例外を生成設定から取り除く。通常の開発設定は保持する。
 

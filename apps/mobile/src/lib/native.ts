@@ -1,3 +1,4 @@
+import * as review from "../../review-deployment.json";
 import { reviewVisits } from "./reviewVisit";
 import { platformAuth } from "./platformAuth";
 import { sessionState } from "./sessionState";
@@ -162,12 +163,6 @@ const production = {
   key: process.env.EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY ?? "",
   streetID: process.env.EXPO_PUBLIC_STREET_ID ?? "11111111-1111-4111-8111-111111111111",
   gateway: process.env.EXPO_PUBLIC_GATEWAY_URL,
-};
-const review = {
-  url: "https://eyrdviyebyozsaellopr.supabase.co",
-  key: "sb_publishable_0T5I4TG5sI_9FJtvq8q7TQ_1zEIVWGO",
-  streetID: "22222222-2222-4222-8222-222222222222",
-  gateway: "wss://denshin-app-review.onrender.com/street",
 };
 export let { url, key, streetID, gateway } = production;
 export const inReview = () => url === review.url;

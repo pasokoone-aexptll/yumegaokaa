@@ -22,6 +22,9 @@ export default ({ config }: ConfigContext): ExpoConfig => {
     const apiURL = process.env.EXPO_PUBLIC_SUPABASE_URL;
     if (!approvedOrigin || !apiURL || apiURL !== approvedOrigin)
       throw new Error("Store build requires an explicit matching API origin");
+    const review: typeof import("./review-deployment.json") = require("./review-deployment.json");
+    if (apiURL === review.url)
+      throw new Error("Store build cannot use the review API for regular accounts");
     const address = new URL(apiURL);
     if (
       address.protocol !== "https:" ||
@@ -59,19 +62,18 @@ export default ({ config }: ConfigContext): ExpoConfig => {
     if (!process.env.APPLE_TEAM_ID?.match(/^[A-Z0-9]{10}$/))
       throw new Error("Store build requires an Apple Team ID");
     const gateway = process.env.EXPO_PUBLIC_GATEWAY_URL;
-    if (gateway) {
-      const endpoint = new URL(gateway);
-      if (
-        endpoint.protocol !== "wss:" ||
-        endpoint.username ||
-        endpoint.password ||
-        endpoint.search ||
-        endpoint.hash
-      )
-        throw new Error(
-          "Store build requires a WSS gateway without embedded credentials",
-        );
-    }
+    if (!gateway) throw new Error("Store build requires a production WSS gateway");
+    const endpoint = new URL(gateway);
+    if (
+      endpoint.protocol !== "wss:" ||
+      endpoint.username ||
+      endpoint.password ||
+      endpoint.search ||
+      endpoint.hash
+    )
+      throw new Error("Store build requires a WSS gateway without embedded credentials");
+    if (endpoint.hostname.replace(/\.$/, "") === new URL(review.gateway).hostname)
+      throw new Error("Store build cannot use the review gateway for regular accounts");
   }
   if (validationRelease) {
     const address = new URL(process.env.EXPO_PUBLIC_SUPABASE_URL ?? "");
