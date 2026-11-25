@@ -30,23 +30,25 @@ export function maintenanceTick({ apiURL, serviceKey, simulate = false }) {
     }
     let icons = 0;
     for (let i = 0; i < 100; i++) {
-      const item = await job("claim", {}, "icon_cleanup");
+      const item = await job("claim", { include_avatars: true }, "icon_cleanup");
       if (!item.id) break;
+      const bucket = item.bucket === "avatars" ? "avatars" : "street-icons";
+      const lease = { id: item.id, lease: item.lease, bucket };
       try {
         const result = await request(
-          "/storage/v1/object/street-icons",
+          "/storage/v1/object/" + bucket,
           "DELETE",
           { prefixes: [item.path] },
         );
         if (!result.ok) throw Error("icon_cleanup_failed");
-        await job("finish", { id: item.id, lease: item.lease }, "icon_cleanup");
+        await job("finish", lease, "icon_cleanup");
         icons++;
       } catch {
-        await job("retry", { id: item.id, lease: item.lease }, "icon_cleanup");
-        console.error("取り下げた街アイコンの清掃を再試行待ちにしました。");
+        await job("retry", lease, "icon_cleanup");
+        console.error("取り下げた画像の清掃を再試行待ちにしました。");
       }
     }
-    console.log("取り下げた街アイコン清掃:", icons, "件");
+    console.log("取り下げた画像清掃:", icons, "件");
     let count = 0;
     for (let i = 0; i < 100; i++) {
       const item = await job("claim");
