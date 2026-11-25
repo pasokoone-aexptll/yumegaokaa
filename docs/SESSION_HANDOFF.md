@@ -8,6 +8,10 @@
 
 2026-11-19追記：電信PINのQ-DP01〜06はユーザーが推奨案をすべて承認。DENSHIN_PIN_SPECに本文反映しDP01実装を開始。旧有効データがある場合の移行判断は配備前に確認。
 
+## 2026-11-25 年齢確認・両OSの追加指定
+
+09:49画像に合わせ、共通RegistrationDeclarationFormの退会をテキストリンクへ、続行を下段の幅広青カプセルへ変更。説明文・余白も調整。保護者/規約同意と年齢制限は保持。型・対象Lint・年齢判定単体試験成功。今回の実表示照合と実機転送は未実施。TECH_VALIDATION末尾参照。
+
 ## 現在の再開点（2026-11-24・Android移植）
 
 ユーザーがiOS UI完成を明示。`5f9e895..1709cce`のAndroid移植を自律サイクルで開始。現在の作業と残件は[ANDROID_UI_PORT](frontend-redesign/ANDROID_UI_PORT.md)。旧iOSキューの記録は以下に保持し、Androidの確認済み根拠へ流用しない。

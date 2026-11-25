@@ -27,6 +27,7 @@ export function RegistrationDeclarationForm({
   onClosePreview?: () => void;
   onContinue: (value: RegistrationDeclaration) => void | Promise<void>;
 }) {
+  const [actionWidth, setActionWidth] = useState(0);
   const [termsAccepted, setTermsAccepted] = useState(false);
   const [busy, setBusy] = useState(false);
   const [band, setBand] = useState<AgeBand>();
@@ -106,7 +107,7 @@ export function RegistrationDeclarationForm({
             {(
               [
                 ["under_13", "13 歳未満"],
-                ["13_17", "13～17 歳"],
+                ["13_17", "13 ～ 17 歳"],
                 ["18_plus", "18 歳以上"],
               ] as const
             ).map(([value, label], index) => (
@@ -199,25 +200,28 @@ export function RegistrationDeclarationForm({
               }}
             />
           )}
-          <View style={styles.actions}>
-            <View style={styles.action}>
-              <NativeAction
-                title={busy ? "保存中…" : "同意して次へ"}
-                tone="blue"
-                contentWidth={100}
-                disabled={!declaration || busy}
-                onPress={submit}
-              />
-            </View>
-            <View style={styles.action}>
-              <NativeAction
-                title={onWithdraw ? "同意せず退会" : "ログアウト"}
-                tone="blue"
-                contentWidth={100}
-                disabled={busy}
-                onPress={onWithdraw ?? logout}
-              />
-            </View>
+          <View
+            style={styles.actions}
+            onLayout={(event) => setActionWidth(event.nativeEvent.layout.width)}
+          >
+            <Pressable
+              accessibilityRole="button"
+              accessibilityState={{ disabled: busy }}
+              disabled={busy}
+              onPress={onWithdraw ?? logout}
+              style={styles.withdraw}
+            >
+              <Text style={styles.withdrawText}>
+                {onWithdraw ? "同意せず退会→" : "同意せずログアウト→"}
+              </Text>
+            </Pressable>
+            <NativeAction
+              title={busy ? "保存中…" : "同意して次へ"}
+              tone="blue"
+              contentWidth={Math.max(100, actionWidth - 32)}
+              disabled={!declaration || busy}
+              onPress={submit}
+            />
           </View>
           {onWithdraw && (
             <Pressable
@@ -226,7 +230,9 @@ export function RegistrationDeclarationForm({
               onPress={logout}
               style={styles.logout}
             >
-              <Text style={styles.caption}>{onClosePreview ? "プレビューを閉じる" : "ログアウト"}</Text>
+              <Text style={styles.caption}>
+                {onClosePreview ? "プレビューを閉じる" : "ログアウト"}
+              </Text>
             </Pressable>
           )}
         </View>
@@ -245,7 +251,7 @@ const styles = StyleSheet.create({
   },
   heading: { alignItems: "center", gap: 12 },
   title: { fontSize: 20, fontWeight: "700", color: "#000" },
-  caption: { fontSize: 14, color: "#999", textAlign: "center" },
+  caption: { fontSize: 14, color: "#bdbdbd", textAlign: "center" },
   ageSection: { marginTop: 96 },
   group: {
     backgroundColor: "#fff",
@@ -267,8 +273,8 @@ const styles = StyleSheet.create({
   },
   age: { flex: 1, fontSize: 18, fontWeight: "600", color: "#000" },
   check: { fontSize: 24, color: "#aaa" },
-  disclosure: { fontSize: 14, lineHeight: 19, color: "#999", marginTop: 26 },
-  bottom: { flexGrow: 1, justifyContent: "flex-end", gap: 16, paddingTop: 56 },
+  disclosure: { fontSize: 14, lineHeight: 19, color: "#bdbdbd", marginTop: 26 },
+  bottom: { flexGrow: 1, justifyContent: "flex-end", gap: 16, paddingTop: 44 },
   link: { flex: 1, fontSize: 17, color: "#888" },
   chevron: { fontSize: 30, lineHeight: 30, color: "#c8c8c8" },
   toggleRow: {
@@ -281,13 +287,17 @@ const styles = StyleSheet.create({
   },
   toggleText: { flex: 1, fontSize: 14, lineHeight: 19, color: "#000" },
   actions: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    gap: 12,
-    justifyContent: "space-between",
-    marginTop: 8,
+    gap: 8,
+    marginTop: 48,
+    marginHorizontal: 6,
   },
-  action: { flex: 1, minWidth: 132 },
+  withdraw: {
+    alignSelf: "flex-start",
+    paddingHorizontal: 10,
+    minHeight: 44,
+    justifyContent: "center",
+  },
+  withdrawText: { fontSize: 16, color: "#000" },
   logout: { alignSelf: "center", padding: 10 },
   error: { color: "#b3261e", fontSize: 14, marginTop: 10 },
 });

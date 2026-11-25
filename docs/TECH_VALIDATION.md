@@ -1924,3 +1924,8 @@ iPhone17 Releaseビルド成功。上書きは自動審査に拒否されたた�
 本人が最終実行を承認。RESET_PLANに結果を記録。本番36利用者表・Auth8件/関連session/identity/MFA/refresh/OTP・Storage11件を消去し0件確認。街/NFC/規約設定7表・migration65件を保持。一時書込制御は解除、残存trigger/function0。Auth削除の500は一時statement triggerが空のCASCADEも止めるためで、row triggerへ直し完了。初回hash証跡の保持制限もRESET_PLANへ明記。運営アカウント0、設置draft4は未割当owner。本人の新規OTP→restore-production-operator.mjs→本人同意/画像/MFA→実機一巡が次。バックアップ/サービスログの即時消去は未実施。
 
 Android session=null logoutを修正し実adapterのmock回帰2件と型検査成功。端末配備は未実施。既存33件の実装29/33・統合27/33・実機11/33・DONE27/33・BLOCKED3/33は維持。大規模監査/Leanは後回し、審査デモ・ADP/APNs/提出ビルドは未完。
+
+
+## 2026-11-25 09:49指定・年齢確認レイアウト（iOS/Android、R03/R19）
+
+RegistrationDeclarationForm共通画面を指定画像へ調整。退会を左寄せのテキストリンク、その下に画面幅から算出した青い「同意して次へ」を配置。年齢表記、薄い説明文、規約群と下部操作の間隔を調整。既存の13歳未満拒否、13〜17歳の保護者同意、明示的規約同意、保存中の操作制限、ログアウトを保持。DB/API・同意記録は変更なし。TypeScript、対象ESLint、age bands単体試験、diff check成功。今回の実機・両OSスクリーンショット照合は未実施（ADB接続端末なし）。ネイティブビルド/実機転送は未実施。旧33タスクの達成率は変更なし。
