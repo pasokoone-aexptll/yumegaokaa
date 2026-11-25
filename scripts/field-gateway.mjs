@@ -1,3 +1,4 @@
+import { fileURLToPath } from "node:url";
 import { fieldFcmTick } from "./lib/fcm.mjs";
 import { startGateway } from "./lib/gateway-runtime.mjs";
 import { maintenanceTick } from "./lib/maintenance.mjs";
@@ -12,6 +13,17 @@ if (apiURL.protocol !== "https:") throw Error("HTTPS required");
 const database = new URL(required("DATABASE_URL"));
 if (database.searchParams.get("sslmode") !== "verify-full")
   throw Error("Use a TLS verified Postgres session connection");
+if (!database.searchParams.has("sslrootcert")) {
+  database.searchParams.set("sslrootcert", fileURLToPath(new URL("./supabase-root.crt", import.meta.url)));
+}
+if (process.env.RENDER_SERVICE_NAME === "denshin-app-review") {
+  const ref = "eyrdviyebyozsaellopr";
+  if (apiURL.origin !== "https://" + ref + ".supabase.co" ||
+      database.username !== "postgres." + ref ||
+      !database.hostname.endsWith(".pooler.supabase.com") ||
+      required("STREET_ID") !== "22222222-2222-4222-8222-222222222222" ||
+      process.env.FCM_SERVICE_ACCOUNT_JSON) throw Error("Review deployment configuration mismatch");
+}
 const tick = maintenanceTick({
   apiURL: apiURL.origin,
   serviceKey: required("SUPABASE_SERVICE_ROLE_KEY"),
